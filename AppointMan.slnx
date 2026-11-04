@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="AppointMan.Infrastructure/AppointMan.Infrastructure.csproj" Id="14b07e59-693f-435a-af18-ec4eeee80541" />
+  <Project Path="AppointMan.Api/AppointMan.Api.csproj" Id="ba4c0ac0-ffad-4365-8a1e-fcd92a602ca3" />
+  <Project Path="AppointMan.Application/AppointMan.Application.csproj" Id="e61a7e6d-2282-4bef-b09f-79e4be9c61ed" />
+  <Project Path="AppointMan.domain/AppointMan.Domain.csproj" Id="40c6dc0b-c875-4d7c-ab46-6e2458345ec2" />
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+</Solution>

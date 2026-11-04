@@ -1,0 +1,23 @@
+﻿using AppointMan.Application.Common.Results;
+using MediatR;
+
+namespace AppointMan.Application.Features.Users.Commands.Login
+{
+    public class LoginCommand : IRequest<Result<LoginResponse>>
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
+
+    public class LoginResponse
+    {
+        public string AccessToken { get; set; }
+        public string RefreshToken { get; set; }
+        public DateTime Expiration { get; set; }
+        public Guid UserId { get; set; }
+        public string Email { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Role { get; set; }
+    }
+}

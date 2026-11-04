@@ -1,0 +1,53 @@
+﻿using AppointMan.Domain.Events;
+using AppointMan.Domain.Interfaces;
+
+namespace AppointMan.Domain.Entities
+{
+    public abstract class BaseEntity : IAggregateRoot
+    {
+        public Guid Id { get; protected set; }
+        public DateTime CreatedAt { get; protected set; }
+        public DateTime? UpdatedAt { get; protected set; }
+        public bool IsDeleted { get; protected set; }
+        public DateTime? DeletedAt { get; protected set; }
+
+        private readonly List<IDomainEvent> _domainEvents = new();
+        public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+        protected BaseEntity()
+        {
+            Id = Guid.NewGuid();
+            CreatedAt = DateTime.UtcNow;
+            IsDeleted = false;
+        }
+
+        public void AddDomainEvent(IDomainEvent domainEvent)
+        {
+            _domainEvents.Add(domainEvent);
+        }
+
+        public void RemoveDomainEvent(IDomainEvent domainEvent)
+        {
+            _domainEvents.Remove(domainEvent);
+        }
+
+        public void ClearDomainEvents()
+        {
+            _domainEvents.Clear();
+        }
+
+        public void SoftDelete()
+        {
+            IsDeleted = true;
+            DeletedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void Restore()
+        {
+            IsDeleted = false;
+            DeletedAt = null;
+            UpdatedAt = DateTime.UtcNow;
+        }
+    }
+}

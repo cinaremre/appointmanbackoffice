@@ -1,0 +1,14 @@
+﻿using AppointMan.Application.Common.Results;
+using MediatR;
+
+namespace AppointMan.Application.Features.Appointments.Commands.RescheduleAppointment
+{
+    public class RescheduleAppointmentCommand : IRequest<Result<Guid>>
+    {
+        public Guid AppointmentId { get; set; }
+        public Guid UserId { get; set; }
+        public Guid? NewEmployeeId { get; set; }   // Opsiyonel: calisan degisebilir
+        public DateTime NewAppointmentDate { get; set; }
+        public string? RescheduledBy { get; set; }
+    }
+}
