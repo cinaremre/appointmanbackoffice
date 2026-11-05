@@ -10,7 +10,8 @@ namespace AppointMan.Application.Common.DTOs
         public decimal Price { get; set; }
         public string Currency { get; set; }
         public int DurationInMinutes { get; set; }
-        public EnumServiceCategory Category { get; set; }
+        public Guid ServiceCategoryId { get; set; }
+        public string? ServiceCategoryName { get; set; }
         public bool IsActive { get; set; }
         public Guid BusinessId { get; set; }
         public string? BusinessName { get; set; }

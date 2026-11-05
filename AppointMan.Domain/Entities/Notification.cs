@@ -24,7 +24,13 @@ namespace AppointMan.Domain.Entities
         private Notification() { } // EF Core
 
         public Notification(Guid userId, string title, string message,
-                           EnumNotificationType type, string? actionUrl = null)
+                    EnumNotificationType type, string? actionUrl = null)
+     : this(Guid.NewGuid(), userId, title, message, type, actionUrl)
+        {
+        }
+        public Notification(Guid id, Guid userId, string title, string message,
+                   EnumNotificationType type, string? actionUrl = null)
+    : base(id)
         {
             if (userId == Guid.Empty)
                 throw new ArgumentException("Kullanıcı ID boş olamaz.", nameof(userId));
@@ -41,7 +47,6 @@ namespace AppointMan.Domain.Entities
 
             AddDomainEvent(new NotificationSentEvent(Id, UserId, Type, Title));
         }
-
         public void SetTitle(string title)
         {
             if (string.IsNullOrWhiteSpace(title))
@@ -115,6 +120,10 @@ namespace AppointMan.Domain.Entities
         public string GetSummary()
         {
             return $"{SentAt:dd.MM.yyyy HH:mm} - {Title} ({(IsRead ? "Okundu" : "Okunmadı")})";
+        }
+        public void SetSentAtForSeed(DateTime sentAt)
+        {
+            SentAt = sentAt;
         }
     }
 }

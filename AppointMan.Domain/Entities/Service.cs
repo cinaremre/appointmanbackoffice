@@ -12,9 +12,11 @@ namespace AppointMan.Domain.Entities
         public string? Description { get; private set; }
         public Money Price { get; private set; }
         public int DurationInMinutes { get; private set; }
-        public EnumServiceCategory Category { get; private set; }
         public bool IsActive { get; private set; }
         public Guid BusinessId { get; private set; }
+
+        public Guid ServiceCategoryId { get; private set; }
+        public ServiceCategory ServiceCategory { get; private set; }
 
         public Business Business { get; private set; }
 
@@ -27,21 +29,29 @@ namespace AppointMan.Domain.Entities
         private Service() { }
 
         public Service(string name, Money price, int durationInMinutes,
-                      EnumServiceCategory category, Guid businessId)
+              Guid serviceCategoryId, Guid businessId)
+    : this(Guid.NewGuid(), name, price, durationInMinutes, serviceCategoryId, businessId)
+        {
+        }
+        public Service(Guid id, string name, Money price, int durationInMinutes,
+              Guid serviceCategoryId, Guid businessId)
+    : base(id)
         {
             if (businessId == Guid.Empty)
                 throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
+            if (serviceCategoryId == Guid.Empty)
+                throw new ArgumentException("Kategori ID boş olamaz.", nameof(serviceCategoryId));
+
             SetName(name);
             Price = price ?? throw new ArgumentNullException(nameof(price));
             SetDuration(durationInMinutes);
-            Category = category;
+            ServiceCategoryId = serviceCategoryId;
             BusinessId = businessId;
             IsActive = true;
 
-            AddDomainEvent(new ServiceCreatedEvent(Id, BusinessId, Name, Price, DurationInMinutes, Category));
+            AddDomainEvent(new ServiceCreatedEvent(Id, BusinessId, Name, Price, DurationInMinutes, ServiceCategoryId));
         }
-
         public void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -57,8 +67,7 @@ namespace AppointMan.Domain.Entities
             if (!string.IsNullOrEmpty(oldName) && oldName != name)
             {
                 var updatedEvent = new ServiceUpdatedEvent(
-                    Id, BusinessId, Name, Price, DurationInMinutes, Category,
-                    oldName, Price, DurationInMinutes, Category);
+                    Id, BusinessId, Name, Price, DurationInMinutes, ServiceCategoryId);
                 updatedEvent.AddChange("Name", oldName, name);
                 AddDomainEvent(updatedEvent);
             }
@@ -76,8 +85,7 @@ namespace AppointMan.Domain.Entities
             if (oldDescription != description)
             {
                 var updatedEvent = new ServiceUpdatedEvent(
-                    Id, BusinessId, Name, Price, DurationInMinutes, Category,
-                    Name, Price, DurationInMinutes, Category);
+                    Id, BusinessId, Name, Price, DurationInMinutes, ServiceCategoryId);
                 updatedEvent.AddChange("Description", oldDescription ?? string.Empty, description ?? string.Empty);
                 AddDomainEvent(updatedEvent);
             }
@@ -98,8 +106,7 @@ namespace AppointMan.Domain.Entities
             if (oldDuration != durationInMinutes)
             {
                 var updatedEvent = new ServiceUpdatedEvent(
-                    Id, BusinessId, Name, Price, DurationInMinutes, Category,
-                    Name, Price, oldDuration, Category);
+                    Id, BusinessId, Name, Price, DurationInMinutes, ServiceCategoryId);
                 updatedEvent.AddChange("DurationInMinutes", oldDuration, durationInMinutes);
                 AddDomainEvent(updatedEvent);
             }
@@ -117,9 +124,30 @@ namespace AppointMan.Domain.Entities
             if (oldPrice != newPrice)
             {
                 var updatedEvent = new ServiceUpdatedEvent(
-                    Id, BusinessId, Name, Price, DurationInMinutes, Category,
-                    Name, oldPrice, DurationInMinutes, Category);
+                    Id, BusinessId, Name, Price, DurationInMinutes, ServiceCategoryId);
                 updatedEvent.AddChange("Price", oldPrice, newPrice);
+                AddDomainEvent(updatedEvent);
+            }
+        }
+
+        public void SetServiceCategory(ServiceCategory serviceCategory)
+        {
+            if (serviceCategory == null)
+                throw new ArgumentNullException(nameof(serviceCategory));
+
+            if (!serviceCategory.IsLeaf())
+                throw new DomainException("Hizmet sadece leaf kategoriye atanabilir.");
+
+            var oldCategoryId = ServiceCategoryId;
+            ServiceCategory = serviceCategory;
+            ServiceCategoryId = serviceCategory.Id;
+            UpdatedAt = DateTime.UtcNow;
+
+            if (oldCategoryId != ServiceCategoryId)
+            {
+                var updatedEvent = new ServiceUpdatedEvent(
+                    Id, BusinessId, Name, Price, DurationInMinutes, ServiceCategoryId);
+                updatedEvent.AddChange("ServiceCategoryId", oldCategoryId.ToString(), ServiceCategoryId.ToString());
                 AddDomainEvent(updatedEvent);
             }
         }
@@ -132,7 +160,7 @@ namespace AppointMan.Domain.Entities
             IsActive = true;
             UpdatedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new ServiceActivatedEvent(Id, BusinessId, Name, Price, DurationInMinutes, Category, activatedBy));
+            AddDomainEvent(new ServiceActivatedEvent(Id, BusinessId, Name, Price, DurationInMinutes, ServiceCategoryId, activatedBy));
         }
 
         public void Deactivate(string? deactivatedBy = null, string? reason = null)
@@ -143,29 +171,35 @@ namespace AppointMan.Domain.Entities
             IsActive = false;
             UpdatedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new ServiceDeactivatedEvent(Id, BusinessId, Name, Price, DurationInMinutes, Category, deactivatedBy, reason));
+            AddDomainEvent(new ServiceDeactivatedEvent(Id, BusinessId, Name, Price, DurationInMinutes, ServiceCategoryId, deactivatedBy, reason));
         }
 
         public void UpdateService(string name, string? description, Money price,
-                                 int durationInMinutes, EnumServiceCategory category,
+                                 int durationInMinutes, ServiceCategory serviceCategory,
                                  string? updatedBy = null)
         {
+            if (serviceCategory == null)
+                throw new ArgumentNullException(nameof(serviceCategory));
+
+            if (!serviceCategory.IsLeaf())
+                throw new DomainException("Hizmet sadece leaf kategoriye atanabilir.");
+
             var oldName = Name;
             var oldDescription = Description;
             var oldPrice = Price;
             var oldDuration = DurationInMinutes;
-            var oldCategory = Category;
+            var oldCategoryId = ServiceCategoryId;
 
             SetName(name);
             SetDescription(description);
             Price = price ?? throw new ArgumentNullException(nameof(price));
             SetDuration(durationInMinutes);
-            Category = category;
+            ServiceCategory = serviceCategory;
+            ServiceCategoryId = serviceCategory.Id;
             UpdatedAt = DateTime.UtcNow;
 
             var updatedEvent = new ServiceUpdatedEvent(
-                Id, BusinessId, Name, Price, DurationInMinutes, Category,
-                oldName, oldPrice, oldDuration, oldCategory);
+                Id, BusinessId, Name, Price, DurationInMinutes, ServiceCategoryId);
 
             if (oldName != name)
                 updatedEvent.AddChange("Name", oldName, name);
@@ -175,8 +209,8 @@ namespace AppointMan.Domain.Entities
                 updatedEvent.AddChange("Price", oldPrice, price);
             if (oldDuration != durationInMinutes)
                 updatedEvent.AddChange("DurationInMinutes", oldDuration, durationInMinutes);
-            if (oldCategory != category)
-                updatedEvent.AddChange("Category", oldCategory, category);
+            if (oldCategoryId != ServiceCategoryId)
+                updatedEvent.AddChange("ServiceCategoryId", oldCategoryId.ToString(), ServiceCategoryId.ToString());
 
             if (updatedEvent.Changes.Any())
                 AddDomainEvent(updatedEvent);
@@ -188,7 +222,7 @@ namespace AppointMan.Domain.Entities
                 return;
 
             SoftDelete();
-            AddDomainEvent(new ServiceDeletedEvent(Id, BusinessId, Name, Price, DurationInMinutes, Category, deletedBy));
+            AddDomainEvent(new ServiceDeletedEvent(Id, BusinessId, Name, Price, DurationInMinutes, ServiceCategoryId, deletedBy));
         }
 
         public bool IsAvailableForAppointment(DateTime appointmentTime)

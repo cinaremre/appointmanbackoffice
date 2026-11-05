@@ -26,13 +26,17 @@ namespace AppointMan.Domain.Entities
         private BusinessCategory() { } // EF Core
 
         public BusinessCategory(string name, int displayOrder = 0, EnumBusinessType? businessType = null)
+     : this(Guid.NewGuid(), name, displayOrder, businessType)
+        {
+        }
+        public BusinessCategory(Guid id, string name, int displayOrder = 0, EnumBusinessType? businessType = null)
+    : base(id)
         {
             SetName(name);
             DisplayOrder = displayOrder;
             IsActive = true;
             CorrespondingBusinessType = businessType;
         }
-
         public void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))

@@ -18,6 +18,11 @@ namespace AppointMan.Domain.Entities
         private EmployeeService() { }
 
         public EmployeeService(Guid employeeId, Guid serviceId)
+    : this(Guid.NewGuid(), employeeId, serviceId)
+        {
+        }
+        public EmployeeService(Guid id, Guid employeeId, Guid serviceId)
+    : base(id)
         {
             if (employeeId == Guid.Empty)
                 throw new ArgumentException("Calisan ID bos olamaz.", nameof(employeeId));
@@ -29,7 +34,6 @@ namespace AppointMan.Domain.Entities
             ServiceId = serviceId;
             IsActive = true;
         }
-
         public void SetCustomPrice(decimal? price)
         {
             if (price.HasValue && price.Value < 0)

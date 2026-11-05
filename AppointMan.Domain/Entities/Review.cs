@@ -24,6 +24,11 @@ namespace AppointMan.Domain.Entities
         private Review() { } // EF Core
 
         public Review(Guid userId, Guid businessId, int rating, string comment, Guid? appointmentId = null)
+    : this(Guid.NewGuid(), userId, businessId, rating, comment, appointmentId)
+        {
+        }
+        public Review(Guid id, Guid userId, Guid businessId, int rating, string comment, Guid? appointmentId = null)
+    : base(id)
         {
             if (userId == Guid.Empty)
                 throw new ArgumentException("Kullanıcı ID boş olamaz.", nameof(userId));
@@ -43,7 +48,6 @@ namespace AppointMan.Domain.Entities
 
             AddDomainEvent(new ReviewWrittenEvent(Id, UserId, BusinessId, Rating, Comment, AppointmentId));
         }
-
         public void SetRating(int rating)
         {
             if (rating < 1 || rating > 5)
@@ -135,6 +139,10 @@ namespace AppointMan.Domain.Entities
         public void Report(Guid reportedBy, string? reportReason = null)
         {
             AddDomainEvent(new ReviewReportedEvent(Id, UserId, BusinessId, Rating, Comment, reportedBy, reportReason));
+        }
+        public void SetReviewDateForSeed(DateTime reviewDate)
+        {
+            ReviewDate = reviewDate;
         }
     }
 }

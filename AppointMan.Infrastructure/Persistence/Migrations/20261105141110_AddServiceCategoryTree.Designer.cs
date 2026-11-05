@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AppointMan.Infrastructure.Migrations
+namespace AppointMan.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261027120120_SearchBusinessesIndexAdded")]
-    partial class SearchBusinessesIndexAdded
+    [Migration("20261105141110_AddServiceCategoryTree")]
+    partial class AddServiceCategoryTree
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -318,6 +318,41 @@ namespace AppointMan.Infrastructure.Migrations
                     b.HasIndex("ParentCategoryId");
 
                     b.ToTable("BusinessCategories", (string)null);
+                });
+
+            modelBuilder.Entity("AppointMan.Domain.Entities.BusinessServiceCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BusinessId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("ServiceCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceCategoryId");
+
+                    b.HasIndex("BusinessId", "ServiceCategoryId")
+                        .IsUnique();
+
+                    b.ToTable("BusinessServiceCategories", (string)null);
                 });
 
             modelBuilder.Entity("AppointMan.Domain.Entities.Employee", b =>
@@ -739,9 +774,6 @@ namespace AppointMan.Infrastructure.Migrations
                     b.Property<Guid>("BusinessId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Category")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -770,6 +802,9 @@ namespace AppointMan.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<Guid>("ServiceCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -777,11 +812,110 @@ namespace AppointMan.Infrastructure.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.HasIndex("Category");
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("ServiceCategoryId");
+
+                    b.ToTable("Services", (string)null);
+                });
+
+            modelBuilder.Entity("AppointMan.Domain.Entities.ServiceCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ColorHex")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DisplayOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("IconUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid?>("ParentCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DisplayOrder");
 
                     b.HasIndex("IsActive");
 
-                    b.ToTable("Services", (string)null);
+                    b.HasIndex("ParentCategoryId");
+
+                    b.ToTable("ServiceCategories", (string)null);
+                });
+
+            modelBuilder.Entity("AppointMan.Domain.Entities.ServiceCategoryTranslation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("LanguageCode")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("ServiceCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LanguageCode");
+
+                    b.HasIndex("LanguageCode", "Name");
+
+                    b.HasIndex("ServiceCategoryId", "LanguageCode")
+                        .IsUnique();
+
+                    b.ToTable("ServiceCategoryTranslations", (string)null);
                 });
 
             modelBuilder.Entity("AppointMan.Domain.Entities.User", b =>
@@ -1133,6 +1267,25 @@ namespace AppointMan.Infrastructure.Migrations
                     b.Navigation("ParentCategory");
                 });
 
+            modelBuilder.Entity("AppointMan.Domain.Entities.BusinessServiceCategory", b =>
+                {
+                    b.HasOne("AppointMan.Domain.Entities.Business", "Business")
+                        .WithMany("ServiceCategories")
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppointMan.Domain.Entities.ServiceCategory", "ServiceCategory")
+                        .WithMany()
+                        .HasForeignKey("ServiceCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Business");
+
+                    b.Navigation("ServiceCategory");
+                });
+
             modelBuilder.Entity("AppointMan.Domain.Entities.Employee", b =>
                 {
                     b.HasOne("AppointMan.Domain.Entities.Business", "Business")
@@ -1249,6 +1402,12 @@ namespace AppointMan.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("AppointMan.Domain.Entities.ServiceCategory", "ServiceCategory")
+                        .WithMany("Services")
+                        .HasForeignKey("ServiceCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.OwnsOne("AppointMan.Domain.ValueObjects.Money", "Price", b1 =>
                         {
                             b1.Property<Guid>("ServiceId")
@@ -1279,6 +1438,29 @@ namespace AppointMan.Infrastructure.Migrations
 
                     b.Navigation("Price")
                         .IsRequired();
+
+                    b.Navigation("ServiceCategory");
+                });
+
+            modelBuilder.Entity("AppointMan.Domain.Entities.ServiceCategory", b =>
+                {
+                    b.HasOne("AppointMan.Domain.Entities.ServiceCategory", "ParentCategory")
+                        .WithMany("SubCategories")
+                        .HasForeignKey("ParentCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentCategory");
+                });
+
+            modelBuilder.Entity("AppointMan.Domain.Entities.ServiceCategoryTranslation", b =>
+                {
+                    b.HasOne("AppointMan.Domain.Entities.ServiceCategory", "ServiceCategory")
+                        .WithMany("Translations")
+                        .HasForeignKey("ServiceCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ServiceCategory");
                 });
 
             modelBuilder.Entity("AppointMan.Domain.Entities.WorkingHour", b =>
@@ -1306,6 +1488,8 @@ namespace AppointMan.Infrastructure.Migrations
                     b.Navigation("Favorites");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("ServiceCategories");
 
                     b.Navigation("Services");
 
@@ -1335,6 +1519,15 @@ namespace AppointMan.Infrastructure.Migrations
                     b.Navigation("Appointments");
 
                     b.Navigation("EmployeeServices");
+                });
+
+            modelBuilder.Entity("AppointMan.Domain.Entities.ServiceCategory", b =>
+                {
+                    b.Navigation("Services");
+
+                    b.Navigation("SubCategories");
+
+                    b.Navigation("Translations");
                 });
 
             modelBuilder.Entity("AppointMan.Domain.Entities.User", b =>

@@ -182,17 +182,17 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<List<ServiceDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<List<ServiceDto>>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Search(
-            [FromQuery] Guid? businessId = null,
-            [FromQuery] Domain.Enums.EnumServiceCategory? category = null,
-            [FromQuery] bool? isActive = null,
-            [FromQuery] string? searchTerm = null,
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 20)
+     [FromQuery] Guid? businessId = null,
+     [FromQuery] Guid? serviceCategoryId = null,
+     [FromQuery] bool? isActive = null,
+     [FromQuery] string? searchTerm = null,
+     [FromQuery] int pageNumber = 1,
+     [FromQuery] int pageSize = 20)
         {
             var query = new SearchServicesQuery
             {
                 BusinessId = businessId,
-                Category = category,
+                ServiceCategoryId = serviceCategoryId,
                 IsActive = isActive,
                 SearchTerm = searchTerm,
                 PageNumber = pageNumber,

@@ -44,10 +44,19 @@ namespace AppointMan.Domain.Entities
         private readonly List<Employee> _employees = new();
         public IReadOnlyCollection<Employee> Employees => _employees.AsReadOnly();
 
+        private readonly List<BusinessServiceCategory> _serviceCategories = new();
+        public IReadOnlyCollection<BusinessServiceCategory> ServiceCategories => _serviceCategories.AsReadOnly();
+
         private Business() { }
 
         public Business(string name, EnumBusinessType businessType, Address address,
-                       PhoneNumber phoneNumber, Email email, Guid ownerId)
+                PhoneNumber phoneNumber, Email email, Guid ownerId)
+     : this(Guid.NewGuid(), name, businessType, address, phoneNumber, email, ownerId)
+        {
+        }
+        public Business(Guid id, string name, EnumBusinessType businessType, Address address,
+               PhoneNumber phoneNumber, Email email, Guid ownerId)
+    : base(id)
         {
             SetName(name);
             BusinessType = businessType;
@@ -62,7 +71,6 @@ namespace AppointMan.Domain.Entities
 
             AddDomainEvent(new BusinessCreatedEvent(Id, Name, OwnerId, BusinessType, email, Address, PhoneNumber, Email));
         }
-
         public void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -243,7 +251,51 @@ namespace AppointMan.Domain.Entities
             AddDomainEvent(new BusinessClosedEvent(Id, Name, OwnerId, BusinessType, closedBy, reason));
         }
 
-        // Employee Methods
+        // ============= SERVICE CATEGORY METHODS =============
+
+        public void AddServiceCategory(ServiceCategory serviceCategory)
+        {
+            if (serviceCategory == null)
+                throw new ArgumentNullException(nameof(serviceCategory));
+
+            if (!serviceCategory.IsRoot())
+                throw new DomainException("Isletmeye sadece root kategori eklenebilir.");
+
+            if (_serviceCategories.Any(sc => sc.ServiceCategoryId == serviceCategory.Id && !sc.IsDeleted))
+                throw new DomainException("Bu kategori zaten isletmeye eklenmis.");
+
+            var businessServiceCategory = new BusinessServiceCategory(Id, serviceCategory.Id);
+            _serviceCategories.Add(businessServiceCategory);
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void RemoveServiceCategory(ServiceCategory serviceCategory)
+        {
+            if (serviceCategory == null)
+                throw new ArgumentNullException(nameof(serviceCategory));
+
+            var businessServiceCategory = _serviceCategories
+                .FirstOrDefault(sc => sc.ServiceCategoryId == serviceCategory.Id && !sc.IsDeleted);
+
+            if (businessServiceCategory is null)
+                throw new DomainException("Bu kategori isletmede bulunamadi.");
+
+            _serviceCategories.Remove(businessServiceCategory);
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public bool HasServiceCategory(Guid serviceCategoryId)
+        {
+            return _serviceCategories.Any(sc => sc.ServiceCategoryId == serviceCategoryId && !sc.IsDeleted);
+        }
+
+        public bool CanProvideServiceCategory(Guid serviceCategoryRootId)
+        {
+            return _serviceCategories.Any(sc => sc.ServiceCategoryId == serviceCategoryRootId && !sc.IsDeleted);
+        }
+
+        // ============= EMPLOYEE METHODS =============
+
         public void AddEmployee(Employee employee)
         {
             if (employee == null)
@@ -297,7 +349,8 @@ namespace AppointMan.Domain.Entities
                 .AsReadOnly();
         }
 
-        // Service Methods
+        // ============= SERVICE METHODS =============
+
         public void AddService(Service service)
         {
             if (service == null)
@@ -308,6 +361,11 @@ namespace AppointMan.Domain.Entities
 
             if (_services.Any(s => s.Name == service.Name && !s.IsDeleted))
                 throw new DomainException("Bu isimde bir hizmet zaten mevcut.");
+
+            // Hizmetin root kategorisi isletmede var mi?
+            var serviceCategoryRoot = service.ServiceCategory?.GetRootCategory();
+            if (serviceCategoryRoot != null && !HasServiceCategory(serviceCategoryRoot.Id))
+                throw new DomainException("Hizmetin kategorisi isletmeye ekli degil.");
 
             _services.Add(service);
             UpdatedAt = DateTime.UtcNow;
@@ -343,7 +401,8 @@ namespace AppointMan.Domain.Entities
             return _services.Where(s => s.IsActive && !s.IsDeleted).ToList().AsReadOnly();
         }
 
-        // WorkingHour Methods
+        // ============= WORKING HOUR METHODS =============
+
         public void AddWorkingHour(WorkingHour workingHour)
         {
             if (workingHour == null)
@@ -393,7 +452,8 @@ namespace AppointMan.Domain.Entities
             return workingHour.IsWithinWorkingHours(dateTime);
         }
 
-        // Rating Methods
+        // ============= RATING METHODS =============
+
         public void UpdateRating(decimal newRating)
         {
             if (newRating < 0 || newRating > 5)
@@ -424,7 +484,8 @@ namespace AppointMan.Domain.Entities
             }
         }
 
-        // Favorite Methods
+        // ============= FAVORITE METHODS =============
+
         public int GetFavoriteCount()
         {
             return _favorites.Count;
@@ -464,7 +525,8 @@ namespace AppointMan.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        // Appointment Methods
+        // ============= APPOINTMENT METHODS =============
+
         public void AddAppointment(Appointment appointment)
         {
             if (appointment == null)
@@ -487,6 +549,8 @@ namespace AppointMan.Domain.Entities
                 .ToList()
                 .AsReadOnly();
         }
+
+        // ============= REVIEW METHODS =============
 
         public void AddReview(Review review)
         {

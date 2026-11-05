@@ -21,31 +21,26 @@ namespace AppointMan.Application.Features.Services.Queries.SearchServices
         {
             try
             {
-                // 1. Temel filtre
                 Expression<Func<Service, bool>> predicate = s => !s.IsDeleted;
 
-                // 2. Isletme filtresi (opsiyonel)
                 if (request.BusinessId.HasValue)
                 {
                     var businessId = request.BusinessId.Value;
                     predicate = predicate.AndAlso(s => s.BusinessId == businessId);
                 }
 
-                // 3. Kategori filtresi
-                if (request.Category.HasValue)
+                if (request.ServiceCategoryId.HasValue)
                 {
-                    var category = request.Category.Value;
-                    predicate = predicate.AndAlso(s => s.Category == category);
+                    var categoryId = request.ServiceCategoryId.Value;
+                    predicate = predicate.AndAlso(s => s.ServiceCategoryId == categoryId);
                 }
 
-                // 4. Aktiflik filtresi
                 if (request.IsActive.HasValue)
                 {
                     var isActive = request.IsActive.Value;
                     predicate = predicate.AndAlso(s => s.IsActive == isActive);
                 }
 
-                // 5. Arama terimi
                 if (!string.IsNullOrWhiteSpace(request.SearchTerm))
                 {
                     var term = request.SearchTerm.Trim().ToLower();
@@ -54,17 +49,14 @@ namespace AppointMan.Application.Features.Services.Queries.SearchServices
                         (s.Description != null && s.Description.ToLower().Contains(term)));
                 }
 
-                // 6. Verileri getir
                 var services = await _serviceRepository.FindAsync(predicate, cancellationToken);
 
-                // 7. Siralama ve sayfalama
                 var pagedServices = services
                     .OrderBy(s => s.Name)
                     .Skip((request.PageNumber - 1) * request.PageSize)
                     .Take(request.PageSize)
                     .ToList();
 
-                // 8. DTO'ya donustur
                 var dtos = pagedServices.Select(s => new ServiceDto
                 {
                     Id = s.Id,
@@ -73,7 +65,8 @@ namespace AppointMan.Application.Features.Services.Queries.SearchServices
                     Price = s.Price.Amount,
                     Currency = s.Price.Currency,
                     DurationInMinutes = s.DurationInMinutes,
-                    Category = s.Category,
+                    ServiceCategoryId = s.ServiceCategoryId,
+                    ServiceCategoryName = s.ServiceCategory?.GetName("tr"),
                     IsActive = s.IsActive,
                     BusinessId = s.BusinessId,
                     BusinessName = s.Business?.Name,

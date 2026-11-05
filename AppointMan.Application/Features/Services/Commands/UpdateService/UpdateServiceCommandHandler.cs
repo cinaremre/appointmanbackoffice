@@ -11,15 +11,18 @@ namespace AppointMan.Application.Features.Services.Commands.UpdateService
     {
         private readonly IRepository<Service> _serviceRepository;
         private readonly IRepository<Business> _businessRepository;
+        private readonly IRepository<ServiceCategory> _serviceCategoryRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public UpdateServiceCommandHandler(
             IRepository<Service> serviceRepository,
             IRepository<Business> businessRepository,
+            IRepository<ServiceCategory> serviceCategoryRepository,
             IUnitOfWork unitOfWork)
         {
             _serviceRepository = serviceRepository;
             _businessRepository = businessRepository;
+            _serviceCategoryRepository = serviceCategoryRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -32,7 +35,7 @@ namespace AppointMan.Application.Features.Services.Commands.UpdateService
                 if (business is null)
                     return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu - Isletme sahibi mi?
+                // 2. Yetki kontrolu
                 if (business.OwnerId != request.OwnerId)
                     return Result<Guid>.Failure(Error.Unauthorized("Bu hizmeti guncelleme yetkiniz yok."));
 
@@ -45,7 +48,20 @@ namespace AppointMan.Application.Features.Services.Commands.UpdateService
                 if (service.BusinessId != request.BusinessId)
                     return Result<Guid>.Failure(Error.BusinessRule("Hizmet bu isletmeye ait degil."));
 
-                // 5. Ayni isimde baska hizmet var mi?
+                // 5. Kategori kontrolu
+                var serviceCategory = await _serviceCategoryRepository.GetByIdAsync(request.ServiceCategoryId, cancellationToken);
+                if (serviceCategory is null)
+                    return Result<Guid>.Failure(Error.NotFound("Kategori", request.ServiceCategoryId.ToString()));
+
+                if (!serviceCategory.IsLeaf())
+                    return Result<Guid>.Failure(Error.BusinessRule("Hizmet sadece leaf kategoriye atanabilir."));
+
+                // 6. Kategori isletmede var mi?
+                var rootCategory = serviceCategory.GetRootCategory();
+                if (rootCategory is not null && !business.HasServiceCategory(rootCategory.Id))
+                    return Result<Guid>.Failure(Error.BusinessRule("Bu kategori isletmeye ekli degil."));
+
+                // 7. Ayni isimde baska hizmet var mi?
                 var existingServices = await _serviceRepository.FindAsync(
                     s => s.Name == request.Name && s.BusinessId == request.BusinessId && s.Id != request.ServiceId && !s.IsDeleted,
                     cancellationToken);
@@ -53,16 +69,16 @@ namespace AppointMan.Application.Features.Services.Commands.UpdateService
                 if (existingServices.Any())
                     return Result<Guid>.Failure(Error.Conflict("Bu isimde bir hizmet zaten mevcut."));
 
-                // 6. Domain kurallari ile guncelle
+                // 8. Guncelle
                 var money = new Money(request.Price, request.Currency);
                 service.UpdateService(
                     request.Name,
                     request.Description,
                     money,
                     request.DurationInMinutes,
-                    request.Category);
+                    serviceCategory);
 
-                // 7. Kaydet
+                // 9. Kaydet
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 return Result<Guid>.Success(service.Id);

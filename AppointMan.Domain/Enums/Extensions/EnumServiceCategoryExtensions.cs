@@ -1,6 +1,6 @@
 ﻿namespace AppointMan.Domain.Enums.Extensions
 {
-    internal static class EnumServiceCategoryExtensions
+    public static class EnumServiceCategoryExtensions
     {
         /// <summary>
         /// Kategori grubunu döndürür (10, 11, 12, ... 19)

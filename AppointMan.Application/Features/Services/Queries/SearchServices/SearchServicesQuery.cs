@@ -1,14 +1,13 @@
 ﻿using AppointMan.Application.Common.DTOs;
 using AppointMan.Application.Common.Results;
-using AppointMan.Domain.Enums;
 using MediatR;
 
 namespace AppointMan.Application.Features.Services.Queries.SearchServices
 {
     public class SearchServicesQuery : IRequest<Result<List<ServiceDto>>>
     {
-        public Guid? BusinessId { get; set; }          // Opsiyonel: belirli isletmede ara
-        public EnumServiceCategory? Category { get; set; }  // Kategori filtresi
+        public Guid? BusinessId { get; set; }
+        public Guid? ServiceCategoryId { get; set; }
         public bool? IsActive { get; set; }
         public string? SearchTerm { get; set; }
         public int PageNumber { get; set; } = 1;

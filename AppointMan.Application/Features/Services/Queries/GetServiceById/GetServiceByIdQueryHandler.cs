@@ -19,14 +19,10 @@ namespace AppointMan.Application.Features.Services.Queries.GetServiceById
         {
             try
             {
-                // 1. Hizmeti ID'ye gore getir
                 var service = await _serviceRepository.GetByIdAsync(request.ServiceId, cancellationToken);
-
-                // 2. Hizmet bulunamadiysa hata dondur
                 if (service is null)
                     return Result<ServiceDto>.Failure(Error.NotFound("Hizmet", request.ServiceId.ToString()));
 
-                // 3. Verileri DTO'ya donustur
                 var dto = new ServiceDto
                 {
                     Id = service.Id,
@@ -35,9 +31,12 @@ namespace AppointMan.Application.Features.Services.Queries.GetServiceById
                     Price = service.Price.Amount,
                     Currency = service.Price.Currency,
                     DurationInMinutes = service.DurationInMinutes,
-                    Category = service.Category,
+                    ServiceCategoryId = service.ServiceCategoryId,
+                    ServiceCategoryName = service.ServiceCategory?.GetName("tr"),
                     IsActive = service.IsActive,
                     BusinessId = service.BusinessId,
+                    BusinessName = service.Business?.Name,
+                    BusinessAddress = service.Business?.Address?.GetFullAddress(),
                     CreatedAt = service.CreatedAt
                 };
 

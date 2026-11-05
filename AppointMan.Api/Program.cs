@@ -1,5 +1,4 @@
-﻿
-using AppointMan.Api.Middlewares;
+﻿using AppointMan.Api.Middlewares;
 using AppointMan.Application;
 using AppointMan.Infrastructure;
 using AppointMan.Infrastructure.Persistence.Context;
@@ -65,6 +64,7 @@ builder.Services.AddSwaggerGen(options =>
         [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
     });
 });
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -72,18 +72,23 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// Veritabanını otomatik migrate et ve seed data ekle
+// Veritabanini otomatik migrate et ve seed data ekle
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
     await dbContext.Database.MigrateAsync();
-    await AppDbContextSeed.SeedAsync(dbContext);
+
+    // Seed data
+    await SeedOrchestrator.SeedAllAsync(dbContext, logger);
 }
 
 app.Run();

@@ -20,16 +20,29 @@ namespace AppointMan.Domain.Entities
         private AppointmentHistory() { } // EF Core
 
         public AppointmentHistory(
-            Guid appointmentId,
-            EnumAppointmentStatus oldStatus,
-            EnumAppointmentStatus newStatus,
-            string? changedBy = null,
-            string? changeReason = null,
-            string? ipAddress = null,
-            string? userAgent = null)
+     Guid appointmentId,
+     EnumAppointmentStatus oldStatus,
+     EnumAppointmentStatus newStatus,
+     string? changedBy = null,
+     string? changeReason = null,
+     string? ipAddress = null,
+     string? userAgent = null)
+     : this(Guid.NewGuid(), appointmentId, oldStatus, newStatus, changedBy, changeReason, ipAddress, userAgent)
+        {
+        }
+        public AppointmentHistory(
+    Guid id,
+    Guid appointmentId,
+    EnumAppointmentStatus oldStatus,
+    EnumAppointmentStatus newStatus,
+    string? changedBy = null,
+    string? changeReason = null,
+    string? ipAddress = null,
+    string? userAgent = null)
+    : base(id)
         {
             if (appointmentId == Guid.Empty)
-                throw new ArgumentException("Randevu ID boş olamaz.", nameof(appointmentId));
+                throw new ArgumentException("Randevu ID bos olamaz.", nameof(appointmentId));
 
             AppointmentId = appointmentId;
             OldStatus = oldStatus;
@@ -41,7 +54,6 @@ namespace AppointMan.Domain.Entities
             UserAgent = userAgent;
             AdditionalData = new Dictionary<string, object>();
         }
-
         public void AddAdditionalData(string key, object value)
         {
             if (string.IsNullOrWhiteSpace(key))
@@ -56,6 +68,10 @@ namespace AppointMan.Domain.Entities
         {
             return $"{ChangedAt:dd.MM.yyyy HH:mm} - {OldStatus} → {NewStatus}" +
                    $"{(string.IsNullOrEmpty(ChangeReason) ? "" : $" ({ChangeReason})")}";
+        }
+        public void SetChangedAtForSeed(DateTime changedAt)
+        {
+            ChangedAt = changedAt;
         }
     }
 }

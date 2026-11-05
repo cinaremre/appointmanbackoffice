@@ -40,6 +40,11 @@ namespace AppointMan.Domain.Entities
         private User() { } // EF Core için
 
         public User(string firstName, string lastName, Email email, PhoneNumber phoneNumber, EnumUserRole role)
+     : this(Guid.NewGuid(), firstName, lastName, email, phoneNumber, role)
+        {
+        }
+        public User(Guid id, string firstName, string lastName, Email email, PhoneNumber phoneNumber, EnumUserRole role)
+    : base(id)
         {
             SetFirstName(firstName);
             SetLastName(lastName);
@@ -51,7 +56,6 @@ namespace AppointMan.Domain.Entities
 
             AddDomainEvent(new UserRegisteredEvent(Id, Email, $"{FirstName} {LastName}", Role));
         }
-
         public void SetFirstName(string firstName)
         {
             if (string.IsNullOrWhiteSpace(firstName))

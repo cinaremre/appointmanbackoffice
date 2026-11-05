@@ -18,12 +18,14 @@ namespace AppointMan.Domain.Entities
 
         private EmployeeTimeOff() { }
 
-        public EmployeeTimeOff(
-            Guid employeeId,
-            DateTime startDate,
-            DateTime endDate,
-            EnumTimeOffType type,
-            string? reason = null)
+        public EmployeeTimeOff(Guid employeeId, DateTime startDate, DateTime endDate,
+    EnumTimeOffType type, string? reason = null)
+    : this(Guid.NewGuid(), employeeId, startDate, endDate, type, reason)
+        {
+        }
+        public EmployeeTimeOff(Guid id, Guid employeeId, DateTime startDate, DateTime endDate,
+    EnumTimeOffType type, string? reason = null)
+    : base(id)
         {
             if (employeeId == Guid.Empty)
                 throw new ArgumentException("Calisan ID bos olamaz.", nameof(employeeId));
@@ -38,7 +40,6 @@ namespace AppointMan.Domain.Entities
             Reason = reason;
             IsApproved = false;
         }
-
         public void Approve(string approvedBy)
         {
             if (IsApproved)

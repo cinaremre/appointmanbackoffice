@@ -17,6 +17,11 @@ namespace AppointMan.Domain.Entities
         private Favorite() { } // EF Core
 
         public Favorite(Guid userId, Guid businessId, string? note = null)
+    : this(Guid.NewGuid(), userId, businessId, note)
+        {
+        }
+        public Favorite(Guid id, Guid userId, Guid businessId, string? note = null)
+    : base(id)
         {
             if (userId == Guid.Empty)
                 throw new ArgumentException("Kullanıcı ID boş olamaz.", nameof(userId));
@@ -45,6 +50,10 @@ namespace AppointMan.Domain.Entities
 
             SoftDelete();
             AddDomainEvent(new FavoriteRemovedEvent(Id, UserId, BusinessId, deletedBy));
+        }
+        public void SetAddedAtForSeed(DateTime addedAt)
+        {
+            AddedAt = addedAt;
         }
     }
 }

@@ -14,6 +14,13 @@ namespace AppointMan.Domain.Entities
         private readonly List<IDomainEvent> _domainEvents = new();
         public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
+        protected BaseEntity(Guid id)
+        {
+            Id = id;
+            CreatedAt = DateTime.UtcNow;
+            IsDeleted = false;
+        }
+
         protected BaseEntity()
         {
             Id = Guid.NewGuid();

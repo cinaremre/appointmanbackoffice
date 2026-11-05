@@ -45,11 +45,12 @@ namespace AppointMan.Domain.Entities
 
         private Employee() { } // EF Core
 
-        public Employee(
-            string firstName,
-            string lastName,
-            PhoneNumber phoneNumber,
-            Guid businessId)
+        public Employee(string firstName, string lastName, PhoneNumber phoneNumber, Guid businessId)
+    : this(Guid.NewGuid(), firstName, lastName, phoneNumber, businessId)
+        {
+        }
+        public Employee(Guid id, string firstName, string lastName, PhoneNumber phoneNumber, Guid businessId)
+    : base(id)
         {
             if (string.IsNullOrWhiteSpace(firstName))
                 throw new DomainException("Calisan adi bos olamaz.");
@@ -70,7 +71,6 @@ namespace AppointMan.Domain.Entities
 
             AddDomainEvent(new EmployeeCreatedEvent(Id, BusinessId, GetFullName()));
         }
-
         public void SetFirstName(string firstName)
         {
             if (string.IsNullOrWhiteSpace(firstName))

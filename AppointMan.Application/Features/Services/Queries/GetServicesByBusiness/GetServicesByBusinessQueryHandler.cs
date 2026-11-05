@@ -21,7 +21,6 @@ namespace AppointMan.Application.Features.Services.Queries.GetServicesByBusiness
         {
             try
             {
-                // 1. Filtreleme
                 Expression<Func<Service, bool>> predicate = s => s.BusinessId == request.BusinessId && !s.IsDeleted;
 
                 if (request.IsActive.HasValue)
@@ -29,17 +28,14 @@ namespace AppointMan.Application.Features.Services.Queries.GetServicesByBusiness
                     predicate = predicate.AndAlso(s => s.IsActive == request.IsActive.Value);
                 }
 
-                // 2. Verileri getir
                 var services = await _serviceRepository.FindAsync(predicate, cancellationToken);
 
-                // 3. Sayfalama
                 var pagedServices = services
                     .OrderBy(s => s.Name)
                     .Skip((request.PageNumber - 1) * request.PageSize)
                     .Take(request.PageSize)
                     .ToList();
 
-                // 4. DTO'ya donustur
                 var dtos = pagedServices.Select(s => new ServiceDto
                 {
                     Id = s.Id,
@@ -48,9 +44,12 @@ namespace AppointMan.Application.Features.Services.Queries.GetServicesByBusiness
                     Price = s.Price.Amount,
                     Currency = s.Price.Currency,
                     DurationInMinutes = s.DurationInMinutes,
-                    Category = s.Category,
+                    ServiceCategoryId = s.ServiceCategoryId,
+                    ServiceCategoryName = s.ServiceCategory?.GetName("tr"),
                     IsActive = s.IsActive,
                     BusinessId = s.BusinessId,
+                    BusinessName = s.Business?.Name,
+                    BusinessAddress = s.Business?.Address?.GetFullAddress(),
                     CreatedAt = s.CreatedAt
                 }).ToList();
 

@@ -6,11 +6,6 @@ namespace AppointMan.Application.Features.Services.Queries.SearchServices
     {
         public SearchServicesQueryValidator()
         {
-            RuleFor(x => x.Category)
-                .IsInEnum()
-                .When(x => x.Category.HasValue)
-                .WithMessage("Gecersiz hizmet kategorisi.");
-
             RuleFor(x => x.SearchTerm)
                 .MaximumLength(100)
                 .WithMessage("Arama terimi en fazla 100 karakter olmalidir.");

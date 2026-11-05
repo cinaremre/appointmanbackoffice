@@ -37,9 +37,8 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
             builder.Property(x => x.DurationInMinutes)
                 .IsRequired();
 
-            builder.Property(x => x.Category)
-                .IsRequired()
-                .HasConversion<int>();
+            builder.Property(x => x.ServiceCategoryId)
+                .IsRequired();
 
             builder.Property(x => x.IsActive)
                 .IsRequired()
@@ -53,13 +52,18 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
                 .HasForeignKey(x => x.BusinessId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne(x => x.ServiceCategory)
+                .WithMany(x => x.Services)
+                .HasForeignKey(x => x.ServiceCategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasMany(x => x.Appointments)
                 .WithOne(x => x.Service)
                 .HasForeignKey(x => x.ServiceId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(x => x.BusinessId);
-            builder.HasIndex(x => x.Category);
+            builder.HasIndex(x => x.ServiceCategoryId);
             builder.HasIndex(x => x.IsActive);
         }
     }

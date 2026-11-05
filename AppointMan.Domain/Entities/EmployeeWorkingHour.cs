@@ -18,11 +18,12 @@ namespace AppointMan.Domain.Entities
 
         private EmployeeWorkingHour() { }
 
-        public EmployeeWorkingHour(
-            Guid employeeId,
-            DayOfWeek dayOfWeek,
-            TimeSpan startTime,
-            TimeSpan endTime)
+        public EmployeeWorkingHour(Guid employeeId, DayOfWeek dayOfWeek, TimeSpan startTime, TimeSpan endTime)
+    : this(Guid.NewGuid(), employeeId, dayOfWeek, startTime, endTime)
+        {
+        }
+        public EmployeeWorkingHour(Guid id, Guid employeeId, DayOfWeek dayOfWeek, TimeSpan startTime, TimeSpan endTime)
+    : base(id)
         {
             if (employeeId == Guid.Empty)
                 throw new ArgumentException("Calisan ID bos olamaz.", nameof(employeeId));

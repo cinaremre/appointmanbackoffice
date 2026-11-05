@@ -1,5 +1,4 @@
 ﻿using AppointMan.Application.Common.Results;
-using AppointMan.Domain.Enums;
 using MediatR;
 
 namespace AppointMan.Application.Features.Services.Commands.UpdateService
@@ -14,6 +13,6 @@ namespace AppointMan.Application.Features.Services.Commands.UpdateService
         public decimal Price { get; set; }
         public string Currency { get; set; } = "TRY";
         public int DurationInMinutes { get; set; }
-        public EnumServiceCategory Category { get; set; }
+        public Guid ServiceCategoryId { get; set; }
     }
 }

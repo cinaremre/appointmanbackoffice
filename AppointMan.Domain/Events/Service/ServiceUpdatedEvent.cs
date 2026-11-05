@@ -1,5 +1,4 @@
-﻿using AppointMan.Domain.Enums;
-using AppointMan.Domain.ValueObjects;
+﻿using AppointMan.Domain.ValueObjects;
 
 namespace AppointMan.Domain.Events.Service
 {
@@ -8,7 +7,7 @@ namespace AppointMan.Domain.Events.Service
         public string? OldName { get; }
         public Money? OldPrice { get; }
         public int? OldDuration { get; }
-        public EnumServiceCategory? OldCategory { get; }
+        public Guid? OldServiceCategoryId { get; }
         public Dictionary<string, object> Changes { get; }
 
         public ServiceUpdatedEvent(
@@ -17,16 +16,16 @@ namespace AppointMan.Domain.Events.Service
             string serviceName,
             Money price,
             int durationInMinutes,
-            EnumServiceCategory category,
+            Guid serviceCategoryId,
             string? oldName = null,
             Money? oldPrice = null,
             int? oldDuration = null,
-            EnumServiceCategory? oldCategory = null) : base(serviceId, businessId, serviceName, price, durationInMinutes, category)
+            Guid? oldServiceCategoryId = null) : base(serviceId, businessId, serviceName, price, durationInMinutes, serviceCategoryId)
         {
             OldName = oldName;
             OldPrice = oldPrice;
             OldDuration = oldDuration;
-            OldCategory = oldCategory;
+            OldServiceCategoryId = oldServiceCategoryId;
             Changes = new Dictionary<string, object>();
         }
 

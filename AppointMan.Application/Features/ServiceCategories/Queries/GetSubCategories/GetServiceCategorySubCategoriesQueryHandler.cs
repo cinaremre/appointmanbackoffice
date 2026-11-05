@@ -1,0 +1,68 @@
+﻿using AppointMan.Application.Common.DTOs;
+using AppointMan.Application.Common.Results;
+using AppointMan.Domain.Entities;
+using AppointMan.Domain.Interfaces;
+using MediatR;
+
+namespace AppointMan.Application.Features.ServiceCategories.Queries.GetSubCategories
+{
+    public class GetServiceCategorySubCategoriesQueryHandler
+        : IRequestHandler<GetServiceCategorySubCategoriesQuery, Result<List<ServiceCategoryDto>>>
+    {
+        private readonly IRepository<ServiceCategory> _categoryRepository;
+
+        public GetServiceCategorySubCategoriesQueryHandler(IRepository<ServiceCategory> categoryRepository)
+        {
+            _categoryRepository = categoryRepository;
+        }
+
+        public async Task<Result<List<ServiceCategoryDto>>> Handle(
+            GetServiceCategorySubCategoriesQuery request,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                // 1. Ana kategoriyi kontrol et
+                var parentCategory = await _categoryRepository.GetByIdAsync(request.CategoryId, cancellationToken);
+                if (parentCategory is null)
+                    return Result<List<ServiceCategoryDto>>.Failure(
+                        Error.NotFound("Kategori", request.CategoryId.ToString()));
+
+                // 2. Alt kategorileri getir
+                var subCategories = await _categoryRepository.FindAsync(
+                    c => c.ParentCategoryId == request.CategoryId &&
+                         !c.IsDeleted &&
+                         (!request.OnlyActive || c.IsActive),
+                    cancellationToken);
+
+                // 3. DTO'ya donustur
+                var dtos = subCategories
+                    .OrderBy(c => c.DisplayOrder)
+                    .Select(c => new ServiceCategoryDto
+                    {
+                        Id = c.Id,
+                        Name = c.GetName(request.LanguageCode),
+                        Description = c.GetDescription(request.LanguageCode),
+                        IconUrl = c.IconUrl,
+                        ColorHex = c.ColorHex,
+                        DisplayOrder = c.DisplayOrder,
+                        IsActive = c.IsActive,
+                        IsLeaf = c.IsLeaf(),
+                        ParentCategoryId = c.ParentCategoryId,
+                        ParentCategoryName = c.ParentCategory?.GetName(request.LanguageCode),
+                        SubCategoryCount = c.GetSubCategoryCount(),
+                        ServiceCount = c.GetServiceCount(),
+                        Depth = c.GetDepth()
+                    })
+                    .ToList();
+
+                return Result<List<ServiceCategoryDto>>.Success(dtos);
+            }
+            catch (Exception ex)
+            {
+                return Result<List<ServiceCategoryDto>>.Failure(
+                    Error.Internal("Alt kategoriler getirilirken bir hata olustu.", ex.Message));
+            }
+        }
+    }
+}

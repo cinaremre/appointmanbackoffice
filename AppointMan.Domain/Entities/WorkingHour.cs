@@ -18,6 +18,11 @@ namespace AppointMan.Domain.Entities
         private WorkingHour() { } // EF Core
 
         public WorkingHour(DayOfWeek dayOfWeek, TimeSpan startTime, TimeSpan endTime, Guid businessId)
+    : this(Guid.NewGuid(), dayOfWeek, startTime, endTime, businessId)
+        {
+        }
+        public WorkingHour(Guid id, DayOfWeek dayOfWeek, TimeSpan startTime, TimeSpan endTime, Guid businessId)
+    : base(id)
         {
             if (businessId == Guid.Empty)
                 throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));

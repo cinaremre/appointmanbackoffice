@@ -1,5 +1,4 @@
-﻿using AppointMan.Domain.Enums;
-using AppointMan.Domain.ValueObjects;
+﻿using AppointMan.Domain.ValueObjects;
 
 namespace AppointMan.Domain.Events.Service
 {
@@ -11,7 +10,7 @@ namespace AppointMan.Domain.Events.Service
             string serviceName,
             Money price,
             int durationInMinutes,
-            EnumServiceCategory category) : base(serviceId, businessId, serviceName, price, durationInMinutes, category)
+            Guid serviceCategoryId) : base(serviceId, businessId, serviceName, price, durationInMinutes, serviceCategoryId)
         {
         }
     }

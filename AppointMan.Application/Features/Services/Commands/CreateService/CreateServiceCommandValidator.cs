@@ -30,9 +30,9 @@ namespace AppointMan.Application.Features.Services.Commands.CreateService
                 .Must(d => d % 5 == 0)
                 .WithMessage("Sure 5 dakikanin kati olmalidir.");
 
-            RuleFor(x => x.Category)
-                .IsInEnum()
-                .WithMessage("Gecersiz hizmet kategorisi.");
+            RuleFor(x => x.ServiceCategoryId)
+                .NotEmpty()
+                .WithMessage("Kategori ID bos olamaz.");
 
             RuleFor(x => x.BusinessId)
                 .NotEmpty()
