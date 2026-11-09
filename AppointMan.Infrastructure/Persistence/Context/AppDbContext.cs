@@ -19,6 +19,7 @@ namespace AppointMan.Infrastructure.Persistence.Context
 
         // ===== DbSet'ler =====
         public DbSet<User> Users { get; set; }
+        public DbSet<BlacklistEntry> BlacklistEntries { get; set; }
         public DbSet<Business> Businesses { get; set; }
         public DbSet<BusinessCategory> BusinessCategories { get; set; }
         public DbSet<Employee> Employees { get; set; }

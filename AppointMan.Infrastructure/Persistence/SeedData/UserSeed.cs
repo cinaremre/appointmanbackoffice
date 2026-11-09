@@ -20,6 +20,11 @@ namespace AppointMan.Infrastructure.Persistence.SeedData
         public static readonly Guid Customer4Id = Guid.Parse("88888888-8888-8888-8888-888888888888");
         public static readonly Guid Customer5Id = Guid.Parse("99999999-9999-9999-9999-999999999999");
 
+        // Calisan kullanicilar
+        public static readonly Guid EmployeeUser1Id = Guid.Parse("aaaaaaaa-0001-0000-0000-000000000001");
+        public static readonly Guid EmployeeUser2Id = Guid.Parse("aaaaaaaa-0002-0000-0000-000000000002");
+        public static readonly Guid EmployeeUser3Id = Guid.Parse("aaaaaaaa-0003-0000-0000-000000000003");
+
         public static async Task SeedAsync(AppDbContext context, ILogger logger)
         {
             if (await context.Users.AnyAsync())
@@ -57,7 +62,17 @@ namespace AppointMan.Infrastructure.Persistence.SeedData
                     EnumUserRole.Customer, "1999-12-05", true, true),
 
                 CreateUser(Customer5Id, "Burak", "Yildiz", "customer5@example.com", "+905550000009",
-                    EnumUserRole.Customer, "1991-04-22", true, false)
+                    EnumUserRole.Customer, "1991-04-22", true, false),
+
+                // Calisan kullanicilar
+                CreateUser(EmployeeUser1Id, "Hasan", "Usta", "hasan.usta@example.com", "+905550000010",
+                    EnumUserRole.Customer, "1980-01-01", true, true),
+
+                CreateUser(EmployeeUser2Id, "Selin", "Sac", "selin.sac@example.com", "+905550000011",
+                    EnumUserRole.Customer, "1985-06-15", true, true),
+
+                CreateUser(EmployeeUser3Id, "Kaan", "Dovmeci", "kaan.dovmeci@example.com", "+905550000012",
+                    EnumUserRole.Customer, "1990-03-20", true, true)
             };
 
             await context.Users.AddRangeAsync(users);

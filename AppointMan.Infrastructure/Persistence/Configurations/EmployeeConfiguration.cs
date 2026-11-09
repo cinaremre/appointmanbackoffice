@@ -51,6 +51,9 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
             builder.Property(x => x.BusinessId)
                 .IsRequired();
 
+            builder.Property(x => x.UserId)
+                .IsRequired(false);
+
             builder.Property(x => x.IsActive)
                 .IsRequired()
                 .HasDefaultValue(true);
@@ -66,7 +69,12 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
             builder.HasOne(x => x.Business)
                 .WithMany(x => x.Employees)
                 .HasForeignKey(x => x.BusinessId)
-                .OnDelete(DeleteBehavior.Restrict);   // CASCADE -> RESTRICT
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.User)
+                .WithMany(x => x.Employees)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasMany(x => x.EmployeeServices)
                 .WithOne(x => x.Employee)
@@ -89,6 +97,7 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(x => x.BusinessId);
+            builder.HasIndex(x => x.UserId);
             builder.HasIndex(x => x.IsActive);
             builder.HasIndex(x => x.IsAvailableForBooking);
             builder.HasIndex(x => new { x.BusinessId, x.DisplayOrder });

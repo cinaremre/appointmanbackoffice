@@ -13,6 +13,7 @@ namespace AppointMan.Domain.Entities
         public PhoneNumber PhoneNumber { get; private set; }
         public string PasswordHash { get; private set; }
         public EnumUserRole Role { get; private set; }
+        public EnumAccountStatus AccountStatus { get; private set; }
         public DateTime? DateOfBirth { get; private set; }
         public string? ProfilePictureUrl { get; private set; }
         public bool IsEmailVerified { get; private set; }
@@ -37,25 +38,34 @@ namespace AppointMan.Domain.Entities
         private readonly List<Notification> _notifications = new();
         public IReadOnlyCollection<Notification> Notifications => _notifications.AsReadOnly();
 
+        private readonly List<Employee> _employees = new();
+        public IReadOnlyCollection<Employee> Employees => _employees.AsReadOnly();
+
+        private readonly List<BlacklistEntry> _blacklistEntries = new();
+        public IReadOnlyCollection<BlacklistEntry> BlacklistEntries => _blacklistEntries.AsReadOnly();
+
         private User() { } // EF Core için
 
         public User(string firstName, string lastName, Email email, PhoneNumber phoneNumber, EnumUserRole role)
-     : this(Guid.NewGuid(), firstName, lastName, email, phoneNumber, role)
+            : this(Guid.NewGuid(), firstName, lastName, email, phoneNumber, role)
         {
         }
+
         public User(Guid id, string firstName, string lastName, Email email, PhoneNumber phoneNumber, EnumUserRole role)
-    : base(id)
+            : base(id)
         {
             SetFirstName(firstName);
             SetLastName(lastName);
             Email = email ?? throw new ArgumentNullException(nameof(email));
             PhoneNumber = phoneNumber ?? throw new ArgumentNullException(nameof(phoneNumber));
             Role = role;
+            AccountStatus = EnumAccountStatus.Active;
             IsEmailVerified = false;
             IsPhoneVerified = false;
 
             AddDomainEvent(new UserRegisteredEvent(Id, Email, $"{FirstName} {LastName}", Role));
         }
+
         public void SetFirstName(string firstName)
         {
             if (string.IsNullOrWhiteSpace(firstName))
@@ -106,6 +116,7 @@ namespace AppointMan.Domain.Entities
 
             AddDomainEvent(new UserPasswordChangedEvent(Id, Email, $"{FirstName} {LastName}", "System"));
         }
+
         public void SetDateOfBirth(DateTime? dateOfBirth)
         {
             if (dateOfBirth.HasValue && dateOfBirth.Value >= DateTime.UtcNow)
@@ -117,6 +128,7 @@ namespace AppointMan.Domain.Entities
             DateOfBirth = dateOfBirth;
             UpdatedAt = DateTime.UtcNow;
         }
+
         public void ChangePassword(string newPasswordHash, string? changedBy = null)
         {
             if (string.IsNullOrWhiteSpace(newPasswordHash))
@@ -221,13 +233,15 @@ namespace AppointMan.Domain.Entities
 
         public void LockAccount(string? reason = null, string? lockedBy = null)
         {
-            // Account status henüz eklemedik, ileride kullanılacak
+            AccountStatus = EnumAccountStatus.Locked;
+            UpdatedAt = DateTime.UtcNow;
             AddDomainEvent(new UserAccountLockedEvent(Id, Email, $"{FirstName} {LastName}", reason, lockedBy));
         }
 
         public void UnlockAccount(string? unlockedBy = null)
         {
-            // Account status henüz eklemedik, ileride kullanılacak
+            AccountStatus = EnumAccountStatus.Active;
+            UpdatedAt = DateTime.UtcNow;
             AddDomainEvent(new UserAccountUnlockedEvent(Id, Email, $"{FirstName} {LastName}", unlockedBy));
         }
 

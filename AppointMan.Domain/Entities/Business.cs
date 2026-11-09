@@ -47,16 +47,20 @@ namespace AppointMan.Domain.Entities
         private readonly List<BusinessServiceCategory> _serviceCategories = new();
         public IReadOnlyCollection<BusinessServiceCategory> ServiceCategories => _serviceCategories.AsReadOnly();
 
+        private readonly List<BlacklistEntry> _blacklistEntries = new();
+        public IReadOnlyCollection<BlacklistEntry> BlacklistEntries => _blacklistEntries.AsReadOnly();
+
         private Business() { }
 
         public Business(string name, EnumBusinessType businessType, Address address,
                 PhoneNumber phoneNumber, Email email, Guid ownerId)
-     : this(Guid.NewGuid(), name, businessType, address, phoneNumber, email, ownerId)
+            : this(Guid.NewGuid(), name, businessType, address, phoneNumber, email, ownerId)
         {
         }
+
         public Business(Guid id, string name, EnumBusinessType businessType, Address address,
                PhoneNumber phoneNumber, Email email, Guid ownerId)
-    : base(id)
+            : base(id)
         {
             SetName(name);
             BusinessType = businessType;
@@ -71,6 +75,7 @@ namespace AppointMan.Domain.Entities
 
             AddDomainEvent(new BusinessCreatedEvent(Id, Name, OwnerId, BusinessType, email, Address, PhoneNumber, Email));
         }
+
         public void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -251,6 +256,42 @@ namespace AppointMan.Domain.Entities
             AddDomainEvent(new BusinessClosedEvent(Id, Name, OwnerId, BusinessType, closedBy, reason));
         }
 
+        // ============= BLACKLIST METHODS =============
+
+        public void AddBlacklistEntry(BlacklistEntry entry)
+        {
+            if (entry == null)
+                throw new ArgumentNullException(nameof(entry));
+
+            if (entry.BusinessId != Id)
+                throw new DomainException("Kara liste kaydi bu isletmeye ait degil.");
+
+            if (_blacklistEntries.Any(b => b.UserId == entry.UserId && !b.IsDeleted))
+                throw new DomainException("Bu kullanici zaten kara listede.");
+
+            _blacklistEntries.Add(entry);
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public bool IsUserBlacklisted(Guid userId)
+        {
+            return _blacklistEntries.Any(b => b.UserId == userId && !b.IsDeleted);
+        }
+
+        public BlacklistEntry? GetActiveBlacklistEntry(Guid userId)
+        {
+            return _blacklistEntries.FirstOrDefault(b => b.UserId == userId && !b.IsDeleted);
+        }
+
+        public IReadOnlyCollection<BlacklistEntry> GetActiveBlacklistEntries()
+        {
+            return _blacklistEntries
+                .Where(b => !b.IsDeleted)
+                .OrderByDescending(b => b.BlacklistedAt)
+                .ToList()
+                .AsReadOnly();
+        }
+
         // ============= SERVICE CATEGORY METHODS =============
 
         public void AddServiceCategory(ServiceCategory serviceCategory)
@@ -362,7 +403,6 @@ namespace AppointMan.Domain.Entities
             if (_services.Any(s => s.Name == service.Name && !s.IsDeleted))
                 throw new DomainException("Bu isimde bir hizmet zaten mevcut.");
 
-            // Hizmetin root kategorisi isletmede var mi?
             var serviceCategoryRoot = service.ServiceCategory?.GetRootCategory();
             if (serviceCategoryRoot != null && !HasServiceCategory(serviceCategoryRoot.Id))
                 throw new DomainException("Hizmetin kategorisi isletmeye ekli degil.");

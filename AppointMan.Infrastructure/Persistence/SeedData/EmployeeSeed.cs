@@ -75,7 +75,22 @@ namespace AppointMan.Infrastructure.Persistence.SeedData
             await context.Employees.AddRangeAsync(employees);
             await context.SaveChangesAsync();
 
-            logger.LogInformation("Employees seed edildi: {Count} calisan", employees.Count);
+            // Calisanlari kullanicilara bagla
+            var hasan = employees.First(e => e.Id == Emp1Id);
+            var selin = employees.First(e => e.Id == Emp4Id);
+            var kaan = employees.First(e => e.Id == Emp6Id);
+
+            var hasanUser = await context.Users.FirstAsync(u => u.Email == "hasan.usta@example.com");
+            var selinUser = await context.Users.FirstAsync(u => u.Email == "selin.sac@example.com");
+            var kaanUser = await context.Users.FirstAsync(u => u.Email == "kaan.dovmeci@example.com");
+
+            hasan.LinkToUser(hasanUser);
+            selin.LinkToUser(selinUser);
+            kaan.LinkToUser(kaanUser);
+
+            await context.SaveChangesAsync();
+
+            logger.LogInformation("Employees seed edildi: {Count} calisan (3 tanesi kullaniciya bagli)", employees.Count);
         }
 
         private static Employee CreateEmployee(Guid id, string firstName, string lastName,

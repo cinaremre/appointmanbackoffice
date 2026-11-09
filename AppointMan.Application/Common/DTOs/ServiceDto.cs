@@ -7,8 +7,8 @@ namespace AppointMan.Application.Common.DTOs
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
-        public decimal Price { get; set; }
-        public string Currency { get; set; }
+        //public decimal Price { get; set; }
+        //public string Currency { get; set; }
         public int DurationInMinutes { get; set; }
         public Guid ServiceCategoryId { get; set; }
         public string? ServiceCategoryName { get; set; }

@@ -21,6 +21,20 @@ namespace AppointMan.Infrastructure.Persistence.Repositories
             return await _dbSet.FindAsync(new object[] { id }, cancellationToken).ConfigureAwait(false);
         }
 
+        public virtual async Task<T?> GetByIdWithIncludesAsync(Guid id, CancellationToken cancellationToken = default,
+            params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _dbSet;
+
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return await query.FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == id, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
         public virtual async Task<IReadOnlyList<T>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _dbSet.ToListAsync(cancellationToken).ConfigureAwait(false);

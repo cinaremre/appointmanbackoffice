@@ -172,6 +172,65 @@ namespace AppointMan.Infrastructure.Migrations
                     b.ToTable("AppointmentHistories", (string)null);
                 });
 
+            modelBuilder.Entity("AppointMan.Domain.Entities.BlacklistEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AppointmentCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("BlacklistedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("BusinessId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("RemoveReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("RemovedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RemovedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlacklistedAt");
+
+                    b.HasIndex("BusinessId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "BusinessId");
+
+                    b.ToTable("BlacklistEntries", (string)null);
+                });
+
             modelBuilder.Entity("AppointMan.Domain.Entities.Business", b =>
                 {
                     b.Property<Guid>("Id")
@@ -420,6 +479,9 @@ namespace AppointMan.Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BusinessId");
@@ -427,6 +489,8 @@ namespace AppointMan.Infrastructure.Migrations
                     b.HasIndex("IsActive");
 
                     b.HasIndex("IsAvailableForBooking");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("BusinessId", "DisplayOrder");
 
@@ -920,6 +984,11 @@ namespace AppointMan.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("AccountStatus")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -992,6 +1061,8 @@ namespace AppointMan.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AccountStatus");
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -1092,6 +1163,25 @@ namespace AppointMan.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Appointment");
+                });
+
+            modelBuilder.Entity("AppointMan.Domain.Entities.BlacklistEntry", b =>
+                {
+                    b.HasOne("AppointMan.Domain.Entities.Business", "Business")
+                        .WithMany("BlacklistEntries")
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppointMan.Domain.Entities.User", "User")
+                        .WithMany("BlacklistEntries")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Business");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("AppointMan.Domain.Entities.Business", b =>
@@ -1291,7 +1381,14 @@ namespace AppointMan.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("AppointMan.Domain.Entities.User", "User")
+                        .WithMany("Employees")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Business");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("AppointMan.Domain.Entities.EmployeeService", b =>
@@ -1433,8 +1530,7 @@ namespace AppointMan.Infrastructure.Migrations
 
                     b.Navigation("Business");
 
-                    b.Navigation("Price")
-                        .IsRequired();
+                    b.Navigation("Price");
 
                     b.Navigation("ServiceCategory");
                 });
@@ -1479,6 +1575,8 @@ namespace AppointMan.Infrastructure.Migrations
             modelBuilder.Entity("AppointMan.Domain.Entities.Business", b =>
                 {
                     b.Navigation("Appointments");
+
+                    b.Navigation("BlacklistEntries");
 
                     b.Navigation("Employees");
 
@@ -1530,6 +1628,10 @@ namespace AppointMan.Infrastructure.Migrations
             modelBuilder.Entity("AppointMan.Domain.Entities.User", b =>
                 {
                     b.Navigation("Appointments");
+
+                    b.Navigation("BlacklistEntries");
+
+                    b.Navigation("Employees");
 
                     b.Navigation("Favorites");
 

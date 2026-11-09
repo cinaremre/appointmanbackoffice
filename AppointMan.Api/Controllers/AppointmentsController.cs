@@ -12,6 +12,7 @@ using AppointMan.Application.Features.Appointments.Queries.GetAvailableSlots;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace AppointMan.Api.Controllers
 {
@@ -38,8 +39,16 @@ namespace AppointMan.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Create([FromBody] CreateAppointmentCommand command)
         {
+            // JWT'den RequesterId'yi al
+            var requesterId = GetRequesterId();
+            if (requesterId == Guid.Empty)
+                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Gecersiz kullanici.")));
+
+            command.RequesterId = requesterId;
+
             var result = await _mediator.Send(command);
 
             if (result.IsSuccess)
@@ -51,8 +60,6 @@ namespace AppointMan.Api.Controllers
         /// <summary>
         /// Randevuyu iptal eder.
         /// </summary>
-        /// <param name="command">Iptal bilgileri</param>
-        /// <returns>Iptal edilen randevunun ID'si</returns>
         [HttpPost("cancel")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
@@ -69,8 +76,6 @@ namespace AppointMan.Api.Controllers
         /// <summary>
         /// Randevuyu onaylar.
         /// </summary>
-        /// <param name="command">Onay bilgileri</param>
-        /// <returns>Onaylanan randevunun ID'si</returns>
         [HttpPost("confirm")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
@@ -87,8 +92,6 @@ namespace AppointMan.Api.Controllers
         /// <summary>
         /// Randevuyu tamamlar.
         /// </summary>
-        /// <param name="command">Tamamlama bilgileri</param>
-        /// <returns>Tamamlanan randevunun ID'si</returns>
         [HttpPost("complete")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
@@ -105,8 +108,6 @@ namespace AppointMan.Api.Controllers
         /// <summary>
         /// Randevuyu yeniden planlar.
         /// </summary>
-        /// <param name="command">Yeniden planlama bilgileri</param>
-        /// <returns>Yeniden planlanan randevunun ID'si</returns>
         [HttpPost("reschedule")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
@@ -123,8 +124,6 @@ namespace AppointMan.Api.Controllers
         /// <summary>
         /// ID'ye gore randevu getirir.
         /// </summary>
-        /// <param name="id">Randevu ID'si</param>
-        /// <returns>Randevu detaylari</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Result<AppointmentDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<AppointmentDto>), StatusCodes.Status404NotFound)]
@@ -142,14 +141,6 @@ namespace AppointMan.Api.Controllers
         /// <summary>
         /// Isletmeye gore randevulari getirir.
         /// </summary>
-        /// <param name="businessId">Isletme ID'si</param>
-        /// <param name="employeeId">Calisan ID'si (opsiyonel)</param>
-        /// <param name="startDate">Baslangic tarihi (opsiyonel)</param>
-        /// <param name="endDate">Bitis tarihi (opsiyonel)</param>
-        /// <param name="status">Randevu durumu (opsiyonel)</param>
-        /// <param name="pageNumber">Sayfa numarasi (varsayilan: 1)</param>
-        /// <param name="pageSize">Sayfa boyutu (varsayilan: 10)</param>
-        /// <returns>Randevu listesi</returns>
         [HttpGet("business/{businessId}")]
         [ProducesResponseType(typeof(Result<List<AppointmentDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<List<AppointmentDto>>), StatusCodes.Status404NotFound)]
@@ -184,13 +175,6 @@ namespace AppointMan.Api.Controllers
         /// <summary>
         /// Kullaniciya gore randevulari getirir.
         /// </summary>
-        /// <param name="userId">Kullanici ID'si</param>
-        /// <param name="startDate">Baslangic tarihi (opsiyonel)</param>
-        /// <param name="endDate">Bitis tarihi (opsiyonel)</param>
-        /// <param name="status">Randevu durumu (opsiyonel)</param>
-        /// <param name="pageNumber">Sayfa numarasi (varsayilan: 1)</param>
-        /// <param name="pageSize">Sayfa boyutu (varsayilan: 10)</param>
-        /// <returns>Randevu listesi</returns>
         [HttpGet("user/{userId}")]
         [ProducesResponseType(typeof(Result<List<AppointmentDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<List<AppointmentDto>>), StatusCodes.Status404NotFound)]
@@ -223,11 +207,6 @@ namespace AppointMan.Api.Controllers
         /// <summary>
         /// Belirli bir calisanin belirli bir hizmet icin musait saatlerini getirir.
         /// </summary>
-        /// <param name="businessId">Isletme ID'si</param>
-        /// <param name="employeeId">Calisan ID'si</param>
-        /// <param name="serviceId">Hizmet ID'si</param>
-        /// <param name="date">Tarih (yyyy-MM-dd)</param>
-        /// <returns>Musait slotlarin listesi</returns>
         [HttpGet("available-slots")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(Result<List<AvailableSlotDto>>), StatusCodes.Status200OK)]
@@ -252,6 +231,20 @@ namespace AppointMan.Api.Controllers
                 return Ok(result);
 
             return BadRequest(result);
+        }
+
+        // ===== HELPER =====
+
+        private Guid GetRequesterId()
+        {
+            var userIdClaim = User.FindFirst("userId")?.Value
+                ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                ?? User.FindFirst(ClaimTypes.Name)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim))
+                return Guid.Empty;
+
+            return Guid.TryParse(userIdClaim, out var userId) ? userId : Guid.Empty;
         }
     }
 }

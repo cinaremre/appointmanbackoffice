@@ -5,16 +5,13 @@ using AppointMan.Domain.ValueObjects;
 
 namespace AppointMan.Domain.Entities
 {
-    /// <summary>
-    /// Isletmede calisan personeli temsil eder.
-    /// </summary>
     public class Employee : BaseEntity
     {
         // Kisisel bilgiler
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
         public string? Title { get; private set; }
-        public string? Bio { get; private set; }          // Kisa tanitim
+        public string? Bio { get; private set; }
         public string? ProfilePictureUrl { get; private set; }
 
         // Iletisim
@@ -25,10 +22,14 @@ namespace AppointMan.Domain.Entities
         public Guid BusinessId { get; private set; }
         public Business Business { get; private set; }
 
+        // Kullanici iliskisi (opsiyonel)
+        public Guid? UserId { get; private set; }
+        public User? User { get; private set; }
+
         // Durum
         public bool IsActive { get; private set; }
-        public bool IsAvailableForBooking { get; private set; }   // Randevu alabilir mi?
-        public int DisplayOrder { get; private set; }             // Listeleme sirasi
+        public bool IsAvailableForBooking { get; private set; }
+        public int DisplayOrder { get; private set; }
 
         // Navigation Properties
         private readonly List<EmployeeService> _employeeServices = new();
@@ -46,11 +47,12 @@ namespace AppointMan.Domain.Entities
         private Employee() { } // EF Core
 
         public Employee(string firstName, string lastName, PhoneNumber phoneNumber, Guid businessId)
-    : this(Guid.NewGuid(), firstName, lastName, phoneNumber, businessId)
+            : this(Guid.NewGuid(), firstName, lastName, phoneNumber, businessId)
         {
         }
+
         public Employee(Guid id, string firstName, string lastName, PhoneNumber phoneNumber, Guid businessId)
-    : base(id)
+            : base(id)
         {
             if (string.IsNullOrWhiteSpace(firstName))
                 throw new DomainException("Calisan adi bos olamaz.");
@@ -71,6 +73,7 @@ namespace AppointMan.Domain.Entities
 
             AddDomainEvent(new EmployeeCreatedEvent(Id, BusinessId, GetFullName()));
         }
+
         public void SetFirstName(string firstName)
         {
             if (string.IsNullOrWhiteSpace(firstName))
@@ -194,7 +197,32 @@ namespace AppointMan.Domain.Entities
             AddDomainEvent(new EmployeeUpdatedEvent(Id, BusinessId, GetFullName()));
         }
 
-        // Service Methods
+        // ===== USER ILISKISI =====
+
+        public void LinkToUser(User user)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            UserId = user.Id;
+            User = user;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void UnlinkFromUser()
+        {
+            UserId = null;
+            User = null;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public bool IsLinkedToUser(Guid userId)
+        {
+            return UserId.HasValue && UserId.Value == userId;
+        }
+
+        // ===== SERVICE METHODS =====
+
         public void AddService(EmployeeService employeeService)
         {
             if (employeeService == null)
@@ -227,7 +255,8 @@ namespace AppointMan.Domain.Entities
             return _employeeServices.Any(es => es.ServiceId == serviceId && !es.IsDeleted);
         }
 
-        // WorkingHour Methods
+        // ===== WORKING HOUR METHODS =====
+
         public void AddWorkingHour(EmployeeWorkingHour workingHour)
         {
             if (workingHour == null)
@@ -269,7 +298,8 @@ namespace AppointMan.Domain.Entities
             return workingHour.IsWithinWorkingHours(dateTime);
         }
 
-        // TimeOff Methods
+        // ===== TIME OFF METHODS =====
+
         public void AddTimeOff(EmployeeTimeOff timeOff)
         {
             if (timeOff == null)
@@ -302,7 +332,8 @@ namespace AppointMan.Domain.Entities
             return _timeOffs.Any(t => t.IsDateWithinTimeOff(dateTime) && !t.IsDeleted);
         }
 
-        // Helper Methods
+        // ===== HELPER METHODS =====
+
         public string GetFullName()
         {
             return $"{FirstName} {LastName}";

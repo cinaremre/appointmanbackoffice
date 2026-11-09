@@ -22,20 +22,18 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
 
-            // Email - string olarak
             builder.Property(x => x.Email)
                 .IsRequired()
                 .HasMaxLength(255)
                 .HasColumnName("Email");
 
-            // ✅ PhoneNumber - string olarak (Value Object'i string'e çevir)
             builder.Property(x => x.PhoneNumber)
                 .IsRequired()
                 .HasMaxLength(20)
                 .HasColumnName("PhoneNumber")
                 .HasConversion(
-                    v => v.Value,           // PhoneNumber -> string
-                    v => new PhoneNumber(v) // string -> PhoneNumber
+                    v => v.Value,
+                    v => new PhoneNumber(v)
                 );
 
             builder.Property(x => x.PasswordHash)
@@ -45,6 +43,11 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
             builder.Property(x => x.Role)
                 .IsRequired()
                 .HasConversion<int>();
+
+            builder.Property(x => x.AccountStatus)
+                .IsRequired()
+                .HasConversion<int>()
+                .HasDefaultValue(EnumAccountStatus.Active);
 
             builder.Property(x => x.DateOfBirth)
                 .IsRequired(false);
@@ -97,9 +100,20 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasMany(x => x.Employees)
+                .WithOne(x => x.User)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.HasMany(x => x.BlacklistEntries)
+                .WithOne(x => x.User)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // Index'ler
             builder.HasIndex(x => x.Email).IsUnique();
             builder.HasIndex(x => x.PhoneNumber).IsUnique();
+            builder.HasIndex(x => x.AccountStatus);
         }
     }
 }
