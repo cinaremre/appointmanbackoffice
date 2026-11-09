@@ -25,7 +25,7 @@ namespace AppointMan.Infrastructure.Persistence.SeedData
                     EnumTimeOffType.Vacation, "Yillik izin", true, UserSeed.Owner1Id.ToString()),
 
                 // Buse Sanat: 1 gunluk hastalik izni (yarin)
-                CreateTimeOff(EmployeeSeed.Emp7Id, today.AddDays(1), today.AddDays(1),
+                CreateTimeOff(EmployeeSeed.Emp7Id, today.AddDays(1), today.AddDays(2),
                     EnumTimeOffType.SickLeave, "Grip", true, UserSeed.Owner3Id.ToString()),
 
                 // Dr. Cem: 5 gunluk tatil (10 gun sonra)

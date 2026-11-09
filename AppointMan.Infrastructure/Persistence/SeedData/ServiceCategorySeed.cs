@@ -83,43 +83,43 @@ namespace AppointMan.Infrastructure.Persistence.SeedData
             logger.LogInformation("ServiceCategories seed ediliyor...");
 
             // ===== ROOT KATEGORILER =====
-            var hairServices = CreateCategory(HairServicesId, 1, "#FF6B6B", "✂️",
+            var hairServices = CreateCategory(HairServicesId, 1, "#FF6B6B", null,
                 "Saç Hizmetleri", "Hair Services",
                 "Saç kesimi, boyama ve bakım hizmetleri", "Haircut, coloring and care services");
 
-            var beardShave = CreateCategory(BeardShaveId, 2, "#4A5568", "🪒",
+            var beardShave = CreateCategory(BeardShaveId, 2, "#4A5568", null,
                 "Sakal & Tıraş", "Beard & Shave",
                 "Sakal kesimi ve tıraş hizmetleri", "Beard trimming and shaving services");
 
-            var dentalServices = CreateCategory(DentalServicesId, 3, "#4299E1", "🦷",
+            var dentalServices = CreateCategory(DentalServicesId, 3, "#4299E1", null,
                 "Diş Hizmetleri", "Dental Services",
                 "Diş tedavisi ve bakımı", "Dental treatment and care");
 
-            var tattooPiercing = CreateCategory(TattooPiercingId, 4, "#9F7AEA", "🎨",
+            var tattooPiercing = CreateCategory(TattooPiercingId, 4, "#9F7AEA", null,
                 "Dövme & Piercing", "Tattoo & Piercing",
                 "Dövme ve piercing hizmetleri", "Tattoo and piercing services");
 
-            var skinBeauty = CreateCategory(SkinBeautyId, 5, "#ED8936", "✨",
+            var skinBeauty = CreateCategory(SkinBeautyId, 5, "#ED8936", null,
                 "Cilt & Güzellik", "Skin & Beauty",
                 "Cilt bakımı ve güzellik hizmetleri", "Skin care and beauty services");
 
-            var massageSpa = CreateCategory(MassageSpaId, 6, "#38B2AC", "💆",
+            var massageSpa = CreateCategory(MassageSpaId, 6, "#38B2AC", null,
                 "Masaj & Spa", "Massage & Spa",
                 "Masaj ve spa hizmetleri", "Massage and spa services");
 
-            var nailCare = CreateCategory(NailCareId, 7, "#F687B3", "💅",
+            var nailCare = CreateCategory(NailCareId, 7, "#F687B3", null,
                 "Tırnak Bakımı", "Nail Care",
                 "Manikür, pedikür ve tırnak sanatı", "Manicure, pedicure and nail art");
 
-            var makeup = CreateCategory(MakeupId, 8, "#FC8181", "💄",
+            var makeup = CreateCategory(MakeupId, 8, "#FC8181", null,
                 "Makyaj", "Makeup",
                 "Profesyonel makyaj hizmetleri", "Professional makeup services");
 
-            var hairRemoval = CreateCategory(HairRemovalId, 9, "#68D391", "🌸",
+            var hairRemoval = CreateCategory(HairRemovalId, 9, "#68D391", null,
                 "Epilasyon & Ağda", "Hair Removal",
                 "Epilasyon ve ağda hizmetleri", "Waxing and hair removal services");
 
-            var healthTherapy = CreateCategory(HealthTherapyId, 10, "#F56565", "❤️",
+            var healthTherapy = CreateCategory(HealthTherapyId, 10, "#F56565", null,
                 "Sağlık & Terapi", "Health & Therapy",
                 "Sağlık ve terapi hizmetleri", "Health and therapy services");
 

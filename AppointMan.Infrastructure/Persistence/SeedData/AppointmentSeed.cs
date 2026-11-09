@@ -89,10 +89,14 @@ namespace AppointMan.Infrastructure.Persistence.SeedData
         }
 
         private static Appointment CreateAppointment(Guid id, Guid userId, Guid businessId,
-            Guid serviceId, Guid employeeId, DateTime appointmentDate, EnumAppointmentStatus status,
-            string? notes, DateTime? completedAt = null, string? cancellationReason = null)
+    Guid serviceId, Guid employeeId, DateTime appointmentDate, EnumAppointmentStatus status,
+    string? notes, DateTime? completedAt = null, string? cancellationReason = null)
         {
-            var appointment = new Appointment(id, userId, businessId, serviceId, employeeId, appointmentDate, notes);
+            // Seed icin gecmis tarihe izin ver
+            var appointment = new Appointment(
+                id, userId, businessId, serviceId, employeeId,
+                appointmentDate, notes,false);
+
             var endTime = appointmentDate.AddMinutes(30);
 
             switch (status)
@@ -100,17 +104,20 @@ namespace AppointMan.Infrastructure.Persistence.SeedData
                 case EnumAppointmentStatus.Confirmed:
                     appointment.SetStatusForSeed(EnumAppointmentStatus.Confirmed, endTime: endTime);
                     break;
+
                 case EnumAppointmentStatus.Completed:
                     appointment.SetStatusForSeed(EnumAppointmentStatus.Completed,
                         completedAt: completedAt ?? DateTime.UtcNow,
                         endTime: endTime);
                     break;
+
                 case EnumAppointmentStatus.Cancelled:
                     appointment.SetStatusForSeed(EnumAppointmentStatus.Cancelled,
                         cancelledAt: DateTime.UtcNow,
                         cancellationReason: cancellationReason,
                         endTime: endTime);
                     break;
+
                 case EnumAppointmentStatus.Pending:
                 default:
                     appointment.SetStatusForSeed(EnumAppointmentStatus.Pending, endTime: endTime);

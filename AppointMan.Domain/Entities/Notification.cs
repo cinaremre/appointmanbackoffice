@@ -73,13 +73,12 @@ namespace AppointMan.Domain.Entities
 
         public void SetActionUrl(string? actionUrl)
         {
-            if (actionUrl != null && !Uri.IsWellFormedUriString(actionUrl, UriKind.Absolute))
-                throw new DomainException("Geçersiz URL formatı.");
+            if (actionUrl != null && actionUrl.Length > 500)
+                throw new DomainException("Action URL 500 karakterden uzun olamaz.");
 
             ActionUrl = actionUrl;
             UpdatedAt = DateTime.UtcNow;
         }
-
         public void MarkAsRead()
         {
             if (IsRead)

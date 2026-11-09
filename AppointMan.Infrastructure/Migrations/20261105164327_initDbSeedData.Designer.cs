@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AppointMan.Infrastructure.Persistence.Migrations
+namespace AppointMan.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261105141110_AddServiceCategoryTree")]
-    partial class AddServiceCategoryTree
+    [Migration("20261105164327_initDbSeedData")]
+    partial class initDbSeedData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

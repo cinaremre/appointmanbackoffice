@@ -33,11 +33,26 @@ namespace AppointMan.Domain.Entities
         private readonly List<AppointmentHistory> _histories = new();
         public IReadOnlyCollection<AppointmentHistory> Histories => _histories.AsReadOnly();
 
-        private Appointment() { } // EF Core
+        public Appointment() { } // EF Core
 
+        // ===== NORMAL CONSTRUCTOR (validasyonlu) =====
+        public Appointment(Guid userId, Guid businessId, Guid serviceId, Guid employeeId,
+                  DateTime appointmentDate, string? notes = null)
+            : this(Guid.NewGuid(), userId, businessId, serviceId, employeeId, appointmentDate, notes, validateDate: true)
+        {
+        }
+
+        // ===== ID'LI CONSTRUCTOR =====
         public Appointment(Guid id, Guid userId, Guid businessId, Guid serviceId, Guid employeeId,
                   DateTime appointmentDate, string? notes = null)
-    : base(id)
+            : this(id, userId, businessId, serviceId, employeeId, appointmentDate, notes, validateDate: true)
+        {
+        }
+
+        // ===== SEED ICIN CONSTRUCTOR (validasyonsuz) =====
+        public Appointment(Guid id, Guid userId, Guid businessId, Guid serviceId, Guid employeeId,
+                  DateTime appointmentDate, string? notes, bool validateDate)
+            : base(id)
         {
             if (userId == Guid.Empty)
                 throw new ArgumentException("Kullanıcı ID boş olamaz.", nameof(userId));
@@ -56,7 +71,17 @@ namespace AppointMan.Domain.Entities
             ServiceId = serviceId;
             EmployeeId = employeeId;
 
-            SetAppointmentDate(appointmentDate);
+            if (validateDate)
+            {
+                SetAppointmentDate(appointmentDate);
+            }
+            else
+            {
+                // Seed icin gecmis tarihe izin ver
+                AppointmentDate = appointmentDate;
+                UpdatedAt = DateTime.UtcNow;
+            }
+
             SetNotes(notes);
 
             Status = EnumAppointmentStatus.Pending;
@@ -64,11 +89,7 @@ namespace AppointMan.Domain.Entities
 
             AddDomainEvent(new AppointmentCreatedEvent(Id, UserId, BusinessId, ServiceId, EmployeeId, AppointmentDate, notes));
         }
-        public Appointment(Guid userId, Guid businessId, Guid serviceId, Guid employeeId,
-                  DateTime appointmentDate, string? notes = null)
-    : this(Guid.NewGuid(), userId, businessId, serviceId, employeeId, appointmentDate, notes)
-        {
-        }
+
         public void SetAppointmentDate(DateTime appointmentDate)
         {
             if (appointmentDate < DateTime.UtcNow)
@@ -238,12 +259,14 @@ namespace AppointMan.Domain.Entities
                 .ToList()
                 .AsReadOnly();
         }
+
+        // ===== SEED ICIN =====
         public void SetStatusForSeed(
-     EnumAppointmentStatus status,
-     DateTime? completedAt = null,
-     DateTime? cancelledAt = null,
-     string? cancellationReason = null,
-     DateTime? endTime = null)
+            EnumAppointmentStatus status,
+            DateTime? completedAt = null,
+            DateTime? cancelledAt = null,
+            string? cancellationReason = null,
+            DateTime? endTime = null)
         {
             Status = status;
             CompletedAt = completedAt;
