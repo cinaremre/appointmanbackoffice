@@ -83,6 +83,11 @@ namespace AppointMan.Infrastructure.Persistence.SeedData
             business.UpdateRating(rating);
             for (int i = 0; i < totalReviews; i++)
                 business.IncrementTotalReviews();
+
+            //  KATEGORI ATA (EKLE)
+            // BusinessCategory entity'sini context'ten almak yerine ID ile set et
+            typeof(Business).GetProperty("CategoryId")?.SetValue(business, categoryId);
+
             return business;
         }
     }

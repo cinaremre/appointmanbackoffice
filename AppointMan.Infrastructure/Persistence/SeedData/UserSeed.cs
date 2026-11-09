@@ -33,8 +33,6 @@ namespace AppointMan.Infrastructure.Persistence.SeedData
                 return;
             }
 
-            const string passwordHash = "$2a$11$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
-
             var users = new List<User>
             {
                 CreateUser(AdminId, "Sistem", "Admin", "admin@example.com", "+905550000001",
@@ -84,8 +82,11 @@ namespace AppointMan.Infrastructure.Persistence.SeedData
         private static User CreateUser(Guid id, string firstName, string lastName, string email,
             string phone, EnumUserRole role, string? dateOfBirth, bool emailVerified, bool phoneVerified)
         {
+
+            const string passwordHash = "$2a$11$B67U1BFFsEe3KXoHu55b4ezNS5ItlHvYuddAqQz4Tid3WretjONHq";
             var user = new User(id, firstName, lastName, new Email(email), new PhoneNumber(phone), role);
-            user.SetPasswordHash("$2a$11$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy");
+
+            user.SetPasswordHash(passwordHash);
             if (dateOfBirth != null)
                 user.SetDateOfBirth(DateTime.Parse(dateOfBirth));
             if (emailVerified) user.VerifyEmail();
