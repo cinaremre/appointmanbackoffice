@@ -364,6 +364,15 @@ FodyWeavers.xsd
 /docker-compose.dcproj
 /AppointMan.Api/Dockerfile
 /AppointMan.Api/appsettings.json
+
+# --- Security: never commit secret material ---------------------------------
+.env
+.env.local
+secrets.json
+appsettings.*.local.json
+*.pfx
+*.snk
+
 /.dockerignore
 /docker-compose.yml
 /launchSettings.json

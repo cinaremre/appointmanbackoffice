@@ -67,11 +67,33 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
             builder.Property(x => x.LastLoginDate)
                 .IsRequired(false);
 
-            builder.Property(x => x.RefreshToken)
+            // Guvenlik: refresh token yalnizca SHA-256 hash'i olarak saklanir.
+            builder.Property(x => x.RefreshTokenHash)
                 .IsRequired(false)
-                .HasMaxLength(500);
+                .HasMaxLength(64);
 
-            builder.Property(x => x.RefreshTokenExpiryTime)
+            builder.Property(x => x.PreviousRefreshTokenHash)
+                .IsRequired(false)
+                .HasMaxLength(64);
+
+            builder.Property(x => x.RefreshTokenExpiresAtUtc)
+                .IsRequired(false);
+
+            builder.Property(x => x.RefreshTokenCreatedAtUtc)
+                .IsRequired(false);
+
+            builder.Property(x => x.RefreshTokenRevokedAtUtc)
+                .IsRequired(false);
+
+            // Guvenlik: brute force korumasi.
+            builder.Property(x => x.AccessFailedCount)
+                .IsRequired()
+                .HasDefaultValue(0);
+
+            builder.Property(x => x.LockoutEndUtc)
+                .IsRequired(false);
+
+            builder.Property(x => x.LastFailedLoginUtc)
                 .IsRequired(false);
 
             // Konum: kullanicinin kayitli oldugu il / ilce.

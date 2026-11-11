@@ -1,4 +1,5 @@
 ﻿using AppointMan.Application.Common.DTOs;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Application.Features.Users.Commands.ChangePassword;
 using AppointMan.Application.Features.Users.Commands.UpdateUserProfile;
@@ -21,10 +22,12 @@ namespace AppointMan.Api.Controllers
     public class UserController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ICurrentUserService _currentUser;
 
-        public UserController(IMediator mediator)
+        public UserController(IMediator mediator, ICurrentUserService currentUser)
         {
             _mediator = mediator;
+            _currentUser = currentUser;
         }
 
         /// <summary>
@@ -37,6 +40,13 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
         {
+            // The actor is always taken from the token: a client cannot change another user's password.
+            var currentUserId = _currentUser.UserId;
+            if (currentUserId is null)
+                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
+
+            command.UserId = currentUserId.Value;
+
             // 1. Command'i mediator ile gonder
             var result = await _mediator.Send(command);
 
@@ -57,6 +67,13 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserProfileCommand command)
         {
+            // The actor is always taken from the token: a client cannot edit another user's profile.
+            var currentUserId = _currentUser.UserId;
+            if (currentUserId is null)
+                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
+
+            command.UserId = currentUserId.Value;
+
             // 1. Command'i mediator ile gonder
             var result = await _mediator.Send(command);
 
@@ -79,6 +96,13 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateLanguage([FromBody] UpdateUserLanguageCommand command)
         {
+            // The actor is always taken from the token: a client cannot change another user's language.
+            var currentUserId = _currentUser.UserId;
+            if (currentUserId is null)
+                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
+
+            command.UserId = currentUserId.Value;
+
             // 1. Command'i mediator ile gonder
             var result = await _mediator.Send(command);
 
@@ -99,6 +123,15 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<UserDto>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUserById(Guid id)
         {
+            var currentUserId = _currentUser.UserId;
+            if (currentUserId is null)
+                return Unauthorized(Result<UserDto>.Failure(Error.Unauthorized("Auth.InvalidUser")));
+
+            // BOLA protection: a caller may only read their own profile unless they are an administrator.
+            var isAdministrator = _currentUser.IsInRole("Admin") || _currentUser.IsInRole("SuperAdmin");
+            if (id != currentUserId.Value && !isAdministrator)
+                return NotFound(Result<UserDto>.Failure(Error.NotFound("User", id.ToString())));
+
             // 1. Query'yi olustur
             var query = new GetUserByIdQuery { UserId = id };
 
@@ -146,6 +179,13 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailCommand command)
         {
+            // The verified account is always the caller; the body cannot target another user.
+            var currentUserId = _currentUser.UserId;
+            if (currentUserId is null)
+                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
+
+            command.UserId = currentUserId.Value;
+
             // 1. Command'i mediator ile gonder
             var result = await _mediator.Send(command);
 

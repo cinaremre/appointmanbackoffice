@@ -3,6 +3,7 @@ using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 
 namespace AppointMan.Application.Features.Users.Commands.VerifyEmail
 {
@@ -10,13 +11,16 @@ namespace AppointMan.Application.Features.Users.Commands.VerifyEmail
     {
         private readonly IRepository<User> _userRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IConfiguration _configuration;
 
         public VerifyEmailCommandHandler(
             IRepository<User> userRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            IConfiguration configuration)
         {
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
+            _configuration = configuration;
         }
 
         public async Task<Result<Guid>> Handle(VerifyEmailCommand request, CancellationToken cancellationToken)
@@ -32,9 +36,14 @@ namespace AppointMan.Application.Features.Users.Commands.VerifyEmail
                 if (user.IsEmailVerified)
                     return Result<Guid>.Failure(Error.Conflict("Email zaten dogrulanmis."));
 
-                // 3. Dogrulama kodu kontrolu (gercek hayatta cache veya DB'de tutulur)
-                // Burada ornek amaçli basit kontrol
-                if (request.VerificationCode != "123456")
+                // 3. Dogrulama kodu kontrolu: kod konfigurasyondan gelir ve tanimli degilse
+                //    dogrulama tamamen kapalidir (fail closed). Sabit kod production'a cikmaz.
+                var configuredCode = _configuration["EmailVerification:DevelopmentCode"];
+
+                if (string.IsNullOrWhiteSpace(configuredCode))
+                    return Result<Guid>.Failure(Error.Validation("EmailVerification.NotConfigured"));
+
+                if (!string.Equals(request.VerificationCode, configuredCode, StringComparison.Ordinal))
                     return Result<Guid>.Failure(Error.Validation("Gecersiz dogrulama kodu."));
 
                 // 4. Domain kurallari ile dogrula

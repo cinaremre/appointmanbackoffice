@@ -1293,6 +1293,11 @@ namespace AppointMan.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("AccessFailedCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<int>("AccountStatus")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -1346,6 +1351,9 @@ namespace AppointMan.Infrastructure.Migrations
                         .HasColumnType("nvarchar(2)")
                         .HasDefaultValue("tr");
 
+                    b.Property<DateTime?>("LastFailedLoginUtc")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("LastLoginDate")
                         .HasColumnType("datetime2");
 
@@ -1353,6 +1361,9 @@ namespace AppointMan.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("LockoutEndUtc")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -1365,15 +1376,25 @@ namespace AppointMan.Infrastructure.Migrations
                         .HasColumnType("nvarchar(20)")
                         .HasColumnName("PhoneNumber");
 
+                    b.Property<string>("PreviousRefreshTokenHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
                     b.Property<string>("ProfilePictureUrl")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("RefreshToken")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                    b.Property<DateTime?>("RefreshTokenCreatedAtUtc")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                    b.Property<DateTime?>("RefreshTokenExpiresAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RefreshTokenHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime?>("RefreshTokenRevokedAtUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Role")

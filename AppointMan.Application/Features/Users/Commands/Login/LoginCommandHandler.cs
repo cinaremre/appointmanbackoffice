@@ -1,5 +1,6 @@
 ﻿using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
+using AppointMan.Application.Common.Security;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Interfaces;
 using MediatR;
@@ -30,21 +31,40 @@ namespace AppointMan.Application.Features.Users.Commands.Login
                 var users = await _userRepository.FindAsync(u => u.Email == request.Email && !u.IsDeleted, cancellationToken);
                 var user = users.FirstOrDefault();
 
-                if (user is null || !BCryptNet.Verify(request.Password, user.PasswordHash))
+                // Unknown account and wrong password share the same error to prevent account enumeration.
+                if (user is null)
                     return Result<LoginResponse>.Failure(Error.Unauthorized("Auth.InvalidCredentials"));
 
-                var token = _tokenService.GenerateAccessToken(user);
+                // Locked accounts are rejected before the password is even verified.
+                if (user.IsLockedOut)
+                    return Result<LoginResponse>.Failure(Error.Unauthorized("Auth.AccountLocked"));
+
+                if (!BCryptNet.Verify(request.Password, user.PasswordHash))
+                {
+                    user.RegisterFailedLogin(AccountLockoutPolicy.MaxFailedAccessAttempts, AccountLockoutPolicy.LockoutDuration);
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                    return Result<LoginResponse>.Failure(Error.Unauthorized("Auth.InvalidCredentials"));
+                }
+
+                var accessToken = _tokenService.GenerateAccessToken(user);
                 var refreshToken = _tokenService.GenerateRefreshToken();
 
-                user.SetRefreshToken(refreshToken, DateTime.UtcNow.AddDays(7));
-                user.UpdateLastLogin();
+                user.RegisterSuccessfulLogin();
+
+                // Only the hash is persisted: a database leak must not expose usable tokens.
+                user.IssueRefreshToken(
+                    RefreshTokenHasher.Hash(refreshToken),
+                    _tokenService.GetRefreshTokenExpiryUtc(),
+                    DateTime.UtcNow);
+
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 var response = new LoginResponse
                 {
-                    AccessToken = token,
+                    AccessToken = accessToken,
                     RefreshToken = refreshToken,
-                    Expiration = DateTime.UtcNow.AddMinutes(60),
+                    Expiration = _tokenService.GetAccessTokenExpiryUtc(),
                     UserId = user.Id,
                     Email = user.Email,
                     FirstName = user.FirstName,
@@ -57,9 +77,10 @@ namespace AppointMan.Application.Features.Users.Commands.Login
 
                 return Result<LoginResponse>.Success(response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Result<LoginResponse>.Failure(Error.Internal("Auth.LoginFailed", ex.Message));
+                // Internal details stay out of the response; only the error key is surfaced.
+                return Result<LoginResponse>.Failure(Error.Internal("Auth.LoginFailed"));
             }
         }
     }

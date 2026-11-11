@@ -25,8 +25,23 @@ namespace AppointMan.Domain.Entities
         public bool IsEmailVerified { get; private set; }
         public bool IsPhoneVerified { get; private set; }
         public DateTime? LastLoginDate { get; private set; }
-        public string? RefreshToken { get; private set; }
-        public DateTime? RefreshTokenExpiryTime { get; private set; }
+
+        // Guvenlik: refresh token yalnizca hash'lenmis olarak saklanir; ham deger DB'de tutulmaz.
+        public string? RefreshTokenHash { get; private set; }
+        public string? PreviousRefreshTokenHash { get; private set; }
+        public DateTime? RefreshTokenExpiresAtUtc { get; private set; }
+        public DateTime? RefreshTokenCreatedAtUtc { get; private set; }
+        public DateTime? RefreshTokenRevokedAtUtc { get; private set; }
+
+        // Guvenlik: brute force korumasi icin basarisiz giris sayaci ve kilit bitis zamani.
+        public int AccessFailedCount { get; private set; }
+        public DateTime? LockoutEndUtc { get; private set; }
+
+        /// <summary>Hesabin su anda kilitli olup olmadigini bildirir.</summary>
+        public bool IsLockedOut => LockoutEndUtc.HasValue && LockoutEndUtc.Value > DateTime.UtcNow;
+
+        /// <summary>Son basarili giris zamani (UTC).</summary>
+        public DateTime? LastFailedLoginUtc { get; private set; }
 
         // Konum: kullanicinin kayitli oldugu il / ilce.
         // Arama kriteri bos geldiginde varsayilan konum olarak kullanilir.
@@ -182,10 +197,65 @@ namespace AppointMan.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void SetRefreshToken(string refreshToken, DateTime expiryTime)
+        /// <summary>
+        /// Yeni refresh token hash'ini kaydeder ve mevcut hash'i tekrar kullanim
+        /// (reuse) tespiti icin onceki slota tasir.
+        /// </summary>
+        /// <param name="refreshTokenHash">Yeni refresh token'in SHA-256 hash'i.</param>
+        /// <param name="expiresAtUtc">Yeni token'in mutlak bitis zamani (UTC).</param>
+        /// <param name="issuedAtUtc">Token'in uretildigi zaman (UTC).</param>
+        public void IssueRefreshToken(string refreshTokenHash, DateTime expiresAtUtc, DateTime issuedAtUtc)
         {
-            RefreshToken = refreshToken;
-            RefreshTokenExpiryTime = expiryTime;
+            if (string.IsNullOrWhiteSpace(refreshTokenHash))
+                throw new DomainException("User.RefreshTokenHashRequired");
+
+            PreviousRefreshTokenHash = RefreshTokenHash;
+            RefreshTokenHash = refreshTokenHash;
+            RefreshTokenExpiresAtUtc = expiresAtUtc;
+            RefreshTokenCreatedAtUtc = issuedAtUtc;
+            RefreshTokenRevokedAtUtc = null;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// Refresh token durumunu iptal eder. Cikis, parola degisimi ve
+        /// token tekrar kullanimi tespitinde cagrilir.
+        /// </summary>
+        /// <param name="revokedAtUtc">Iptal zamani (UTC).</param>
+        public void RevokeRefreshToken(DateTime revokedAtUtc)
+        {
+            RefreshTokenHash = null;
+            PreviousRefreshTokenHash = null;
+            RefreshTokenExpiresAtUtc = null;
+            RefreshTokenRevokedAtUtc = revokedAtUtc;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// Basarisiz giris denemesini kaydeder ve esik asildiginda hesabi kilitler.
+        /// </summary>
+        /// <param name="maxFailedAttempts">Kilit oncesi izin verilen deneme sayisi.</param>
+        /// <param name="lockoutDuration">Kilit suresi.</param>
+        public void RegisterFailedLogin(int maxFailedAttempts, TimeSpan lockoutDuration)
+        {
+            AccessFailedCount++;
+            LastFailedLoginUtc = DateTime.UtcNow;
+
+            if (AccessFailedCount >= maxFailedAttempts)
+                LockoutEndUtc = DateTime.UtcNow.Add(lockoutDuration);
+
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// Basarili giris sonrasi sayaci sifirlar ve son giris zamanini gunceller.
+        /// </summary>
+        public void RegisterSuccessfulLogin()
+        {
+            AccessFailedCount = 0;
+            LockoutEndUtc = null;
+            LastFailedLoginUtc = null;
+            LastLoginDate = DateTime.UtcNow;
             UpdatedAt = DateTime.UtcNow;
         }
 

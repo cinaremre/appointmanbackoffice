@@ -5,6 +5,7 @@ using AppointMan.Application.Features.Districts.Queries.GetByCity;
 using AppointMan.Application.Features.Localities.Queries.GetByDistrict;
 using AppointMan.Application.Features.Neighborhoods.Queries.GetByLocality;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppointMan.Api.Controllers
@@ -15,6 +16,8 @@ namespace AppointMan.Api.Controllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
+    // Adres hiyerarsisi kimligi dogrulanmis kullanicilara aciktir; anonim erisim kapalidir.
+    [Authorize]
     public class AddressController : ControllerBase
     {
         private readonly IMediator _mediator;

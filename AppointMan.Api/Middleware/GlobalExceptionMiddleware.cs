@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.Interfaces;
+﻿using AppointMan.Application.Common.Exceptions;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Domain.Exceptions;
 using FluentValidation;
 using System.Net;
@@ -10,6 +11,7 @@ namespace AppointMan.Api.Middleware
     /// Tum istisnalari tek noktada HTTP yanitina cevirir ve lokalizasyon
     /// anahtarlarini aktif kulturde cozer. Istemciye istisna tipi veya
     /// stack trace sizdirilmaz; <c>Detail</c> yalnizca gelistirme ortaminda dolar.
+    /// Her yanit, logla eslesmesi icin bir <c>correlationId</c> tasir.
     /// </summary>
     public class GlobalExceptionMiddleware
     {
@@ -64,16 +66,28 @@ namespace AppointMan.Api.Middleware
                 _logger.LogWarning(ex, "Es zamanli guncelleme cakismasi. Key: {Key}", ex.Key);
                 await HandleDomainExceptionAsync(context, HttpStatusCode.Conflict, "concurrency_conflict", ex);
             }
-            catch (DomainException ex)
+            catch (ForbiddenAccessException ex)
             {
-                // Is kurali ihlali: istemci hatasi (400).
-                _logger.LogWarning(ex, "Is kurali ihlali. Key: {Key}", ex.Key);
-                await HandleDomainExceptionAsync(context, HttpStatusCode.BadRequest, "business_rule", ex);
+                // Kaynak sahipligi ihlali: 403 Forbidden.
+                _logger.LogWarning(ex, "Yetki ihlali");
+                await HandleSimpleAsync(context, HttpStatusCode.Forbidden, "forbidden", "Error.Forbidden");
             }
             catch (UnauthorizedAccessException ex)
             {
                 _logger.LogWarning(ex, "Yetkisiz erisim");
                 await HandleSimpleAsync(context, HttpStatusCode.Unauthorized, "unauthorized", "Error.Unauthorized");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                // Bulunamayan kaynak: 404 NotFound (varlik sizintisini onlemek icin 403 yerine tercih edilir).
+                _logger.LogWarning(ex, "Kaynak bulunamadi");
+                await HandleSimpleAsync(context, HttpStatusCode.NotFound, "not_found", "Error.NotFound");
+            }
+            catch (DomainException ex)
+            {
+                // Is kurali ihlali: istemci hatasi (400).
+                _logger.LogWarning(ex, "Is kurali ihlali. Key: {Key}", ex.Key);
+                await HandleDomainExceptionAsync(context, HttpStatusCode.BadRequest, "business_rule", ex);
             }
             catch (Exception ex)
             {
@@ -101,7 +115,8 @@ namespace AppointMan.Api.Middleware
             {
                 StatusCode = (int)statusCode,
                 Code = code,
-                Message = message
+                Message = message,
+                CorrelationId = context.TraceIdentifier
             });
         }
 
@@ -122,7 +137,8 @@ namespace AppointMan.Api.Middleware
             {
                 StatusCode = (int)statusCode,
                 Code = code,
-                Message = _localizer.Get(key)
+                Message = _localizer.Get(key),
+                CorrelationId = context.TraceIdentifier
             });
         }
 
@@ -145,7 +161,8 @@ namespace AppointMan.Api.Middleware
                 StatusCode = (int)HttpStatusCode.BadRequest,
                 Code = "validation_error",
                 Message = _localizer.Get("Error.Validation"),
-                Errors = errors
+                Errors = errors,
+                CorrelationId = context.TraceIdentifier
             });
         }
 
@@ -164,7 +181,8 @@ namespace AppointMan.Api.Middleware
                 StatusCode = (int)HttpStatusCode.InternalServerError,
                 Code = "unexpected_error",
                 Message = _localizer.Get("Error.Unexpected"),
-                Detail = detail
+                Detail = detail,
+                CorrelationId = context.TraceIdentifier
             });
         }
 

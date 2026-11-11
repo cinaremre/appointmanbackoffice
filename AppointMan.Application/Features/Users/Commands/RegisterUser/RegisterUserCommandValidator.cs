@@ -1,4 +1,5 @@
 ﻿using AppointMan.Application.Common.Interfaces;
+using AppointMan.Application.Common.Security;
 using FluentValidation;
 
 namespace AppointMan.Application.Features.Users.Commands.RegisterUser
@@ -37,17 +38,24 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
                 .MaximumLength(15)
                 .WithMessage(localizer.Get("Validation.PhoneNumberMaxLength"));
 
+            // Parola politikasi tek kaynaktan (PasswordPolicy) gelir; API yuzeyi ile
+            // uygulama katmani arasinda sapma olamaz.
             RuleFor(x => x.Password)
                 .NotEmpty()
                 .WithMessage(localizer.Get("Validation.PasswordRequired"))
-                .MinimumLength(6)
+                .MinimumLength(PasswordPolicy.MinimumLength)
                 .WithMessage(localizer.Get("Validation.PasswordMinLength"))
-                .MaximumLength(50)
-                .WithMessage(localizer.Get("Validation.PasswordMaxLength"));
+                .MaximumLength(PasswordPolicy.MaximumLength)
+                .WithMessage(localizer.Get("Validation.PasswordMaxLength"))
+                .Must(PasswordPolicy.IsStrong)
+                .WithMessage(localizer.Get("Validation.PasswordComplexity"));
 
+            // Yalnizca self-assignable roller kabul edilir: Admin/SuperAdmin istemciden atanamaz.
             RuleFor(x => x.Role)
                 .IsInEnum()
-                .WithMessage(localizer.Get("Validation.RoleInvalid"));
+                .WithMessage(localizer.Get("Validation.RoleInvalid"))
+                .Must(SelfAssignableRoles.IsSelfAssignable)
+                .WithMessage(localizer.Get("Validation.RoleNotSelfAssignable"));
 
             RuleFor(x => x.DateOfBirth)
                 .Must(date => !date.HasValue || date.Value < DateTime.UtcNow.AddYears(-18))

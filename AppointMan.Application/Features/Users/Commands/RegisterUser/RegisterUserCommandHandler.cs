@@ -1,5 +1,6 @@
 ﻿using AppointMan.Application.Common.Errors;
 using AppointMan.Application.Common.Results;
+using AppointMan.Application.Common.Security;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
@@ -44,7 +45,12 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
                 if (existingUserByPhone.Any())
                     return Result<Guid>.Failure(Error.Conflict("User.PhoneTaken"));
 
-                // 3. Domain entity olustur
+                // 3. Yetkilendirme: istemci yalnizca self-assignable rolleri talep edebilir.
+                //    Admin / SuperAdmin / Moderator gibi roller yalnizca yonetici tarafindan atanir.
+                if (!SelfAssignableRoles.IsSelfAssignable(request.Role))
+                    return Result<Guid>.Failure(Error.Forbidden("Validation.RoleNotSelfAssignable"));
+
+                // 4. Domain entity olustur
                 var user = new User(
                     request.FirstName,
                     request.LastName,

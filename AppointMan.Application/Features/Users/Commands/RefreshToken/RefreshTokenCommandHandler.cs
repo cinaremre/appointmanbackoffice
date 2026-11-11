@@ -1,5 +1,7 @@
-﻿using AppointMan.Application.Common.Interfaces;
+﻿using System.Security.Claims;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
+using AppointMan.Application.Common.Security;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Interfaces;
 using MediatR;
@@ -26,49 +28,70 @@ namespace AppointMan.Application.Features.Users.Commands.RefreshToken
         {
             try
             {
-                // 1. Eski token'dan principal al
+                // 1. Eski access token'dan kimligi al (imza, issuer ve audience hala dogrulanir).
                 var principal = _tokenService.GetPrincipalFromExpiredToken(request.AccessToken);
                 if (principal is null)
-                    return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Geçersiz token."));
+                    return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Auth.InvalidToken"));
 
-                // 2. Kullanıcı ID'sini al
-                var userId = principal.FindFirst("userId")?.Value;
-                if (string.IsNullOrEmpty(userId))
-                    return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Geçersiz token."));
+                // 2. Kullanici kimligini coz; bozuk claim 500 degil 401 uretir.
+                var userIdClaim = principal.FindFirst("userId")?.Value
+                    ?? principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                // 3. Kullanıcıyı bul
+                if (!Guid.TryParse(userIdClaim, out var userId))
+                    return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Auth.InvalidToken"));
+
+                // 3. Kullaniciyi bul
                 var users = await _userRepository.FindAsync(
-                    u => u.Id == Guid.Parse(userId) && !u.IsDeleted,
+                    u => u.Id == userId && !u.IsDeleted,
                     cancellationToken);
+
                 var user = users.FirstOrDefault();
 
                 if (user is null)
-                    return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Kullanıcı bulunamadı."));
+                    return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Auth.InvalidToken"));
 
-                // 4. Refresh token kontrolü
-                if (user.RefreshToken != request.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-                    return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Geçersiz refresh token."));
+                // 4. Reuse detection: daha once rotate edilmis bir token tekrar sunulursa
+                //    token hirsizligi varsayilir ve tum oturumlar iptal edilir.
+                if (RefreshTokenHasher.Matches(request.RefreshToken, user.PreviousRefreshTokenHash))
+                {
+                    user.RevokeRefreshToken(DateTime.UtcNow);
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // 5. Yeni token oluştur
+                    return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Auth.RefreshTokenReused"));
+                }
+
+                // 5. Aktif token dogrulugu: iptal edilmemis, suresi gecmemis ve hash eslesmeli.
+                var isActiveToken = user.RefreshTokenRevokedAtUtc is null
+                    && user.RefreshTokenExpiresAtUtc.HasValue
+                    && user.RefreshTokenExpiresAtUtc.Value > DateTime.UtcNow
+                    && RefreshTokenHasher.Matches(request.RefreshToken, user.RefreshTokenHash);
+
+                if (!isActiveToken)
+                    return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Auth.InvalidRefreshToken"));
+
+                // 6. Rotasyon: yeni cift uretilir, eski hash onceki slota tasinir.
                 var newAccessToken = _tokenService.GenerateAccessToken(user);
                 var newRefreshToken = _tokenService.GenerateRefreshToken();
 
-                // 6. Refresh token'ı güncelle
-                user.SetRefreshToken(newRefreshToken, DateTime.UtcNow.AddDays(7));
+                user.IssueRefreshToken(
+                    RefreshTokenHasher.Hash(newRefreshToken),
+                    _tokenService.GetRefreshTokenExpiryUtc(),
+                    DateTime.UtcNow);
+
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 var response = new RefreshTokenResponse
                 {
                     AccessToken = newAccessToken,
                     RefreshToken = newRefreshToken,
-                    Expiration = DateTime.UtcNow.AddMinutes(60)
+                    Expiration = _tokenService.GetAccessTokenExpiryUtc()
                 };
 
                 return Result<RefreshTokenResponse>.Success(response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Result<RefreshTokenResponse>.Failure(Error.Internal("Token yenilenirken bir hata oluştu.", ex.Message));
+                return Result<RefreshTokenResponse>.Failure(Error.Internal("Auth.RefreshTokenFailed"));
             }
         }
     }
