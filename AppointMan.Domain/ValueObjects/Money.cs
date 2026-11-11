@@ -19,10 +19,10 @@ namespace AppointMan.Domain.ValueObjects
         public void SetAmount(decimal amount)
         {
             if (amount < 0)
-                throw new DomainException("Tutar negatif olamaz.");
+                throw new DomainException("Money.AmountNegative");
 
             if (amount > 99999999.99m)
-                throw new DomainException("Tutar cok yuksek.");
+                throw new DomainException("Money.AmountTooHigh");
 
             Amount = Math.Round(amount, 2);
         }
@@ -30,10 +30,10 @@ namespace AppointMan.Domain.ValueObjects
         public void SetCurrency(string currency)
         {
             if (string.IsNullOrWhiteSpace(currency))
-                throw new DomainException("Para birimi bos olamaz.");
+                throw new DomainException("Money.CurrencyRequired");
 
             if (currency.Length != 3)
-                throw new DomainException("Para birimi 3 karakter olmalidir.");
+                throw new DomainException("Money.CurrencyLength");
 
             Currency = currency.ToUpperInvariant();
         }
@@ -41,7 +41,7 @@ namespace AppointMan.Domain.ValueObjects
         public Money Add(Money other)
         {
             if (other.Currency != Currency)
-                throw new DomainException("Farkli para birimleri toplanamaz.");
+                throw new DomainException("Money.CurrencyMismatchAdd");
 
             return new Money(Amount + other.Amount, Currency);
         }
@@ -49,10 +49,10 @@ namespace AppointMan.Domain.ValueObjects
         public Money Subtract(Money other)
         {
             if (other.Currency != Currency)
-                throw new DomainException("Farkli para birimleri cikarilamaz.");
+                throw new DomainException("Money.CurrencyMismatchSubtract");
 
             if (Amount < other.Amount)
-                throw new DomainException("Yetersiz bakiye.");
+                throw new DomainException("Money.InsufficientBalance");
 
             return new Money(Amount - other.Amount, Currency);
         }
@@ -60,7 +60,7 @@ namespace AppointMan.Domain.ValueObjects
         public Money Multiply(decimal multiplier)
         {
             if (multiplier < 0)
-                throw new DomainException("Carpan negatif olamaz.");
+                throw new DomainException("Money.MultiplierNegative");
 
             return new Money(Amount * multiplier, Currency);
         }
@@ -68,7 +68,7 @@ namespace AppointMan.Domain.ValueObjects
         public Money Divide(decimal divisor)
         {
             if (divisor <= 0)
-                throw new DomainException("Bolen 0'dan buyuk olmalidir.");
+                throw new DomainException("Money.DivisorPositive");
 
             return new Money(Amount / divisor, Currency);
         }
@@ -99,7 +99,7 @@ namespace AppointMan.Domain.ValueObjects
         public static bool operator >(Money left, Money right)
         {
             if (left.Currency != right.Currency)
-                throw new DomainException("Farkli para birimleri karsilastirilamaz.");
+                throw new DomainException("Money.CurrencyMismatchCompare");
 
             return left.Amount > right.Amount;
         }
@@ -107,7 +107,7 @@ namespace AppointMan.Domain.ValueObjects
         public static bool operator <(Money left, Money right)
         {
             if (left.Currency != right.Currency)
-                throw new DomainException("Farkli para birimleri karsilastirilamaz.");
+                throw new DomainException("Money.CurrencyMismatchCompare");
 
             return left.Amount < right.Amount;
         }
@@ -115,7 +115,7 @@ namespace AppointMan.Domain.ValueObjects
         public static bool operator >=(Money left, Money right)
         {
             if (left.Currency != right.Currency)
-                throw new DomainException("Farkli para birimleri karsilastirilamaz.");
+                throw new DomainException("Money.CurrencyMismatchCompare");
 
             return left.Amount >= right.Amount;
         }
@@ -123,7 +123,7 @@ namespace AppointMan.Domain.ValueObjects
         public static bool operator <=(Money left, Money right)
         {
             if (left.Currency != right.Currency)
-                throw new DomainException("Farkli para birimleri karsilastirilamaz.");
+                throw new DomainException("Money.CurrencyMismatchCompare");
 
             return left.Amount <= right.Amount;
         }

@@ -33,7 +33,7 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
                     cancellationToken);
 
                 if (existingUserByEmail.Any())
-                    return Result<Guid>.Failure(Error.Conflict("Bu email adresi zaten kayitli."));
+                    return Result<Guid>.Failure(Error.Conflict("User.EmailTaken"));
 
                 // 2. Telefon kontrolu
                 var phone = new PhoneNumber(request.PhoneNumber);
@@ -42,7 +42,7 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
                     cancellationToken);
 
                 if (existingUserByPhone.Any())
-                    return Result<Guid>.Failure(Error.Conflict("Bu telefon numarasi zaten kayitli."));
+                    return Result<Guid>.Failure(Error.Conflict("User.PhoneTaken"));
 
                 // 3. Domain entity olustur
                 var user = new User(
@@ -67,7 +67,13 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
                     user.UpdateLocation(request.CityId, request.DistrictId);
                 }
 
-                // 6. Kaydet
+                // 6. Dil tercihi - bos gelirse domain varsayilani ("tr") korunur
+                if (!string.IsNullOrWhiteSpace(request.LanguageCode))
+                {
+                    user.SetLanguageCode(request.LanguageCode);
+                }
+
+                // 7. Kaydet
                 await _userRepository.AddAsync(user, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -84,11 +90,11 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
             }
             catch (DomainException ex)
             {
-                return Result<Guid>.Failure(Error.BusinessRule(ex.Message));
+                return Result<Guid>.Failure(Error.BusinessRule(ex.Key));
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Kullanici kaydedilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("User.RegisterFailed", ex.Message));
             }
         }
     }

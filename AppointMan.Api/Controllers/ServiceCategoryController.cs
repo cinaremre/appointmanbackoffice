@@ -8,7 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AppointMan.API.Controllers
+namespace AppointMan.Api.Controllers
 {
     /// <summary>
     /// Hizmet kategorileri ile ilgili islemleri yonetir.

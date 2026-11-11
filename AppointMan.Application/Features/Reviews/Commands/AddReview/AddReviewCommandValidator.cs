@@ -1,30 +1,31 @@
-﻿using FluentValidation;
+﻿using AppointMan.Application.Common.Interfaces;
+using FluentValidation;
 
 namespace AppointMan.Application.Features.Reviews.Commands.AddReview
 {
     public class AddReviewCommandValidator : AbstractValidator<AddReviewCommand>
     {
-        public AddReviewCommandValidator()
+        public AddReviewCommandValidator(ILocalizationService localizer)
         {
             RuleFor(x => x.UserId)
                 .NotEmpty()
-                .WithMessage("Kullanici ID bos olamaz.");
+                .WithMessage(localizer.Get("Validation.UserIdRequired"));
 
             RuleFor(x => x.BusinessId)
                 .NotEmpty()
-                .WithMessage("Isletme ID bos olamaz.");
+                .WithMessage(localizer.Get("Validation.BusinessIdRequired"));
 
             RuleFor(x => x.Rating)
                 .InclusiveBetween(1, 5)
-                .WithMessage("Puan 1-5 arasinda olmalidir.");
+                .WithMessage(localizer.Get("Validation.RatingRange"));
 
             RuleFor(x => x.Comment)
                 .NotEmpty()
-                .WithMessage("Yorum bos olamaz.")
+                .WithMessage(localizer.Get("Validation.CommentRequired"))
                 .MinimumLength(10)
-                .WithMessage("Yorum en az 10 karakter olmalidir.")
+                .WithMessage(localizer.Get("Validation.CommentMinLength"))
                 .MaximumLength(500)
-                .WithMessage("Yorum en fazla 500 karakter olmalidir.");
+                .WithMessage(localizer.Get("Validation.CommentMaxLength"));
         }
     }
 }

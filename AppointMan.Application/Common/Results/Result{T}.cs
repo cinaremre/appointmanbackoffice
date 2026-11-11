@@ -17,6 +17,9 @@
         public static Result<T> Success(T value) => new(true, value);
         public static Result<T> Failure(Error error) => new(false, default, error);
 
+        /// <inheritdoc />
+        public IResult WithError(Error error) => Failure(error);
+
         public TResult Match<TResult>(
             Func<T, TResult> onSuccess,
             Func<Error, TResult> onFailure)

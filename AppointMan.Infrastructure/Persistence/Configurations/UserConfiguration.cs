@@ -81,6 +81,13 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
             builder.Property(x => x.DistrictId)
                 .IsRequired(false);
 
+            // Dil tercihi: "tr" / "en". NOT NULL + varsayilan "tr" oldugu icin
+            // mevcut satirlar icin backfill gerekmez.
+            builder.Property(x => x.LanguageCode)
+                .IsRequired()
+                .HasMaxLength(2)
+                .HasDefaultValue(User.DefaultLanguageCode);
+
             builder.HasOne<City>()
                 .WithMany()
                 .HasForeignKey(x => x.CityId)
@@ -133,6 +140,7 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
             builder.HasIndex(x => x.AccountStatus);
             builder.HasIndex(x => x.CityId);
             builder.HasIndex(x => x.DistrictId);
+            builder.HasIndex(x => x.LanguageCode);
         }
     }
 }

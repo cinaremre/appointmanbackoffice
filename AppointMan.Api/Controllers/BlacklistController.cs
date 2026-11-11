@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace AppointMan.API.Controllers
+namespace AppointMan.Api.Controllers
 {
     /// <summary>
     /// Kara liste islemlerini yonetir.
@@ -35,7 +35,7 @@ namespace AppointMan.API.Controllers
         {
             var requesterId = GetRequesterId();
             if (requesterId == Guid.Empty)
-                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Gecersiz kullanici.")));
+                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
 
             command.RequesterId = requesterId;
 
@@ -62,7 +62,7 @@ namespace AppointMan.API.Controllers
             var requesterId = GetRequesterId();
             if (requesterId == Guid.Empty)
                 return Unauthorized(Result<List<BlacklistEntryDto>>.Failure(
-                    Error.Unauthorized("Gecersiz kullanici.")));
+                    Error.Unauthorized("Auth.InvalidUser")));
 
             var query = new GetBlacklistedUsersQuery
             {
@@ -91,7 +91,7 @@ namespace AppointMan.API.Controllers
         {
             var requesterId = GetRequesterId();
             if (requesterId == Guid.Empty)
-                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Gecersiz kullanici.")));
+                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
 
             command.BlacklistEntryId = id;
             command.RequesterId = requesterId;

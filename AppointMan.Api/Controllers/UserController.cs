@@ -2,6 +2,7 @@
 using AppointMan.Application.Common.Results;
 using AppointMan.Application.Features.Users.Commands.ChangePassword;
 using AppointMan.Application.Features.Users.Commands.UpdateUserProfile;
+using AppointMan.Application.Features.Users.Commands.UpdateUserLanguage;
 using AppointMan.Application.Features.Users.Commands.VerifyEmail;
 using AppointMan.Application.Features.Users.Queries.GetUserByEmail;
 using AppointMan.Application.Features.Users.Queries.GetUserById;
@@ -55,6 +56,28 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserProfileCommand command)
+        {
+            // 1. Command'i mediator ile gonder
+            var result = await _mediator.Send(command);
+
+            // 2. Sonuca gore cevap dondur
+            if (result.IsSuccess)
+                return Ok(result);
+
+            return BadRequest(result);
+        }
+
+        /// <summary>
+        /// Kullanicinin dil tercihini gunceller. Sonraki isteklerde donen
+        /// metinler bu dile gore cozulur.
+        /// </summary>
+        /// <param name="command">Dil guncelleme bilgileri</param>
+        /// <returns>Islem sonucu</returns>
+        [HttpPut("language")]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateLanguage([FromBody] UpdateUserLanguageCommand command)
         {
             // 1. Command'i mediator ile gonder
             var result = await _mediator.Send(command);

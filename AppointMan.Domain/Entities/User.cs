@@ -7,6 +7,12 @@ namespace AppointMan.Domain.Entities
 {
     public class User : BaseEntity
     {
+        /// <summary>Desteklenen dil kodlari.</summary>
+        private static readonly string[] SupportedLanguages = { "tr", "en" };
+
+        /// <summary>Varsayilan dil kodu.</summary>
+        public const string DefaultLanguageCode = "tr";
+
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
         public string Email { get; private set; }
@@ -26,6 +32,10 @@ namespace AppointMan.Domain.Entities
         // Arama kriteri bos geldiginde varsayilan konum olarak kullanilir.
         public int? CityId { get; private set; }
         public int? DistrictId { get; private set; }
+
+        // Dil tercihi: "tr" veya "en". Kullaniciya donen metinlerin kulturu
+        // bu deger uzerinden belirlenir.
+        public string LanguageCode { get; private set; }
 
         // Navigation Properties
         private readonly List<Appointment> _appointments = new();
@@ -67,6 +77,7 @@ namespace AppointMan.Domain.Entities
             AccountStatus = EnumAccountStatus.Active;
             IsEmailVerified = false;
             IsPhoneVerified = false;
+            LanguageCode = DefaultLanguageCode;
 
             AddDomainEvent(new UserRegisteredEvent(Id, Email, $"{FirstName} {LastName}", Role));
         }
@@ -74,10 +85,10 @@ namespace AppointMan.Domain.Entities
         public void SetFirstName(string firstName)
         {
             if (string.IsNullOrWhiteSpace(firstName))
-                throw new DomainException("İsim boş olamaz.");
+                throw new DomainException("Validation.FirstNameRequired");
 
             if (firstName.Length < 2 || firstName.Length > 50)
-                throw new DomainException("İsim 2-50 karakter arasında olmalıdır.");
+                throw new DomainException("Validation.FirstNameLength");
 
             var oldFirstName = FirstName;
             FirstName = firstName;
@@ -94,10 +105,10 @@ namespace AppointMan.Domain.Entities
         public void SetLastName(string lastName)
         {
             if (string.IsNullOrWhiteSpace(lastName))
-                throw new DomainException("Soyisim boş olamaz.");
+                throw new DomainException("Validation.LastNameRequired");
 
             if (lastName.Length < 2 || lastName.Length > 50)
-                throw new DomainException("Soyisim 2-50 karakter arasında olmalıdır.");
+                throw new DomainException("Validation.LastNameLength");
 
             var oldLastName = LastName;
             LastName = lastName;
@@ -114,7 +125,7 @@ namespace AppointMan.Domain.Entities
         public void SetPasswordHash(string passwordHash)
         {
             if (string.IsNullOrWhiteSpace(passwordHash))
-                throw new DomainException("Şifre hash'i boş olamaz.");
+                throw new DomainException("User.PasswordHashRequired");
 
             PasswordHash = passwordHash;
             UpdatedAt = DateTime.UtcNow;
@@ -125,10 +136,10 @@ namespace AppointMan.Domain.Entities
         public void SetDateOfBirth(DateTime? dateOfBirth)
         {
             if (dateOfBirth.HasValue && dateOfBirth.Value >= DateTime.UtcNow)
-                throw new DomainException("Dogum tarihi gelecek bir tarih olamaz.");
+                throw new DomainException("User.DateOfBirthInFuture");
 
             if (dateOfBirth.HasValue && dateOfBirth.Value > DateTime.UtcNow.AddYears(-18))
-                throw new DomainException("Yas 18'den buyuk olmalidir.");
+                throw new DomainException("Validation.DateOfBirthMinAge");
 
             DateOfBirth = dateOfBirth;
             UpdatedAt = DateTime.UtcNow;
@@ -137,7 +148,7 @@ namespace AppointMan.Domain.Entities
         public void ChangePassword(string newPasswordHash, string? changedBy = null)
         {
             if (string.IsNullOrWhiteSpace(newPasswordHash))
-                throw new DomainException("Şifre hash'i boş olamaz.");
+                throw new DomainException("User.PasswordHashRequired");
 
             PasswordHash = newPasswordHash;
             UpdatedAt = DateTime.UtcNow;
@@ -213,10 +224,10 @@ namespace AppointMan.Domain.Entities
         public void UpdateLocation(int? cityId, int? districtId, string? updatedBy = null)
         {
             if (cityId.HasValue && cityId.Value <= 0)
-                throw new DomainException("Il ID gecersiz.");
+                throw new DomainException("Address.CityIdInvalid");
 
             if (districtId.HasValue && districtId.Value <= 0)
-                throw new DomainException("Ilce ID gecersiz.");
+                throw new DomainException("Address.DistrictIdInvalid");
 
             var oldCityId = CityId;
             var oldDistrictId = DistrictId;
@@ -236,10 +247,32 @@ namespace AppointMan.Domain.Entities
                 AddDomainEvent(updatedEvent);
         }
 
+        /// <summary>
+        /// Kullanicinin dil tercihini gunceller. Yalnizca desteklenen kodlar kabul edilir.
+        /// Sonraki isteklerde metinler bu dile gore cozulur.
+        /// </summary>
+        /// <param name="languageCode">Dil kodu ("tr" veya "en").</param>
+        public void SetLanguageCode(string languageCode)
+        {
+            if (string.IsNullOrWhiteSpace(languageCode))
+                throw new DomainException("User.LanguageCodeRequired");
+
+            var normalized = languageCode.Trim().ToLowerInvariant();
+
+            if (!SupportedLanguages.Contains(normalized))
+                throw new DomainException("User.InvalidLanguageCode");
+
+            if (LanguageCode == normalized)
+                return;
+
+            LanguageCode = normalized;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
         public void ChangeEmail(Email newEmail)
         {
             if (Email == newEmail)
-                throw new DomainException("Yeni email mevcut email ile aynı olamaz.");
+                throw new DomainException("User.EmailSameAsCurrent");
 
             var oldEmail = Email;
             Email = newEmail;
@@ -254,7 +287,7 @@ namespace AppointMan.Domain.Entities
         public void ChangePhoneNumber(PhoneNumber newPhoneNumber)
         {
             if (PhoneNumber == newPhoneNumber)
-                throw new DomainException("Yeni telefon numarası mevcut numara ile aynı olamaz.");
+                throw new DomainException("User.PhoneSameAsCurrent");
 
             var oldPhoneNumber = PhoneNumber;
             PhoneNumber = newPhoneNumber;
@@ -286,7 +319,7 @@ namespace AppointMan.Domain.Entities
                 throw new ArgumentNullException(nameof(appointment));
 
             if (appointment.UserId != Id)
-                throw new DomainException("Randevu bu kullanıcıya ait değil.");
+                throw new DomainException("User.AppointmentNotOwned");
 
             _appointments.Add(appointment);
             UpdatedAt = DateTime.UtcNow;
@@ -298,7 +331,7 @@ namespace AppointMan.Domain.Entities
                 throw new ArgumentNullException(nameof(review));
 
             if (review.UserId != Id)
-                throw new DomainException("Yorum bu kullanıcıya ait değil.");
+                throw new DomainException("User.ReviewNotOwned");
 
             _reviews.Add(review);
             UpdatedAt = DateTime.UtcNow;
@@ -310,10 +343,10 @@ namespace AppointMan.Domain.Entities
                 throw new ArgumentNullException(nameof(favorite));
 
             if (favorite.UserId != Id)
-                throw new DomainException("Favori bu kullanıcıya ait değil.");
+                throw new DomainException("User.FavoriteNotOwned");
 
             if (_favorites.Any(f => f.BusinessId == favorite.BusinessId && !f.IsDeleted))
-                throw new DomainException("Bu işletme zaten favorilerde.");
+                throw new DomainException("Favorite.AlreadyExists");
 
             _favorites.Add(favorite);
             UpdatedAt = DateTime.UtcNow;
@@ -323,7 +356,7 @@ namespace AppointMan.Domain.Entities
         {
             var favorite = _favorites.FirstOrDefault(f => f.BusinessId == businessId && !f.IsDeleted);
             if (favorite == null)
-                throw new DomainException("Bu işletme favorilerde bulunamadı.");
+                throw new DomainException("Favorite.NotFound");
 
             _favorites.Remove(favorite);
             UpdatedAt = DateTime.UtcNow;
@@ -340,7 +373,7 @@ namespace AppointMan.Domain.Entities
                 throw new ArgumentNullException(nameof(notification));
 
             if (notification.UserId != Id)
-                throw new DomainException("Bildirim bu kullanıcıya ait değil.");
+                throw new DomainException("User.NotificationNotOwned");
 
             _notifications.Add(notification);
             UpdatedAt = DateTime.UtcNow;

@@ -37,7 +37,7 @@ namespace AppointMan.Domain.Entities
         public Locality(int districtId, string name)
         {
             if (districtId <= 0)
-                throw new DomainException("Ilce ID gecersiz.");
+                throw new DomainException("District.IdInvalid");
 
             DistrictId = districtId;
             SetName(name);
@@ -53,10 +53,10 @@ namespace AppointMan.Domain.Entities
         public Locality(int id, int districtId, string name)
         {
             if (id <= 0)
-                throw new DomainException("Locality ID gecersiz.");
+                throw new DomainException("Locality.IdInvalid");
 
             if (districtId <= 0)
-                throw new DomainException("Ilce ID gecersiz.");
+                throw new DomainException("District.IdInvalid");
 
             Id = id;
             DistrictId = districtId;
@@ -68,10 +68,10 @@ namespace AppointMan.Domain.Entities
         public void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new DomainException("Locality adi bos olamaz.");
+                throw new DomainException("Locality.NameRequired");
 
             if (name.Length < 2 || name.Length > 100)
-                throw new DomainException("Locality adi 2-100 karakter arasinda olmalidir.");
+                throw new DomainException("Locality.NameLength");
 
             Name = name.Trim();
             SearchName = SearchNormalizer.Normalize(Name);

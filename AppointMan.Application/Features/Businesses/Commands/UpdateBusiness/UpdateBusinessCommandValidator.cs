@@ -1,50 +1,51 @@
-﻿using FluentValidation;
+﻿using AppointMan.Application.Common.Interfaces;
+using FluentValidation;
 
 namespace AppointMan.Application.Features.Businesses.Commands.UpdateBusiness
 {
     public class UpdateBusinessCommandValidator : AbstractValidator<UpdateBusinessCommand>
     {
-        public UpdateBusinessCommandValidator()
+        public UpdateBusinessCommandValidator(ILocalizationService localizer)
         {
             RuleFor(x => x.BusinessId)
                 .NotEmpty()
-                .WithMessage("Isletme ID bos olamaz.");
+                .WithMessage(localizer.Get("Validation.BusinessIdRequired"));
 
             RuleFor(x => x.OwnerId)
                 .NotEmpty()
-                .WithMessage("Sahip ID bos olamaz.");
+                .WithMessage(localizer.Get("Validation.OwnerIdRequired"));
 
             RuleFor(x => x.Name)
                 .NotEmpty()
-                .WithMessage("Isletme adi bos olamaz.")
+                .WithMessage(localizer.Get("Validation.BusinessNameRequired"))
                 .MinimumLength(2)
-                .WithMessage("Isletme adi en az 2 karakter olmalidir.")
+                .WithMessage(localizer.Get("Validation.BusinessNameMinLength"))
                 .MaximumLength(100)
-                .WithMessage("Isletme adi en fazla 100 karakter olmalidir.");
+                .WithMessage(localizer.Get("Validation.BusinessNameMaxLength"));
 
             RuleFor(x => x.BusinessType)
                 .IsInEnum()
-                .WithMessage("Gecersiz isletme tipi.");
+                .WithMessage(localizer.Get("Validation.BusinessTypeInvalid"));
 
             RuleFor(x => x.Address)
                 .NotNull()
-                .WithMessage("Adres bos olamaz.");
+                .WithMessage(localizer.Get("Validation.AddressRequired"));
 
             RuleFor(x => x.PhoneNumber)
                 .NotNull()
-                .WithMessage("Telefon numarasi bos olamaz.");
+                .WithMessage(localizer.Get("Validation.PhoneNumberRequired"));
 
             RuleFor(x => x.Email)
                 .NotNull()
-                .WithMessage("Email bos olamaz.");
+                .WithMessage(localizer.Get("Validation.EmailRequired"));
 
             RuleFor(x => x.Description)
                 .MaximumLength(500)
-                .WithMessage("Aciklama en fazla 500 karakter olmalidir.");
+                .WithMessage(localizer.Get("Validation.DescriptionMaxLength"));
 
             RuleFor(x => x.WebsiteUrl)
                 .MaximumLength(200)
-                .WithMessage("Website URL en fazla 200 karakter olmalidir.");
+                .WithMessage(localizer.Get("Validation.WebsiteUrlMaxLength"));
         }
     }
 }

@@ -11,7 +11,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AppointMan.API.Controllers
+namespace AppointMan.Api.Controllers
 {
     /// <summary>
     /// Isletme calisanlari ile ilgili islemleri yonetir.

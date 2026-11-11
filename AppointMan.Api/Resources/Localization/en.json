@@ -1,0 +1,169 @@
+{
+  "Error": {
+    "NotFound": "{0} was not found.",
+    "Unexpected": "An unexpected error occurred. Please try again later.",
+    "Unauthorized": "You are not authorized to perform this action.",
+    "Forbidden": "You do not have permission to access this resource.",
+    "Conflict": "This record already exists.",
+    "Validation": "The submitted information is invalid.",
+    "Internal": "An unexpected error occurred while processing your request."
+  },
+  "Auth": {
+    "InvalidCredentials": "The email address or password is incorrect.",
+    "InvalidUser": "Invalid user.",
+    "Unauthorized": "You need to sign in to perform this action.",
+    "TokenExpired": "Your session has expired. Please sign in again.",
+    "AccountLocked": "Your account has been locked. Please contact support.",
+    "AccountNotVerified": "Your account has not been verified yet.",
+    "LoginFailed": "An error occurred while signing in."
+  },
+  "Validation": {
+    "FirstNameRequired": "First name is required.",
+    "FirstNameMinLength": "First name must be at least 2 characters long.",
+    "FirstNameLength": "First name must be between 2 and 50 characters long.",
+    "FirstNameMaxLength": "First name must be at most 50 characters long.",
+    "LastNameRequired": "Last name is required.",
+    "LastNameMinLength": "Last name must be at least 2 characters long.",
+    "LastNameLength": "Last name must be between 2 and 50 characters long.",
+    "LastNameMaxLength": "Last name must be at most 50 characters long.",
+    "EmailRequired": "Email address is required.",
+    "EmailInvalid": "Please enter a valid email address.",
+    "EmailMaxLength": "Email address must be at most 255 characters long.",
+    "PhoneNumberRequired": "Phone number is required.",
+    "PhoneNumberMinLength": "Phone number must be at least 10 characters long.",
+    "PhoneNumberMaxLength": "Phone number must be at most 15 characters long.",
+    "PasswordRequired": "Password is required.",
+    "PasswordMinLength": "Password must be at least 6 characters long.",
+    "PasswordMaxLength": "Password must be at most 50 characters long.",
+    "RoleInvalid": "Invalid user role.",
+    "DateOfBirthMinAge": "The user must be at least 18 years old.",
+    "AddressRequired": "Address is required.",
+    "CommentRequired": "Comment is required.",
+    "VerificationCodeRequired": "Verification code is required.",
+    "NotesMaxLength": "Notes must be at most 500 characters long.",
+    "ReasonMaxLength": "Reason must be at most 500 characters long.",
+    "MessageMaxLength": "Message must be at most 1000 characters long.",
+    "TitleMaxLength": "Title must be at most 100 characters long.",
+    "PageNumberMin": "Page number must be 1 or greater.",
+    "PageSizeRange": "Page size must be between 1 and 100.",
+    "LanguageCodeUnsupported": "Unsupported language code. Only 'tr' or 'en' are allowed.",
+    "BusinessIdRequired": "Business ID is required.",
+    "BusinessNameRequired": "Business name is required.",
+    "BusinessNameMinLength": "Business name must be at least 2 characters long.",
+    "BusinessNameMaxLength": "Business name must be at most 100 characters long.",
+    "BusinessTypeInvalid": "Invalid business type.",
+    "OwnerIdRequired": "Owner ID is required.",
+    "DescriptionMaxLength": "Description must be at most 500 characters long.",
+    "WebsiteUrlMaxLength": "Website URL must be at most 200 characters long.",
+    "UserIdRequired": "User ID is required.",
+    "RatingRange": "Rating must be between 1 and 5.",
+    "CommentMinLength": "Comment must be at least 10 characters long.",
+    "CommentMaxLength": "Comment must be at most 500 characters long.",
+    "VerificationCodeLength": "Verification code must be 6 characters long."
+  },
+  "Address": {
+    "CityRequired": "Please select a city.",
+    "CityIdInvalid": "City information is invalid.",
+    "DistrictIdInvalid": "District information is invalid.",
+    "LocalityIdInvalid": "Locality information is invalid.",
+    "NeighborhoodIdInvalid": "Neighborhood information is invalid.",
+    "StreetRequired": "Street name is required.",
+    "StreetMaxLength": "Street name must be at most 100 characters long.",
+    "PostalCodeRequired": "Postal code is required.",
+    "PostalCodeMaxLength": "Postal code must be at most 20 characters long.",
+    "CountryCodeRequired": "Country code is required."
+  },
+  "Coordinates": {
+    "Invalid": "Location information is invalid.",
+    "LatitudeOutOfRange": "Latitude must be between -90 and 90.",
+    "LongitudeOutOfRange": "Longitude must be between -180 and 180."
+  },
+  "Money": {
+    "AmountNegative": "Amount cannot be negative.",
+    "AmountTooHigh": "Amount is too high.",
+    "CurrencyRequired": "Currency is required.",
+    "CurrencyLength": "Currency must be 3 characters long.",
+    "CurrencyMismatchAdd": "Amounts with different currencies cannot be added.",
+    "CurrencyMismatchSubtract": "Amounts with different currencies cannot be subtracted.",
+    "CurrencyMismatchCompare": "Amounts with different currencies cannot be compared.",
+    "InsufficientBalance": "Insufficient balance.",
+    "MultiplierNegative": "Multiplier cannot be negative.",
+    "DivisorPositive": "Divisor must be greater than 0."
+  },
+  "TimeRange": {
+    "StartBeforeEnd": "Start time must be earlier than end time.",
+    "OutOfDayBounds": "Times must be between 00:00 and 24:00.",
+    "FiveMinuteStep": "Times must be a multiple of 5 minutes."
+  },
+  "City": {
+    "IdInvalid": "City ID is invalid.",
+    "NameRequired": "City name is required.",
+    "NameLength": "City name must be between 2 and 100 characters long.",
+    "CountryCodeRequired": "Country code is required.",
+    "CountryCodeLength": "Country code must be 2 characters long (ISO 3166-1 alpha-2)."
+  },
+  "District": {
+    "IdInvalid": "District ID is invalid.",
+    "NameRequired": "District name is required.",
+    "NameLength": "District name must be between 2 and 100 characters long."
+  },
+  "Locality": {
+    "IdInvalid": "Locality ID is invalid.",
+    "NameRequired": "Locality name is required.",
+    "NameLength": "Locality name must be between 2 and 100 characters long."
+  },
+  "Neighborhood": {
+    "IdInvalid": "Neighborhood ID is invalid.",
+    "NameRequired": "Neighborhood name is required.",
+    "NameLength": "Neighborhood name must be between 2 and 100 characters long."
+  },
+  "Appointment": {
+    "DateInPast": "An appointment cannot be scheduled in the past.",
+    "TimeStepFiveMinutes": "Appointment time must be a multiple of 5 minutes.",
+    "TimeOutOfWindow": "Appointment time must be between 06:00 and 23:00.",
+    "EndTimeAfterStart": "End time must be later than the start time.",
+    "NotesMaxLength": "Notes must be at most 500 characters long.",
+    "OnlyPendingCanBeConfirmed": "Only pending appointments can be confirmed.",
+    "CompletedCannotBeCancelled": "A completed appointment cannot be cancelled.",
+    "AlreadyCancelled": "This appointment has already been cancelled.",
+    "PastCannotBeCancelled": "A past appointment cannot be cancelled.",
+    "OnlyConfirmedCanBeCompleted": "Only confirmed appointments can be completed.",
+    "FutureCannotBeCompleted": "A future appointment cannot be completed.",
+    "CompletedCannotBeRescheduled": "A completed appointment cannot be rescheduled.",
+    "CancelledCannotBeRescheduled": "A cancelled appointment cannot be rescheduled."
+  },
+  "Review": {
+    "AlreadyVisible": "The review is already visible.",
+    "AlreadyExists": "A review has already been submitted for this appointment."
+  },
+  "Favorite": {
+    "AlreadyExists": "This business is already in your favorites.",
+    "NotFound": "This business was not found in your favorites."
+  },
+  "Blacklist": {
+    "AlreadyExists": "This user is already on the blacklist."
+  },
+  "User": {
+    "LanguageCodeRequired": "Language code is required.",
+    "InvalidLanguageCode": "Invalid language code. Only 'tr' or 'en' are allowed.",
+    "EmailOrPhoneTaken": "This email address or phone number is already registered.",
+    "EmailTaken": "This email address is already registered.",
+    "PhoneTaken": "This phone number is already registered.",
+    "NotFound": "The user was not found.",
+    "PasswordHashRequired": "Password information is required.",
+    "DateOfBirthInFuture": "Date of birth cannot be in the future.",
+    "EmailSameAsCurrent": "The new email address cannot be the same as the current one.",
+    "PhoneSameAsCurrent": "The new phone number cannot be the same as the current one.",
+    "AppointmentNotOwned": "The appointment does not belong to this user.",
+    "ReviewNotOwned": "The review does not belong to this user.",
+    "FavoriteNotOwned": "The favorite does not belong to this user.",
+    "NotificationNotOwned": "The notification does not belong to this user.",
+    "RegisterFailed": "An error occurred while registering the user.",
+    "LanguageUpdateFailed": "An error occurred while updating the language preference."
+  },
+  "Concurrency": {
+    "SlotTaken": "An appointment already exists for this time slot.",
+    "RowVersionMismatch": "The record was modified by another operation. Please try again.",
+    "Deadlock": "The operation was temporarily locked. Please try again."
+  }
+}

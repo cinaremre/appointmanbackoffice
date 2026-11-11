@@ -33,7 +33,7 @@ namespace AppointMan.Application.Features.Reviews.Commands.ShowReview
 
                 // 2. Yorum zaten gorunur mu?
                 if (review.IsVisible)
-                    return Result<Guid>.Failure(Error.Conflict("Yorum zaten gorunur."));
+                    return Result<Guid>.Failure(Error.Conflict("Review.AlreadyVisible"));
 
                 // 3. Goster
                 review.Show();

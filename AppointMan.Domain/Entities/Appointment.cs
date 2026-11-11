@@ -106,13 +106,13 @@ namespace AppointMan.Domain.Entities
         public void SetAppointmentDate(DateTime appointmentDate, DateTime now)
         {
             if (appointmentDate < now)
-                throw new DomainException("Randevu tarihi geçmiş bir zaman olamaz.");
+                throw new DomainException("Appointment.DateInPast");
 
             if (appointmentDate.Minute % 5 != 0)
-                throw new DomainException("Randevu saati 5 dakikanın katı olmalıdır.");
+                throw new DomainException("Appointment.TimeStepFiveMinutes");
 
             if (appointmentDate.Hour < 6 || appointmentDate.Hour > 23)
-                throw new DomainException("Randevu saati 06:00-23:00 arasında olmalıdır.");
+                throw new DomainException("Appointment.TimeOutOfWindow");
 
             AppointmentDate = appointmentDate;
             UpdatedAt = now;
@@ -121,7 +121,7 @@ namespace AppointMan.Domain.Entities
         public void SetEndTime(DateTime endTime)
         {
             if (endTime <= AppointmentDate)
-                throw new DomainException("Bitiş saati başlangıç saatinden sonra olmalıdır.");
+                throw new DomainException("Appointment.EndTimeAfterStart");
 
             EndTime = endTime;
             UpdatedAt = DateTime.UtcNow;
@@ -130,7 +130,7 @@ namespace AppointMan.Domain.Entities
         public void SetNotes(string? notes)
         {
             if (notes != null && notes.Length > 500)
-                throw new DomainException("Notlar 500 karakterden uzun olamaz.");
+                throw new DomainException("Validation.NotesMaxLength");
 
             Notes = notes;
             UpdatedAt = DateTime.UtcNow;

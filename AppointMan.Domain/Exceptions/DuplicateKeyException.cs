@@ -20,15 +20,17 @@ namespace AppointMan.Domain.Exceptions
         /// Tekillik ihlali olusturur.
         /// </summary>
         /// <param name="entityName">Ihlal edilen varlik adi.</param>
-        /// <param name="message">Kullaniciya gosterilecek Turkce mesaj.</param>
+        /// <param name="key">Lokalizasyon anahtari (orn. "Concurrency.SlotTaken").</param>
         /// <param name="indexName">Ihlal edilen index adi (opsiyonel).</param>
         /// <param name="innerException">Asil veritabani istisnasi (opsiyonel).</param>
+        /// <param name="message">Anahtar cozulemezse kullanilacak yedek metin (opsiyonel).</param>
         public DuplicateKeyException(
             string entityName,
-            string message,
+            string key,
             string? indexName = null,
-            Exception? innerException = null)
-            : base(message, innerException)
+            Exception? innerException = null,
+            string? message = null)
+            : base(key, message ?? key, innerException)
         {
             EntityName = entityName;
             IndexName = indexName;

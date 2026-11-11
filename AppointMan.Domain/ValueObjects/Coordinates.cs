@@ -13,10 +13,10 @@ namespace AppointMan.Domain.ValueObjects
         public Coordinates(double? latitude, double? longitude)
         {
             if (latitude.HasValue && (latitude.Value < -90 || latitude.Value > 90))
-                throw new DomainException("Enlem -90 ile 90 arasinda olmalidir.");
+                throw new DomainException("Coordinates.LatitudeOutOfRange");
 
             if (longitude.HasValue && (longitude.Value < -180 || longitude.Value > 180))
-                throw new DomainException("Boylam -180 ile 180 arasinda olmalidir.");
+                throw new DomainException("Coordinates.LongitudeOutOfRange");
 
             Latitude = latitude.HasValue ? Math.Round(latitude.Value, 6) : null;
             Longitude = longitude.HasValue ? Math.Round(longitude.Value, 6) : null;

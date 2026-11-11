@@ -1,0 +1,169 @@
+{
+  "Error": {
+    "NotFound": "{0} bulunamadı.",
+    "Unexpected": "Bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
+    "Unauthorized": "Bu işlem için yetkiniz bulunmuyor.",
+    "Forbidden": "Bu kaynağa erişim izniniz yok.",
+    "Conflict": "Bu kayıt zaten mevcut.",
+    "Validation": "Gönderilen bilgiler geçersiz.",
+    "Internal": "İşlem sırasında beklenmeyen bir hata oluştu."
+  },
+  "Auth": {
+    "InvalidCredentials": "E-posta veya şifre hatalı.",
+    "InvalidUser": "Geçersiz kullanıcı.",
+    "Unauthorized": "Bu işlemi yapabilmek için giriş yapmanız gerekiyor.",
+    "TokenExpired": "Oturumunuzun süresi doldu. Lütfen tekrar giriş yapın.",
+    "AccountLocked": "Hesabınız kilitlendi. Lütfen destek ekibiyle iletişime geçin.",
+    "AccountNotVerified": "Hesabınız henüz doğrulanmadı.",
+    "LoginFailed": "Giriş yapılırken bir hata oluştu."
+  },
+  "Validation": {
+    "FirstNameRequired": "İsim boş olamaz.",
+    "FirstNameMinLength": "İsim en az 2 karakter olmalıdır.",
+    "FirstNameLength": "İsim 2-50 karakter arasında olmalıdır.",
+    "FirstNameMaxLength": "İsim en fazla 50 karakter olmalıdır.",
+    "LastNameRequired": "Soyisim boş olamaz.",
+    "LastNameMinLength": "Soyisim en az 2 karakter olmalıdır.",
+    "LastNameLength": "Soyisim 2-50 karakter arasında olmalıdır.",
+    "LastNameMaxLength": "Soyisim en fazla 50 karakter olmalıdır.",
+    "EmailRequired": "E-posta adresi boş olamaz.",
+    "EmailInvalid": "Geçersiz e-posta adresi.",
+    "EmailMaxLength": "E-posta adresi 255 karakterden uzun olamaz.",
+    "PhoneNumberRequired": "Telefon numarası boş olamaz.",
+    "PhoneNumberMinLength": "Telefon numarası en az 10 karakter olmalıdır.",
+    "PhoneNumberMaxLength": "Telefon numarası en fazla 15 karakter olmalıdır.",
+    "PasswordRequired": "Şifre boş olamaz.",
+    "PasswordMinLength": "Şifre en az 6 karakter olmalıdır.",
+    "PasswordMaxLength": "Şifre en fazla 50 karakter olmalıdır.",
+    "RoleInvalid": "Geçersiz kullanıcı rolü.",
+    "DateOfBirthMinAge": "Kullanıcı 18 yaşından büyük olmalıdır.",
+    "AddressRequired": "Adres boş olamaz.",
+    "CommentRequired": "Yorum boş olamaz.",
+    "VerificationCodeRequired": "Doğrulama kodu boş olamaz.",
+    "NotesMaxLength": "Not 500 karakterden uzun olamaz.",
+    "ReasonMaxLength": "Sebep 500 karakterden uzun olamaz.",
+    "MessageMaxLength": "Mesaj 1000 karakterden uzun olamaz.",
+    "TitleMaxLength": "Unvan 100 karakterden uzun olamaz.",
+    "PageNumberMin": "Sayfa numarası 1 veya daha büyük olmalıdır.",
+    "PageSizeRange": "Sayfa boyutu 1-100 arasında olmalıdır.",
+    "LanguageCodeUnsupported": "Desteklenmeyen dil kodu. Yalnızca 'tr' veya 'en' kullanılabilir.",
+    "BusinessIdRequired": "İşletme ID boş olamaz.",
+    "BusinessNameRequired": "İşletme adı boş olamaz.",
+    "BusinessNameMinLength": "İşletme adı en az 2 karakter olmalıdır.",
+    "BusinessNameMaxLength": "İşletme adı en fazla 100 karakter olmalıdır.",
+    "BusinessTypeInvalid": "Geçersiz işletme tipi.",
+    "OwnerIdRequired": "Sahip ID boş olamaz.",
+    "DescriptionMaxLength": "Açıklama en fazla 500 karakter olmalıdır.",
+    "WebsiteUrlMaxLength": "Website adresi en fazla 200 karakter olmalıdır.",
+    "UserIdRequired": "Kullanıcı ID boş olamaz.",
+    "RatingRange": "Puan 1-5 arasında olmalıdır.",
+    "CommentMinLength": "Yorum en az 10 karakter olmalıdır.",
+    "CommentMaxLength": "Yorum en fazla 500 karakter olmalıdır.",
+    "VerificationCodeLength": "Doğrulama kodu 6 karakter olmalıdır."
+  },
+  "Address": {
+    "CityRequired": "İl seçilmelidir.",
+    "CityIdInvalid": "İl bilgisi geçersiz.",
+    "DistrictIdInvalid": "İlçe bilgisi geçersiz.",
+    "LocalityIdInvalid": "Semt bilgisi geçersiz.",
+    "NeighborhoodIdInvalid": "Mahalle bilgisi geçersiz.",
+    "StreetRequired": "Sokak adı boş olamaz.",
+    "StreetMaxLength": "Sokak adı 100 karakterden uzun olamaz.",
+    "PostalCodeRequired": "Posta kodu boş olamaz.",
+    "PostalCodeMaxLength": "Posta kodu 20 karakterden uzun olamaz.",
+    "CountryCodeRequired": "Ülke kodu boş olamaz."
+  },
+  "Coordinates": {
+    "Invalid": "Konum bilgisi geçersiz.",
+    "LatitudeOutOfRange": "Enlem -90 ile 90 arasında olmalıdır.",
+    "LongitudeOutOfRange": "Boylam -180 ile 180 arasında olmalıdır."
+  },
+  "Money": {
+    "AmountNegative": "Tutar negatif olamaz.",
+    "AmountTooHigh": "Tutar çok yüksek.",
+    "CurrencyRequired": "Para birimi boş olamaz.",
+    "CurrencyLength": "Para birimi 3 karakter olmalıdır.",
+    "CurrencyMismatchAdd": "Farklı para birimleri toplanamaz.",
+    "CurrencyMismatchSubtract": "Farklı para birimleri çıkarılamaz.",
+    "CurrencyMismatchCompare": "Farklı para birimleri karşılaştırılamaz.",
+    "InsufficientBalance": "Yetersiz bakiye.",
+    "MultiplierNegative": "Çarpan negatif olamaz.",
+    "DivisorPositive": "Bölen 0'dan büyük olmalıdır."
+  },
+  "TimeRange": {
+    "StartBeforeEnd": "Başlangıç zamanı bitiş zamanından önce olmalıdır.",
+    "OutOfDayBounds": "Saatler 00:00-24:00 arasında olmalıdır.",
+    "FiveMinuteStep": "Saatler 5 dakikanın katı olmalıdır."
+  },
+  "City": {
+    "IdInvalid": "İl ID geçersiz.",
+    "NameRequired": "İl adı boş olamaz.",
+    "NameLength": "İl adı 2-100 karakter arasında olmalıdır.",
+    "CountryCodeRequired": "Ülke kodu boş olamaz.",
+    "CountryCodeLength": "Ülke kodu 2 karakter olmalıdır (ISO 3166-1 alpha-2)."
+  },
+  "District": {
+    "IdInvalid": "İlçe ID geçersiz.",
+    "NameRequired": "İlçe adı boş olamaz.",
+    "NameLength": "İlçe adı 2-100 karakter arasında olmalıdır."
+  },
+  "Locality": {
+    "IdInvalid": "Semt ID geçersiz.",
+    "NameRequired": "Semt adı boş olamaz.",
+    "NameLength": "Semt adı 2-100 karakter arasında olmalıdır."
+  },
+  "Neighborhood": {
+    "IdInvalid": "Mahalle ID geçersiz.",
+    "NameRequired": "Mahalle adı boş olamaz.",
+    "NameLength": "Mahalle adı 2-100 karakter arasında olmalıdır."
+  },
+  "Appointment": {
+    "DateInPast": "Randevu tarihi geçmiş bir zaman olamaz.",
+    "TimeStepFiveMinutes": "Randevu saati 5 dakikanın katı olmalıdır.",
+    "TimeOutOfWindow": "Randevu saati 06:00-23:00 arasında olmalıdır.",
+    "EndTimeAfterStart": "Bitiş saati başlangıç saatinden sonra olmalıdır.",
+    "NotesMaxLength": "Notlar 500 karakterden uzun olamaz.",
+    "OnlyPendingCanBeConfirmed": "Sadece bekleyen randevular onaylanabilir.",
+    "CompletedCannotBeCancelled": "Tamamlanmış randevu iptal edilemez.",
+    "AlreadyCancelled": "Randevu zaten iptal edilmiş.",
+    "PastCannotBeCancelled": "Geçmiş randevu iptal edilemez.",
+    "OnlyConfirmedCanBeCompleted": "Sadece onaylanmış randevular tamamlanabilir.",
+    "FutureCannotBeCompleted": "Gelecek randevu tamamlanamaz.",
+    "CompletedCannotBeRescheduled": "Tamamlanmış randevu yeniden planlanamaz.",
+    "CancelledCannotBeRescheduled": "İptal edilmiş randevu yeniden planlanamaz."
+  },
+  "Review": {
+    "AlreadyVisible": "Yorum zaten görünür.",
+    "AlreadyExists": "Bu randevu için zaten bir yorum yapılmış."
+  },
+  "Favorite": {
+    "AlreadyExists": "Bu işletme zaten favorilerinizde.",
+    "NotFound": "Bu işletme favorilerinizde bulunamadı."
+  },
+  "Blacklist": {
+    "AlreadyExists": "Bu kullanıcı zaten kara listede."
+  },
+  "User": {
+    "LanguageCodeRequired": "Dil kodu boş olamaz.",
+    "InvalidLanguageCode": "Geçersiz dil kodu. Yalnızca 'tr' veya 'en' kullanılabilir.",
+    "EmailOrPhoneTaken": "Bu e-posta veya telefon numarası zaten kayıtlı.",
+    "EmailTaken": "Bu e-posta adresi zaten kayıtlı.",
+    "PhoneTaken": "Bu telefon numarası zaten kayıtlı.",
+    "NotFound": "Kullanıcı bulunamadı.",
+    "PasswordHashRequired": "Şifre bilgisi boş olamaz.",
+    "DateOfBirthInFuture": "Doğum tarihi gelecek bir tarih olamaz.",
+    "EmailSameAsCurrent": "Yeni e-posta adresi mevcut adresle aynı olamaz.",
+    "PhoneSameAsCurrent": "Yeni telefon numarası mevcut numara ile aynı olamaz.",
+    "AppointmentNotOwned": "Randevu bu kullanıcıya ait değil.",
+    "ReviewNotOwned": "Yorum bu kullanıcıya ait değil.",
+    "FavoriteNotOwned": "Favori bu kullanıcıya ait değil.",
+    "NotificationNotOwned": "Bildirim bu kullanıcıya ait değil.",
+    "RegisterFailed": "Kullanıcı kaydedilirken bir hata oluştu.",
+    "LanguageUpdateFailed": "Dil tercihi güncellenirken bir hata oluştu."
+  },
+  "Concurrency": {
+    "SlotTaken": "Bu saat aralığında zaten bir randevu bulunuyor.",
+    "RowVersionMismatch": "Kayıt başka bir işlem tarafından değiştirildi. Lütfen tekrar deneyin.",
+    "Deadlock": "İşlem geçici olarak kilitlendi. Lütfen tekrar deneyin."
+  }
+}

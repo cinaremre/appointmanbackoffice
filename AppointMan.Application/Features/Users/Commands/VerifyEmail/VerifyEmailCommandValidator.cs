@@ -1,20 +1,21 @@
-﻿using FluentValidation;
+﻿using AppointMan.Application.Common.Interfaces;
+using FluentValidation;
 
 namespace AppointMan.Application.Features.Users.Commands.VerifyEmail
 {
     public class VerifyEmailCommandValidator : AbstractValidator<VerifyEmailCommand>
     {
-        public VerifyEmailCommandValidator()
+        public VerifyEmailCommandValidator(ILocalizationService localizer)
         {
             RuleFor(x => x.UserId)
                 .NotEmpty()
-                .WithMessage("Kullanici ID bos olamaz.");
+                .WithMessage(localizer.Get("Validation.UserIdRequired"));
 
             RuleFor(x => x.VerificationCode)
                 .NotEmpty()
-                .WithMessage("Dogrulama kodu bos olamaz.")
+                .WithMessage(localizer.Get("Validation.VerificationCodeRequired"))
                 .Length(6)
-                .WithMessage("Dogrulama kodu 6 karakter olmalidir.");
+                .WithMessage(localizer.Get("Validation.VerificationCodeLength"));
         }
     }
 }

@@ -31,7 +31,7 @@ namespace AppointMan.Application.Features.Users.Commands.Login
                 var user = users.FirstOrDefault();
 
                 if (user is null || !BCryptNet.Verify(request.Password, user.PasswordHash))
-                    return Result<LoginResponse>.Failure(Error.Unauthorized("Geçersiz email veya şifre."));
+                    return Result<LoginResponse>.Failure(Error.Unauthorized("Auth.InvalidCredentials"));
 
                 var token = _tokenService.GenerateAccessToken(user);
                 var refreshToken = _tokenService.GenerateRefreshToken();
@@ -49,14 +49,17 @@ namespace AppointMan.Application.Features.Users.Commands.Login
                     Email = user.Email,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    Role = user.Role.ToString()
+                    Role = user.Role.ToString(),
+                    LanguageCode = string.IsNullOrWhiteSpace(user.LanguageCode)
+                        ? User.DefaultLanguageCode
+                        : user.LanguageCode
                 };
 
                 return Result<LoginResponse>.Success(response);
             }
             catch (Exception ex)
             {
-                return Result<LoginResponse>.Failure(Error.Internal("Giriş yapılırken bir hata oluştu.", ex.Message));
+                return Result<LoginResponse>.Failure(Error.Internal("Auth.LoginFailed", ex.Message));
             }
         }
     }

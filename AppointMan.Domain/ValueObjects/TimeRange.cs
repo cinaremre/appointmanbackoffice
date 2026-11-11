@@ -13,13 +13,13 @@ namespace AppointMan.Domain.ValueObjects
         public TimeRange(TimeSpan startTime, TimeSpan endTime)
         {
             if (startTime >= endTime)
-                throw new DomainException("Baslangic zamani bitis zamanindan once olmalidir.");
+                throw new DomainException("TimeRange.StartBeforeEnd");
 
             if (startTime.TotalHours < 0 || endTime.TotalHours > 24)
-                throw new DomainException("Saatler 00:00-24:00 arasinda olmalidir.");
+                throw new DomainException("TimeRange.OutOfDayBounds");
 
             if (startTime.Minutes % 5 != 0 || endTime.Minutes % 5 != 0)
-                throw new DomainException("Saatler 5 dakikanin kati olmalidir.");
+                throw new DomainException("TimeRange.FiveMinuteStep");
 
             StartTime = startTime;
             EndTime = endTime;

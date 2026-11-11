@@ -19,5 +19,8 @@ namespace AppointMan.Application.Features.Users.Commands.Login
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Role { get; set; }
+
+        /// <summary>Kullanicinin tercih ettigi dil kodu ("tr" / "en").</summary>
+        public string LanguageCode { get; set; }
     }
 }

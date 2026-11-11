@@ -48,7 +48,7 @@ namespace AppointMan.Domain.Entities
         public City(int id, string name, string countryCode)
         {
             if (id <= 0)
-                throw new DomainException("Il ID gecersiz.");
+                throw new DomainException("City.IdInvalid");
 
             Id = id;
             SetName(name);
@@ -60,10 +60,10 @@ namespace AppointMan.Domain.Entities
         public void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new DomainException("Il adi bos olamaz.");
+                throw new DomainException("City.NameRequired");
 
             if (name.Length < 2 || name.Length > 100)
-                throw new DomainException("Il adi 2-100 karakter arasinda olmalidir.");
+                throw new DomainException("City.NameLength");
 
             Name = name.Trim();
             SearchName = SearchNormalizer.Normalize(Name);
@@ -73,10 +73,10 @@ namespace AppointMan.Domain.Entities
         public void SetCountryCode(string countryCode)
         {
             if (string.IsNullOrWhiteSpace(countryCode))
-                throw new DomainException("Ulke kodu bos olamaz.");
+                throw new DomainException("City.CountryCodeRequired");
 
             if (countryCode.Length != 2)
-                throw new DomainException("Ulke kodu 2 karakter olmalidir (ISO 3166-1 alpha-2).");
+                throw new DomainException("City.CountryCodeLength");
 
             CountryCode = countryCode.ToUpperInvariant();
             UpdatedAt = DateTime.UtcNow;

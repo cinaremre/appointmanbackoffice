@@ -13,10 +13,14 @@ namespace AppointMan.Domain.Exceptions
         /// <summary>
         /// Guncelleme cakismasi olusturur.
         /// </summary>
-        /// <param name="message">Kullaniciya gosterilecek Turkce mesaj.</param>
+        /// <param name="key">Lokalizasyon anahtari (orn. "Concurrency.RowVersionMismatch").</param>
         /// <param name="innerException">Asil veritabani istisnasi (opsiyonel).</param>
-        public ConcurrencyConflictException(string message, Exception? innerException = null)
-            : base(message, innerException)
+        /// <param name="message">Anahtar cozulemezse kullanilacak yedek metin (opsiyonel).</param>
+        public ConcurrencyConflictException(
+            string key,
+            Exception? innerException = null,
+            string? message = null)
+            : base(key, message ?? key, innerException)
         {
         }
     }

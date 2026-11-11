@@ -10,7 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\SemtController.cs" />
+    <Content Update="Resources\Localization\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

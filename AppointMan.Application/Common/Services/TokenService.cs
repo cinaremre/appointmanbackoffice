@@ -30,7 +30,12 @@ namespace AppointMan.Application.Common.Services
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.GivenName, $"{user.FirstName} {user.LastName}"),
                 new Claim("userId", user.Id.ToString()),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
+                new Claim(ClaimTypes.Role, user.Role.ToString()),
+                // Dil tercihi claim'i, kullanici bazli kultur saglayicisi tarafindan
+                // DB sorgusu yapmadan okunur. Token uretildigi anda donar.
+                new Claim("language", string.IsNullOrWhiteSpace(user.LanguageCode)
+                    ? "tr"
+                    : user.LanguageCode)
             };
 
             var token = new JwtSecurityToken(

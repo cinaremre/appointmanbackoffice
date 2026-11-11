@@ -28,28 +28,28 @@ namespace AppointMan.Domain.ValueObjects
             int? neighborhoodId = null)
         {
             if (cityId <= 0)
-                throw new DomainException("Il secilmelidir.");
+                throw new DomainException("Address.CityRequired");
 
             if (districtId.HasValue && districtId.Value <= 0)
-                throw new DomainException("Ilce ID gecersiz.");
+                throw new DomainException("Address.DistrictIdInvalid");
 
             if (localityId.HasValue && localityId.Value <= 0)
-                throw new DomainException("Locality ID gecersiz.");
+                throw new DomainException("Address.LocalityIdInvalid");
 
             if (neighborhoodId.HasValue && neighborhoodId.Value <= 0)
-                throw new DomainException("Mahalle ID gecersiz.");
+                throw new DomainException("Address.NeighborhoodIdInvalid");
 
             if (string.IsNullOrWhiteSpace(street))
-                throw new DomainException("Sokak adi bos olamaz.");
+                throw new DomainException("Address.StreetRequired");
 
             if (street.Length > 100)
-                throw new DomainException("Sokak adi 100 karakterden uzun olamaz.");
+                throw new DomainException("Address.StreetMaxLength");
 
             if (string.IsNullOrWhiteSpace(postalCode))
-                throw new DomainException("Posta kodu bos olamaz.");
+                throw new DomainException("Address.PostalCodeRequired");
 
             if (postalCode.Length > 20)
-                throw new DomainException("Posta kodu 20 karakterden uzun olamaz.");
+                throw new DomainException("Address.PostalCodeMaxLength");
 
             CityId = cityId;
             DistrictId = districtId;
@@ -65,7 +65,7 @@ namespace AppointMan.Domain.ValueObjects
         public void SetCity(int cityId)
         {
             if (cityId <= 0)
-                throw new DomainException("Il ID gecersiz.");
+                throw new DomainException("Address.CityIdInvalid");
 
             CityId = cityId;
         }
@@ -73,7 +73,7 @@ namespace AppointMan.Domain.ValueObjects
         public void SetDistrict(int? districtId)
         {
             if (districtId.HasValue && districtId.Value <= 0)
-                throw new DomainException("Ilce ID gecersiz.");
+                throw new DomainException("Address.DistrictIdInvalid");
 
             DistrictId = districtId;
         }
@@ -81,7 +81,7 @@ namespace AppointMan.Domain.ValueObjects
         public void SetLocality(int? localityId)
         {
             if (localityId.HasValue && localityId.Value <= 0)
-                throw new DomainException("Locality ID gecersiz.");
+                throw new DomainException("Address.LocalityIdInvalid");
 
             LocalityId = localityId;
         }
@@ -89,7 +89,7 @@ namespace AppointMan.Domain.ValueObjects
         public void SetNeighborhood(int? neighborhoodId)
         {
             if (neighborhoodId.HasValue && neighborhoodId.Value <= 0)
-                throw new DomainException("Mahalle ID gecersiz.");
+                throw new DomainException("Address.NeighborhoodIdInvalid");
 
             NeighborhoodId = neighborhoodId;
         }
@@ -97,10 +97,10 @@ namespace AppointMan.Domain.ValueObjects
         public void SetStreet(string street)
         {
             if (string.IsNullOrWhiteSpace(street))
-                throw new DomainException("Sokak adi bos olamaz.");
+                throw new DomainException("Address.StreetRequired");
 
             if (street.Length > 100)
-                throw new DomainException("Sokak adi 100 karakterden uzun olamaz.");
+                throw new DomainException("Address.StreetMaxLength");
 
             Street = street.Trim();
         }
@@ -114,10 +114,10 @@ namespace AppointMan.Domain.ValueObjects
         public void SetPostalCode(string postalCode)
         {
             if (string.IsNullOrWhiteSpace(postalCode))
-                throw new DomainException("Posta kodu bos olamaz.");
+                throw new DomainException("Address.PostalCodeRequired");
 
             if (postalCode.Length > 20)
-                throw new DomainException("Posta kodu 20 karakterden uzun olamaz.");
+                throw new DomainException("Address.PostalCodeMaxLength");
 
             PostalCode = postalCode.Trim();
         }

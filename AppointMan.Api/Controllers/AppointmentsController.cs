@@ -52,7 +52,7 @@ namespace AppointMan.Api.Controllers
             // JWT'den RequesterId'yi al
             var requesterId = GetRequesterId();
             if (requesterId == Guid.Empty)
-                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Gecersiz kullanici.")));
+                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
 
             command.RequesterId = requesterId;
             command.IdempotencyKey = idempotencyKey;
