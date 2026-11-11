@@ -15,6 +15,11 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
             builder.Property(x => x.IsDeleted).IsRequired().HasDefaultValue(false);
             builder.Property(x => x.DeletedAt).IsRequired(false);
 
+            // Optimistic concurrency: SQL Server rowversion kolonu.
+            // Es zamanli iki guncellemeden ikincisi DbUpdateConcurrencyException alir;
+            // sessiz veri kaybi (lost update) onlenir.
+            builder.Property(x => x.RowVersion).IsRowVersion();
+
             // Global query filter for soft delete
             builder.HasQueryFilter(x => !x.IsDeleted);
         }

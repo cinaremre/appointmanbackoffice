@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.Results;
+﻿using AppointMan.Application.Common.Errors;
+using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
@@ -71,6 +72,15 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 return Result<Guid>.Success(user.Id);
+            }
+            catch (DuplicateKeyException)
+            {
+                // Es zamanli iki kayit denemesinde ikincisi unique index'e takilir.
+                return Result<Guid>.Failure(ConcurrencyErrors.DuplicateRegistration());
+            }
+            catch (ConcurrencyConflictException)
+            {
+                return Result<Guid>.Failure(ConcurrencyErrors.ConcurrencyConflict());
             }
             catch (DomainException ex)
             {

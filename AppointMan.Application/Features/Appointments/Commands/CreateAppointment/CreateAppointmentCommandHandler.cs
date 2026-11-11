@@ -1,4 +1,7 @@
-﻿using AppointMan.Application.Common.Results;
+﻿using System.Data;
+using AppointMan.Application.Common.Abstractions;
+using AppointMan.Application.Common.Errors;
+using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Enums;
 using AppointMan.Domain.Exceptions;
@@ -15,6 +18,9 @@ namespace AppointMan.Application.Features.Appointments.Commands.CreateAppointmen
         private readonly IRepository<Employee> _employeeRepository;
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<BlacklistEntry> _blacklistRepository;
+        private readonly IRepository<IdempotencyRecord> _idempotencyRepository;
+        private readonly IAppointmentBookingGuard _bookingGuard;
+        private readonly IDateTimeService _dateTimeService;
         private readonly IUnitOfWork _unitOfWork;
 
         public CreateAppointmentCommandHandler(
@@ -24,6 +30,9 @@ namespace AppointMan.Application.Features.Appointments.Commands.CreateAppointmen
             IRepository<Employee> employeeRepository,
             IRepository<User> userRepository,
             IRepository<BlacklistEntry> blacklistRepository,
+            IRepository<IdempotencyRecord> idempotencyRepository,
+            IAppointmentBookingGuard bookingGuard,
+            IDateTimeService dateTimeService,
             IUnitOfWork unitOfWork)
         {
             _appointmentRepository = appointmentRepository;
@@ -32,6 +41,9 @@ namespace AppointMan.Application.Features.Appointments.Commands.CreateAppointmen
             _employeeRepository = employeeRepository;
             _userRepository = userRepository;
             _blacklistRepository = blacklistRepository;
+            _idempotencyRepository = idempotencyRepository;
+            _bookingGuard = bookingGuard;
+            _dateTimeService = dateTimeService;
             _unitOfWork = unitOfWork;
         }
 
@@ -39,6 +51,18 @@ namespace AppointMan.Application.Features.Appointments.Commands.CreateAppointmen
         {
             try
             {
+                // 0. Idempotency: ayni anahtarla daha once randevu uretilmis mi?
+                if (!string.IsNullOrWhiteSpace(request.IdempotencyKey))
+                {
+                    var existingRecords = await _idempotencyRepository.FindAsync(
+                        r => r.Key == request.IdempotencyKey,
+                        cancellationToken);
+
+                    var existingRecord = existingRecords.FirstOrDefault();
+                    if (existingRecord is not null)
+                        return Result<Guid>.Success(existingRecord.AppointmentId);
+                }
+
                 // 1. Requester kontrolu
                 var requester = await _userRepository.GetByIdAsync(request.RequesterId, cancellationToken);
                 if (requester is null)
@@ -107,12 +131,7 @@ namespace AppointMan.Application.Features.Appointments.Commands.CreateAppointmen
                 if (employee.IsOnTimeOff(request.AppointmentDate))
                     return Result<Guid>.Failure(Error.BusinessRule("Calisan bu tarihte izinde."));
 
-                // 9. Cakisma kontrolu
-                var hasConflict = await CheckForConflicts(request, service, cancellationToken);
-                if (hasConflict)
-                    return Result<Guid>.Failure(Error.Conflict("Calisanin bu saatte baska bir randevusu var."));
-
-                // ===== 10. KARA LISTE KONTROLU =====
+                // 9. Kara liste kontrolu
                 var isBlacklisted = await _blacklistRepository.ExistsAsync(
                     b => b.UserId == request.UserId &&
                          b.BusinessId == request.BusinessId &&
@@ -123,7 +142,7 @@ namespace AppointMan.Application.Features.Appointments.Commands.CreateAppointmen
                     return Result<Guid>.Failure(
                         Error.BusinessRule("Randevunuz oluşturulamıyor, lütfen işletme ile iletişime geçiniz."));
 
-                // ===== 11. 3. AKTIF RANDEVU KONTROLU =====
+                // 10. 3. aktif randevu kontrolu
                 var activeAppointmentCount = await CountActiveAppointmentsAsync(
                     request.UserId, request.BusinessId, cancellationToken);
 
@@ -146,24 +165,48 @@ namespace AppointMan.Application.Features.Appointments.Commands.CreateAppointmen
                         Error.BusinessRule("Randevunuz oluşturulamıyor, lütfen işletme ile iletişime geçiniz."));
                 }
 
-                // 12. Domain entity olustur
-                var appointment = new Appointment(
-                    request.UserId,
-                    request.BusinessId,
-                    request.ServiceId,
-                    request.EmployeeId,
-                    request.AppointmentDate,
-                    request.Notes);
+                // 11. Cakisma kontrolu + kayit: aralik kilidi altinda tek transaction.
+                //     SERIALIZABLE + UPDLOCK/HOLDLOCK sayesinde iki paralel istegin
+                //     ayni zaman araligina randevu eklemesi imkansizdir.
+                var start = request.AppointmentDate;
+                var durationMinutes = service.DurationInMinutes;
+                var end = start.AddMinutes(durationMinutes);
+                var now = _dateTimeService.UtcNow;
 
-                // 13. Bitis saati hesapla
-                var endTime = request.AppointmentDate.AddMinutes(service.DurationInMinutes);
-                appointment.SetEndTime(endTime);
+                return await _unitOfWork.ExecuteInTransactionAsync(async token =>
+                {
+                    var hasConflict = await _bookingGuard.HasConflictAsync(
+                        request.EmployeeId, start, end, durationMinutes, token);
 
-                // 14. Kaydet
-                await _appointmentRepository.AddAsync(appointment, cancellationToken);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                    if (hasConflict)
+                        return Result<Guid>.Failure(ConcurrencyErrors.BookingConflict());
 
-                return Result<Guid>.Success(appointment.Id);
+                    var appointment = new Appointment(
+                        request.UserId,
+                        request.BusinessId,
+                        request.ServiceId,
+                        request.EmployeeId,
+                        start,
+                        request.Notes);
+
+                    // Bitis saati her zaman yazilir; cakisma penceresi DB ile ayni olur.
+                    appointment.SetEndTime(end);
+
+                    // Domain tarafindaki gecmis tarih kontrolu ayni referans zamani kullanir.
+                    appointment.SetAppointmentDate(start, now);
+
+                    await _appointmentRepository.AddAsync(appointment, token);
+
+                    if (!string.IsNullOrWhiteSpace(request.IdempotencyKey))
+                    {
+                        var record = new IdempotencyRecord(
+                            request.IdempotencyKey, request.UserId, appointment.Id, now);
+
+                        await _idempotencyRepository.AddAsync(record, token);
+                    }
+
+                    return Result<Guid>.Success(appointment.Id);
+                }, IsolationLevel.Serializable, cancellationToken);
             }
             catch (DomainException ex)
             {
@@ -193,24 +236,6 @@ namespace AppointMan.Application.Features.Appointments.Commands.CreateAppointmen
                 Error.Unauthorized("Baska bir kullanici adina randevu olusturma yetkiniz yok."));
         }
 
-        private async Task<bool> CheckForConflicts(
-            CreateAppointmentCommand request,
-            Service service,
-            CancellationToken cancellationToken)
-        {
-            var startTime = request.AppointmentDate;
-            var endTime = startTime.AddMinutes(service.DurationInMinutes);
-
-            var existingAppointments = await _appointmentRepository.FindAsync(
-                a => a.EmployeeId == request.EmployeeId &&
-                     a.Status != EnumAppointmentStatus.Cancelled &&
-                     a.AppointmentDate < endTime &&
-                     a.AppointmentDate.AddMinutes(a.Service.DurationInMinutes) > startTime,
-                cancellationToken);
-
-            return existingAppointments.Any();
-        }
-
         // ===== 3. AKTIF RANDEVU KONTROLU =====
         private async Task<int> CountActiveAppointmentsAsync(
             Guid userId,
@@ -223,7 +248,7 @@ namespace AppointMan.Application.Features.Appointments.Commands.CreateAppointmen
                      a.BusinessId == businessId &&
                      a.Status != EnumAppointmentStatus.Cancelled &&
                      a.Status != EnumAppointmentStatus.Completed &&
-                     a.AppointmentDate > DateTime.UtcNow &&
+                     a.AppointmentDate > _dateTimeService.UtcNow &&
                      !a.IsDeleted,
                 cancellationToken);
 

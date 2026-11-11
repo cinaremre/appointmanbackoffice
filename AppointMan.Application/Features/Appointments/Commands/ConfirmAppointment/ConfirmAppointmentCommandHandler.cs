@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.Results;
+﻿using AppointMan.Application.Common.Errors;
+using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
@@ -9,13 +10,16 @@ namespace AppointMan.Application.Features.Appointments.Commands.ConfirmAppointme
     public class ConfirmAppointmentCommandHandler : IRequestHandler<ConfirmAppointmentCommand, Result<Guid>>
     {
         private readonly IRepository<Appointment> _appointmentRepository;
+        private readonly IDateTimeService _dateTimeService;
         private readonly IUnitOfWork _unitOfWork;
 
         public ConfirmAppointmentCommandHandler(
             IRepository<Appointment> appointmentRepository,
+            IDateTimeService dateTimeService,
             IUnitOfWork unitOfWork)
         {
             _appointmentRepository = appointmentRepository;
+            _dateTimeService = dateTimeService;
             _unitOfWork = unitOfWork;
         }
 
@@ -32,13 +36,18 @@ namespace AppointMan.Application.Features.Appointments.Commands.ConfirmAppointme
                 if (appointment.BusinessId != request.BusinessId)
                     return Result<Guid>.Failure(Error.Unauthorized("Bu randevuyu onaylama yetkiniz yok."));
 
-                // 3. Domain kurallari ile onayla
-                appointment.Confirm(request.ConfirmedBy ?? "Business");
+                // 3. Domain kurallari ile onayla.
+                //    Es zamanli iki onay isteginden ikincisi rowversion cakismasi ile reddedilir.
+                appointment.Confirm(request.ConfirmedBy ?? "Business", _dateTimeService.UtcNow);
 
                 // 4. Kaydet
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 return Result<Guid>.Success(appointment.Id);
+            }
+            catch (ConcurrencyConflictException)
+            {
+                return Result<Guid>.Failure(ConcurrencyErrors.ConcurrencyConflict());
             }
             catch (DomainException ex)
             {

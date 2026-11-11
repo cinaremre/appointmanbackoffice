@@ -11,6 +11,14 @@ namespace AppointMan.Domain.Entities
         public bool IsDeleted { get; protected set; }
         public DateTime? DeletedAt { get; protected set; }
 
+        /// <summary>
+        /// EF Core optimistic concurrency token.
+        /// SQL Server tarafindan her UPDATE'te otomatik uretilir; es zamanli
+        /// iki guncellemeden ikincisi DbUpdateConcurrencyException alir ve
+        /// sessiz veri kaybi (lost update) onlenir.
+        /// </summary>
+        public byte[]? RowVersion { get; protected set; }
+
         private readonly List<IDomainEvent> _domainEvents = new();
         public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 

@@ -35,12 +35,19 @@ namespace AppointMan.Api.Controllers
         /// Yeni randevu olusturur.
         /// </summary>
         /// <param name="command">Randevu bilgileri</param>
+        /// <param name="idempotencyKey">
+        /// Ayni istegin ag tekrari veya cift tiklama ile mukerrer gonderilmesini
+        /// engelleyen istemci anahtari. Ayni anahtarla gelen ikinci istek
+        /// yeni randevu uretmez, ilk olusan randevunun ID'sini doner.
+        /// </param>
         /// <returns>Olusturulan randevunun ID'si</returns>
         [HttpPost]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Create([FromBody] CreateAppointmentCommand command)
+        public async Task<IActionResult> Create(
+            [FromBody] CreateAppointmentCommand command,
+            [FromHeader(Name = "Idempotency-Key")] string? idempotencyKey = null)
         {
             // JWT'den RequesterId'yi al
             var requesterId = GetRequesterId();
@@ -48,6 +55,7 @@ namespace AppointMan.Api.Controllers
                 return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Gecersiz kullanici.")));
 
             command.RequesterId = requesterId;
+            command.IdempotencyKey = idempotencyKey;
 
             var result = await _mediator.Send(command);
 

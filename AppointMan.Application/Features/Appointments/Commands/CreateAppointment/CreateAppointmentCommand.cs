@@ -17,5 +17,12 @@ namespace AppointMan.Application.Features.Appointments.Commands.CreateAppointmen
         public Guid EmployeeId { get; set; }
         public DateTime AppointmentDate { get; set; }
         public string? Notes { get; set; }
+
+        /// <summary>
+        /// Ayni istegin ag tekrari veya cift tiklama ile mukerrer gonderilmesini
+        /// engelleyen istemci anahtari. Header'dan okunur, govdede beklenmez.
+        /// </summary>
+        [JsonIgnore]
+        public string? IdempotencyKey { get; set; }
     }
 }

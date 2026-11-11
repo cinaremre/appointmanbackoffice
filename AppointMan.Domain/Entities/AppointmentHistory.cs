@@ -26,8 +26,9 @@ namespace AppointMan.Domain.Entities
      string? changedBy = null,
      string? changeReason = null,
      string? ipAddress = null,
-     string? userAgent = null)
-     : this(Guid.NewGuid(), appointmentId, oldStatus, newStatus, changedBy, changeReason, ipAddress, userAgent)
+     string? userAgent = null,
+     DateTime? changedAt = null)
+     : this(Guid.NewGuid(), appointmentId, oldStatus, newStatus, changedBy, changeReason, ipAddress, userAgent, changedAt)
         {
         }
         public AppointmentHistory(
@@ -38,7 +39,8 @@ namespace AppointMan.Domain.Entities
     string? changedBy = null,
     string? changeReason = null,
     string? ipAddress = null,
-    string? userAgent = null)
+    string? userAgent = null,
+    DateTime? changedAt = null)
     : base(id)
         {
             if (appointmentId == Guid.Empty)
@@ -49,7 +51,9 @@ namespace AppointMan.Domain.Entities
             NewStatus = newStatus;
             ChangedBy = changedBy ?? "System";
             ChangeReason = changeReason;
-            ChangedAt = DateTime.UtcNow;
+            // Degisiklik zamani disaridan verilebilir; ayni istek icindeki
+            // tum kayitlar ayni referans zamani paylasir.
+            ChangedAt = changedAt ?? DateTime.UtcNow;
             IpAddress = ipAddress;
             UserAgent = userAgent;
             AdditionalData = new Dictionary<string, object>();

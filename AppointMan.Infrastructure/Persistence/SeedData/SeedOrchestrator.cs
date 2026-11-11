@@ -14,6 +14,28 @@ namespace AppointMan.Infrastructure.Persistence.SeedData
         {
             logger.LogInformation("=== SEED ISLEMI BASLIYOR ===");
 
+            // Coklu instance korumasi: uygulama ayni anda birden fazla instance ile
+            // acilirsa yalnizca bir tanesi seed eder. Kilit alinamazsa bu instance
+            // sessizce cikar; duplicate kayit veya PK ihlali olusmaz.
+            // @LockOwner='Session' kilidi baglanti kapandiginda otomatik birakir.
+            await context.Database.OpenConnectionAsync();
+
+            await using var lockCommand = context.Database.GetDbConnection().CreateCommand();
+            lockCommand.CommandText =
+                "DECLARE @result int; " +
+                "EXEC @result = sp_getapplock @Resource = 'AppointMan.Seeding', " +
+                "@LockMode = 'Exclusive', @LockOwner = 'Session', @LockTimeout = 0; " +
+                "SELECT @result;";
+
+            var lockResult = Convert.ToInt32(await lockCommand.ExecuteScalarAsync());
+
+            if (lockResult < 0)
+            {
+                logger.LogInformation(
+                    "Seed kilidi alinamadi (baska bir instance seed ediyor), atlaniyor.");
+                return;
+            }
+
             await using var transaction = await context.Database.BeginTransactionAsync();
 
             try

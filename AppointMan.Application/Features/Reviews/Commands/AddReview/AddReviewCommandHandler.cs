@@ -1,4 +1,6 @@
-﻿using AppointMan.Application.Common.Results;
+﻿using AppointMan.Application.Common.Abstractions;
+using AppointMan.Application.Common.Errors;
+using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
@@ -12,6 +14,7 @@ namespace AppointMan.Application.Features.Reviews.Commands.AddReview
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<Business> _businessRepository;
         private readonly IRepository<Appointment> _appointmentRepository;
+        private readonly IBusinessRatingUpdater _businessRatingUpdater;
         private readonly IUnitOfWork _unitOfWork;
 
         public AddReviewCommandHandler(
@@ -19,12 +22,14 @@ namespace AppointMan.Application.Features.Reviews.Commands.AddReview
             IRepository<User> userRepository,
             IRepository<Business> businessRepository,
             IRepository<Appointment> appointmentRepository,
+            IBusinessRatingUpdater businessRatingUpdater,
             IUnitOfWork unitOfWork)
         {
             _reviewRepository = reviewRepository;
             _userRepository = userRepository;
             _businessRepository = businessRepository;
             _appointmentRepository = appointmentRepository;
+            _businessRatingUpdater = businessRatingUpdater;
             _unitOfWork = unitOfWork;
         }
 
@@ -58,16 +63,9 @@ namespace AppointMan.Application.Features.Reviews.Commands.AddReview
                         return Result<Guid>.Failure(Error.BusinessRule("Sadece tamamlanmis randevulara yorum yapilabilir."));
                 }
 
-                // 4. Ayni randevu icin daha once yorum yapilmis mi?
-                if (request.AppointmentId.HasValue)
-                {
-                    var existingReviews = await _reviewRepository.FindAsync(
-                        r => r.AppointmentId == request.AppointmentId.Value && r.UserId == request.UserId && !r.IsDeleted,
-                        cancellationToken);
-
-                    if (existingReviews.Any())
-                        return Result<Guid>.Failure(Error.Conflict("Bu randevu icin zaten yorum yapilmis."));
-                }
+                // 4. Ayni randevu icin ikinci yorum on kontrolu YAPILMAZ:
+                //    UX_Reviews_AppointmentId unique index tek dogruluk kaynagidir.
+                //    Es zamanli iki denemede ikincisi DuplicateKeyException alir.
 
                 // 5. Yorum olustur
                 var review = new Review(
@@ -77,16 +75,25 @@ namespace AppointMan.Application.Features.Reviews.Commands.AddReview
                     request.Comment,
                     request.AppointmentId);
 
-                // 6. Kaydet
+                // 6. Kaydet (unique index ihlali burada yakalanir)
                 await _reviewRepository.AddAsync(review, cancellationToken);
-
-                // 7. Isletme puanini guncelle
-                await UpdateBusinessRating(request.BusinessId, cancellationToken);
-
-                // 8. Degisiklikleri kaydet
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+                // 7. Isletme puanini atomik olarak guncelle.
+                //    Read-modify-write yerine tek UPDATE kullanildigi icin
+                //    es zamanli yorumlarda sayac kaybi olusmaz.
+                await _businessRatingUpdater.UpdateOnNewReviewAsync(
+                    request.BusinessId, request.Rating, cancellationToken);
+
                 return Result<Guid>.Success(review.Id);
+            }
+            catch (DuplicateKeyException)
+            {
+                return Result<Guid>.Failure(ConcurrencyErrors.DuplicateReview());
+            }
+            catch (ConcurrencyConflictException)
+            {
+                return Result<Guid>.Failure(ConcurrencyErrors.ConcurrencyConflict());
             }
             catch (DomainException ex)
             {
@@ -95,30 +102,6 @@ namespace AppointMan.Application.Features.Reviews.Commands.AddReview
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(Error.Internal("Yorum eklenirken bir hata olustu.", ex.Message));
-            }
-        }
-
-        private async Task UpdateBusinessRating(Guid businessId, CancellationToken cancellationToken)
-        {
-            // 1. Isletmenin tum gorunur yorumlarini getir
-            var reviews = await _reviewRepository.FindAsync(
-                r => r.BusinessId == businessId && r.IsVisible && !r.IsDeleted,
-                cancellationToken);
-
-            if (!reviews.Any())
-                return;
-
-            // 2. Ortalama puan hesapla
-            var averageRating = reviews.Average(r => r.Rating);
-            var totalReviews = reviews.Count();
-
-            // 3. Isletmeyi guncelle
-            var business = await _businessRepository.GetByIdAsync(businessId, cancellationToken);
-            if (business is not null)
-            {
-                business.UpdateRating((decimal)averageRating);
-                // TotalReviews zaten reviews.Count, ama Business entity'sinde TotalReviews property'si var
-                // Bu property'nin guncellenmesi gerekiyorsa, business.IncrementTotalReviews() veya benzeri bir metot kullanilabilir
             }
         }
     }

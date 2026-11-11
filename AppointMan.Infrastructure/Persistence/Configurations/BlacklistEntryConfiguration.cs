@@ -51,8 +51,13 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
 
             builder.HasIndex(x => x.UserId);
             builder.HasIndex(x => x.BusinessId);
-            builder.HasIndex(x => new { x.UserId, x.BusinessId });
             builder.HasIndex(x => x.BlacklistedAt);
+
+            // Ayni kullanici ayni isletmede iki kez kara listede olamaz.
+            // Es zamanli iki ekleme denemesinde ikincisi DB tarafindan reddedilir.
+            builder.HasIndex(x => new { x.BusinessId, x.UserId })
+                .IsUnique()
+                .HasDatabaseName("UX_BlacklistEntries_BusinessId_UserId");
         }
     }
 }

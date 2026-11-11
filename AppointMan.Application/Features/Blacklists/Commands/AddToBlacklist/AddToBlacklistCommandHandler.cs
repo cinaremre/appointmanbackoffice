@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.Results;
+﻿using AppointMan.Application.Common.Errors;
+using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Enums;
 using AppointMan.Domain.Exceptions;
@@ -45,32 +46,31 @@ namespace AppointMan.Application.Features.Blacklists.Commands.AddToBlacklist
                 if (user is null)
                     return Result<Guid>.Failure(Error.NotFound("Kullanici", request.UserId.ToString()));
 
-                // 4. Zaten kara listede mi?
-                var existingEntries = await _blacklistRepository.FindAsync(
-                    b => b.UserId == request.UserId &&
-                         b.BusinessId == request.BusinessId &&
-                         !b.IsDeleted,
-                    cancellationToken);
-
-                if (existingEntries.Any())
-                    return Result<Guid>.Failure(
-                        Error.Conflict("Bu kullanici zaten kara listede."));
-
-                // 5. Yeni kara liste kaydi olustur
+                // 4. On kontrol YAPILMAZ: (BusinessId, UserId) uzerindeki unique index
+                //    tek dogruluk kaynagidir. Es zamanli iki ekleme denemesinde
+                //    ikincisi DuplicateKeyException alir ve 409 Conflict doner.
                 var entry = new BlacklistEntry(
                     request.UserId,
                     request.BusinessId,
                     0,  // Manuel ekleme, randevu sayisi 0
                     request.Reason ?? "Manuel kara listeye ekleme");
 
-                // 6. Kaydet
+                // 5. Kaydet (unique index ihlali burada yakalanir)
                 await _blacklistRepository.AddAsync(entry, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // 7. Kullanici 3 farkli isletmede kara listede mi?
+                // 6. Kullanici 3 farkli isletmede kara listede mi?
                 await CheckAndLockUserIfNeededAsync(request.UserId, cancellationToken);
 
                 return Result<Guid>.Success(entry.Id);
+            }
+            catch (DuplicateKeyException)
+            {
+                return Result<Guid>.Failure(ConcurrencyErrors.DuplicateBlacklistEntry());
+            }
+            catch (ConcurrencyConflictException)
+            {
+                return Result<Guid>.Failure(ConcurrencyErrors.ConcurrencyConflict());
             }
             catch (DomainException ex)
             {

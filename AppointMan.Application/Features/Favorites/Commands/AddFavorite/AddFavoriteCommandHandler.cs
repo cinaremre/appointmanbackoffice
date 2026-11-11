@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.Results;
+﻿using AppointMan.Application.Common.Errors;
+using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
@@ -39,22 +40,23 @@ namespace AppointMan.Application.Features.Favorites.Commands.AddFavorite
                 if (business is null)
                     return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
 
-                // 3. Zaten favori mi?
-                var existingFavorites = await _favoriteRepository.FindAsync(
-                    f => f.UserId == request.UserId && f.BusinessId == request.BusinessId && !f.IsDeleted,
-                    cancellationToken);
-
-                if (existingFavorites.Any())
-                    return Result<Guid>.Failure(Error.Conflict("Bu isletme zaten favorilerde."));
-
-                // 4. Favori olustur
+                // 3. On kontrol YAPILMAZ: (UserId, BusinessId) uzerindeki unique index
+                //    tek dogruluk kaynagidir. Es zamanli iki ekleme denemesinde
+                //    ikincisi DuplicateKeyException alir ve 409 Conflict doner.
                 var favorite = new Favorite(request.UserId, request.BusinessId, request.Note);
 
-                // 5. Kaydet
                 await _favoriteRepository.AddAsync(favorite, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 return Result<Guid>.Success(favorite.Id);
+            }
+            catch (DuplicateKeyException)
+            {
+                return Result<Guid>.Failure(ConcurrencyErrors.DuplicateFavorite());
+            }
+            catch (ConcurrencyConflictException)
+            {
+                return Result<Guid>.Failure(ConcurrencyErrors.ConcurrencyConflict());
             }
             catch (DomainException ex)
             {

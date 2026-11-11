@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using AppointMan.Domain.Exceptions;
+using FluentValidation;
 using System.Net;
 using System.Text.Json;
 
@@ -26,11 +27,44 @@ namespace AppointMan.Api.Middlewares
                 _logger.LogWarning(ex, "Validasyon hatası");
                 await HandleValidationExceptionAsync(context, ex);
             }
+            catch (DuplicateKeyException ex)
+            {
+                // Veritabani tekillik kisiti ihlali: 500 yerine 409 Conflict.
+                _logger.LogWarning(ex, "Tekillik ihlali: {IndexName}", ex.IndexName);
+                await HandleDomainConflictAsync(context, "duplicate_key", ex.Message);
+            }
+            catch (ConcurrencyConflictException ex)
+            {
+                // Es zamanli guncelleme cakismasi: istemci tekrar denemeli.
+                _logger.LogWarning(ex, "Es zamanli guncelleme cakismasi");
+                await HandleDomainConflictAsync(context, "concurrency_conflict", ex.Message);
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Beklenmeyen hata");
                 await HandleExceptionAsync(context, ex);
             }
+        }
+
+        /// <summary>
+        /// Yaris kosulu kaynakli hatalari 409 Conflict olarak dondurur.
+        /// </summary>
+        /// <param name="context">Gecerli HTTP baglami.</param>
+        /// <param name="code">Istemciye donulecek hata kodu.</param>
+        /// <param name="message">Kullaniciya gosterilecek Turkce mesaj.</param>
+        private static Task HandleDomainConflictAsync(HttpContext context, string code, string message)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+
+            var response = new
+            {
+                StatusCode = context.Response.StatusCode,
+                Code = code,
+                Message = message
+            };
+
+            return context.Response.WriteAsync(JsonSerializer.Serialize(response));
         }
 
         private static Task HandleValidationExceptionAsync(HttpContext context, ValidationException exception)

@@ -92,7 +92,20 @@ namespace AppointMan.Domain.Entities
 
         public void SetAppointmentDate(DateTime appointmentDate)
         {
-            if (appointmentDate < DateTime.UtcNow)
+            SetAppointmentDate(appointmentDate, DateTime.UtcNow);
+        }
+
+        /// <summary>
+        /// Randevu tarihini dogrular ve atar.
+        /// Gecmis tarih kontrolu icin kullanilan zaman disaridan verilir;
+        /// boylece ayni istek icindeki tum kontroller ayni referans zamani kullanir.
+        /// </summary>
+        /// <param name="appointmentDate">Atanacak randevu zamani.</param>
+        /// <param name="now">Referans alinacak guncel UTC zamani.</param>
+        /// <exception cref="DomainException">Tarih gecmis, 5 dakikaya hizali degil veya saat araligi disinda ise.</exception>
+        public void SetAppointmentDate(DateTime appointmentDate, DateTime now)
+        {
+            if (appointmentDate < now)
                 throw new DomainException("Randevu tarihi geçmiş bir zaman olamaz.");
 
             if (appointmentDate.Minute % 5 != 0)
@@ -102,7 +115,7 @@ namespace AppointMan.Domain.Entities
                 throw new DomainException("Randevu saati 06:00-23:00 arasında olmalıdır.");
 
             AppointmentDate = appointmentDate;
-            UpdatedAt = DateTime.UtcNow;
+            UpdatedAt = now;
         }
 
         public void SetEndTime(DateTime endTime)
@@ -123,59 +136,89 @@ namespace AppointMan.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void Confirm(string? confirmedBy = null)
+        /// <summary>
+        /// Bekleyen randevuyu onaylar.
+        /// </summary>
+        /// <param name="confirmedBy">Onaylayan kullanici.</param>
+        /// <param name="now">Islem zamani (UTC).</param>
+        public void Confirm(string? confirmedBy = null, DateTime? now = null)
         {
+            var currentTime = now ?? DateTime.UtcNow;
+
             if (Status != EnumAppointmentStatus.Pending)
                 throw new DomainException("Sadece bekleyen randevular onaylanabilir.");
 
             var oldStatus = Status;
             Status = EnumAppointmentStatus.Confirmed;
-            UpdatedAt = DateTime.UtcNow;
+            UpdatedAt = currentTime;
 
-            AddHistory(oldStatus, Status, confirmedBy, "Randevu onaylandı");
+            AddHistory(oldStatus, Status, confirmedBy, "Randevu onaylandı", currentTime);
             AddDomainEvent(new AppointmentConfirmedEvent(Id, UserId, BusinessId, ServiceId, EmployeeId, AppointmentDate, confirmedBy));
         }
 
-        public void Cancel(string? reason = null, string? cancelledBy = null)
+        /// <summary>
+        /// Randevuyu iptal eder.
+        /// </summary>
+        /// <param name="reason">Iptal gerekcesi.</param>
+        /// <param name="cancelledBy">Iptal eden kullanici.</param>
+        /// <param name="now">Islem zamani (UTC).</param>
+        public void Cancel(string? reason = null, string? cancelledBy = null, DateTime? now = null)
         {
+            var currentTime = now ?? DateTime.UtcNow;
+
             if (Status == EnumAppointmentStatus.Completed)
                 throw new DomainException("Tamamlanmış randevu iptal edilemez.");
 
             if (Status == EnumAppointmentStatus.Cancelled)
                 throw new DomainException("Randevu zaten iptal edilmiş.");
 
-            if (AppointmentDate < DateTime.UtcNow)
+            if (AppointmentDate < currentTime)
                 throw new DomainException("Geçmiş randevu iptal edilemez.");
 
             var oldStatus = Status;
             Status = EnumAppointmentStatus.Cancelled;
             CancellationReason = reason;
-            CancelledAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
+            CancelledAt = currentTime;
+            UpdatedAt = currentTime;
 
-            AddHistory(oldStatus, Status, cancelledBy, reason ?? "Kullanıcı tarafından iptal edildi");
+            AddHistory(oldStatus, Status, cancelledBy, reason ?? "Kullanıcı tarafından iptal edildi", currentTime);
             AddDomainEvent(new AppointmentCancelledEvent(Id, UserId, BusinessId, ServiceId, EmployeeId, AppointmentDate, reason, cancelledBy));
         }
 
-        public void Complete(string? completedBy = null)
+        /// <summary>
+        /// Onaylanmis randevuyu tamamlandi olarak isaretler.
+        /// </summary>
+        /// <param name="completedBy">Tamamlayan kullanici.</param>
+        /// <param name="now">Islem zamani (UTC).</param>
+        public void Complete(string? completedBy = null, DateTime? now = null)
         {
+            var currentTime = now ?? DateTime.UtcNow;
+
             if (Status != EnumAppointmentStatus.Confirmed)
                 throw new DomainException("Sadece onaylanmış randevular tamamlanabilir.");
 
-            if (AppointmentDate > DateTime.UtcNow)
+            if (AppointmentDate > currentTime)
                 throw new DomainException("Gelecek randevu tamamlanamaz.");
 
             var oldStatus = Status;
             Status = EnumAppointmentStatus.Completed;
-            CompletedAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
+            CompletedAt = currentTime;
+            UpdatedAt = currentTime;
 
-            AddHistory(oldStatus, Status, completedBy, "Randevu tamamlandı");
+            AddHistory(oldStatus, Status, completedBy, "Randevu tamamlandı", currentTime);
             AddDomainEvent(new AppointmentCompletedEvent(Id, UserId, BusinessId, ServiceId, EmployeeId, AppointmentDate, completedBy));
         }
 
-        public void Reschedule(DateTime newDate, string? rescheduledBy = null)
+        /// <summary>
+        /// Randevuyu yeni bir tarihe tasir ve durumu bekleyene ceker.
+        /// </summary>
+        /// <param name="newDate">Yeni randevu zamani.</param>
+        /// <param name="rescheduledBy">Islemi yapan kullanici.</param>
+        /// <param name="now">Islem zamani (UTC).</param>
+        public void Reschedule(DateTime newDate, string? rescheduledBy = null, DateTime? now = null)
         {
+            var currentTime = now ?? DateTime.UtcNow;
+
             if (Status == EnumAppointmentStatus.Completed)
                 throw new DomainException("Tamamlanmış randevu yeniden planlanamaz.");
 
@@ -185,56 +228,99 @@ namespace AppointMan.Domain.Entities
             var oldStatus = Status;
             var oldDate = AppointmentDate;
 
-            SetAppointmentDate(newDate);
+            SetAppointmentDate(newDate, currentTime);
             Status = EnumAppointmentStatus.Pending;
-            UpdatedAt = DateTime.UtcNow;
+            UpdatedAt = currentTime;
 
             AddHistory(oldStatus, Status, rescheduledBy,
-                      $"Randevu {oldDate:dd.MM.yyyy HH:mm} → {newDate:dd.MM.yyyy HH:mm} tarihine yeniden planlandı");
+                      $"Randevu {oldDate:dd.MM.yyyy HH:mm} → {newDate:dd.MM.yyyy HH:mm} tarihine yeniden planlandı",
+                      currentTime);
             AddDomainEvent(new AppointmentRescheduledEvent(Id, UserId, BusinessId, ServiceId, EmployeeId, oldDate, newDate, rescheduledBy));
         }
 
-        public void MarkReminderSent()
+        /// <summary>Hatirlatma gonderildi olarak isaretler.</summary>
+        /// <param name="now">Islem zamani (UTC).</param>
+        public void MarkReminderSent(DateTime? now = null)
         {
+            var currentTime = now ?? DateTime.UtcNow;
+
             IsReminderSent = true;
-            ReminderSentAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
+            ReminderSentAt = currentTime;
+            UpdatedAt = currentTime;
         }
 
-        public bool CanBeCancelled()
+        /// <summary>Randevunun iptal edilebilir olup olmadigini belirler.</summary>
+        /// <param name="now">Referans alinacak guncel UTC zamani.</param>
+        public bool CanBeCancelled(DateTime? now = null)
         {
+            var currentTime = now ?? DateTime.UtcNow;
+
             return Status != EnumAppointmentStatus.Completed &&
                    Status != EnumAppointmentStatus.Cancelled &&
-                   AppointmentDate > DateTime.UtcNow;
+                   AppointmentDate > currentTime;
         }
 
-        public bool IsUpcoming()
+        /// <summary>Randevunun yaklasan (onayli ve gelecekte) olup olmadigini belirler.</summary>
+        /// <param name="now">Referans alinacak guncel UTC zamani.</param>
+        public bool IsUpcoming(DateTime? now = null)
         {
+            var currentTime = now ?? DateTime.UtcNow;
+
             return Status == EnumAppointmentStatus.Confirmed &&
-                   AppointmentDate > DateTime.UtcNow;
+                   AppointmentDate > currentTime;
         }
 
-        public bool IsPast()
+        /// <summary>Randevunun gecmiste kalip kalmadigini belirler.</summary>
+        /// <param name="now">Referans alinacak guncel UTC zamani.</param>
+        public bool IsPast(DateTime? now = null)
         {
-            return AppointmentDate < DateTime.UtcNow;
+            var currentTime = now ?? DateTime.UtcNow;
+
+            return AppointmentDate < currentTime;
         }
 
+        /// <summary>
+        /// Verilen zaman araligi ile cakisip cakismadigini belirler.
+        /// Bitis saati bilinmiyorsa varsayilan 30 dakika kullanilir.
+        /// </summary>
         public bool OverlapsWith(DateTime start, DateTime end)
         {
-            var appointmentEnd = EndTime ?? AppointmentDate.AddMinutes(30);
+            return OverlapsWith(start, end, 30);
+        }
+
+        /// <summary>
+        /// Verilen zaman araligi ile cakisip cakismadigini belirler.
+        /// EndTime null ise fallbackDurationMinutes kullanilir; boylece cakisma
+        /// penceresi tek kaynaktan (servis suresi) hesaplanir ve DB kisitiyla
+        /// ayni formulu paylasir.
+        /// </summary>
+        /// <param name="start">Kontrol edilecek araligin baslangici.</param>
+        /// <param name="end">Kontrol edilecek araligin bitisi.</param>
+        /// <param name="fallbackDurationMinutes">EndTime null ise kullanilacak sure (dakika).</param>
+        /// <returns>Araliklar cakisiyorsa true.</returns>
+        /// <exception cref="DomainException">Sure 0 veya kucukse.</exception>
+        public bool OverlapsWith(DateTime start, DateTime end, int fallbackDurationMinutes)
+        {
+            if (fallbackDurationMinutes <= 0)
+                throw new DomainException("Varsayilan sure 0'dan buyuk olmalidir.");
+
+            var appointmentEnd = EndTime ?? AppointmentDate.AddMinutes(fallbackDurationMinutes);
             return AppointmentDate < end && appointmentEnd > start;
         }
 
         // History Methods
         private void AddHistory(EnumAppointmentStatus oldStatus, EnumAppointmentStatus newStatus,
-                        string? changedBy = null, string? changeReason = null)
+                        string? changedBy = null, string? changeReason = null, DateTime? now = null)
         {
+            var currentTime = now ?? DateTime.UtcNow;
+
             var history = new AppointmentHistory(
                 Id,
                 oldStatus,
                 newStatus,
                 changedBy ?? "System",
-                changeReason);
+                changeReason,
+                changedAt: currentTime);
 
             _histories.Add(history);
             AddDomainEvent(new AppointmentStatusChangedEvent(

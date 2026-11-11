@@ -57,6 +57,13 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
             builder.HasIndex(x => x.BusinessId);
             builder.HasIndex(x => x.Rating);
             builder.HasIndex(x => x.ReviewDate);
+
+            // Randevu basina yalnizca bir yorum yapilabilir.
+            // AppointmentId null olan yorumlar filtre disinda kalir.
+            builder.HasIndex(x => x.AppointmentId)
+                .IsUnique()
+                .HasFilter("[AppointmentId] IS NOT NULL")
+                .HasDatabaseName("UX_Reviews_AppointmentId");
         }
     }
 }
