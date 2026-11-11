@@ -22,6 +22,10 @@ namespace AppointMan.Infrastructure.Persistence.Context
         public DbSet<BlacklistEntry> BlacklistEntries { get; set; }
         public DbSet<Business> Businesses { get; set; }
         public DbSet<BusinessCategory> BusinessCategories { get; set; }
+        public DbSet<City> Cities { get; set; }
+        public DbSet<District> Districts { get; set; }
+        public DbSet<Locality> Localities { get; set; }
+        public DbSet<Neighborhood> Neighborhoods { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<EmployeeService> EmployeeServices { get; set; }
         public DbSet<EmployeeWorkingHour> EmployeeWorkingHours { get; set; }

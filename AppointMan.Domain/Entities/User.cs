@@ -22,6 +22,11 @@ namespace AppointMan.Domain.Entities
         public string? RefreshToken { get; private set; }
         public DateTime? RefreshTokenExpiryTime { get; private set; }
 
+        // Konum: kullanicinin kayitli oldugu il / ilce.
+        // Arama kriteri bos geldiginde varsayilan konum olarak kullanilir.
+        public int? CityId { get; private set; }
+        public int? DistrictId { get; private set; }
+
         // Navigation Properties
         private readonly List<Appointment> _appointments = new();
         public IReadOnlyCollection<Appointment> Appointments => _appointments.AsReadOnly();
@@ -196,6 +201,36 @@ namespace AppointMan.Domain.Entities
                 updatedEvent.AddChange("DateOfBirth", oldDateOfBirth?.ToString("yyyy-MM-dd") ?? "null", dateOfBirth?.ToString("yyyy-MM-dd") ?? "null");
             if (oldProfilePictureUrl != profilePictureUrl)
                 updatedEvent.AddChange("ProfilePictureUrl", oldProfilePictureUrl ?? "null", profilePictureUrl ?? "null");
+
+            if (updatedEvent.Changes.Any())
+                AddDomainEvent(updatedEvent);
+        }
+
+        /// <summary>
+        /// Kullanicinin kayitli konumunu (il / ilce) gunceller.
+        /// Arama sirasinda kriter bos geldiginde bu bilgi kullanilir.
+        /// </summary>
+        public void UpdateLocation(int? cityId, int? districtId, string? updatedBy = null)
+        {
+            if (cityId.HasValue && cityId.Value <= 0)
+                throw new DomainException("Il ID gecersiz.");
+
+            if (districtId.HasValue && districtId.Value <= 0)
+                throw new DomainException("Ilce ID gecersiz.");
+
+            var oldCityId = CityId;
+            var oldDistrictId = DistrictId;
+
+            CityId = cityId;
+            DistrictId = districtId;
+            UpdatedAt = DateTime.UtcNow;
+
+            var updatedEvent = new UserProfileUpdatedEvent(Id, Email, $"{FirstName} {LastName}", updatedBy);
+
+            if (oldCityId != cityId)
+                updatedEvent.AddChange("CityId", oldCityId?.ToString() ?? "null", cityId?.ToString() ?? "null");
+            if (oldDistrictId != districtId)
+                updatedEvent.AddChange("DistrictId", oldDistrictId?.ToString() ?? "null", districtId?.ToString() ?? "null");
 
             if (updatedEvent.Changes.Any())
                 AddDomainEvent(updatedEvent);

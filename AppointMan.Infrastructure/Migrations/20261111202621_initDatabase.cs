@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AppointMan.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class initDbSeedData : Migration
+    public partial class initDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,6 +38,23 @@ namespace AppointMan.Infrastructure.Migrations
                         principalTable: "BusinessCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Cities",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    SearchName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CountryCode = table.Column<string>(type: "nchar(2)", fixedLength: true, maxLength: 2, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cities", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -77,6 +94,7 @@ namespace AppointMan.Infrastructure.Migrations
                     PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false),
+                    AccountStatus = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ProfilePictureUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     IsEmailVerified = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
@@ -92,6 +110,29 @@ namespace AppointMan.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Districts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    CityId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    SearchName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Districts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Districts_Cities_CityId",
+                        column: x => x.CityId,
+                        principalTable: "Cities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -117,58 +158,6 @@ namespace AppointMan.Infrastructure.Migrations
                         principalTable: "ServiceCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Businesses",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    BusinessType = table.Column<int>(type: "int", nullable: false),
-                    Street = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    BuildingNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    ApartmentNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    District = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    City = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    State = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    Country = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PostalCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Latitude = table.Column<double>(type: "float(10)", precision: 10, scale: 6, nullable: true),
-                    Longitude = table.Column<double>(type: "float(10)", precision: 10, scale: 6, nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    PhoneNumber_CountryCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber_NationalNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    WebsiteUrl = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    LogoUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    IsVerified = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    Rating = table.Column<decimal>(type: "decimal(3,1)", precision: 3, scale: 1, nullable: true),
-                    TotalReviews = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Businesses", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Businesses_BusinessCategories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "BusinessCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                    table.ForeignKey(
-                        name: "FK_Businesses_Users_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -199,6 +188,126 @@ namespace AppointMan.Infrastructure.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Businesses",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    BusinessType = table.Column<int>(type: "int", nullable: false),
+                    CityId = table.Column<int>(type: "int", nullable: false),
+                    DistrictId = table.Column<int>(type: "int", nullable: true),
+                    Street = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    BuildingNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    ApartmentNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    PostalCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Latitude = table.Column<double>(type: "float(10)", precision: 10, scale: 6, nullable: true),
+                    Longitude = table.Column<double>(type: "float(10)", precision: 10, scale: 6, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    PhoneNumber_CountryCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber_NationalNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    WebsiteUrl = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    LogoUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsVerified = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    Rating = table.Column<decimal>(type: "decimal(3,1)", precision: 3, scale: 1, nullable: true),
+                    TotalReviews = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Businesses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Businesses_BusinessCategories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "BusinessCategories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Businesses_Cities_CityId",
+                        column: x => x.CityId,
+                        principalTable: "Cities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Businesses_Districts_DistrictId",
+                        column: x => x.DistrictId,
+                        principalTable: "Districts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Businesses_Users_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Localities",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    DistrictId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    SearchName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Localities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Localities_Districts_DistrictId",
+                        column: x => x.DistrictId,
+                        principalTable: "Districts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BlacklistEntries",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Reason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    AppointmentCount = table.Column<int>(type: "int", nullable: false),
+                    BlacklistedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RemovedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RemovedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    RemoveReason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlacklistEntries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BlacklistEntries_Businesses_BusinessId",
+                        column: x => x.BusinessId,
+                        principalTable: "Businesses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BlacklistEntries_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -243,6 +352,7 @@ namespace AppointMan.Infrastructure.Migrations
                     PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     BusinessId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     IsAvailableForBooking = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     DisplayOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
@@ -260,6 +370,12 @@ namespace AppointMan.Infrastructure.Migrations
                         principalTable: "Businesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Employees_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -300,8 +416,8 @@ namespace AppointMan.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    Currency = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false, defaultValue: "TRY"),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true),
+                    Currency = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: true, defaultValue: "TRY"),
                     DurationInMinutes = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     BusinessId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -352,6 +468,29 @@ namespace AppointMan.Infrastructure.Migrations
                         principalTable: "Businesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Neighborhoods",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    LocalityId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    SearchName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Neighborhoods", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Neighborhoods_Localities_LocalityId",
+                        column: x => x.LocalityId,
+                        principalTable: "Localities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -627,6 +766,26 @@ namespace AppointMan.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BlacklistEntries_BlacklistedAt",
+                table: "BlacklistEntries",
+                column: "BlacklistedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BlacklistEntries_BusinessId",
+                table: "BlacklistEntries",
+                column: "BusinessId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BlacklistEntries_UserId",
+                table: "BlacklistEntries",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BlacklistEntries_UserId_BusinessId",
+                table: "BlacklistEntries",
+                columns: new[] { "UserId", "BusinessId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BusinessCategories_CorrespondingBusinessType",
                 table: "BusinessCategories",
                 column: "CorrespondingBusinessType");
@@ -663,14 +822,19 @@ namespace AppointMan.Infrastructure.Migrations
                 columns: new[] { "CategoryId", "IsActive", "IsVerified" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Businesses_City",
+                name: "IX_Businesses_CityId",
                 table: "Businesses",
-                column: "City");
+                column: "CityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Businesses_City_District",
+                name: "IX_Businesses_CityId_DistrictId",
                 table: "Businesses",
-                columns: new[] { "City", "District" });
+                columns: new[] { "CityId", "DistrictId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Businesses_DistrictId",
+                table: "Businesses",
+                column: "DistrictId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Businesses_Name",
@@ -694,6 +858,41 @@ namespace AppointMan.Infrastructure.Migrations
                 column: "ServiceCategoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Cities_CountryCode",
+                table: "Cities",
+                column: "CountryCode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cities_IsActive",
+                table: "Cities",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cities_SearchName",
+                table: "Cities",
+                column: "SearchName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Districts_CityId",
+                table: "Districts",
+                column: "CityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Districts_CityId_SearchName",
+                table: "Districts",
+                columns: new[] { "CityId", "SearchName" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Districts_IsActive",
+                table: "Districts",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Districts_SearchName",
+                table: "Districts",
+                column: "SearchName");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Employees_BusinessId",
                 table: "Employees",
                 column: "BusinessId");
@@ -712,6 +911,11 @@ namespace AppointMan.Infrastructure.Migrations
                 name: "IX_Employees_IsAvailableForBooking",
                 table: "Employees",
                 column: "IsAvailableForBooking");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Employees_UserId",
+                table: "Employees",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmployeeServices_EmployeeId",
@@ -770,6 +974,46 @@ namespace AppointMan.Infrastructure.Migrations
                 table: "Favorites",
                 columns: new[] { "UserId", "BusinessId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Localities_DistrictId",
+                table: "Localities",
+                column: "DistrictId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Localities_DistrictId_SearchName",
+                table: "Localities",
+                columns: new[] { "DistrictId", "SearchName" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Localities_IsActive",
+                table: "Localities",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Localities_SearchName",
+                table: "Localities",
+                column: "SearchName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Neighborhoods_IsActive",
+                table: "Neighborhoods",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Neighborhoods_LocalityId",
+                table: "Neighborhoods",
+                column: "LocalityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Neighborhoods_LocalityId_SearchName",
+                table: "Neighborhoods",
+                columns: new[] { "LocalityId", "SearchName" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Neighborhoods_SearchName",
+                table: "Neighborhoods",
+                column: "SearchName");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_IsRead",
@@ -863,6 +1107,11 @@ namespace AppointMan.Infrastructure.Migrations
                 column: "ServiceCategoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Users_AccountStatus",
+                table: "Users",
+                column: "AccountStatus");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
                 table: "Users",
                 column: "Email",
@@ -893,6 +1142,9 @@ namespace AppointMan.Infrastructure.Migrations
                 name: "AppointmentHistories");
 
             migrationBuilder.DropTable(
+                name: "BlacklistEntries");
+
+            migrationBuilder.DropTable(
                 name: "BusinessServiceCategories");
 
             migrationBuilder.DropTable(
@@ -908,6 +1160,9 @@ namespace AppointMan.Infrastructure.Migrations
                 name: "Favorites");
 
             migrationBuilder.DropTable(
+                name: "Neighborhoods");
+
+            migrationBuilder.DropTable(
                 name: "Notifications");
 
             migrationBuilder.DropTable(
@@ -918,6 +1173,9 @@ namespace AppointMan.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "WorkingHours");
+
+            migrationBuilder.DropTable(
+                name: "Localities");
 
             migrationBuilder.DropTable(
                 name: "Appointments");
@@ -938,7 +1196,13 @@ namespace AppointMan.Infrastructure.Migrations
                 name: "BusinessCategories");
 
             migrationBuilder.DropTable(
+                name: "Districts");
+
+            migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Cities");
         }
     }
 }

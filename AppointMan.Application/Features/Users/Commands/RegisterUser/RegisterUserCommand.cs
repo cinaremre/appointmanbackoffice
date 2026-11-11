@@ -13,5 +13,10 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
         public string Password { get; set; }
         public EnumUserRole Role { get; set; } = EnumUserRole.Customer;
         public DateTime? DateOfBirth { get; set; }
+
+        // Kullanicinin kayitli oldugu il / ilce.
+        // Aramalarda kriter bos geldiginde varsayilan konum olarak kullanilir.
+        public int? CityId { get; set; }
+        public int? DistrictId { get; set; }
     }
 }

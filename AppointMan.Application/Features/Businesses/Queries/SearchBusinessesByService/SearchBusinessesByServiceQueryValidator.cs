@@ -6,15 +6,23 @@ namespace AppointMan.Application.Features.Businesses.Queries.SearchBusinessesByS
     {
         public SearchBusinessesByServiceQueryValidator()
         {
-            RuleFor(x => x.City)
-                .NotEmpty()
-                .WithMessage("Sehir bos olamaz.")
-                .MaximumLength(50)
-                .WithMessage("Sehir en fazla 50 karakter olmalidir.");
+            RuleFor(x => x.CityId)
+                .GreaterThan(0)
+                .When(x => x.CityId.HasValue)
+                .WithMessage("Sehir ID gecersiz.");
 
-            RuleFor(x => x.District)
-                .MaximumLength(50)
-                .WithMessage("Ilce en fazla 50 karakter olmalidir.");
+            RuleFor(x => x.DistrictId)
+                .GreaterThan(0)
+                .When(x => x.DistrictId.HasValue)
+                .WithMessage("Ilce ID gecersiz.");
+
+            RuleFor(x => x.LocalityId)
+                .GreaterThan(0)
+                .WithMessage("Locality ID gecersiz.");
+
+            RuleFor(x => x.NeighborhoodId)
+                .GreaterThan(0)
+                .WithMessage("Mahalle ID gecersiz.");
 
             RuleFor(x => x.ServiceSearchTerm)
                 .MaximumLength(100)

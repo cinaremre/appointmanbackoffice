@@ -11,10 +11,14 @@ namespace AppointMan.Application.Features.Businesses.Queries.SearchBusinesses
     public class SearchBusinessesQueryHandler : IRequestHandler<SearchBusinessesQuery, Result<List<BusinessDto>>>
     {
         private readonly IRepository<Business> _businessRepository;
+        private readonly IRepository<User> _userRepository;
 
-        public SearchBusinessesQueryHandler(IRepository<Business> businessRepository)
+        public SearchBusinessesQueryHandler(
+            IRepository<Business> businessRepository,
+            IRepository<User> userRepository)
         {
             _businessRepository = businessRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<Result<List<BusinessDto>>> Handle(SearchBusinessesQuery request, CancellationToken cancellationToken)
@@ -34,15 +38,47 @@ namespace AppointMan.Application.Features.Businesses.Queries.SearchBusinesses
                     predicate = predicate.AndAlso(b => b.CategoryId == categoryId);
                 }
 
-                // 3. Sehir filtresi (zorunlu)
-                var city = request.City.Trim().ToLower();
-                predicate = predicate.AndAlso(b => b.Address.City.ToLower() == city);
+                // 3. Konum cozumleme: istekte gelen deger varsa o kullanilir ve ASLA ezilmez.
+                //    Istekte konum gelmediyse kullanicinin kayitli adresi devreye girer.
+                var cityId = request.CityId;
+                var districtId = request.DistrictId;
+
+                if (!cityId.HasValue && !districtId.HasValue && request.CurrentUserId.HasValue)
+                {
+                    var users = await _userRepository.FindAsync(
+                        u => u.Id == request.CurrentUserId.Value, cancellationToken);
+
+                    var user = users.FirstOrDefault();
+                    if (user is not null)
+                    {
+                        cityId = user.CityId;
+                        districtId = user.DistrictId;
+                    }
+                }
+
+                if (!cityId.HasValue && !districtId.HasValue)
+                    return Result<List<BusinessDto>>.Failure(
+                        Error.BusinessRule("Arama icin sehir veya ilce bilgisi gereklidir."));
+
+                if (cityId.HasValue)
+                    predicate = predicate.AndAlso(b => b.Address.CityId == cityId.Value);
 
                 // 4. Ilce filtresi (opsiyonel)
-                if (!string.IsNullOrWhiteSpace(request.District))
+                if (districtId.HasValue)
                 {
-                    var district = request.District.Trim().ToLower();
-                    predicate = predicate.AndAlso(b => b.Address.District.ToLower() == district);
+                    predicate = predicate.AndAlso(b => b.Address.DistrictId == districtId.Value);
+                }
+
+                // 5. Locality filtresi (opsiyonel)
+                if (request.LocalityId.HasValue)
+                {
+                    predicate = predicate.AndAlso(b => b.Address.LocalityId == request.LocalityId.Value);
+                }
+
+                // 6. Mahalle filtresi (opsiyonel)
+                if (request.NeighborhoodId.HasValue)
+                {
+                    predicate = predicate.AndAlso(b => b.Address.NeighborhoodId == request.NeighborhoodId.Value);
                 }
 
                 // 5. Verileri getir

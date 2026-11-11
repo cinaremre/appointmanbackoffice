@@ -60,7 +60,13 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
                     user.SetDateOfBirth(request.DateOfBirth);
                 }
 
-                // 5. Kaydet
+                // 5. Konum bilgisi (il / ilce) - aramalarda varsayilan konum olarak kullanilir
+                if (request.CityId.HasValue || request.DistrictId.HasValue)
+                {
+                    user.UpdateLocation(request.CityId, request.DistrictId);
+                }
+
+                // 6. Kaydet
                 await _userRepository.AddAsync(user, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 

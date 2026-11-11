@@ -29,6 +29,16 @@ namespace AppointMan.Application.Features.Users.Commands.UpdateUserProfile
             RuleFor(x => x.DateOfBirth)
                 .Must(date => !date.HasValue || date.Value < DateTime.UtcNow.AddYears(-18))
                 .WithMessage("Yaş 18'den büyük olmalıdır.");
+
+            RuleFor(x => x.CityId)
+                .GreaterThan(0)
+                .When(x => x.CityId.HasValue)
+                .WithMessage("Il ID gecersiz.");
+
+            RuleFor(x => x.DistrictId)
+                .GreaterThan(0)
+                .When(x => x.DistrictId.HasValue)
+                .WithMessage("Ilce ID gecersiz.");
         }
     }
 }

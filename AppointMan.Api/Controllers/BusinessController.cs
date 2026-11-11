@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.DTOs;
+﻿using System.Security.Claims;
+using AppointMan.Application.Common.DTOs;
 using AppointMan.Application.Common.Results;
 using AppointMan.Application.Features.Businesses.Commands.ActivateBusiness;
 using AppointMan.Application.Features.Businesses.Commands.CreateBusiness;
@@ -146,17 +147,24 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<List<BusinessDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<List<BusinessDto>>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Search(
-            [FromQuery] Guid? categoryId,
-            [FromQuery] string city,
-            [FromQuery] string? district,
+            [FromQuery] Guid? categoryId = null,
+            [FromQuery] int? cityId = null,
+            [FromQuery] int? districtId = null,
+            [FromQuery] int? localityId = null,
+            [FromQuery] int? neighborhoodId = null,
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 20)
         {
+            // Kullanici girisli ise ID'si sorguya aktarilir: konum kriteri bos
+            // gelirse kullanicinin kayitli il/ilce bilgisi kullanilir.
             var query = new SearchBusinessesQuery
             {
                 CategoryId = categoryId,
-                City = city,
-                District = district,
+                CityId = cityId,
+                DistrictId = districtId,
+                LocalityId = localityId,
+                NeighborhoodId = neighborhoodId,
+                CurrentUserId = GetCurrentUserId(),
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
@@ -189,18 +197,25 @@ namespace AppointMan.Api.Controllers
             [FromQuery] Guid? serviceCategoryId,
             [FromQuery] string? serviceSearchTerm,
             [FromQuery] Guid? businessCategoryId,
-            [FromQuery] string city,
-            [FromQuery] string? district,
+            [FromQuery] int? cityId = null,
+            [FromQuery] int? districtId = null,
+            [FromQuery] int? localityId = null,
+            [FromQuery] int? neighborhoodId = null,
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 20)
         {
+            // Kullanici girisli ise ID'si sorguya aktarilir: konum kriteri bos
+            // gelirse kullanicinin kayitli il/ilce bilgisi kullanilir.
             var query = new SearchBusinessesByServiceQuery
             {
                 ServiceCategoryId = serviceCategoryId,
                 ServiceSearchTerm = serviceSearchTerm,
                 BusinessCategoryId = businessCategoryId,
-                City = city,
-                District = district,
+                CityId = cityId,
+                DistrictId = districtId,
+                LocalityId = localityId,
+                NeighborhoodId = neighborhoodId,
+                CurrentUserId = GetCurrentUserId(),
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
@@ -211,6 +226,21 @@ namespace AppointMan.Api.Controllers
                 return Ok(result);
 
             return BadRequest(result);
+        }
+
+        /// <summary>
+        /// Token icindeki kullanici ID'sini okur. Anonim istekte null doner.
+        /// Arama sorgularinda konum kriteri bos geldiginde kullanicinin kayitli
+        /// il/ilce bilgisini kullanabilmek icin gereklidir.
+        /// </summary>
+        private Guid? GetCurrentUserId()
+        {
+            var rawUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (Guid.TryParse(rawUserId, out var userId))
+                return userId;
+
+            return null;
         }
     }
 }

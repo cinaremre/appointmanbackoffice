@@ -14,8 +14,16 @@ namespace AppointMan.Application.Features.Businesses.Queries.SearchBusinessesByS
         public Guid? BusinessCategoryId { get; set; }
 
         // Konum filtresi
-        public string City { get; set; }
-        public string? District { get; set; }
+        public int? CityId { get; set; }
+        public int? DistrictId { get; set; }
+        public int? LocalityId { get; set; }
+        public int? NeighborhoodId { get; set; }
+
+        /// <summary>
+        /// Istekte konum bilgisi gelmezse kullanicinin kayitli adresini
+        /// kullanabilmek icin gonderilen kullanici ID'si.
+        /// </summary>
+        public Guid? CurrentUserId { get; set; }
 
         // Sayfalama
         public int PageNumber { get; set; } = 1;

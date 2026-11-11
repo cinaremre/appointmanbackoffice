@@ -18,6 +18,13 @@ namespace AppointMan.Infrastructure.Persistence.SeedData
 
             try
             {
+                // 0. Konum verileri (il -> ilce). Isletme adresleri CityId/DistrictId
+                //    ile bu kayitlara bagli oldugu icin en once eklenmelidir.
+                await CitySeed.SeedAsync(context, logger);
+                await DistrictSeed.SeedAsync(context, logger);
+                await LocalitySeed.SeedAsync(context, logger);
+                await NeighborhoodSeed.SeedAsync(context, logger);
+
                 // 1. Kategoriler (bagimsiz)
                 await ServiceCategorySeed.SeedAsync(context, logger);
                 await BusinessCategorySeed.SeedAsync(context, logger);
@@ -104,6 +111,12 @@ namespace AppointMan.Infrastructure.Persistence.SeedData
                 await context.BusinessCategories.ExecuteDeleteAsync();
                 await context.ServiceCategoryTranslations.ExecuteDeleteAsync();
                 await context.ServiceCategories.ExecuteDeleteAsync();
+                // Konum verileri en son silinir: isletmeler CityId/DistrictId ile
+                // bu kayitlara bagli oldugu icin once alt tablolar temizlenmis olmali.
+                await context.Neighborhoods.ExecuteDeleteAsync();
+                await context.Localities.ExecuteDeleteAsync();
+                await context.Districts.ExecuteDeleteAsync();
+                await context.Cities.ExecuteDeleteAsync();
                 await context.Users.ExecuteDeleteAsync();
             }
             finally

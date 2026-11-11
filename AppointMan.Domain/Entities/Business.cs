@@ -153,14 +153,20 @@ namespace AppointMan.Domain.Entities
 
         public void UpdateAddress(Address address)
         {
+            if (address == null)
+                throw new ArgumentNullException(nameof(address));
+
             var oldAddress = Address;
-            Address = address ?? throw new ArgumentNullException(nameof(address));
+            Address = address;
             UpdatedAt = DateTime.UtcNow;
 
             if (oldAddress != address)
             {
                 var updatedEvent = new BusinessUpdatedEvent(Id, Name, OwnerId, BusinessType);
-                updatedEvent.AddChange("Address", oldAddress.GetFullAddress(), address.GetFullAddress());
+                updatedEvent.AddChange(
+                    "Address",
+                    $"CityId: {oldAddress?.CityId}, DistrictId: {oldAddress?.DistrictId}",
+                    $"CityId: {address.CityId}, DistrictId: {address.DistrictId}");
                 AddDomainEvent(updatedEvent);
             }
         }

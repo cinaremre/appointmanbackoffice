@@ -26,6 +26,22 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
 
             builder.OwnsOne(x => x.Address, address =>
             {
+                address.Property(a => a.CityId)
+                    .HasColumnName("CityId")
+                    .IsRequired();
+
+                address.Property(a => a.DistrictId)
+                    .HasColumnName("DistrictId")
+                    .IsRequired(false);
+
+                address.Property(a => a.LocalityId)
+                    .HasColumnName("LocalityId")
+                    .IsRequired(false);
+
+                address.Property(a => a.NeighborhoodId)
+                    .HasColumnName("NeighborhoodId")
+                    .IsRequired(false);
+
                 address.Property(a => a.Street)
                     .HasColumnName("Street")
                     .IsRequired()
@@ -40,26 +56,6 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
                     .HasColumnName("ApartmentNumber")
                     .IsRequired(false)
                     .HasMaxLength(20);
-
-                address.Property(a => a.District)
-                    .HasColumnName("District")
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                address.Property(a => a.City)
-                    .HasColumnName("City")
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                address.Property(a => a.State)
-                    .HasColumnName("State")
-                    .IsRequired(false)
-                    .HasMaxLength(50);
-
-                address.Property(a => a.Country)
-                    .HasColumnName("Country")
-                    .IsRequired()
-                    .HasMaxLength(50);
 
                 address.Property(a => a.PostalCode)
                     .HasColumnName("PostalCode")
@@ -79,9 +75,40 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
                         .HasPrecision(10, 6);
                 });
 
-                // ✅ Index'leri OwnsOne icinde tanimla
-                address.HasIndex(a => a.City);
-                address.HasIndex(a => new { a.City, a.District });
+                address.HasOne<City>()
+                    .WithMany()
+                    .HasForeignKey(a => a.CityId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                address.HasOne<District>()
+                    .WithMany()
+                    .HasForeignKey(a => a.DistrictId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                address.HasOne<Locality>()
+                    .WithMany()
+                    .HasForeignKey(a => a.LocalityId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                address.HasOne<Neighborhood>()
+                    .WithMany()
+                    .HasForeignKey(a => a.NeighborhoodId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                address.HasIndex(a => a.CityId)
+                    .HasDatabaseName("IX_Businesses_CityId");
+
+                address.HasIndex(a => a.DistrictId)
+                    .HasDatabaseName("IX_Businesses_DistrictId");
+
+                address.HasIndex(a => a.LocalityId)
+                    .HasDatabaseName("IX_Businesses_LocalityId");
+
+                address.HasIndex(a => a.NeighborhoodId)
+                    .HasDatabaseName("IX_Businesses_NeighborhoodId");
+
+                address.HasIndex(a => new { a.CityId, a.DistrictId })
+                    .HasDatabaseName("IX_Businesses_CityId_DistrictId");
             });
 
             builder.OwnsOne(x => x.PhoneNumber, phone =>
@@ -169,6 +196,11 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
                 .WithOne(x => x.Business)
                 .HasForeignKey(x => x.BusinessId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(x => x.BlacklistEntries)
+                .WithOne(x => x.Business)
+                .HasForeignKey(x => x.BusinessId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasIndex(x => x.Name);
             builder.HasIndex(x => x.OwnerId);

@@ -74,6 +74,23 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
             builder.Property(x => x.RefreshTokenExpiryTime)
                 .IsRequired(false);
 
+            // Konum: kullanicinin kayitli oldugu il / ilce.
+            builder.Property(x => x.CityId)
+                .IsRequired(false);
+
+            builder.Property(x => x.DistrictId)
+                .IsRequired(false);
+
+            builder.HasOne<City>()
+                .WithMany()
+                .HasForeignKey(x => x.CityId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne<District>()
+                .WithMany()
+                .HasForeignKey(x => x.DistrictId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // Relationships
             builder.HasMany(x => x.Appointments)
                 .WithOne(x => x.User)
@@ -114,6 +131,8 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
             builder.HasIndex(x => x.Email).IsUnique();
             builder.HasIndex(x => x.PhoneNumber).IsUnique();
             builder.HasIndex(x => x.AccountStatus);
+            builder.HasIndex(x => x.CityId);
+            builder.HasIndex(x => x.DistrictId);
         }
     }
 }

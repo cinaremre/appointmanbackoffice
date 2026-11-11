@@ -35,7 +35,13 @@ namespace AppointMan.Application.Features.Users.Commands.UpdateUserProfile
                     request.DateOfBirth,
                     request.ProfilePictureUrl);
 
-                // 3. Kaydet
+                // 3. Konum bilgisi (il / ilce) - sonraki aramalarda guncel konum kullanilir
+                if (request.CityId.HasValue || request.DistrictId.HasValue)
+                {
+                    user.UpdateLocation(request.CityId, request.DistrictId);
+                }
+
+                // 4. Kaydet
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 return Result<Guid>.Success(user.Id);

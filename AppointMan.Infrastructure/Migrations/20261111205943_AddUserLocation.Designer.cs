@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppointMan.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261109124645_EmployeeCreatesOwnAppointments")]
-    partial class EmployeeCreatesOwnAppointments
+    [Migration("20261111205943_AddUserLocation")]
+    partial class AddUserLocation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -173,6 +173,65 @@ namespace AppointMan.Infrastructure.Migrations
                         .IsDescending(false, true);
 
                     b.ToTable("AppointmentHistories", (string)null);
+                });
+
+            modelBuilder.Entity("AppointMan.Domain.Entities.BlacklistEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AppointmentCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("BlacklistedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("BusinessId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("RemoveReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("RemovedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RemovedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlacklistedAt");
+
+                    b.HasIndex("BusinessId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "BusinessId");
+
+                    b.ToTable("BlacklistEntries", (string)null);
                 });
 
             modelBuilder.Entity("AppointMan.Domain.Entities.Business", b =>
@@ -353,6 +412,98 @@ namespace AppointMan.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("BusinessServiceCategories", (string)null);
+                });
+
+            modelBuilder.Entity("AppointMan.Domain.Entities.City", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CountryCode")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("nchar(2)")
+                        .IsFixedLength();
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SearchName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryCode")
+                        .HasDatabaseName("IX_Cities_CountryCode");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("IX_Cities_IsActive");
+
+                    b.HasIndex("SearchName")
+                        .HasDatabaseName("IX_Cities_SearchName");
+
+                    b.ToTable("Cities", (string)null);
+                });
+
+            modelBuilder.Entity("AppointMan.Domain.Entities.District", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SearchName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId")
+                        .HasDatabaseName("IX_Districts_CityId");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("IX_Districts_IsActive");
+
+                    b.HasIndex("SearchName")
+                        .HasDatabaseName("IX_Districts_SearchName");
+
+                    b.HasIndex("CityId", "SearchName")
+                        .HasDatabaseName("IX_Districts_CityId_SearchName");
+
+                    b.ToTable("Districts", (string)null);
                 });
 
             modelBuilder.Entity("AppointMan.Domain.Entities.Employee", b =>
@@ -645,6 +796,98 @@ namespace AppointMan.Infrastructure.Migrations
                     b.ToTable("Favorites", (string)null);
                 });
 
+            modelBuilder.Entity("AppointMan.Domain.Entities.Locality", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DistrictId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SearchName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DistrictId")
+                        .HasDatabaseName("IX_Localities_DistrictId");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("IX_Localities_IsActive");
+
+                    b.HasIndex("SearchName")
+                        .HasDatabaseName("IX_Localities_SearchName");
+
+                    b.HasIndex("DistrictId", "SearchName")
+                        .HasDatabaseName("IX_Localities_DistrictId_SearchName");
+
+                    b.ToTable("Localities", (string)null);
+                });
+
+            modelBuilder.Entity("AppointMan.Domain.Entities.Neighborhood", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<int>("LocalityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SearchName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("IX_Neighborhoods_IsActive");
+
+                    b.HasIndex("LocalityId")
+                        .HasDatabaseName("IX_Neighborhoods_LocalityId");
+
+                    b.HasIndex("SearchName")
+                        .HasDatabaseName("IX_Neighborhoods_SearchName");
+
+                    b.HasIndex("LocalityId", "SearchName")
+                        .HasDatabaseName("IX_Neighborhoods_LocalityId_SearchName");
+
+                    b.ToTable("Neighborhoods", (string)null);
+                });
+
             modelBuilder.Entity("AppointMan.Domain.Entities.Notification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -928,6 +1171,14 @@ namespace AppointMan.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("AccountStatus")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int?>("CityId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -936,6 +1187,9 @@ namespace AppointMan.Infrastructure.Migrations
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("DistrictId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -1000,6 +1254,12 @@ namespace AppointMan.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AccountStatus");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("DistrictId");
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -1102,6 +1362,25 @@ namespace AppointMan.Infrastructure.Migrations
                     b.Navigation("Appointment");
                 });
 
+            modelBuilder.Entity("AppointMan.Domain.Entities.BlacklistEntry", b =>
+                {
+                    b.HasOne("AppointMan.Domain.Entities.Business", "Business")
+                        .WithMany("BlacklistEntries")
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppointMan.Domain.Entities.User", "User")
+                        .WithMany("BlacklistEntries")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Business");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("AppointMan.Domain.Entities.Business", b =>
                 {
                     b.HasOne("AppointMan.Domain.Entities.BusinessCategory", "Category")
@@ -1130,34 +1409,27 @@ namespace AppointMan.Infrastructure.Migrations
                                 .HasColumnType("nvarchar(20)")
                                 .HasColumnName("BuildingNumber");
 
-                            b1.Property<string>("City")
-                                .IsRequired()
-                                .HasMaxLength(50)
-                                .HasColumnType("nvarchar(50)")
-                                .HasColumnName("City");
+                            b1.Property<int>("CityId")
+                                .HasColumnType("int")
+                                .HasColumnName("CityId");
 
-                            b1.Property<string>("Country")
-                                .IsRequired()
-                                .HasMaxLength(50)
-                                .HasColumnType("nvarchar(50)")
-                                .HasColumnName("Country");
+                            b1.Property<int?>("DistrictId")
+                                .HasColumnType("int")
+                                .HasColumnName("DistrictId");
 
-                            b1.Property<string>("District")
-                                .IsRequired()
-                                .HasMaxLength(50)
-                                .HasColumnType("nvarchar(50)")
-                                .HasColumnName("District");
+                            b1.Property<int?>("LocalityId")
+                                .HasColumnType("int")
+                                .HasColumnName("LocalityId");
+
+                            b1.Property<int?>("NeighborhoodId")
+                                .HasColumnType("int")
+                                .HasColumnName("NeighborhoodId");
 
                             b1.Property<string>("PostalCode")
                                 .IsRequired()
                                 .HasMaxLength(20)
                                 .HasColumnType("nvarchar(20)")
                                 .HasColumnName("PostalCode");
-
-                            b1.Property<string>("State")
-                                .HasMaxLength(50)
-                                .HasColumnType("nvarchar(50)")
-                                .HasColumnName("State");
 
                             b1.Property<string>("Street")
                                 .IsRequired()
@@ -1167,14 +1439,46 @@ namespace AppointMan.Infrastructure.Migrations
 
                             b1.HasKey("BusinessId");
 
-                            b1.HasIndex("City");
+                            b1.HasIndex("CityId")
+                                .HasDatabaseName("IX_Businesses_CityId");
 
-                            b1.HasIndex("City", "District");
+                            b1.HasIndex("DistrictId")
+                                .HasDatabaseName("IX_Businesses_DistrictId");
+
+                            b1.HasIndex("LocalityId")
+                                .HasDatabaseName("IX_Businesses_LocalityId");
+
+                            b1.HasIndex("NeighborhoodId")
+                                .HasDatabaseName("IX_Businesses_NeighborhoodId");
+
+                            b1.HasIndex("CityId", "DistrictId")
+                                .HasDatabaseName("IX_Businesses_CityId_DistrictId");
 
                             b1.ToTable("Businesses");
 
                             b1.WithOwner()
                                 .HasForeignKey("BusinessId");
+
+                            b1.HasOne("AppointMan.Domain.Entities.City", null)
+                                .WithMany()
+                                .HasForeignKey("CityId")
+                                .OnDelete(DeleteBehavior.Restrict)
+                                .IsRequired();
+
+                            b1.HasOne("AppointMan.Domain.Entities.District", null)
+                                .WithMany()
+                                .HasForeignKey("DistrictId")
+                                .OnDelete(DeleteBehavior.Restrict);
+
+                            b1.HasOne("AppointMan.Domain.Entities.Locality", null)
+                                .WithMany()
+                                .HasForeignKey("LocalityId")
+                                .OnDelete(DeleteBehavior.Restrict);
+
+                            b1.HasOne("AppointMan.Domain.Entities.Neighborhood", null)
+                                .WithMany()
+                                .HasForeignKey("NeighborhoodId")
+                                .OnDelete(DeleteBehavior.Restrict);
 
                             b1.OwnsOne("AppointMan.Domain.ValueObjects.Coordinates", "Coordinates", b2 =>
                                 {
@@ -1291,6 +1595,17 @@ namespace AppointMan.Infrastructure.Migrations
                     b.Navigation("ServiceCategory");
                 });
 
+            modelBuilder.Entity("AppointMan.Domain.Entities.District", b =>
+                {
+                    b.HasOne("AppointMan.Domain.Entities.City", "City")
+                        .WithMany("Districts")
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("City");
+                });
+
             modelBuilder.Entity("AppointMan.Domain.Entities.Employee", b =>
                 {
                     b.HasOne("AppointMan.Domain.Entities.Business", "Business")
@@ -1367,6 +1682,28 @@ namespace AppointMan.Infrastructure.Migrations
                     b.Navigation("Business");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("AppointMan.Domain.Entities.Locality", b =>
+                {
+                    b.HasOne("AppointMan.Domain.Entities.District", "District")
+                        .WithMany("Localities")
+                        .HasForeignKey("DistrictId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("District");
+                });
+
+            modelBuilder.Entity("AppointMan.Domain.Entities.Neighborhood", b =>
+                {
+                    b.HasOne("AppointMan.Domain.Entities.Locality", "Locality")
+                        .WithMany("Neighborhoods")
+                        .HasForeignKey("LocalityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Locality");
                 });
 
             modelBuilder.Entity("AppointMan.Domain.Entities.Notification", b =>
@@ -1474,6 +1811,19 @@ namespace AppointMan.Infrastructure.Migrations
                     b.Navigation("ServiceCategory");
                 });
 
+            modelBuilder.Entity("AppointMan.Domain.Entities.User", b =>
+                {
+                    b.HasOne("AppointMan.Domain.Entities.City", null)
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AppointMan.Domain.Entities.District", null)
+                        .WithMany()
+                        .HasForeignKey("DistrictId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("AppointMan.Domain.Entities.WorkingHour", b =>
                 {
                     b.HasOne("AppointMan.Domain.Entities.Business", "Business")
@@ -1493,6 +1843,8 @@ namespace AppointMan.Infrastructure.Migrations
             modelBuilder.Entity("AppointMan.Domain.Entities.Business", b =>
                 {
                     b.Navigation("Appointments");
+
+                    b.Navigation("BlacklistEntries");
 
                     b.Navigation("Employees");
 
@@ -1514,6 +1866,16 @@ namespace AppointMan.Infrastructure.Migrations
                     b.Navigation("SubCategories");
                 });
 
+            modelBuilder.Entity("AppointMan.Domain.Entities.City", b =>
+                {
+                    b.Navigation("Districts");
+                });
+
+            modelBuilder.Entity("AppointMan.Domain.Entities.District", b =>
+                {
+                    b.Navigation("Localities");
+                });
+
             modelBuilder.Entity("AppointMan.Domain.Entities.Employee", b =>
                 {
                     b.Navigation("Appointments");
@@ -1523,6 +1885,11 @@ namespace AppointMan.Infrastructure.Migrations
                     b.Navigation("TimeOffs");
 
                     b.Navigation("WorkingHours");
+                });
+
+            modelBuilder.Entity("AppointMan.Domain.Entities.Locality", b =>
+                {
+                    b.Navigation("Neighborhoods");
                 });
 
             modelBuilder.Entity("AppointMan.Domain.Entities.Service", b =>
@@ -1544,6 +1911,8 @@ namespace AppointMan.Infrastructure.Migrations
             modelBuilder.Entity("AppointMan.Domain.Entities.User", b =>
                 {
                     b.Navigation("Appointments");
+
+                    b.Navigation("BlacklistEntries");
 
                     b.Navigation("Employees");
 
