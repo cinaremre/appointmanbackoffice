@@ -90,3 +90,51 @@ Select-String -Path .\AppointMan.Api\appsettings.json -Pattern 'Secret|Password|
 dotnet run --project .\AppointMan.Api\AppointMan.Api.csproj
 # Beklenen: OptionsValidationException / InvalidOperationException ve cikis
 ```
+
+## 7. Graylog Loglama
+
+API, loglari **GELF formati uzerinden UDP** ile Graylog'a gonderir. Konsol loglari da korunur;
+Graylog erisilemezse istek akisi **etkilenmez**, en fazla bir kez `stderr`'e uyari yazilir.
+
+| Degisken | Aciklama | Varsayilan |
+|---|---|---|
+| `GRAYLOG_ENABLED` | `false` ise provider hic kaydedilmez (no-op) | `false` |
+| `GRAYLOG_HOST` | Graylog GELF UDP adresi | `localhost` |
+| `GRAYLOG_PORT` | GELF UDP portu | `12201` |
+| `GRAYLOG_SOURCE` | GELF `host`/`source` alani | `AppointMan.Api` |
+| `GRAYLOG_ENVIRONMENT` | `_environment` alani | bos |
+| `GRAYLOG_MASKED_FIELDS` | Ek maskelenecek alanlar (virgul/noktali virgul ile) | bos |
+
+Environment degiskenleri `appsettings.json` icindeki `Graylog` bolumune **tercih edilir**.
+
+```powershell
+$env:GRAYLOG_ENABLED = "true"
+$env:GRAYLOG_HOST    = "graylog.internal"
+$env:GRAYLOG_PORT    = "12201"
+```
+
+Varsayilan olarak maskelenen alanlar: `password`, `passwordHash`, `currentPassword`, `newPassword`,
+`token`, `accessToken`, `refreshToken`, `refreshTokenHash`, `authorization`, `secret`, `apiKey`,
+`apiKeyHash`, `creditCard`, `cardNumber`, `cvv`, `cvc`, `tckn`, `tcKimlikNo`, `iban`.
+
+> **Not:** Yalnizca `application/json` govdeler loglanir. Form-encoded govdeler (orn. login)
+> yapisal olarak maskelenemedigi icin icerigi hic yazilmaz, `<body_not_logged: ...>` olarak ozetlenir.
+
+## 8. Grafana
+
+Metrik panosunun admin parolasi `.env` uzerinden gelir ve `docker-compose.yml` icinde **hardcode edilmez**.
+
+| Degisken | Aciklama |
+|---|---|
+| `GRAFANA_ADMIN_PASSWORD` | Grafana `admin` kullanicisinin parolasi |
+
+```powershell
+# .env icine guclu bir parola yazin (sablon: .env.example)
+GRAFANA_ADMIN_PASSWORD=<guclu-bir-parola>
+```
+
+Grafana'da anonim erisim ve kullanici kaydi kapalidir (`GF_AUTH_ANONYMOUS_ENABLED=false`,
+`GF_USERS_ALLOW_SIGN_UP=false`). Canli ortamda bu parolayi bir secret store'dan besleyin.
+
+Metrik altyapisinin tamami icin bkz. `docs/observability/metrics.md`.
+

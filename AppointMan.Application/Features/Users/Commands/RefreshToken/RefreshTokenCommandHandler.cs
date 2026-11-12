@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using AppointMan.Application.Common.Diagnostics;
 using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Application.Common.Security;
@@ -13,15 +14,18 @@ namespace AppointMan.Application.Features.Users.Commands.RefreshToken
         private readonly IRepository<User> _userRepository;
         private readonly ITokenService _tokenService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly AppointManMetrics _metrics;
 
         public RefreshTokenCommandHandler(
             IRepository<User> userRepository,
             ITokenService tokenService,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            AppointManMetrics metrics)
         {
             _userRepository = userRepository;
             _tokenService = tokenService;
             _unitOfWork = unitOfWork;
+            _metrics = metrics;
         }
 
         public async Task<Result<RefreshTokenResponse>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
@@ -31,14 +35,20 @@ namespace AppointMan.Application.Features.Users.Commands.RefreshToken
                 // 1. Eski access token'dan kimligi al (imza, issuer ve audience hala dogrulanir).
                 var principal = _tokenService.GetPrincipalFromExpiredToken(request.AccessToken);
                 if (principal is null)
+                {
+                    _metrics.RecordRefreshTokenRotation("invalid");
                     return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Auth.InvalidToken"));
+                }
 
                 // 2. Kullanici kimligini coz; bozuk claim 500 degil 401 uretir.
                 var userIdClaim = principal.FindFirst("userId")?.Value
                     ?? principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                 if (!Guid.TryParse(userIdClaim, out var userId))
+                {
+                    _metrics.RecordRefreshTokenRotation("invalid");
                     return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Auth.InvalidToken"));
+                }
 
                 // 3. Kullaniciyi bul
                 var users = await _userRepository.FindAsync(
@@ -48,7 +58,10 @@ namespace AppointMan.Application.Features.Users.Commands.RefreshToken
                 var user = users.FirstOrDefault();
 
                 if (user is null)
+                {
+                    _metrics.RecordRefreshTokenRotation("invalid");
                     return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Auth.InvalidToken"));
+                }
 
                 // 4. Reuse detection: daha once rotate edilmis bir token tekrar sunulursa
                 //    token hirsizligi varsayilir ve tum oturumlar iptal edilir.
@@ -56,6 +69,8 @@ namespace AppointMan.Application.Features.Users.Commands.RefreshToken
                 {
                     user.RevokeRefreshToken(DateTime.UtcNow);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                    _metrics.RecordRefreshTokenRotation("reused");
 
                     return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Auth.RefreshTokenReused"));
                 }
@@ -67,7 +82,17 @@ namespace AppointMan.Application.Features.Users.Commands.RefreshToken
                     && RefreshTokenHasher.Matches(request.RefreshToken, user.RefreshTokenHash);
 
                 if (!isActiveToken)
+                {
+                    // Distinguish a stale token from a rejected one so the dashboard can tell them apart.
+                    var outcome = user.RefreshTokenExpiresAtUtc.HasValue
+                                  && user.RefreshTokenExpiresAtUtc.Value <= DateTime.UtcNow
+                        ? "expired"
+                        : "invalid";
+
+                    _metrics.RecordRefreshTokenRotation(outcome);
+
                     return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Auth.InvalidRefreshToken"));
+                }
 
                 // 6. Rotasyon: yeni cift uretilir, eski hash onceki slota tasinir.
                 var newAccessToken = _tokenService.GenerateAccessToken(user);
@@ -86,6 +111,8 @@ namespace AppointMan.Application.Features.Users.Commands.RefreshToken
                     RefreshToken = newRefreshToken,
                     Expiration = _tokenService.GetAccessTokenExpiryUtc()
                 };
+
+                _metrics.RecordRefreshTokenRotation("success");
 
                 return Result<RefreshTokenResponse>.Success(response);
             }

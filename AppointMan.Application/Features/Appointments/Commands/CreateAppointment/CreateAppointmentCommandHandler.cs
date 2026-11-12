@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using AppointMan.Application.Common.Abstractions;
+using AppointMan.Application.Common.Diagnostics;
 using AppointMan.Application.Common.Errors;
 using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
@@ -22,6 +23,7 @@ namespace AppointMan.Application.Features.Appointments.Commands.CreateAppointmen
         private readonly IAppointmentBookingGuard _bookingGuard;
         private readonly IDateTimeService _dateTimeService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly AppointManMetrics _metrics;
 
         public CreateAppointmentCommandHandler(
             IRepository<Appointment> appointmentRepository,
@@ -33,7 +35,8 @@ namespace AppointMan.Application.Features.Appointments.Commands.CreateAppointmen
             IRepository<IdempotencyRecord> idempotencyRepository,
             IAppointmentBookingGuard bookingGuard,
             IDateTimeService dateTimeService,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            AppointManMetrics metrics)
         {
             _appointmentRepository = appointmentRepository;
             _businessRepository = businessRepository;
@@ -45,6 +48,7 @@ namespace AppointMan.Application.Features.Appointments.Commands.CreateAppointmen
             _bookingGuard = bookingGuard;
             _dateTimeService = dateTimeService;
             _unitOfWork = unitOfWork;
+            _metrics = metrics;
         }
 
         public async Task<Result<Guid>> Handle(CreateAppointmentCommand request, CancellationToken cancellationToken)
@@ -204,6 +208,9 @@ namespace AppointMan.Application.Features.Appointments.Commands.CreateAppointmen
 
                         await _idempotencyRepository.AddAsync(record, token);
                     }
+
+                    // Business metric: only a genuinely new booking increments the counter.
+                    _metrics.RecordAppointmentCreated();
 
                     return Result<Guid>.Success(appointment.Id);
                 }, IsolationLevel.Serializable, cancellationToken);

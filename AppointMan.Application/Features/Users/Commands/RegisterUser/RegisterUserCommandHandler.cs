@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.Errors;
+﻿using AppointMan.Application.Common.Diagnostics;
+using AppointMan.Application.Common.Errors;
 using AppointMan.Application.Common.Results;
 using AppointMan.Application.Common.Security;
 using AppointMan.Domain.Entities;
@@ -14,13 +15,16 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
     {
         private readonly IRepository<User> _userRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly AppointManMetrics _metrics;
 
         public RegisterUserCommandHandler(
             IRepository<User> userRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            AppointManMetrics metrics)
         {
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
+            _metrics = metrics;
         }
 
         public async Task<Result<Guid>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -82,6 +86,8 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
                 // 7. Kaydet
                 await _userRepository.AddAsync(user, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                _metrics.RecordUserRegistered(user.Role.ToString());
 
                 return Result<Guid>.Success(user.Id);
             }

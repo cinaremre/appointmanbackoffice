@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.Errors;
+﻿using AppointMan.Application.Common.Diagnostics;
+using AppointMan.Application.Common.Errors;
 using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
@@ -12,15 +13,18 @@ namespace AppointMan.Application.Features.Appointments.Commands.CancelAppointmen
         private readonly IRepository<Appointment> _appointmentRepository;
         private readonly IDateTimeService _dateTimeService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly AppointManMetrics _metrics;
 
         public CancelAppointmentCommandHandler(
             IRepository<Appointment> appointmentRepository,
             IDateTimeService dateTimeService,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            AppointManMetrics metrics)
         {
             _appointmentRepository = appointmentRepository;
             _dateTimeService = dateTimeService;
             _unitOfWork = unitOfWork;
+            _metrics = metrics;
         }
 
         public async Task<Result<Guid>> Handle(CancelAppointmentCommand request, CancellationToken cancellationToken)
@@ -43,6 +47,8 @@ namespace AppointMan.Application.Features.Appointments.Commands.CancelAppointmen
 
                 // 4. Kaydet
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                _metrics.RecordAppointmentCancelled();
 
                 return Result<Guid>.Success(appointment.Id);
             }

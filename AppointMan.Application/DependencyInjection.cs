@@ -1,4 +1,5 @@
 ﻿using AppointMan.Application.Common.Behaviors;
+using AppointMan.Application.Common.Diagnostics;
 using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Services;
 using FluentValidation;
@@ -24,6 +25,9 @@ namespace AppointMan.Application
 
             // TokenService
             services.AddScoped<ITokenService, TokenService>();
+
+            // Business metrics: a single singleton owns the Meter and its instruments.
+            services.AddSingleton<AppointManMetrics>();
 
             return services;
         }

@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# The API exposes metrics at /metrics through the OpenTelemetry Prometheus exporter.
+scrape_configs:
+  - job_name: 'appointman-api'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['appointman-api:8082']
+        labels:
+          service: 'appointman-api'
+          environment: 'development'

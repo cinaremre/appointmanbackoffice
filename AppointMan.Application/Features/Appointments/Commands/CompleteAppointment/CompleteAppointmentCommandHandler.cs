@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.Results;
+﻿using AppointMan.Application.Common.Diagnostics;
+using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
@@ -10,13 +11,16 @@ namespace AppointMan.Application.Features.Appointments.Commands.CompleteAppointm
     {
         private readonly IRepository<Appointment> _appointmentRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly AppointManMetrics _metrics;
 
         public CompleteAppointmentCommandHandler(
             IRepository<Appointment> appointmentRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            AppointManMetrics metrics)
         {
             _appointmentRepository = appointmentRepository;
             _unitOfWork = unitOfWork;
+            _metrics = metrics;
         }
 
         public async Task<Result<Guid>> Handle(CompleteAppointmentCommand request, CancellationToken cancellationToken)
@@ -37,6 +41,8 @@ namespace AppointMan.Application.Features.Appointments.Commands.CompleteAppointm
 
                 // 4. Kaydet
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                _metrics.RecordAppointmentCompleted();
 
                 return Result<Guid>.Success(appointment.Id);
             }

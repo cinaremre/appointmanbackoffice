@@ -11,10 +11,22 @@ namespace AppointMan.Api.Middleware
     /// Tum istisnalari tek noktada HTTP yanitina cevirir ve lokalizasyon
     /// anahtarlarini aktif kulturde cozer. Istemciye istisna tipi veya
     /// stack trace sizdirilmaz; <c>Detail</c> yalnizca gelistirme ortaminda dolar.
-    /// Her yanit, logla eslesmesi icin bir <c>correlationId</c> tasir.
+    /// Yakalanan her istisna yapilandirilmis alanlarla loglanir; stack trace
+    /// GELF uzerinden Graylog'a iletilir.
     /// </summary>
     public class GlobalExceptionMiddleware
     {
+        /// <summary>
+        /// Hata log semasi. Placeholder'lar GELF alanlarina donusur
+        /// (<c>_correlationId</c>, <c>_requestBody</c>, ...).
+        /// </summary>
+        private const string LogTemplate =
+            "HTTP {HttpMethod} {Url} failed with {StatusCode} | " +
+            "correlationId={CorrelationId} userId={UserId} query={Query} " +
+            "requestBody={RequestBody} error={ErrorMessage}";
+
+        private const string UserIdClaimType = "userId";
+
         private readonly RequestDelegate _next;
         private readonly ILogger<GlobalExceptionMiddleware> _logger;
         private readonly ILocalizationService _localizer;
@@ -51,49 +63,130 @@ namespace AppointMan.Api.Middleware
             }
             catch (ValidationException ex)
             {
-                _logger.LogWarning(ex, "Validasyon hatasi");
+                LogException(context, LogLevel.Warning, (int)HttpStatusCode.BadRequest, ex);
                 await HandleValidationExceptionAsync(context, ex);
             }
             catch (DuplicateKeyException ex)
             {
                 // Veritabani tekillik kisiti ihlali: 500 yerine 409 Conflict.
-                _logger.LogWarning(ex, "Tekillik ihlali. Key: {Key}, Index: {IndexName}", ex.Key, ex.IndexName);
+                LogException(context, LogLevel.Warning, (int)HttpStatusCode.Conflict, ex);
                 await HandleDomainExceptionAsync(context, HttpStatusCode.Conflict, "duplicate_key", ex);
             }
             catch (ConcurrencyConflictException ex)
             {
                 // Es zamanli guncelleme cakismasi: istemci tekrar denemeli.
-                _logger.LogWarning(ex, "Es zamanli guncelleme cakismasi. Key: {Key}", ex.Key);
+                LogException(context, LogLevel.Warning, (int)HttpStatusCode.Conflict, ex);
                 await HandleDomainExceptionAsync(context, HttpStatusCode.Conflict, "concurrency_conflict", ex);
             }
             catch (ForbiddenAccessException ex)
             {
                 // Kaynak sahipligi ihlali: 403 Forbidden.
-                _logger.LogWarning(ex, "Yetki ihlali");
+                LogException(context, LogLevel.Warning, (int)HttpStatusCode.Forbidden, ex);
                 await HandleSimpleAsync(context, HttpStatusCode.Forbidden, "forbidden", "Error.Forbidden");
             }
             catch (UnauthorizedAccessException ex)
             {
-                _logger.LogWarning(ex, "Yetkisiz erisim");
+                LogException(context, LogLevel.Warning, (int)HttpStatusCode.Unauthorized, ex);
                 await HandleSimpleAsync(context, HttpStatusCode.Unauthorized, "unauthorized", "Error.Unauthorized");
             }
             catch (KeyNotFoundException ex)
             {
                 // Bulunamayan kaynak: 404 NotFound (varlik sizintisini onlemek icin 403 yerine tercih edilir).
-                _logger.LogWarning(ex, "Kaynak bulunamadi");
+                LogException(context, LogLevel.Warning, (int)HttpStatusCode.NotFound, ex);
                 await HandleSimpleAsync(context, HttpStatusCode.NotFound, "not_found", "Error.NotFound");
             }
             catch (DomainException ex)
             {
                 // Is kurali ihlali: istemci hatasi (400).
-                _logger.LogWarning(ex, "Is kurali ihlali. Key: {Key}", ex.Key);
+                LogException(context, LogLevel.Warning, (int)HttpStatusCode.BadRequest, ex);
                 await HandleDomainExceptionAsync(context, HttpStatusCode.BadRequest, "business_rule", ex);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Beklenmeyen hata");
+                // Beklenmeyen hata: 500 ve Error seviyesinde log.
+                LogException(context, LogLevel.Error, (int)HttpStatusCode.InternalServerError, ex);
                 await HandleUnexpectedAsync(context, ex);
             }
+        }
+
+        /// <summary>
+        /// Istisnayi yapilandirilmis alanlarla loglar. Loglama hatasi yanit uretimini engellemez.
+        /// </summary>
+        /// <param name="context">Gecerli HTTP baglami.</param>
+        /// <param name="level">Kullanilacak log seviyesi (4xx icin Warning, 5xx icin Error).</param>
+        /// <param name="statusCode">Istemciye donulecek HTTP durum kodu.</param>
+        /// <param name="exception">Yakalanan istisna; stack trace loglanir.</param>
+        private void LogException(HttpContext context, LogLevel level, int statusCode, Exception exception)
+        {
+            try
+            {
+                _logger.Log(
+                    level,
+                    exception,
+                    LogTemplate,
+                    context.Request.Method,
+                    context.Request.Path.Value ?? "/",
+                    statusCode,
+                    ResolveCorrelationId(context),
+                    ResolveUserId(context),
+                    context.Request.QueryString.Value ?? string.Empty,
+                    ResolveRequestBody(context),
+                    exception.Message);
+            }
+            catch
+            {
+                // Loglama best effort: hata yanitini asla bozmaz.
+            }
+        }
+
+        /// <summary>
+        /// Correlation id'yi korelasyon middleware'inin biraktigi degerden okur.
+        /// </summary>
+        /// <param name="context">Gecerli HTTP baglami.</param>
+        /// <returns>Istek icin kullanilan correlation id.</returns>
+        private static string ResolveCorrelationId(HttpContext context)
+        {
+            if (context.Items.TryGetValue(CorrelationIdMiddleware.ItemKey, out var value)
+                && value is string correlationId
+                && !string.IsNullOrWhiteSpace(correlationId))
+            {
+                return correlationId;
+            }
+
+            return context.TraceIdentifier;
+        }
+
+        /// <summary>
+        /// Cagirici kimligini token claim'lerinden okur.
+        /// </summary>
+        /// <param name="context">Gecerli HTTP baglami.</param>
+        /// <returns>Kullanici kimligi; anonim isteklerde bos metin.</returns>
+        private static string ResolveUserId(HttpContext context)
+        {
+            var principal = context.User;
+
+            if (principal?.Identity?.IsAuthenticated != true)
+                return string.Empty;
+
+            return principal.FindFirst(UserIdClaimType)?.Value
+                ?? principal.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                ?? string.Empty;
+        }
+
+        /// <summary>
+        /// Istek/yanit loglama middleware'inin biraktigi maskeli govdeyi okur.
+        /// </summary>
+        /// <param name="context">Gecerli HTTP baglami.</param>
+        /// <returns>Maskelenmis istek govdesi; yoksa bos metin.</returns>
+        private static string ResolveRequestBody(HttpContext context)
+        {
+            if (context.Items.TryGetValue(RequestResponseLoggingMiddleware.RequestBodyItemKey, out var value)
+                && value is string body)
+            {
+                return body;
+            }
+
+            return string.Empty;
         }
 
         /// <summary>

@@ -1,6 +1,8 @@
 ﻿using AppointMan.Api.Authorization;
 using AppointMan.Api.Configuration;
 using AppointMan.Api.Localization;
+using AppointMan.Api.Logging;
+using AppointMan.Api.Metrics;
 using AppointMan.Api.Middleware;
 using AppointMan.Api.RateLimiting;
 using AppointMan.Api.Services;
@@ -15,6 +17,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using OpenTelemetry.Metrics;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +26,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.ValidateAllowedHosts(builder.Environment);
 builder.Configuration.GetRequiredConnectionString();
 builder.Services.AddValidatedJwtSettings(builder.Configuration);
+
+// Graylog GELF/UDP loglamasi: konsol log timing korunur, yapilandirma hatasi uygulamayi durdurmaz.
+builder.Logging.AddGraylogLogging(builder.Configuration);
+
+// Metrik hatti: OpenTelemetry toplar, Prometheus /metrics ucundan kazar.
+// Yapilandirma hatasi uygulamayi durdurmaz; metrikler sessizce devre disi kalir.
+builder.Services.AddAppointManMetrics(builder.Configuration);
 
 // Servisleri ekle
 builder.Services.AddApplicationServices();
@@ -151,6 +161,10 @@ app.UseRequestLocalization();
 
 // Korelasyon kimligi hata middleware'inden once uretilir ki loglar ve yanitlar eslesebilsin.
 app.UseMiddleware<CorrelationIdMiddleware>();
+
+// Istek/yanit loglamasi hata middleware'inin disinda olmali: boylece uretilen
+// 4xx/5xx yanitlari da response logunda gorunur.
+app.UseMiddleware<RequestResponseLoggingMiddleware>();
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 // HSTS yalnizca HTTPS uzerinden servis edilen ortamlarda devrede.
@@ -172,6 +186,15 @@ app.UseRateLimiter();
 
 app.UseAuthorization();
 app.MapControllers();
+
+// Prometheus kazima ucu. Canli ortamda ag seviyesinde kisitlanmalidir (reverse proxy / firewall).
+var metricsSettings = builder.Configuration.GetSection(MetricsSettings.SectionName).Get<MetricsSettings>()
+    ?? new MetricsSettings();
+
+if (metricsSettings.Enabled)
+{
+    app.MapPrometheusScrapingEndpoint(metricsSettings.EndpointPath).AllowAnonymous();
+}
 
 // Veritabanini otomatik migrate et ve seed data ekle
 using (var scope = app.Services.CreateScope())

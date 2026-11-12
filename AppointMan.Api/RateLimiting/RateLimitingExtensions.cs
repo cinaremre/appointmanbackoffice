@@ -1,5 +1,6 @@
 ﻿using System.Threading.RateLimiting;
 using AppointMan.Api.Configuration;
+using AppointMan.Api.Metrics;
 
 namespace AppointMan.Api.RateLimiting
 {
@@ -9,6 +10,9 @@ namespace AppointMan.Api.RateLimiting
     public static class RateLimitingExtensions
     {
         private const string AuthenticationPathPrefix = "/api/auth";
+
+        /// <summary>Path used when configuration does not override the metrics endpoint.</summary>
+        private const string DefaultMetricsPath = "/metrics";
 
         /// <summary>
         /// Adds a global rate limiter that partitions by authenticated user (or client IP)
@@ -29,6 +33,12 @@ namespace AppointMan.Api.RateLimiting
                 ?? new RateLimitingSettings();
 
             services.Configure<RateLimitingSettings>(configuration.GetSection(RateLimitingSettings.SectionName));
+
+            // Prometheus scrapes every few seconds; throttling it would create gaps in the dashboards.
+            var metricsPath = configuration.GetSection(MetricsSettings.SectionName)["EndpointPath"];
+
+            if (string.IsNullOrWhiteSpace(metricsPath))
+                metricsPath = DefaultMetricsPath;
 
             services.AddRateLimiter(options =>
             {
@@ -52,6 +62,10 @@ namespace AppointMan.Api.RateLimiting
 
                 options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
                 {
+                    // The scraping endpoint is exempt: rate limiting it would drop metric samples.
+                    if (httpContext.Request.Path.StartsWithSegments(metricsPath, StringComparison.OrdinalIgnoreCase))
+                        return RateLimitPartition.GetNoLimiter("metrics");
+
                     var isAuthenticationRequest = httpContext.Request.Path
                         .StartsWithSegments(AuthenticationPathPrefix, StringComparison.OrdinalIgnoreCase);
 

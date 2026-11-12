@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.Results;
+﻿using AppointMan.Application.Common.Diagnostics;
+using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
@@ -13,19 +14,22 @@ namespace AppointMan.Application.Features.Appointments.Commands.RescheduleAppoin
         private readonly IRepository<Service> _serviceRepository;
         private readonly IRepository<Employee> _employeeRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly AppointManMetrics _metrics;
 
         public RescheduleAppointmentCommandHandler(
             IRepository<Appointment> appointmentRepository,
             IRepository<Business> businessRepository,
             IRepository<Service> serviceRepository,
             IRepository<Employee> employeeRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            AppointManMetrics metrics)
         {
             _appointmentRepository = appointmentRepository;
             _businessRepository = businessRepository;
             _serviceRepository = serviceRepository;
             _employeeRepository = employeeRepository;
             _unitOfWork = unitOfWork;
+            _metrics = metrics;
         }
 
         public async Task<Result<Guid>> Handle(RescheduleAppointmentCommand request, CancellationToken cancellationToken)
@@ -108,6 +112,8 @@ namespace AppointMan.Application.Features.Appointments.Commands.RescheduleAppoin
 
                 // 12. Kaydet
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                _metrics.RecordAppointmentRescheduled();
 
                 return Result<Guid>.Success(appointment.Id);
             }

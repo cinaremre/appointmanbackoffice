@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.Interfaces;
+﻿using AppointMan.Application.Common.Diagnostics;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Application.Common.Security;
 using AppointMan.Domain.Entities;
@@ -13,15 +14,18 @@ namespace AppointMan.Application.Features.Users.Commands.Login
         private readonly IRepository<User> _userRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ITokenService _tokenService;
+        private readonly AppointManMetrics _metrics;
 
         public LoginCommandHandler(
             IRepository<User> userRepository,
             IUnitOfWork unitOfWork,
-            ITokenService tokenService)
+            ITokenService tokenService,
+            AppointManMetrics metrics)
         {
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
             _tokenService = tokenService;
+            _metrics = metrics;
         }
 
         public async Task<Result<LoginResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -33,16 +37,24 @@ namespace AppointMan.Application.Features.Users.Commands.Login
 
                 // Unknown account and wrong password share the same error to prevent account enumeration.
                 if (user is null)
+                {
+                    _metrics.RecordLoginAttempt("invalid_credentials");
                     return Result<LoginResponse>.Failure(Error.Unauthorized("Auth.InvalidCredentials"));
+                }
 
                 // Locked accounts are rejected before the password is even verified.
                 if (user.IsLockedOut)
+                {
+                    _metrics.RecordLoginAttempt("locked");
                     return Result<LoginResponse>.Failure(Error.Unauthorized("Auth.AccountLocked"));
+                }
 
                 if (!BCryptNet.Verify(request.Password, user.PasswordHash))
                 {
                     user.RegisterFailedLogin(AccountLockoutPolicy.MaxFailedAccessAttempts, AccountLockoutPolicy.LockoutDuration);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                    _metrics.RecordLoginAttempt("invalid_credentials");
 
                     return Result<LoginResponse>.Failure(Error.Unauthorized("Auth.InvalidCredentials"));
                 }
@@ -74,6 +86,8 @@ namespace AppointMan.Application.Features.Users.Commands.Login
                         ? User.DefaultLanguageCode
                         : user.LanguageCode
                 };
+
+                _metrics.RecordLoginAttempt("success");
 
                 return Result<LoginResponse>.Success(response);
             }
