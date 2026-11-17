@@ -8,7 +8,7 @@
     public static class PasswordPolicy
     {
         /// <summary>Minimum accepted password length.</summary>
-        public const int MinimumLength = 12;
+        public const int MinimumLength = 8;
 
         /// <summary>Maximum accepted password length; guards against hashing based denial of service.</summary>
         public const int MaximumLength = 128;

@@ -6,6 +6,5 @@ namespace AppointMan.Application.Features.Notifications.Queries.GetUnreadNotific
 {
     public class GetUnreadNotificationsQuery : IRequest<Result<List<NotificationDto>>>
     {
-        public Guid UserId { get; set; }
     }
 }

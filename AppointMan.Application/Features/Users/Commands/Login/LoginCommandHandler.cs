@@ -3,7 +3,9 @@ using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Application.Common.Security;
 using AppointMan.Domain.Entities;
+using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
+using AppointMan.Domain.ValueObjects;
 using MediatR;
 using BCryptNet = BCrypt.Net.BCrypt;
 
@@ -32,8 +34,43 @@ namespace AppointMan.Application.Features.Users.Commands.Login
         {
             try
             {
-                var users = await _userRepository.FindAsync(u => u.Email == request.Email && !u.IsDeleted, cancellationToken);
-                var user = users.FirstOrDefault();
+                var identifier = request.Email?.Trim() ?? string.Empty;
+
+                // Tek alan iki formati da kabul eder: '@' iceriyorsa e-posta, aksi halde telefon.
+                // Alan adi geriye donuk uyumluluk icin "Email" olarak korunmustur.
+                User? user = null;
+
+                if (identifier.Contains('@'))
+                {
+                    var usersByEmail = await _userRepository.FindAsync(
+                        u => u.Email == identifier && !u.IsDeleted, cancellationToken);
+
+                    user = usersByEmail.FirstOrDefault();
+                }
+                else if (!string.IsNullOrWhiteSpace(identifier))
+                {
+                    // PhoneNumber gecersiz girdide DomainException firlatir; bunu kimlik hatasina
+                    // ceviriyoruz ki istemci her durumda ayni sabit cevabi alsin.
+                    PhoneNumber? phoneNumber = null;
+
+                    try
+                    {
+                        phoneNumber = new PhoneNumber(identifier);
+                    }
+                    catch (DomainException)
+                    {
+                        phoneNumber = null;
+                    }
+
+                    if (phoneNumber is not null)
+                    {
+                        // PhoneNumber value converter ile tek kolona map'li; esitlik SQL'e cevrilebilir.
+                        var usersByPhone = await _userRepository.FindAsync(
+                            u => u.PhoneNumber == phoneNumber && !u.IsDeleted, cancellationToken);
+
+                        user = usersByPhone.FirstOrDefault();
+                    }
+                }
 
                 // Unknown account and wrong password share the same error to prevent account enumeration.
                 if (user is null)

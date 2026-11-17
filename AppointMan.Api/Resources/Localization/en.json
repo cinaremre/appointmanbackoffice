@@ -9,7 +9,7 @@
     "Internal": "An unexpected error occurred while processing your request."
   },
   "Auth": {
-    "InvalidCredentials": "The email address or password is incorrect.",
+    "InvalidCredentials": "Your login credentials are incorrect.",
     "InvalidUser": "Invalid user.",
     "Unauthorized": "You need to sign in to perform this action.",
     "TokenExpired": "Your session has expired. Please sign in again.",
@@ -33,7 +33,7 @@
     "PhoneNumberMinLength": "Phone number must be at least 10 characters long.",
     "PhoneNumberMaxLength": "Phone number must be at most 15 characters long.",
     "PasswordRequired": "Password is required.",
-    "PasswordMinLength": "Password must be at least 12 characters long.",
+    "PasswordMinLength": "Password must be at least 8 characters long.",
     "PasswordMaxLength": "Password must be at most 128 characters long.",
     "PasswordComplexity": "Password must contain at least one uppercase letter, one lowercase letter, one digit and one special character.",
     "RoleInvalid": "Invalid user role.",

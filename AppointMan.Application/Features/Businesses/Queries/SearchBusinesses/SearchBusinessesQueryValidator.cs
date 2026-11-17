@@ -6,6 +6,10 @@ namespace AppointMan.Application.Features.Businesses.Queries.SearchBusinesses
     {
         public SearchBusinessesQueryValidator()
         {
+            RuleFor(x => x.City)
+                .MaximumLength(100)
+                .WithMessage("Sehir adi en fazla 100 karakter olabilir.");
+
             RuleFor(x => x.CityId)
                 .GreaterThan(0)
                 .When(x => x.CityId.HasValue)

@@ -49,7 +49,19 @@ namespace AppointMan.Application.Features.Services.Queries.SearchServices
                         (s.Description != null && s.Description.ToLower().Contains(term)));
                 }
 
-                var services = await _serviceRepository.FindAsync(predicate, cancellationToken);
+                // Navigation'lar yuklenmezse DTO'daki ServiceCategoryName "Unknown",
+                // BusinessName ve BusinessAddress null doner. GetName() cevirilere bagli
+                // oldugu icin Translations da include edilir.
+                // Address owned type oldugu icin Business yuklendiginde otomatik gelir.
+                var services = await _serviceRepository.FindWithIncludesAsync(
+                    predicate,
+                    new[]
+                    {
+                        nameof(Service.ServiceCategory),
+                        "ServiceCategory.Translations",
+                        nameof(Service.Business)
+                    },
+                    cancellationToken);
 
                 var pagedServices = services
                     .OrderBy(s => s.Name)

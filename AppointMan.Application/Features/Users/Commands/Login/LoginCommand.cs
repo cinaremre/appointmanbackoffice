@@ -5,6 +5,9 @@ namespace AppointMan.Application.Features.Users.Commands.Login
 {
     public class LoginCommand : IRequest<Result<LoginResponse>>
     {
+        /// <summary>
+        /// Login identifier. Accepts either an e-mail address or a phone number.
+        /// </summary>
         public string Email { get; set; }
         public string Password { get; set; }
     }

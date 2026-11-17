@@ -1,4 +1,5 @@
 ﻿using AppointMan.Application.Common.DTOs;
+using AppointMan.Application.Common.Helpers;
 using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Interfaces;
@@ -33,7 +34,8 @@ namespace AppointMan.Application.Features.WorkingHours.Queries.GetByBusiness
                     StartTime = w.StartTime,
                     EndTime = w.EndTime,
                     IsClosed = w.IsClosed,
-                    DayName = w.DayOfWeek.ToString()
+                    // DayOfWeek.ToString() framework'un Ingilizce adini doner; Turkce ad helper'dan alinir.
+                    DayName = DayNameHelper.ToTurkishName(w.DayOfWeek)
                 }).ToList();
 
                 return Result<List<WorkingHourDto>>.Success(dtos);

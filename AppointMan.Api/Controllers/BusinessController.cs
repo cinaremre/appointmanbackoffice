@@ -142,12 +142,27 @@ namespace AppointMan.Api.Controllers
         /// <summary>
         /// Kategori, sehir ve ilceye gore isletme arar.
         /// </summary>
+        /// <param name="categoryId">Isletme kategorisi (opsiyonel).</param>
+        /// <param name="city">
+        /// Sehir ADI (orn. "Ankara"). Sayisal ID verilmemisse bu ada gore
+        /// City tablosundan ID cozulur.
+        /// </param>
+        /// <param name="cityId">
+        /// Sehir ID'si (opsiyonel). Verilirse <paramref name="city"/> dikkate alinmaz.
+        /// </param>
+        /// <param name="districtId">Ilce ID'si (opsiyonel).</param>
+        /// <param name="localityId">Locality ID'si (opsiyonel).</param>
+        /// <param name="neighborhoodId">Mahalle ID'si (opsiyonel).</param>
+        /// <param name="pageNumber">Sayfa numarasi (varsayilan: 1).</param>
+        /// <param name="pageSize">Sayfa boyutu (varsayilan: 20).</param>
+        /// <returns>Eslesen isletme listesi.</returns>
         [HttpGet("search")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(Result<List<BusinessDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<List<BusinessDto>>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Search(
             [FromQuery] Guid? categoryId = null,
+            [FromQuery] string? city = null,
             [FromQuery] int? cityId = null,
             [FromQuery] int? districtId = null,
             [FromQuery] int? localityId = null,
@@ -160,6 +175,7 @@ namespace AppointMan.Api.Controllers
             var query = new SearchBusinessesQuery
             {
                 CategoryId = categoryId,
+                City = city,
                 CityId = cityId,
                 DistrictId = districtId,
                 LocalityId = localityId,

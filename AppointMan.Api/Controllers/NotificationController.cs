@@ -1,4 +1,5 @@
 ﻿using AppointMan.Application.Common.DTOs;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Application.Features.Notifications.Commands.DeleteNotification;
 using AppointMan.Application.Features.Notifications.Commands.MarkAllAsRead;
@@ -21,10 +22,31 @@ namespace AppointMan.Api.Controllers
     public class NotificationController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ICurrentUserService _currentUser;
 
-        public NotificationController(IMediator mediator)
+        public NotificationController(IMediator mediator, ICurrentUserService currentUser)
         {
             _mediator = mediator;
+            _currentUser = currentUser;
+        }
+
+        /// <summary>
+        /// Route'taki kullanici ID'si ile token'daki kimligin ayni olmasini dogrular.
+        /// Uyusmazsa baska bir kullanicinin bildirimlerine erisim engellenir (IDOR korumasi).
+        /// </summary>
+        /// <param name="routeUserId">Route'tan gelen kullanici ID'si.</param>
+        /// <returns>Dogrulama basarisizsa donulecek sonuc; basariliysa null.</returns>
+        private IActionResult? EnsureOwnership(Guid routeUserId)
+        {
+            var currentUserId = _currentUser.UserId;
+
+            if (currentUserId is null)
+                return Unauthorized();
+
+            if (routeUserId != currentUserId.Value)
+                return StatusCode(StatusCodes.Status403Forbidden);
+
+            return null;
         }
 
         /// <summary>
@@ -59,10 +81,14 @@ namespace AppointMan.Api.Controllers
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10)
         {
+            // Kimlik token'dan cozulur; route'taki ID yalnizca sahiplik dogrulamasi icin kullanilir.
+            var ownership = EnsureOwnership(userId);
+            if (ownership is not null)
+                return ownership;
+
             // 1. Query'yi olustur
             var query = new GetNotificationsByUserQuery
             {
-                UserId = userId,
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
@@ -74,7 +100,7 @@ namespace AppointMan.Api.Controllers
             if (result.IsSuccess)
                 return Ok(result);
 
-            return NotFound(result);
+            return FromError(result);
         }
 
         /// <summary>
@@ -87,8 +113,13 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<List<NotificationDto>>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUnread(Guid userId)
         {
+            // Kimlik token'dan cozulur; route'taki ID yalnizca sahiplik dogrulamasi icin kullanilir.
+            var ownership = EnsureOwnership(userId);
+            if (ownership is not null)
+                return ownership;
+
             // 1. Query'yi olustur
-            var query = new GetUnreadNotificationsQuery { UserId = userId };
+            var query = new GetUnreadNotificationsQuery();
 
             // 2. Mediator ile gonder
             var result = await _mediator.Send(query);
@@ -97,7 +128,7 @@ namespace AppointMan.Api.Controllers
             if (result.IsSuccess)
                 return Ok(result);
 
-            return NotFound(result);
+            return FromError(result);
         }
 
         /// <summary>
@@ -159,17 +190,19 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<int>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> MarkAllAsRead(Guid userId, [FromBody] MarkAllAsReadCommand command)
         {
-            // 1. ID'yi command'e ata
-            command.UserId = userId;
+            // Kimlik token'dan cozulur; route'taki ID yalnizca sahiplik dogrulamasi icin kullanilir.
+            var ownership = EnsureOwnership(userId);
+            if (ownership is not null)
+                return ownership;
 
-            // 2. Mediator ile gonder
+            // 1. Mediator ile gonder
             var result = await _mediator.Send(command);
 
-            // 3. Sonuca gore cevap dondur
+            // 2. Sonuca gore cevap dondur
             if (result.IsSuccess)
                 return Ok(result);
 
-            return BadRequest(result);
+            return FromError(result);
         }
 
         /// <summary>

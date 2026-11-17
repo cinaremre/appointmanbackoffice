@@ -19,7 +19,21 @@ namespace AppointMan.Application.Features.Services.Queries.GetServiceById
         {
             try
             {
-                var service = await _serviceRepository.GetByIdAsync(request.ServiceId, cancellationToken);
+                // Navigation'lar yuklenmezse ServiceCategoryName "Unknown", BusinessName ve
+                // BusinessAddress null doner. GetName() cevirilere bagli oldugu icin
+                // Translations da include edilir. Address owned type oldugu icin
+                // Business yuklendiginde otomatik gelir.
+                var matches = await _serviceRepository.FindWithIncludesAsync(
+                    s => s.Id == request.ServiceId && !s.IsDeleted,
+                    new[]
+                    {
+                        nameof(Service.ServiceCategory),
+                        "ServiceCategory.Translations",
+                        nameof(Service.Business)
+                    },
+                    cancellationToken);
+
+                var service = matches.FirstOrDefault();
                 if (service is null)
                     return Result<ServiceDto>.Failure(Error.NotFound("Hizmet", request.ServiceId.ToString()));
 

@@ -82,5 +82,9 @@ namespace AppointMan.Infrastructure.Services
 
             return DateTime.SpecifyKind(utcDateTime.Add(_businessTimeZoneOffset), DateTimeKind.Unspecified);
         }
+
+        /// <inheritdoc />
+        public DateTime ToUtc(DateTime businessLocalDateTime)
+            => DateTime.SpecifyKind(businessLocalDateTime.Subtract(_businessTimeZoneOffset), DateTimeKind.Utc);
     }
 }

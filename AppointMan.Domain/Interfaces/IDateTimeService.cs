@@ -21,5 +21,12 @@
         /// <param name="utcDateTime">Instant expressed in UTC.</param>
         /// <returns>The same instant as business local wall-clock time.</returns>
         DateTime ToBusinessLocalTime(DateTime utcDateTime);
+
+        /// <summary>
+        /// Converts a business local wall-clock value back to the UTC instant used in storage.
+        /// </summary>
+        /// <param name="businessLocalDateTime">Wall-clock time in the business time zone.</param>
+        /// <returns>The equivalent instant expressed in UTC.</returns>
+        DateTime ToUtc(DateTime businessLocalDateTime);
     }
 }

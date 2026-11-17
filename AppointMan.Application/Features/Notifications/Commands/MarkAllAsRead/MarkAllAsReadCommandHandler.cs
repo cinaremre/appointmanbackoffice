@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.Results;
+﻿using AppointMan.Application.Common.Interfaces;
+using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Interfaces;
 using MediatR;
@@ -9,22 +10,30 @@ namespace AppointMan.Application.Features.Notifications.Commands.MarkAllAsRead
     {
         private readonly IRepository<Notification> _notificationRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService _currentUser;
 
         public MarkAllAsReadCommandHandler(
             IRepository<Notification> notificationRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ICurrentUserService currentUser)
         {
             _notificationRepository = notificationRepository;
             _unitOfWork = unitOfWork;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<int>> Handle(MarkAllAsReadCommand request, CancellationToken cancellationToken)
         {
             try
             {
+                // 0. Kimlik her zaman imzali token'dan gelir; istekteki hicbir alan kullaniciyi temsil etmez.
+                var currentUserId = _currentUser.UserId;
+                if (currentUserId is null)
+                    return Result<int>.Failure(Error.Unauthorized("Auth.InvalidUser"));
+
                 // 1. Okunmamis bildirimleri getir
                 var notifications = await _notificationRepository.FindAsync(
-                    n => n.UserId == request.UserId && !n.IsRead && !n.IsDeleted,
+                    n => n.UserId == currentUserId.Value && !n.IsRead && !n.IsDeleted,
                     cancellationToken);
 
                 var notificationList = notifications.ToList();

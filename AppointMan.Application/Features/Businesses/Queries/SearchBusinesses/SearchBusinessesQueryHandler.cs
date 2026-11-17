@@ -1,6 +1,7 @@
 ﻿using AppointMan.Application.Common.DTOs;
 using AppointMan.Application.Common.Helpers;
 using AppointMan.Application.Common.Results;
+using AppointMan.Domain.Common;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Interfaces;
 using MediatR;
@@ -12,13 +13,16 @@ namespace AppointMan.Application.Features.Businesses.Queries.SearchBusinesses
     {
         private readonly IRepository<Business> _businessRepository;
         private readonly IRepository<User> _userRepository;
+        private readonly IRepository<City> _cityRepository;
 
         public SearchBusinessesQueryHandler(
             IRepository<Business> businessRepository,
-            IRepository<User> userRepository)
+            IRepository<User> userRepository,
+            IRepository<City> cityRepository)
         {
             _businessRepository = businessRepository;
             _userRepository = userRepository;
+            _cityRepository = cityRepository;
         }
 
         public async Task<Result<List<BusinessDto>>> Handle(SearchBusinessesQuery request, CancellationToken cancellationToken)
@@ -42,6 +46,39 @@ namespace AppointMan.Application.Features.Businesses.Queries.SearchBusinesses
                 //    Istekte konum gelmediyse kullanicinin kayitli adresi devreye girer.
                 var cityId = request.CityId;
                 var districtId = request.DistrictId;
+
+                // Istekte sehir ADI geldiyse ID'ye cozulur. Address bir value object oldugu ve
+                // City navigasyonu icermedigi icin once ID cozumu, sonra Address.CityId filtresi gerekir.
+                // CityId doluysa ada hic bakilmaz; sayisal ID her zaman oncelikli.
+                if (!cityId.HasValue && !string.IsNullOrWhiteSpace(request.City))
+                {
+                    var rawCity = request.City.Trim();
+                    var normalized = SearchNormalizer.Normalize(rawCity);
+                    var lowered = rawCity.ToLower();
+
+                    // 1) Tam eslesme (normalize edilmis arama adi veya birebir ad)
+                    var citiesByName = await _cityRepository.FindAsync(
+                        c => c.SearchName == normalized || c.Name.ToLower() == lowered,
+                        cancellationToken);
+
+                    var resolvedCity = citiesByName.FirstOrDefault();
+
+                    // 2) Tam eslesme yoksa kismi eslesmeye dus (orn. "Ankar" -> "Ankara")
+                    if (resolvedCity is null)
+                    {
+                        var citiesByPartial = await _cityRepository.FindAsync(
+                            c => c.SearchName.Contains(normalized) || c.Name.ToLower().Contains(lowered),
+                            cancellationToken);
+
+                        resolvedCity = citiesByPartial.FirstOrDefault();
+                    }
+
+                    if (resolvedCity is null)
+                        return Result<List<BusinessDto>>.Failure(
+                            Error.BusinessRule("Belirtilen sehir bulunamadi."));
+
+                    cityId = resolvedCity.Id;
+                }
 
                 if (!cityId.HasValue && !districtId.HasValue && request.CurrentUserId.HasValue)
                 {
