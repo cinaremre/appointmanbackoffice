@@ -10,6 +10,13 @@ namespace AppointMan.Application.Features.Businesses.Queries.SearchBusinessesByS
         public Guid? ServiceCategoryId { get; set; }
         public string? ServiceSearchTerm { get; set; }
 
+        /// <summary>
+        /// Birlestirilmis arama terimi: isletme adi, hizmet adi veya sehir adindan
+        /// herhangi biri eslesirse isletme listelenir (OR).
+        /// Diger filtrelerle (kategori, konum) AND olarak birlesir.
+        /// </summary>
+        public string? SearchTerm { get; set; }
+
         // Isletme filtresi (opsiyonel)
         public Guid? BusinessCategoryId { get; set; }
 

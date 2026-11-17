@@ -28,6 +28,23 @@ namespace AppointMan.Api.Controllers
         }
 
         /// <summary>
+        /// Hata kodunu dogru HTTP durum koduna esler. Yetki hatasi 404 olarak donulurse
+        /// istemci kaynagin var olmadigini sanar; bu yuzden kod bazli esleme yapilir.
+        /// </summary>
+        /// <param name="result">Basarisiz sonuc.</param>
+        /// <returns>Uygun HTTP durum kodu ile sarilmis sonuc.</returns>
+        private IActionResult FromError<T>(Result<T> result)
+        {
+            return result.Error?.Code switch
+            {
+                "NOT_FOUND" => NotFound(result),
+                "UNAUTHORIZED" => Unauthorized(result),
+                "FORBIDDEN" => StatusCode(StatusCodes.Status403Forbidden, result),
+                _ => BadRequest(result)
+            };
+        }
+
+        /// <summary>
         /// Kullanicinin tum bildirimlerini getirir.
         /// </summary>
         /// <param name="userId">Kullanici ID'si</param>
@@ -93,7 +110,8 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<NotificationDto>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(Guid id)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi olustur.
+            //    Kullanici kimligi handler icinde token'dan cozulur; istekten alinmaz.
             var query = new GetNotificationByIdQuery { NotificationId = id };
 
             // 2. Mediator ile gonder
@@ -103,7 +121,7 @@ namespace AppointMan.Api.Controllers
             if (result.IsSuccess)
                 return Ok(result);
 
-            return NotFound(result);
+            return FromError(result);
         }
 
         /// <summary>
@@ -117,7 +135,7 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> MarkAsRead(Guid id, [FromBody] MarkAsReadCommand command)
         {
-            // 1. ID'yi command'e ata
+            // 1. Route'taki ID'yi command'e ata. Kullanici kimligi handler icinde token'dan cozulur.
             command.NotificationId = id;
 
             // 2. Mediator ile gonder
@@ -127,7 +145,7 @@ namespace AppointMan.Api.Controllers
             if (result.IsSuccess)
                 return Ok(result);
 
-            return BadRequest(result);
+            return FromError(result);
         }
 
         /// <summary>
@@ -165,7 +183,7 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(Guid id, [FromBody] DeleteNotificationCommand command)
         {
-            // 1. ID'yi command'e ata
+            // 1. Route'taki ID'yi command'e ata. Kullanici kimligi handler icinde token'dan cozulur.
             command.NotificationId = id;
 
             // 2. Mediator ile gonder
@@ -175,7 +193,7 @@ namespace AppointMan.Api.Controllers
             if (result.IsSuccess)
                 return Ok(result);
 
-            return BadRequest(result);
+            return FromError(result);
         }
     }
 }

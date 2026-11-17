@@ -28,11 +28,20 @@ namespace AppointMan.Application.Features.ServiceCategories.Queries.GetSubCatego
                     return Result<List<ServiceCategoryDto>>.Failure(
                         Error.NotFound("Kategori", request.CategoryId.ToString()));
 
-                // 2. Alt kategorileri getir
-                var subCategories = await _categoryRepository.FindAsync(
+                // 2. Alt kategorileri getir.
+                //    Translations yuklenmezse GetName() "Unknown" doner; SubCategories/Services
+                //    yuklenmezse IsLeaf(), GetSubCategoryCount() ve GetServiceCount() yanlis olur.
+                var subCategories = await _categoryRepository.FindWithIncludesAsync(
                     c => c.ParentCategoryId == request.CategoryId &&
                          !c.IsDeleted &&
                          (!request.OnlyActive || c.IsActive),
+                    new[]
+                    {
+                        nameof(ServiceCategory.Translations),
+                        "ParentCategory.Translations",
+                        nameof(ServiceCategory.SubCategories),
+                        nameof(ServiceCategory.Services)
+                    },
                     cancellationToken);
 
                 // 3. DTO'ya donustur

@@ -19,9 +19,16 @@ namespace AppointMan.Application.Features.Favorites.Queries.GetByUser
         {
             try
             {
-                // 1. Kullanicinin favorilerini getir
-                var favorites = await _favoriteRepository.FindAsync(
+                // 1. Kullanicinin favorilerini getir.
+                //    Business ve adresi include edilmezse DTO'daki BusinessName ve BusinessAddress
+                //    null kalir. Address bir navigation oldugu icin ic ice yol gerekiyor.
+                var favorites = await _favoriteRepository.FindWithIncludesAsync(
                     f => f.UserId == request.UserId && !f.IsDeleted,
+                    new[]
+                    {
+                        nameof(Favorite.Business),
+                        "Business.Address"
+                    },
                     cancellationToken);
 
                 // 2. Sayfalama

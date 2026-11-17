@@ -28,6 +28,10 @@ namespace AppointMan.Application.Features.Businesses.Queries.SearchBusinessesByS
                 .MaximumLength(100)
                 .WithMessage("Arama terimi en fazla 100 karakter olmalidir.");
 
+            RuleFor(x => x.SearchTerm)
+                .MaximumLength(100)
+                .WithMessage("Arama terimi en fazla 100 karakter olmalidir.");
+
             RuleFor(x => x.PageNumber)
                 .GreaterThanOrEqualTo(1)
                 .WithMessage("Sayfa numarasi 1 veya daha buyuk olmalidir.");

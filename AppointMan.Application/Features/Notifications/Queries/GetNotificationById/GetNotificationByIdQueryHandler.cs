@@ -1,4 +1,5 @@
 ﻿using AppointMan.Application.Common.DTOs;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Interfaces;
@@ -9,25 +10,39 @@ namespace AppointMan.Application.Features.Notifications.Queries.GetNotificationB
     public class GetNotificationByIdQueryHandler : IRequestHandler<GetNotificationByIdQuery, Result<NotificationDto>>
     {
         private readonly IRepository<Notification> _notificationRepository;
+        private readonly ICurrentUserService _currentUser;
 
-        public GetNotificationByIdQueryHandler(IRepository<Notification> notificationRepository)
+        public GetNotificationByIdQueryHandler(
+            IRepository<Notification> notificationRepository,
+            ICurrentUserService currentUser)
         {
             _notificationRepository = notificationRepository;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<NotificationDto>> Handle(GetNotificationByIdQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                // 1. Bildirimi ID'ye gore getir
-                var notification = await _notificationRepository.GetByIdAsync(request.NotificationId, cancellationToken);
+                // 1. Bildirimi ID'ye gore getir (silinmis kayitlar haric)
+                var notifications = await _notificationRepository.FindAsync(
+                    n => n.Id == request.NotificationId && !n.IsDeleted,
+                    cancellationToken);
+
+                var notification = notifications.FirstOrDefault();
 
                 // 2. Bildirim bulunamadiysa hata dondur
                 if (notification is null)
                     return Result<NotificationDto>.Failure(Error.NotFound("Bildirim", request.NotificationId.ToString()));
 
-                // 3. Yetki kontrolu
-                if (notification.UserId != request.UserId)
+                // 3. Yetki kontrolu.
+                //    Aktor kimligi her zaman imzali token'dan gelir; istekteki hicbir alan
+                //    kullaniciyi temsil etmez. Aksi halde istemci baskasinin bildirimini okur.
+                var currentUserId = _currentUser.UserId;
+                if (currentUserId is null)
+                    return Result<NotificationDto>.Failure(Error.Unauthorized("Auth.InvalidUser"));
+
+                if (notification.UserId != currentUserId.Value)
                     return Result<NotificationDto>.Failure(Error.Unauthorized("Bu bildirimi goruntuleme yetkiniz yok."));
 
                 // 4. DTO'ya donustur

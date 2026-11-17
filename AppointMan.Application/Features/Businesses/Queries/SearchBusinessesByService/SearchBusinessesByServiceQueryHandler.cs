@@ -15,17 +15,20 @@ namespace AppointMan.Application.Features.Businesses.Queries.SearchBusinessesByS
         private readonly IRepository<Service> _serviceRepository;
         private readonly IRepository<ServiceCategory> _serviceCategoryRepository;
         private readonly IRepository<User> _userRepository;
+        private readonly IRepository<City> _cityRepository;
 
         public SearchBusinessesByServiceQueryHandler(
             IRepository<Business> businessRepository,
             IRepository<Service> serviceRepository,
             IRepository<ServiceCategory> serviceCategoryRepository,
-            IRepository<User> userRepository)
+            IRepository<User> userRepository,
+            IRepository<City> cityRepository)
         {
             _businessRepository = businessRepository;
             _serviceRepository = serviceRepository;
             _serviceCategoryRepository = serviceCategoryRepository;
             _userRepository = userRepository;
+            _cityRepository = cityRepository;
         }
 
         public async Task<Result<List<BusinessDto>>> Handle(
@@ -102,6 +105,59 @@ namespace AppointMan.Application.Features.Businesses.Queries.SearchBusinessesByS
                     b.IsVerified &&
                     !b.IsDeleted;
 
+                // 3.0. Birlestirilmis arama: isletme adi, hizmet adi veya sehir adi (OR).
+                //      Address bir value object oldugu ve City navigasyonu icermedigi icin
+                //      sehir adi once ID'ye cozulur, ardindan Address.CityId ile filtrelenir.
+                var searchMatchedIds = new List<Guid>();
+                var resolvedCityIds = new List<int>();
+
+                if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+                {
+                    var term = request.SearchTerm.Trim().ToLower();
+
+                    // 3.0.1. Isletme adi
+                    var businessesByName = await _businessRepository.FindAsync(
+                        b => b.Name.ToLower().Contains(term), cancellationToken);
+
+                    foreach (var business in businessesByName)
+                        searchMatchedIds.Add(business.Id);
+
+                    // 3.0.2. Hizmet adi veya aciklamasi
+                    var servicesByTerm = await _serviceRepository.FindAsync(
+                        s => s.IsActive && !s.IsDeleted &&
+                             (s.Name.ToLower().Contains(term) ||
+                              (s.Description != null && s.Description.ToLower().Contains(term))),
+                        cancellationToken);
+
+                    foreach (var service in servicesByTerm)
+                        searchMatchedIds.Add(service.BusinessId);
+
+                    // 3.0.3. Sehir adi (SearchName normalize edilmis alandir)
+                    var citiesByTerm = await _cityRepository.FindAsync(
+                        c => c.Name.ToLower().Contains(term) ||
+                             c.SearchName.Contains(term),
+                        cancellationToken);
+
+                    resolvedCityIds = citiesByTerm.Select(c => c.Id).ToList();
+
+                    if (resolvedCityIds.Count > 0)
+                    {
+                        var cityIds = resolvedCityIds;
+                        var businessesByCity = await _businessRepository.FindAsync(
+                            b => cityIds.Contains(b.Address.CityId), cancellationToken);
+
+                        foreach (var business in businessesByCity)
+                            searchMatchedIds.Add(business.Id);
+                    }
+
+                    // Hicbir alanla eslesme yoksa erken cikis.
+                    if (searchMatchedIds.Count == 0)
+                        return Result<List<BusinessDto>>.Success(new List<BusinessDto>());
+
+                    var matchedIds = searchMatchedIds.Distinct().ToList();
+                    businessPredicate = businessPredicate.AndAlso(b => matchedIds.Contains(b.Id));
+                }
+
                 // 3.1. Isletme ID'leri (hizmet filtresinden)
                 if (matchingBusinessIds != null)
                 {
@@ -136,7 +192,8 @@ namespace AppointMan.Application.Features.Businesses.Queries.SearchBusinessesByS
                     }
                 }
 
-                if (!cityId.HasValue && !districtId.HasValue)
+                // Sehir adiyla yapilan arama da konum sayilir: resolvedCityIds doluysa 400 donulmez.
+                if (!cityId.HasValue && !districtId.HasValue && resolvedCityIds.Count == 0)
                     return Result<List<BusinessDto>>.Failure(
                         Error.BusinessRule("Arama icin sehir veya ilce bilgisi gereklidir."));
 
@@ -144,6 +201,14 @@ namespace AppointMan.Application.Features.Businesses.Queries.SearchBusinessesByS
                 {
                     businessPredicate = businessPredicate.AndAlso(b =>
                         b.Address.CityId == cityId.Value);
+                }
+                else if (!districtId.HasValue && resolvedCityIds.Count > 0)
+                {
+                    // Sehir adi yazildiginda cozulen ID'ler konum kriteri olarak kullanilir.
+                    // Acikca il/ilce verilmisse bu dal devreye girmez, cakisan filtre olusmaz.
+                    var cityIdsForFilter = resolvedCityIds;
+                    businessPredicate = businessPredicate.AndAlso(b =>
+                        cityIdsForFilter.Contains(b.Address.CityId));
                 }
 
                 // 3.4. Ilce (opsiyonel)

@@ -28,7 +28,11 @@ namespace AppointMan.Application.Features.Employees.Queries.GetEmployeesByBusine
                     predicate = predicate.AndAlso(e => e.IsActive == request.IsActive.Value);
                 }
 
-                var employees = await _employeeRepository.FindAsync(predicate, cancellationToken);
+                // Business navigasyonu yuklenmezse DTO'daki BusinessName her zaman null kalir.
+                var employees = await _employeeRepository.FindWithIncludesAsync(
+                    predicate,
+                    new[] { nameof(Employee.Business) },
+                    cancellationToken);
 
                 var pagedEmployees = employees
                     .OrderBy(e => e.DisplayOrder)

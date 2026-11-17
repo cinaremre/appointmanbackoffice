@@ -11,27 +11,39 @@ namespace AppointMan.Application.Features.Employees.Queries.GetAvailableEmployee
         private readonly IRepository<Employee> _employeeRepository;
         private readonly IRepository<Appointment> _appointmentRepository;
         private readonly IRepository<Service> _serviceRepository;
+        private readonly IDateTimeService _dateTimeService;
 
         public GetAvailableEmployeesQueryHandler(
             IRepository<Employee> employeeRepository,
             IRepository<Appointment> appointmentRepository,
-            IRepository<Service> serviceRepository)
+            IRepository<Service> serviceRepository,
+            IDateTimeService dateTimeService)
         {
             _employeeRepository = employeeRepository;
             _appointmentRepository = appointmentRepository;
             _serviceRepository = serviceRepository;
+            _dateTimeService = dateTimeService;
         }
 
         public async Task<Result<List<EmployeeDto>>> Handle(GetAvailableEmployeesQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                // 1. Isletmenin aktif ve randevu kabul eden calisanlarini getir
-                var employees = await _employeeRepository.FindAsync(
+                // 1. Isletmenin aktif ve randevu kabul eden calisanlarini getir.
+                //    Navigasyonlar yuklenmezse domain kontrolleri sessizce yanlis sonuc verir:
+                //    CanProvideService() her zaman false doner ve sonuc listesi bosalir.
+                var employees = await _employeeRepository.FindWithIncludesAsync(
                     e => e.BusinessId == request.BusinessId &&
                          e.IsActive &&
                          e.IsAvailableForBooking &&
                          !e.IsDeleted,
+                    new[]
+                    {
+                        nameof(Employee.EmployeeServices),   // CanProvideService
+                        nameof(Employee.WorkingHours),       // IsWorkingOn
+                        nameof(Employee.TimeOffs),           // IsOnTimeOff
+                        nameof(Employee.Business)            // BusinessName
+                    },
                     cancellationToken);
 
                 var availableEmployees = employees.ToList();
@@ -52,34 +64,43 @@ namespace AppointMan.Application.Features.Employees.Queries.GetAvailableEmployee
                         return Result<List<EmployeeDto>>.Failure(Error.NotFound("Hizmet", request.ServiceId.Value.ToString()));
 
                     var appointmentDate = request.AppointmentDate.Value;
+
+                    // The API receives UTC instants, but opening hours are stored as local
+                    // wall-clock time-of-day. Comparing against the raw UTC value would shift
+                    // every availability decision by the configured offset.
+                    var businessLocalDate = _dateTimeService.ToBusinessLocalTime(appointmentDate);
+
+                    // Conflict detection keeps using UTC because appointments are persisted in UTC.
                     var startTime = appointmentDate;
                     var endTime = startTime.AddMinutes(service.DurationInMinutes);
 
-                    var filteredEmployees = new List<Employee>();
+                    // Calisma saati ve izin kontrolleri bellekte yapilir; navigasyonlar zaten yuklu.
+                    var scheduleEligible = availableEmployees
+                        .Where(e => e.IsWorkingOn(businessLocalDate) && !e.IsOnTimeOff(businessLocalDate))
+                        .ToList();
 
-                    foreach (var employee in availableEmployees)
+                    if (scheduleEligible.Count == 0)
                     {
-                        // Calisma saati kontrolu
-                        if (!employee.IsWorkingOn(appointmentDate))
-                            continue;
+                        availableEmployees = scheduleEligible;
+                    }
+                    else
+                    {
+                        // Cakisma kontrolu tek sorguda yapilir: calisan basina sorgu (N+1) yerine 1 sorgu.
+                        var candidateIds = scheduleEligible.Select(e => e.Id).ToList();
 
-                        // Izin kontrolu
-                        if (employee.IsOnTimeOff(appointmentDate))
-                            continue;
-
-                        // Cakisma kontrolu
                         var conflicts = await _appointmentRepository.FindAsync(
-                            a => a.EmployeeId == employee.Id &&
+                            a => candidateIds.Contains(a.EmployeeId) &&
                                  a.Status != Domain.Enums.EnumAppointmentStatus.Cancelled &&
                                  a.AppointmentDate < endTime &&
                                  a.AppointmentDate.AddMinutes(a.Service.DurationInMinutes) > startTime,
                             cancellationToken);
 
-                        if (!conflicts.Any())
-                            filteredEmployees.Add(employee);
-                    }
+                        var busyEmployeeIds = conflicts.Select(a => a.EmployeeId).ToHashSet();
 
-                    availableEmployees = filteredEmployees;
+                        availableEmployees = scheduleEligible
+                            .Where(e => !busyEmployeeIds.Contains(e.Id))
+                            .ToList();
+                    }
                 }
 
                 // 4. DTO'ya donustur

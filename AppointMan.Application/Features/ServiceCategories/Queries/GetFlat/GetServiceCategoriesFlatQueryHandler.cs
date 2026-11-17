@@ -22,9 +22,19 @@ namespace AppointMan.Application.Features.ServiceCategories.Queries.GetFlat
         {
             try
             {
-                // 1. Kategorileri getir
-                var categories = await _categoryRepository.FindAsync(
+                // 1. Kategorileri getir.
+                //    Translations yuklenmezse GetName() her kategori icin "Unknown" doner;
+                //    SubCategories/Services yuklenmezse IsLeaf(), GetDepth() ve sayaclar yanlis olur.
+                //    ParentCategory.Translations ic ice yol oldugu icin tek seviye Include yetmez.
+                var categories = await _categoryRepository.FindWithIncludesAsync(
                     c => !c.IsDeleted && (!request.OnlyActive || c.IsActive),
+                    new[]
+                    {
+                        nameof(ServiceCategory.Translations),
+                        "ParentCategory.Translations",
+                        nameof(ServiceCategory.SubCategories),
+                        nameof(ServiceCategory.Services)
+                    },
                     cancellationToken);
 
                 var categoryList = categories.ToList();

@@ -22,7 +22,20 @@ namespace AppointMan.Application.Features.ServiceCategories.Queries.GetById
         {
             try
             {
-                var category = await _categoryRepository.GetByIdAsync(request.CategoryId, cancellationToken);
+                // Translations yuklenmezse GetName() "Unknown" doner; SubCategories/Services
+                // yuklenmezse IsLeaf(), GetSubCategoryCount() ve GetServiceCount() yanlis olur.
+                var matches = await _categoryRepository.FindWithIncludesAsync(
+                    c => c.Id == request.CategoryId && !c.IsDeleted,
+                    new[]
+                    {
+                        nameof(ServiceCategory.Translations),
+                        "ParentCategory.Translations",
+                        nameof(ServiceCategory.SubCategories),
+                        nameof(ServiceCategory.Services)
+                    },
+                    cancellationToken);
+
+                var category = matches.FirstOrDefault();
                 if (category is null)
                     return Result<ServiceCategoryDto>.Failure(
                         Error.NotFound("Kategori", request.CategoryId.ToString()));

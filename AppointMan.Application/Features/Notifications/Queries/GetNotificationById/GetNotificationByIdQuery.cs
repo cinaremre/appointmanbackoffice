@@ -7,6 +7,5 @@ namespace AppointMan.Application.Features.Notifications.Queries.GetNotificationB
     public class GetNotificationByIdQuery : IRequest<Result<NotificationDto>>
     {
         public Guid NotificationId { get; set; }
-        public Guid UserId { get; set; }
     }
 }

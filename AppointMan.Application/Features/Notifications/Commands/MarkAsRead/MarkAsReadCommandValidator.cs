@@ -9,10 +9,6 @@ namespace AppointMan.Application.Features.Notifications.Commands.MarkAsRead
             RuleFor(x => x.NotificationId)
                 .NotEmpty()
                 .WithMessage("Bildirim ID bos olamaz.");
-
-            RuleFor(x => x.UserId)
-                .NotEmpty()
-                .WithMessage("Kullanici ID bos olamaz.");
         }
     }
 }

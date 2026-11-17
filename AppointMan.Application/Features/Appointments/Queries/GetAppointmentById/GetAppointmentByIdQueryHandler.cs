@@ -19,8 +19,21 @@ namespace AppointMan.Application.Features.Appointments.Queries.GetAppointmentByI
         {
             try
             {
-                // 1. Randevuyu ID'ye gore getir
-                var appointment = await _appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken);
+                // 1. Randevuyu ID'ye gore getir.
+                //    Include edilmezse personel, isletme, hizmet ve kullanici alanlari null doner.
+                //    Silinmis kayitlar da 404 dondurur.
+                var matches = await _appointmentRepository.FindWithIncludesAsync(
+                    a => a.Id == request.AppointmentId && !a.IsDeleted,
+                    new[]
+                    {
+                        nameof(Appointment.Employee),   // EmployeeFullName, EmployeeTitle
+                        nameof(Appointment.User),       // UserFullName, UserEmail
+                        nameof(Appointment.Business),   // BusinessName
+                        nameof(Appointment.Service)     // ServiceName
+                    },
+                    cancellationToken);
+
+                var appointment = matches.FirstOrDefault();
 
                 // 2. Randevu bulunamadiysa hata dondur
                 if (appointment is null)

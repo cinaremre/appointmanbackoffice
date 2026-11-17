@@ -42,8 +42,19 @@ namespace AppointMan.Application.Features.Appointments.Queries.GetAppointmentsBy
                     predicate = predicate.AndAlso(a => a.Status == status);
                 }
 
-                // 2. Verileri getir
-                var appointments = await _appointmentRepository.FindAsync(predicate, cancellationToken);
+                // 2. Verileri getir.
+                //    Include edilmezse DTO'daki tum navigation alanlari (personel, isletme,
+                //    hizmet, kullanici) null doner ve duzenleme ekrani bilgi gosteremez.
+                var appointments = await _appointmentRepository.FindWithIncludesAsync(
+                    predicate,
+                    new[]
+                    {
+                        nameof(Appointment.Employee),   // EmployeeFullName, EmployeeTitle
+                        nameof(Appointment.User),       // UserFullName, UserEmail
+                        nameof(Appointment.Business),   // BusinessName
+                        nameof(Appointment.Service)     // ServiceName
+                    },
+                    cancellationToken);
 
                 // 3. Sayfalama
                 var pagedAppointments = appointments

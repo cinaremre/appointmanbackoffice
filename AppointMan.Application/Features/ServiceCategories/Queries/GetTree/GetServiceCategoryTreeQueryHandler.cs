@@ -22,9 +22,19 @@ namespace AppointMan.Application.Features.ServiceCategories.Queries.GetTree
         {
             try
             {
-                // 1. Tum kategorileri getir
-                var allCategories = await _categoryRepository.FindAsync(
+                // 1. Tum kategorileri getir.
+                //    Translations yuklenmezse GetName() "Unknown" doner; SubCategories/Services
+                //    yuklenmezse IsLeaf(), GetSubCategoryCount() ve GetServiceCount() yanlis olur.
+                //    Tum kategoriler tek sorguda geldigi icin EF fixup hiyerarsiyi de baglar.
+                var allCategories = await _categoryRepository.FindWithIncludesAsync(
                     c => !c.IsDeleted && (!request.OnlyActive || c.IsActive),
+                    new[]
+                    {
+                        nameof(ServiceCategory.Translations),
+                        "ParentCategory.Translations",
+                        nameof(ServiceCategory.SubCategories),
+                        nameof(ServiceCategory.Services)
+                    },
                     cancellationToken);
 
                 var categoryList = allCategories.ToList();

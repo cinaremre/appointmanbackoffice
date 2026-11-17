@@ -19,8 +19,14 @@ namespace AppointMan.Application.Features.Employees.Queries.GetEmployeeById
         {
             try
             {
-                // 1. Calisani ID'ye gore getir
-                var employee = await _employeeRepository.GetByIdAsync(request.EmployeeId, cancellationToken);
+                // 1. Calisani ID'ye gore getir.
+                //    Business navigasyonu yuklenmezse DTO'daki BusinessName her zaman null kalir.
+                var matches = await _employeeRepository.FindWithIncludesAsync(
+                    e => e.Id == request.EmployeeId && !e.IsDeleted,
+                    new[] { nameof(Employee.Business) },
+                    cancellationToken);
+
+                var employee = matches.FirstOrDefault();
 
                 // 2. Calisan bulunamadiysa hata dondur
                 if (employee is null)

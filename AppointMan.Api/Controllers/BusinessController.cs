@@ -188,15 +188,20 @@ namespace AppointMan.Api.Controllers
         /// <param name="district">Ilce (opsiyonel)</param>
         /// <param name="pageNumber">Sayfa numarasi (varsayilan: 1)</param>
         /// <param name="pageSize">Sayfa boyutu (varsayilan: 20)</param>
+        /// <param name="searchTerm">
+        /// Birlestirilmis arama terimi: isletme adi, hizmet adi veya sehir adindan biri
+        /// eslesirse isletme listelenir (opsiyonel).
+        /// </param>
         /// <returns>Isletme listesi</returns>
         [HttpGet("search-by-service")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(Result<List<BusinessDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<List<BusinessDto>>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> SearchByService(
-            [FromQuery] Guid? serviceCategoryId,
-            [FromQuery] string? serviceSearchTerm,
-            [FromQuery] Guid? businessCategoryId,
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] Guid? serviceCategoryId = null,
+            [FromQuery] string? serviceSearchTerm = null,
+            [FromQuery] Guid? businessCategoryId = null,
             [FromQuery] int? cityId = null,
             [FromQuery] int? districtId = null,
             [FromQuery] int? localityId = null,
@@ -208,6 +213,7 @@ namespace AppointMan.Api.Controllers
             // gelirse kullanicinin kayitli il/ilce bilgisi kullanilir.
             var query = new SearchBusinessesByServiceQuery
             {
+                SearchTerm = searchTerm,
                 ServiceCategoryId = serviceCategoryId,
                 ServiceSearchTerm = serviceSearchTerm,
                 BusinessCategoryId = businessCategoryId,

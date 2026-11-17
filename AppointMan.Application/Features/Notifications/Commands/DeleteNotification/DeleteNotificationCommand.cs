@@ -6,6 +6,5 @@ namespace AppointMan.Application.Features.Notifications.Commands.DeleteNotificat
     public class DeleteNotificationCommand : IRequest<Result<Guid>>
     {
         public Guid NotificationId { get; set; }
-        public Guid UserId { get; set; }
     }
 }

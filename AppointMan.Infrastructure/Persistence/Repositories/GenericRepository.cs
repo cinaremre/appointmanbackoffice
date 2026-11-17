@@ -45,6 +45,28 @@ namespace AppointMan.Infrastructure.Persistence.Repositories
             return await _dbSet.Where(predicate).ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
+        public virtual async Task<IReadOnlyList<T>> FindWithIncludesAsync(
+            Expression<Func<T, bool>> predicate,
+            string[] includes,
+            CancellationToken cancellationToken = default)
+        {
+            IQueryable<T> query = _dbSet;
+
+            // String based includes are used because a single level Include cannot populate
+            // grandchildren such as "ParentCategory.Translations".
+            if (includes is not null)
+            {
+                foreach (var include in includes)
+                {
+                    if (!string.IsNullOrWhiteSpace(include))
+                        query = query.Include(include.Trim());
+                }
+            }
+
+            return await query.Where(predicate).ToListAsync(cancellationToken).ConfigureAwait(false);
+        }
+
         public virtual async Task<T> AddAsync(T entity, CancellationToken cancellationToken = default)
         {
             await _dbSet.AddAsync(entity, cancellationToken).ConfigureAwait(false);
