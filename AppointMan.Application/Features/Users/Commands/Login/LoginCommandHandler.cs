@@ -96,6 +96,14 @@ namespace AppointMan.Application.Features.Users.Commands.Login
                     return Result<LoginResponse>.Failure(Error.Unauthorized("Auth.InvalidCredentials"));
                 }
 
+                // Sifre dogru ama adres dogrulanmamis: giris engellenir.
+                // Kod ayirt edilebilir; istemci dogrulama ekranina yonlendirebilir.
+                if (!user.IsEmailVerified)
+                {
+                    _metrics.RecordLoginAttempt("email_not_verified");
+                    return Result<LoginResponse>.Failure(Error.Unauthorized("Auth.EmailNotVerified"));
+                }
+
                 var accessToken = _tokenService.GenerateAccessToken(user);
                 var refreshToken = _tokenService.GenerateRefreshToken();
 

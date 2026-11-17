@@ -1,4 +1,5 @@
-﻿using AppointMan.Domain.Enums;
+﻿using System.Security.Cryptography;
+using AppointMan.Domain.Enums;
 using AppointMan.Domain.Events.User;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.ValueObjects;
@@ -32,6 +33,17 @@ namespace AppointMan.Domain.Entities
         public DateTime? RefreshTokenExpiresAtUtc { get; private set; }
         public DateTime? RefreshTokenCreatedAtUtc { get; private set; }
         public DateTime? RefreshTokenRevokedAtUtc { get; private set; }
+
+        // Guvenlik: e-posta dogrulama token'i da yalnizca hash'lenmis olarak saklanir.
+        // Kullanici basina tek aktif token tutulur; yeni token eskisini gecersiz kilar.
+        public string? EmailVerificationTokenHash { get; private set; }
+        public DateTime? EmailVerificationTokenExpiresAt { get; private set; }
+
+        /// <summary>
+        /// Dogrulama e-postasinin en son istendigi zaman (UTC).
+        /// Yeniden gonderme sikligini sinirlamak icin kullanilir.
+        /// </summary>
+        public DateTime? EmailVerificationRequestedAt { get; private set; }
 
         // Guvenlik: brute force korumasi icin basarisiz giris sayaci ve kilit bitis zamani.
         public int AccessFailedCount { get; private set; }
@@ -177,8 +189,38 @@ namespace AppointMan.Domain.Entities
                 return;
 
             IsEmailVerified = true;
+            // Token tek kullanimliktir: dogrulama basarili olunca temizlenir.
+            ClearEmailVerificationToken();
             UpdatedAt = DateTime.UtcNow;
             AddDomainEvent(new UserEmailVerifiedEvent(Id, Email, $"{FirstName} {LastName}"));
+        }
+
+        /// <summary>
+        /// Yeni bir e-posta dogrulama token'i kaydeder ve varsa onceki token'i gecersiz kilar.
+        /// </summary>
+        /// <param name="tokenHash">Ham token'in SHA-256 hash'i; ham deger asla saklanmaz.</param>
+        /// <param name="expiresAt">Token'in mutlak bitis zamani (UTC).</param>
+        /// <param name="requestedAt">E-postanin istendigi zaman (UTC); yeniden gonderme siniri icin.</param>
+        /// <exception cref="DomainException">Token hash'i bos oldugunda firlatilir.</exception>
+        public void IssueEmailVerificationToken(string tokenHash, DateTime expiresAt, DateTime requestedAt)
+        {
+            if (string.IsNullOrWhiteSpace(tokenHash))
+                throw new DomainException("User.EmailVerificationTokenRequired");
+
+            EmailVerificationTokenHash = tokenHash;
+            EmailVerificationTokenExpiresAt = expiresAt;
+            EmailVerificationRequestedAt = requestedAt;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// Aktif e-posta dogrulama token'ini temizler. Token yoksa da cagrilabilir.
+        /// </summary>
+        public void ClearEmailVerificationToken()
+        {
+            EmailVerificationTokenHash = null;
+            EmailVerificationTokenExpiresAt = null;
+            EmailVerificationRequestedAt = null;
         }
 
         public void VerifyPhone()
@@ -457,6 +499,114 @@ namespace AppointMan.Domain.Entities
         public string GetFullName()
         {
             return $"{FirstName} {LastName}";
+        }
+
+        /// <summary>Placeholder first name applied when an account is erased.</summary>
+        private const string AnonymizedFirstName = "Anonim";
+
+        /// <summary>Placeholder last name applied when an account is erased.</summary>
+        private const string AnonymizedLastName = "Kullanici";
+
+        /// <summary>
+        /// Erases every personal data field on the account (KVKK anonymization) and marks
+        /// the record as soft deleted. The row is retained because appointment, review,
+        /// favourite, notification and blacklist rows reference it through Restrict FKs.
+        /// </summary>
+        /// <param name="utcNow">Moment of erasure, stored in <c>UpdatedAt</c> and <c>DeletedAt</c>.</param>
+        /// <returns>The anonymized e-mail address that replaced the original one.</returns>
+        public string AnonymizeAndDelete(DateTime utcNow)
+        {
+            // 1. Dogrudan tanimlayicilar
+            FirstName = AnonymizedFirstName;
+            LastName = AnonymizedLastName;
+
+            // 2. Iletisim tanimlayicilari: her kayit icin benzersiz yer tutucular.
+            //    Sabit bir deger kullanilsaydi ikinci silmede unique index ihlali olurdu.
+            Email = BuildAnonymizedEmail(Id);
+            PhoneNumber = BuildAnonymizedPhoneNumber(Id);
+
+            // 3. Kimlik bilgisi: BCrypt bu degeri asla dogrulayamaz.
+            //    Kolon zorunlu ve 500 karakter sinirli oldugu icin yer tutucu sart.
+            PasswordHash = BuildUnusablePasswordHash();
+
+            // 4. Oturum yetenegi ve dogrulama token'lari temizlenir.
+            RevokeRefreshToken(utcNow);
+            ClearEmailVerificationToken();
+
+            // 5. Davranissal ve dolayli tanimlayicilar silinir.
+            IsEmailVerified = false;
+            IsPhoneVerified = false;
+            DateOfBirth = null;
+            ProfilePictureUrl = null;
+            LastLoginDate = null;
+            CityId = null;
+            DistrictId = null;
+            AccessFailedCount = 0;
+            LockoutEndUtc = null;
+
+            // 6. Dil tercihi, rol ve hesap durumu kisisel veri degildir; korunur.
+
+            // 7. Soft delete: satir referans butunlugu icin kalir.
+            IsDeleted = true;
+            DeletedAt = utcNow;
+            UpdatedAt = utcNow;
+
+            return Email;
+        }
+
+        /// <summary>
+        /// Reports whether the user still owns at least one non deleted business.
+        /// Business ownership must be transferred before the account can be erased.
+        /// </summary>
+        /// <remarks>
+        /// The caller must eager load the OwnedBusinesses navigation; otherwise the
+        /// collection is empty and this method silently returns false.
+        /// </remarks>
+        /// <returns><c>true</c> when ownership transfer is still required.</returns>
+        public bool OwnsAnyBusiness()
+        {
+            return _ownedBusinesses.Any(b => !b.IsDeleted);
+        }
+
+        /// <summary>
+        /// Builds the per-record unique placeholder e-mail for a deleted account.
+        /// </summary>
+        /// <param name="userId">Identifier of the account being erased.</param>
+        /// <returns>Deterministic address of the form deleted-{32 hex}@anonim.local.</returns>
+        private static string BuildAnonymizedEmail(Guid userId)
+        {
+            // 53 karakter: 8 on ek + 32 hex + 13 son ek; Email kolonu 255 karaktere kadar.
+            return $"deleted-{userId:N}@anonim.local";
+        }
+
+        /// <summary>
+        /// Builds the per-record unique placeholder phone number for a deleted account.
+        /// The value is produced through the PhoneNumber value object so its format
+        /// validation and normalization always run.
+        /// </summary>
+        /// <param name="userId">Identifier of the account being erased.</param>
+        /// <returns>A normalized +905XXXXXXXXX PhoneNumber value object.</returns>
+        private static PhoneNumber BuildAnonymizedPhoneNumber(Guid userId)
+        {
+            // Guid baytlarindan 9 haneli sayisal govde uretilir; +905 oneki ile
+            // gecerli bir mobil numara formati elde edilir (toplam 13 karakter).
+            var bytes = userId.ToByteArray();
+            var seed = BitConverter.ToUInt64(bytes, 0);
+            var body = (int)(seed % 1_000_000_000);
+
+            return new PhoneNumber($"+905{body:D9}");
+        }
+
+        /// <summary>
+        /// Creates a password hash that can never be matched by BCrypt verification.
+        /// </summary>
+        /// <returns>Opaque placeholder string within the 500 character column limit.</returns>
+        private static string BuildUnusablePasswordHash()
+        {
+            // BCrypt bu degeri asla dogrulayamaz: gecerli bir hash formati degil.
+            var noise = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+
+            return $"!DELETED!{noise}";
         }
     }
 }

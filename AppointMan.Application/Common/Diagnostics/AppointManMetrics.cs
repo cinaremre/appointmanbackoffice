@@ -32,6 +32,7 @@ namespace AppointMan.Application.Common.Diagnostics
         private readonly Counter<long> _appointmentsCompleted;
         private readonly Counter<long> _appointmentsRescheduled;
         private readonly Counter<long> _usersRegistered;
+        private readonly Counter<long> _accountsDeleted;
         private readonly Counter<long> _loginAttempts;
         private readonly Counter<long> _refreshTokenRotations;
 
@@ -72,6 +73,11 @@ namespace AppointMan.Application.Common.Diagnostics
                 unit: "{user}",
                 description: "Number of self service registrations.");
 
+            _accountsDeleted = _meter.CreateCounter<long>(
+                "appointman.users.deleted",
+                unit: "{user}",
+                description: "Number of self service account erasures (KVKK anonymization).");
+
             _loginAttempts = _meter.CreateCounter<long>(
                 "appointman.auth.login.attempts",
                 unit: "{attempt}",
@@ -104,6 +110,13 @@ namespace AppointMan.Application.Common.Diagnostics
         /// <param name="role">Role granted at registration; limited to Customer or BusinessOwner.</param>
         public void RecordUserRegistered(string role)
             => _usersRegistered.Add(1, new KeyValuePair<string, object?>(RoleTag, role));
+
+        /// <summary>
+        /// Records a successful self service account erasure.
+        /// Deliberately carries no tags: an identifier would create an unbounded number
+        /// of time series and would also re-introduce personal data into telemetry.
+        /// </summary>
+        public void RecordAccountDeleted() => _accountsDeleted.Add(1);
 
         /// <summary>
         /// Records a login attempt.

@@ -1,5 +1,6 @@
 ﻿using AppointMan.Api.Authorization;
 using AppointMan.Api.Configuration;
+using AppointMan.Api.Email;
 using AppointMan.Api.Localization;
 using AppointMan.Api.Logging;
 using AppointMan.Api.Metrics;
@@ -9,6 +10,7 @@ using AppointMan.Api.Services;
 using AppointMan.Application;
 using AppointMan.Application.Common.Interfaces;
 using AppointMan.Infrastructure;
+using AppointMan.Infrastructure.Extensions;
 using AppointMan.Infrastructure.Persistence.Context;
 using AppointMan.Infrastructure.Persistence.SeedData;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -37,6 +39,11 @@ builder.Services.AddAppointManMetrics(builder.Configuration);
 // Servisleri ekle
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
+
+// E-posta hatti: SMTP yapilandirilmissa gercek gonderim, aksi halde log modu.
+// Gonderim arka planda yurur; kayit akisi SMTP beklemez ve SMTP hatasi kaydi bozmaz.
+builder.Services.AddEmailInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
+builder.Services.AddHostedService<EmailBackgroundService>();
 
 // Lokalizasyon: tr/en kataloglari baslangicta bellege yuklenir (runtime izleme yok)
 builder.Services.AddSingleton<ILocalizationService, JsonLocalizationService>();

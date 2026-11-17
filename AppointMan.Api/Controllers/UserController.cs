@@ -2,6 +2,7 @@
 using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Application.Features.Users.Commands.ChangePassword;
+using AppointMan.Application.Features.Users.Commands.DeleteAccount;
 using AppointMan.Application.Features.Users.Commands.UpdateUserProfile;
 using AppointMan.Application.Features.Users.Commands.UpdateUserLanguage;
 using AppointMan.Application.Features.Users.Commands.VerifyEmail;
@@ -194,6 +195,35 @@ namespace AppointMan.Api.Controllers
                 return Ok(result);
 
             return BadRequest(result);
+        }
+
+        /// <summary>
+        /// Kullanicinin kendi hesabini siler ve kisisel bilgilerini anonimlestirir.
+        /// Aktor her zaman token'dan cozulur; istek govdesinden kullanici ID'si kabul edilmez.
+        /// </summary>
+        /// <param name="command">Mevcut sifreyi tasiyan silme istegi</param>
+        /// <returns>Islem sonucu</returns>
+        [HttpPost("delete-account")]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountCommand command)
+        {
+            // 1. Command'i mediator ile gonder (kimlik handler icinde token'dan cozulur)
+            var result = await _mediator.Send(command);
+
+            // 2. Sonuca gore cevap dondur
+            if (result.IsSuccess)
+                return Ok(result);
+
+            return result.Error?.Code switch
+            {
+                "NOT_FOUND" => NotFound(result),
+                "UNAUTHORIZED" => Unauthorized(result),
+                "FORBIDDEN" => StatusCode(StatusCodes.Status403Forbidden, result),
+                _ => BadRequest(result)
+            };
         }
     }
 }

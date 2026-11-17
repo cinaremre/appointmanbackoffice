@@ -2,7 +2,10 @@
 using AppointMan.Application.Features.Users.Commands.Login;
 using AppointMan.Application.Features.Users.Commands.RefreshToken;
 using AppointMan.Application.Features.Users.Commands.RegisterUser;
+using AppointMan.Application.Features.Users.Commands.ResendVerificationEmail;
+using AppointMan.Application.Features.Users.Commands.VerifyEmailToken;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppointMan.Api.Controllers
@@ -79,6 +82,73 @@ namespace AppointMan.Api.Controllers
                 return Ok(result);
 
             return Unauthorized(result);
+        }
+
+        /// <summary>
+        /// E-posta adresini, e-postadaki baglantidan gelen token ile dogrular.
+        /// Baglanti bir e-posta istemcisinden acildigi icin anonim erisime aciktir.
+        /// </summary>
+        /// <param name="token">Ham dogrulama token'i</param>
+        /// <returns>Dogrulama sonucu</returns>
+        [AllowAnonymous]
+        [HttpGet("verify-email")]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+        {
+            var result = await _mediator.Send(new VerifyEmailTokenCommand { Token = token });
+
+            return MapVerificationResult(result);
+        }
+
+        /// <summary>
+        /// GET varyantiyla ayni islemi govde uzerinden yapar (API istemcileri icin).
+        /// </summary>
+        /// <param name="command">Token'i tasiyan komut</param>
+        /// <returns>Dogrulama sonucu</returns>
+        [AllowAnonymous]
+        [HttpPost("verify-email")]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> VerifyEmailPost([FromBody] VerifyEmailTokenCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            return MapVerificationResult(result);
+        }
+
+        /// <summary>
+        /// Dogrulama e-postasini yeniden gonderir. Yanit, adresin sistemde kayitli
+        /// olup olmadigini sizdirmamak icin her durumda basarili doner.
+        /// </summary>
+        /// <param name="command">E-posta adresini tasiyan komut</param>
+        /// <returns>Istek kabul edildi bilgisi</returns>
+        [AllowAnonymous]
+        [HttpPost("resend-verification")]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ResendVerification([FromBody] ResendVerificationEmailCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            if (result.IsSuccess)
+                return Ok(result);
+
+            return BadRequest(result);
+        }
+
+        /// <summary>
+        /// Dogrulama sonucunu uygun HTTP durum koduna esler.
+        /// Is kurali ihlalleri (gecersiz/suresi gecmis token) 400 doner.
+        /// </summary>
+        /// <param name="result">Komut sonucu</param>
+        /// <returns>Sarilmis sonuc</returns>
+        private IActionResult MapVerificationResult(Result<bool> result)
+        {
+            if (result.IsSuccess)
+                return Ok(result);
+
+            return BadRequest(result);
         }
     }
 }

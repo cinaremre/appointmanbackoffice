@@ -15,7 +15,21 @@
     "TokenExpired": "Oturumunuzun süresi doldu. Lütfen tekrar giriş yapın.",
     "AccountLocked": "Hesabınız kilitlendi. Lütfen destek ekibiyle iletişime geçin.",
     "AccountNotVerified": "Hesabınız henüz doğrulanmadı.",
-    "LoginFailed": "Giriş yapılırken bir hata oluştu."
+    "LoginFailed": "Giriş yapılırken bir hata oluştu.",
+    "EmailNotVerified": "E-posta adresiniz doğrulanmamış. Lütfen e-postanıza gelen doğrulama bağlantısını kullanın.",
+    "InvalidVerificationToken": "Doğrulama bağlantısı geçersiz veya daha önce kullanılmış.",
+    "VerificationTokenExpired": "Doğrulama bağlantısının süresi dolmuş. Lütfen yeni bir bağlantı isteyin.",
+    "EmailAlreadyVerified": "E-posta adresiniz zaten doğrulanmış.",
+    "ResendVerificationCooldown": "Yeni bir doğrulama e-postası istemek için lütfen birkaç dakika bekleyin.",
+    "AccountDeleted": "Hesabınız silindi ve kişisel bilgileriniz anonimleştirildi.",
+    "CurrentPasswordInvalid": "Mevcut şifre doğrulanamadı.",
+    "AccountDeletionBlockedByBusinesses": "İşletme sahibi olduğunuz için hesabınızı silemezsiniz. Lütfen önce işletmelerinizi devredin.",
+    "AccountDeletionFailed": "Hesap silinirken bir hata oluştu.",
+    "UserIdRequired": "Kullanıcı bilgisi bulunamadı."
+  },
+  "Email": {
+    "VerifySubject": "E-posta adresinizi doğrulayın",
+    "VerifyBody": "Merhaba,<br/><br/>Hesabınızı doğrulamak için aşağıdaki bağlantıya tıklayın:<br/><a href=\"{0}\">{0}</a><br/><br/>Bu bağlantı 24 saat geçerlidir. Bu isteği siz yapmadıysanız bu e-postayı yok sayabilirsiniz."
   },
   "Validation": {
     "FirstNameRequired": "İsim boş olamaz.",

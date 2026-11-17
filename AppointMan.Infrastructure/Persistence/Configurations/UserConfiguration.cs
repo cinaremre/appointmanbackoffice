@@ -64,6 +64,21 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasDefaultValue(false);
 
+            // Guvenlik: e-posta dogrulama token'i yalnizca SHA-256 hash'i olarak saklanir.
+            builder.Property(x => x.EmailVerificationTokenHash)
+                .IsRequired(false)
+                .HasMaxLength(64);
+
+            builder.Property(x => x.EmailVerificationTokenExpiresAt)
+                .IsRequired(false);
+
+            builder.Property(x => x.EmailVerificationRequestedAt)
+                .IsRequired(false);
+
+            builder.HasIndex(x => x.EmailVerificationTokenHash)
+                .HasDatabaseName("IX_Users_EmailVerificationTokenHash")
+                .HasFilter("[EmailVerificationTokenHash] IS NOT NULL");
+
             builder.Property(x => x.LastLoginDate)
                 .IsRequired(false);
 

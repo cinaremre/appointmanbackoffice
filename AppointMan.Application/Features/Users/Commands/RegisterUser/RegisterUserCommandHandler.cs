@@ -1,5 +1,8 @@
 ﻿using AppointMan.Application.Common.Diagnostics;
 using AppointMan.Application.Common.Errors;
+using AppointMan.Application.Common.Helpers;
+using AppointMan.Application.Common.Interfaces;
+using AppointMan.Application.Common.Models;
 using AppointMan.Application.Common.Results;
 using AppointMan.Application.Common.Security;
 using AppointMan.Domain.Entities;
@@ -16,15 +19,24 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
         private readonly IRepository<User> _userRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly AppointManMetrics _metrics;
+        private readonly IEmailQueue _emailQueue;
+        private readonly EmailOptions _emailOptions;
+        private readonly ILocalizationService _localizationService;
 
         public RegisterUserCommandHandler(
             IRepository<User> userRepository,
             IUnitOfWork unitOfWork,
-            AppointManMetrics metrics)
+            AppointManMetrics metrics,
+            IEmailQueue emailQueue,
+            EmailOptions emailOptions,
+            ILocalizationService localizationService)
         {
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
             _metrics = metrics;
+            _emailQueue = emailQueue;
+            _emailOptions = emailOptions;
+            _localizationService = localizationService;
         }
 
         public async Task<Result<Guid>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -87,7 +99,22 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
                 await _userRepository.AddAsync(user, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+                // 8. E-posta dogrulama token'i. Ham deger yalnizca e-postada yer alir;
+                //    veritabaninda SHA-256 hash'i saklanir ve token tek kullanimliktir.
+                var rawVerificationToken = Guid.NewGuid().ToString("N");
+
+                user.IssueEmailVerificationToken(
+                    RefreshTokenHasher.Hash(rawVerificationToken),
+                    DateTime.UtcNow.AddHours(_emailOptions.TokenLifetimeHours),
+                    DateTime.UtcNow);
+
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+
                 _metrics.RecordUserRegistered(user.Role.ToString());
+
+                // 9. Dogrulama e-postasi kuyruga verilir; gonderim arka planda yapilir.
+                //    Gonderim hatasi kaydi basarisiz gostermemelidir.
+                TryQueueVerificationEmail(user, rawVerificationToken);
 
                 return Result<Guid>.Success(user.Id);
             }
@@ -107,6 +134,34 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(Error.Internal("User.RegisterFailed", ex.Message));
+            }
+        }
+
+        /// <summary>
+        /// Dogrulama e-postasini kuyruga birakir. Kuyruk veya sablon hatasi
+        /// kayit akisini bozmaz: kullanici daha sonra yeniden gonderim isteyebilir.
+        /// </summary>
+        /// <param name="user">Dogrulanacak kullanici.</param>
+        /// <param name="rawToken">E-postaya yazilacak ham (hash'lenmemis) token.</param>
+        private void TryQueueVerificationEmail(User user, string rawToken)
+        {
+            if (string.IsNullOrWhiteSpace(_emailOptions.VerificationLinkBaseUrl))
+                return;
+
+            try
+            {
+                var link = EmailVerificationLinkBuilder.Build(_emailOptions.VerificationLinkBaseUrl, rawToken);
+
+                _emailQueue.TryEnqueue(new EmailMessage
+                {
+                    To = user.Email,
+                    Subject = _localizationService.Get("Email.VerifySubject"),
+                    HtmlBody = _localizationService.Get("Email.VerifyBody", link)
+                });
+            }
+            catch (Exception)
+            {
+                // E-posta hatasi kullanici olusturmayi geri almaz; idempotent yeniden gonderim vardir.
             }
         }
     }

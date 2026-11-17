@@ -138,3 +138,44 @@ Grafana'da anonim erisim ve kullanici kaydi kapalidir (`GF_AUTH_ANONYMOUS_ENABLE
 
 Metrik altyapisinin tamami icin bkz. `docs/observability/metrics.md`.
 
+## 9. E-posta dogrulama (SMTP)
+
+Kayit sonrasi gonderilen dogrulama e-postasi SMTP uzerinden yollanir. Ayarlar
+`appsettings.json` icindeki `Email` bolumunden okunur ve ortam degiskenleri bu
+degerleri **ezer**.
+
+| Degisken | Aciklama |
+|---|---|
+| `EMAIL_HOST` | SMTP sunucu adresi. **Bos ise uygulama log moduna duser.** |
+| `EMAIL_PORT` | SMTP portu (varsayilan `587`) |
+| `EMAIL_USE_SSL` | `true` / `false` (varsayilan `true`) |
+| `EMAIL_USERNAME` | SMTP kullanici adi (bos ise anonim gonderim denenir) |
+| `EMAIL_PASSWORD` | SMTP sifresi — **asla log'a yazilmaz** |
+| `EMAIL_FROM_ADDRESS` | Gonderen adresi |
+| `EMAIL_FROM_NAME` | Gonderen gorunen adi |
+| `EMAIL_VERIFICATION_LINK_BASE` | Dogrulama ucunun tam adresi; token `?token=...` olarak eklenir |
+
+```powershell
+# .env icine (sablon: .env.example)
+EMAIL_HOST=smtp.ornek.com
+EMAIL_PORT=587
+EMAIL_USE_SSL=true
+EMAIL_USERNAME=no-reply@ornek.com
+EMAIL_PASSWORD=<guclu-bir-parola>
+EMAIL_VERIFICATION_LINK_BASE=https://apiapp.rezervise.com/api/Auth/verify-email
+```
+
+### Davranis
+
+- **Development** ortaminda veya `EMAIL_HOST` bos oldugunda e-posta gonderilmez;
+  icerik uygulama log'una yazilir. Development'ta govde (dogrulama bagi dahil)
+  gorunur, diger ortamlarda token sizmamasi icin yalnizca alici ve konu yazilir.
+- Gonderim **arka planda** yapilir: kayit istegi SMTP gecikmesini veya hatasini
+  beklemez. Kuyruk sinirlidir; doldugunda mesaj reddedilir ve uyari loglanir.
+- SMTP hatasi kayit akisini **bozmaz**; kullanici `resend-verification`
+  ucuyla yeni bag istemelidir.
+
+> **Uretim notu:** `AppointMan.Api/appsettings.json` git-ignored'dir. Canliya
+> alirken `Email` bolumunun sunucudaki bu dosyaya veya ortam degiskenlerine
+> eklendiginden emin olun; aksi halde dogrulama e-postalari gonderilmez.
+

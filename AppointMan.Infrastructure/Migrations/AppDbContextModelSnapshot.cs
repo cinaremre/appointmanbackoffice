@@ -1324,6 +1324,16 @@ namespace AppointMan.Infrastructure.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("Email");
 
+                    b.Property<DateTime?>("EmailVerificationRequestedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EmailVerificationTokenExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmailVerificationTokenHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1418,6 +1428,10 @@ namespace AppointMan.Infrastructure.Migrations
 
                     b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("EmailVerificationTokenHash")
+                        .HasDatabaseName("IX_Users_EmailVerificationTokenHash")
+                        .HasFilter("[EmailVerificationTokenHash] IS NOT NULL");
 
                     b.HasIndex("LanguageCode");
 

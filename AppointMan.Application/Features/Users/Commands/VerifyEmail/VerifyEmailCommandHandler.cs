@@ -27,8 +27,11 @@ namespace AppointMan.Application.Features.Users.Commands.VerifyEmail
         {
             try
             {
-                // 1. Kullanici kontrolu
-                var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
+                // 1. Kullanici kontrolu. Silinmis hesap dogrulanamaz.
+                var users = await _userRepository.FindAsync(
+                    u => u.Id == request.UserId && !u.IsDeleted, cancellationToken);
+
+                var user = users.FirstOrDefault();
                 if (user is null)
                     return Result<Guid>.Failure(Error.NotFound("Kullanici", request.UserId.ToString()));
 
