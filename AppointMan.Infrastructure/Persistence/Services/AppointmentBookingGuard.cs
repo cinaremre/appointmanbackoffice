@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore;
 namespace AppointMan.Infrastructure.Persistence.Services
 {
     /// <summary>
-    /// Rezervasyon cakismasini SERIALIZABLE izolasyon altinda kontrol eder.
-    /// SERIALIZABLE, ayni yuklem icin key-range kilidi kurdugundan iki paralel
-    /// istegin ayni zaman araligina randevu eklemesi imkansizdir; check-then-act
-    /// yarisi veritabani seviyesinde serilestirilir.
+    /// Rezervasyon cakisma kontrolunu yapar. Izolasyon seviyesini bu metot degistirmez;
+    /// arayan SERIALIZABLE transaction icinde cagirmalidir. Bu kosul saglandiginda
+    /// aralik kilidi sayesinde iki paralel istegin ayni zaman araligina randevu
+    /// eklemesi engellenir ve check-then-act yarisi serilestirilir.
     /// </summary>
     public sealed class AppointmentBookingGuard : IAppointmentBookingGuard
     {
@@ -33,15 +33,19 @@ namespace AppointMan.Infrastructure.Persistence.Services
             DateTime start,
             DateTime end,
             int fallbackDurationMinutes,
+            Guid? excludeAppointmentId = null,
             CancellationToken cancellationToken = default)
         {
-            // Soft delete global filtresi burada acikca uygulanir.
+            // Soft delete global filtresi IgnoreQueryFilters ile kaldirildigi icin
+            // silinmemis kayit kosulu acikca uygulanir. Null exclude id SQL'de
+            // "<> NULL" ile tum satirlari elediginden HasValue ile korunur.
             return _context.Appointments
                 .IgnoreQueryFilters()
                 .AnyAsync(
                     a => a.EmployeeId == employeeId
                          && !a.IsDeleted
                          && a.Status != EnumAppointmentStatus.Cancelled
+                         && (!excludeAppointmentId.HasValue || a.Id != excludeAppointmentId.Value)
                          && a.AppointmentDate < end
                          && (a.EndTime ?? a.AppointmentDate.AddMinutes(fallbackDurationMinutes)) > start,
                     cancellationToken);

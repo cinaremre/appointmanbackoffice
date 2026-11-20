@@ -1,4 +1,6 @@
-﻿using AppointMan.Application.Common.DTOs;
+﻿using AppointMan.Api.Authorization;
+using AppointMan.Application.Common.DTOs;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Application.Features.Reviews.Commands.AddReview;
 using AppointMan.Application.Features.Reviews.Commands.DeleteReview;
@@ -23,10 +25,31 @@ namespace AppointMan.Api.Controllers
     public class ReviewController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ICurrentUserService _currentUser;
 
-        public ReviewController(IMediator mediator)
+        public ReviewController(IMediator mediator, ICurrentUserService currentUser)
         {
             _mediator = mediator;
+            _currentUser = currentUser;
+        }
+
+        /// <summary>
+        /// Token'dan cozulen kullanici ID'sini dondurur; eksikse Unauthorized uretir.
+        /// Istek govdesindeki UserId degerleri yetki icin kullanilmaz.
+        /// </summary>
+        /// <param name="userId">Dogrulanmis kullanici ID'si.</param>
+        /// <returns>Kimlik eksikse donulecek sonuc; aksi halde null.</returns>
+        private IActionResult? ResolveCurrentUserId(out Guid userId)
+        {
+            var currentUserId = _currentUser.UserId;
+            if (!_currentUser.IsAuthenticated || currentUserId is null)
+            {
+                userId = Guid.Empty;
+                return Unauthorized();
+            }
+
+            userId = currentUserId.Value;
+            return null;
         }
 
         /// <summary>
@@ -128,10 +151,16 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Add([FromBody] AddReviewCommand command)
         {
-            // 1. Command'i mediator ile gonder
+            // 1. UserId her zaman JWT'den alinir; govde degerine guvenilmez.
+            if (ResolveCurrentUserId(out var userId) is { } unauthorized)
+                return unauthorized;
+
+            command.UserId = userId;
+
+            // 2. Command'i mediator ile gonder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 3. Sonuca gore cevap dondur
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -148,10 +177,16 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update([FromBody] UpdateReviewCommand command)
         {
-            // 1. Command'i mediator ile gonder
+            // 1. UserId her zaman JWT'den alinir; govde degerine guvenilmez.
+            if (ResolveCurrentUserId(out var userId) is { } unauthorized)
+                return unauthorized;
+
+            command.UserId = userId;
+
+            // 2. Command'i mediator ile gonder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 3. Sonuca gore cevap dondur
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -169,8 +204,12 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(Guid id, [FromBody] DeleteReviewCommand command)
         {
-            // 1. ID'yi command'e ata
+            // 1. ID ve aktor kimligi guvenilir kaynaklardan alinir.
+            if (ResolveCurrentUserId(out var userId) is { } unauthorized)
+                return unauthorized;
+
             command.ReviewId = id;
+            command.UserId = userId;
 
             // 2. Mediator ile gonder
             var result = await _mediator.Send(command);
@@ -189,7 +228,7 @@ namespace AppointMan.Api.Controllers
         /// <param name="command">Gizleme bilgileri</param>
         /// <returns>Gizlenen yorumun ID'si</returns>
         [HttpPost("{id}/hide")]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Policy = AuthorizationPolicies.AdministratorOnly)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Hide(Guid id, [FromBody] HideReviewCommand command)
@@ -214,7 +253,7 @@ namespace AppointMan.Api.Controllers
         /// <param name="command">Gosterme bilgileri</param>
         /// <returns>Gosterilen yorumun ID'si</returns>
         [HttpPost("{id}/show")]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Policy = AuthorizationPolicies.AdministratorOnly)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Show(Guid id, [FromBody] ShowReviewCommand command)

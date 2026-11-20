@@ -73,6 +73,13 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Cancel([FromBody] CancelAppointmentCommand command)
         {
+            // JWT'den gelen kimlik govdeye yazilan UserId'nin yerine gecer.
+            var requesterId = GetRequesterId();
+            if (requesterId == Guid.Empty)
+                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
+
+            command.UserId = requesterId;
+
             var result = await _mediator.Send(command);
 
             if (result.IsSuccess)
@@ -121,6 +128,13 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Reschedule([FromBody] RescheduleAppointmentCommand command)
         {
+            // JWT'den gelen kimlik govdeye yazilan UserId'nin yerine gecer.
+            var requesterId = GetRequesterId();
+            if (requesterId == Guid.Empty)
+                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
+
+            command.UserId = requesterId;
+
             var result = await _mediator.Send(command);
 
             if (result.IsSuccess)

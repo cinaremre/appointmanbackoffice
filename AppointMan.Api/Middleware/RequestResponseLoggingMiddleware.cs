@@ -157,8 +157,9 @@ namespace AppointMan.Api.Middleware
                 if (contentLength > MaxBodyBytes)
                     return SummarizeOmitted($"{contentLength} bytes");
 
-                // Buffering keeps the body readable for the model binding that follows.
-                context.Request.EnableBuffering();
+                // Buffering keeps the body readable for model binding, but is capped so a
+                // caller cannot force the server to buffer an unbounded request body.
+                context.Request.EnableBuffering(MaxBodyBytes);
                 context.Request.Body.Position = 0;
 
                 using var reader = new StreamReader(

@@ -15,6 +15,11 @@ namespace AppointMan.Application.Features.Reviews.Commands.AddReview
                 .NotEmpty()
                 .WithMessage(localizer.Get("Validation.BusinessIdRequired"));
 
+            // Yorum yalnizca tamamlanmis bir randevuya baglanabilir.
+            RuleFor(x => x.AppointmentId)
+                .NotEmpty()
+                .WithMessage("Randevu ID zorunludur.");
+
             RuleFor(x => x.Rating)
                 .InclusiveBetween(1, 5)
                 .WithMessage(localizer.Get("Validation.RatingRange"));

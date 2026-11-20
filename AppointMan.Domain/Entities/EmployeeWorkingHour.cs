@@ -100,6 +100,48 @@ namespace AppointMan.Domain.Entities
             return timeOfDay >= BreakStartTime.Value && timeOfDay < BreakEndTime.Value;
         }
 
+        /// <summary>
+        /// Araligin tamaminin calisma saatleri icinde kaldigini kontrol eder.
+        /// Saatler isletmenin yerel duvar saatidir; aralik ayni takvim gununde olmalidir.
+        /// </summary>
+        public bool IsWithinWorkingHours(DateTime start, DateTime end)
+        {
+            if (IsClosed || start >= end)
+                return false;
+
+            if (start.TimeOfDay < StartTime)
+                return false;
+
+            // 24:00 bitis saati gun sonunu ifade eder; gece yarisi sinirina izin verilir.
+            if (EndTime >= TimeSpan.FromHours(24))
+            {
+                if (start.Date == end.Date)
+                    return true;
+
+                return end == start.Date.AddDays(1) && end.TimeOfDay == TimeSpan.Zero;
+            }
+
+            return start.Date == end.Date && end.TimeOfDay <= EndTime;
+        }
+
+        /// <summary>
+        /// Araligin mola ile yarim-acik (start dahil, end haric) olarak
+        /// kesisip kesmedigini kontrol eder.
+        /// </summary>
+        public bool OverlapsBreak(DateTime start, DateTime end)
+        {
+            if (!BreakStartTime.HasValue || !BreakEndTime.HasValue || start >= end)
+                return false;
+
+            // 24:00 bitisinde end bir sonraki gunun 00:00'idir; ayni is gunu sayilir.
+            var isMidnightEnd = end == start.Date.AddDays(1) && end.TimeOfDay == TimeSpan.Zero;
+            if (start.Date != end.Date && !isMidnightEnd)
+                return false;
+
+            return start.TimeOfDay < BreakEndTime.Value &&
+                   (end.TimeOfDay > BreakStartTime.Value || isMidnightEnd);
+        }
+
         public TimeSpan GetDuration()
         {
             return EndTime - StartTime;

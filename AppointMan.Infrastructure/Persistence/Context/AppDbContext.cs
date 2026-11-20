@@ -2,22 +2,23 @@
 using AppointMan.Domain.Events;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
-using AppointMan.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using System.Data;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace AppointMan.Infrastructure.Persistence.Context
 {
-    public class AppDbContext : DbContext, IUnitOfWork
+    public class AppDbContext : DbContext
     {
-        private IDbContextTransaction? _currentTransaction;
+        private readonly IDomainEventDispatcher? _domainEventDispatcher;
+        private bool _dispatchingDomainEvents;
 
-        public AppDbContext(DbContextOptions<AppDbContext> options)
+        public AppDbContext(
+            DbContextOptions<AppDbContext> options,
+            IDomainEventDispatcher? domainEventDispatcher = null)
             : base(options)
         {
+            _domainEventDispatcher = domainEventDispatcher;
         }
 
         // ===== DbSet'ler =====
@@ -61,9 +62,17 @@ namespace AppointMan.Infrastructure.Persistence.Context
         /// </summary>
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
+            // Event'ler kayit oncesi snapshot'lanir: kayit sirasinda degisen
+            // entity durumlari sonrasi tekrar okunursa ayni event kacirilabilir.
+            var pendingEvents = SnapshotDomainEvents();
+
             try
             {
-                return await base.SaveChangesAsync(cancellationToken);
+                var result = await base.SaveChangesAsync(cancellationToken);
+
+                await DispatchDomainEventsAsync(pendingEvents, cancellationToken);
+
+                return result;
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -96,6 +105,60 @@ namespace AppointMan.Infrastructure.Persistence.Context
                 }
 
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// Takip edilen aggregate'lerde biriken domain event'lerini kayit oncesinde kopyalar.
+        /// </summary>
+        /// <returns>Kaynak aggregate'leriyle birlikte bekleyen event'ler.</returns>
+        private List<(IAggregateRoot Aggregate, IDomainEvent Event)> SnapshotDomainEvents()
+        {
+            if (_domainEventDispatcher is null || _dispatchingDomainEvents)
+                return new List<(IAggregateRoot, IDomainEvent)>();
+
+            return ChangeTracker.Entries<IAggregateRoot>()
+                .SelectMany(entry => entry.Entity.DomainEvents.Select(
+                    domainEvent => (Aggregate: entry.Entity, Event: domainEvent)))
+                .ToList();
+        }
+
+        /// <summary>
+        /// Kayit basariliysa event'leri yayinlar ve kaynak aggregate'lerden temizler.
+        /// </summary>
+        /// <param name="pendingEvents">Kayit oncesi alinan event snapshot'i.</param>
+        /// <param name="cancellationToken">Iptal tokeni.</param>
+        private async Task DispatchDomainEventsAsync(
+            IReadOnlyCollection<(IAggregateRoot Aggregate, IDomainEvent Event)> pendingEvents,
+            CancellationToken cancellationToken)
+        {
+            if (pendingEvents.Count == 0)
+                return;
+
+            // Bir event handler ayni context uzerinde tekrar SaveChangesAsync
+            // cagirabilir; bu bayrak ayni snapshot'in iki kez yayinlanmasini engeller.
+            _dispatchingDomainEvents = true;
+
+            try
+            {
+                await _domainEventDispatcher!.DispatchAsync(
+                    pendingEvents.Select(pending => pending.Event).ToList(),
+                    cancellationToken);
+            }
+            catch
+            {
+                // Transaction icinde yayin hatasi sessizce gecilirse commit
+                // kismi islenmis bir degisikligi kalici hale getirir. Transaction
+                // disinda kayit zaten tamamlandigindan yanit bozulmaz.
+                if (Database.CurrentTransaction is not null)
+                    throw;
+            }
+            finally
+            {
+                foreach (var pending in pendingEvents)
+                    pending.Aggregate.ClearDomainEvents();
+
+                _dispatchingDomainEvents = false;
             }
         }
 
@@ -146,100 +209,6 @@ namespace AppointMan.Infrastructure.Persistence.Context
                     => "Bu telefon numarasi zaten kayitli.",
                 _ => "Bu kayit zaten mevcut."
             };
-        }
-
-        // ===== Transaction Management =====
-        public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
-        {
-            if (_currentTransaction is not null)
-                throw new InvalidOperationException("Zaten aktif bir transaction var.");
-
-            _currentTransaction = await Database.BeginTransactionAsync(cancellationToken);
-        }
-
-        public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
-        {
-            if (_currentTransaction is null)
-                throw new InvalidOperationException("Aktif transaction yok.");
-
-            try
-            {
-                await SaveChangesAsync(cancellationToken);
-                await _currentTransaction.CommitAsync(cancellationToken);
-            }
-            catch
-            {
-                await RollbackTransactionAsync(cancellationToken);
-                throw;
-            }
-            finally
-            {
-                await _currentTransaction.DisposeAsync();
-                _currentTransaction = null;
-            }
-        }
-
-        public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
-        {
-            if (_currentTransaction is null)
-                return;
-
-            try
-            {
-                await _currentTransaction.RollbackAsync(cancellationToken);
-            }
-            finally
-            {
-                await _currentTransaction.DisposeAsync();
-                _currentTransaction = null;
-            }
-        }
-
-        // ===== Repository Factory =====
-        public IRepository<T> Repository<T>() where T : class, IAggregateRoot
-        {
-            return new GenericRepository<T>(this);
-        }
-
-        // ===== Scoped Transaction Helper =====
-        /// <summary>
-        /// Verilen isi belirtilen izolasyon seviyesinde tek transaction icinde
-        /// calistirir, basarili olursa commit eder, hata olursa geri alir.
-        /// Rezervasyon gibi aralik cakismasi riski tasiyan akislarda
-        /// <see cref="IsolationLevel.Serializable"/> kullanilir.
-        /// </summary>
-        public async Task<T> ExecuteInTransactionAsync<T>(
-            Func<CancellationToken, Task<T>> operation,
-            IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,
-            CancellationToken cancellationToken = default)
-        {
-            await using var transaction = await Database.BeginTransactionAsync(isolationLevel, cancellationToken);
-
-            try
-            {
-                var result = await operation(cancellationToken);
-                await SaveChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
-                return result;
-            }
-            catch
-            {
-                await transaction.RollbackAsync(cancellationToken);
-                throw;
-            }
-        }
-
-        /// <summary>Donus degeri olmayan isler icin ayni davranis.</summary>
-        public Task ExecuteInTransactionAsync(
-            Func<CancellationToken, Task> operation,
-            IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,
-            CancellationToken cancellationToken = default)
-        {
-            return ExecuteInTransactionAsync(async token =>
-            {
-                await operation(token);
-                return true;
-            }, isolationLevel, cancellationToken);
         }
     }
 }

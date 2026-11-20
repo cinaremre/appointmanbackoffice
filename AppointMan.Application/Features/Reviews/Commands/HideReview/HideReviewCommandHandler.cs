@@ -1,4 +1,6 @@
-﻿using AppointMan.Application.Common.Results;
+﻿using AppointMan.Application.Common.Authorization;
+using AppointMan.Application.Common.Interfaces;
+using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
@@ -11,21 +13,29 @@ namespace AppointMan.Application.Features.Reviews.Commands.HideReview
         private readonly IRepository<Review> _reviewRepository;
         private readonly IRepository<Business> _businessRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService _currentUser;
 
         public HideReviewCommandHandler(
             IRepository<Review> reviewRepository,
             IRepository<Business> businessRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ICurrentUserService currentUser)
         {
             _reviewRepository = reviewRepository;
             _businessRepository = businessRepository;
             _unitOfWork = unitOfWork;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<Guid>> Handle(HideReviewCommand request, CancellationToken cancellationToken)
         {
             try
             {
+                // 0. Controller'daki rol kisitinin yaninda handler seviyesinde de
+                //    yonetici zorunlulugu dogrulanir (defense in depth).
+                if (!CallerAuthorization.IsAdministrator(_currentUser))
+                    return Result<Guid>.Failure(Error.Forbidden("Yorumu gizleme yetkiniz yok."));
+
                 // 1. Yorum kontrolu
                 var review = await _reviewRepository.GetByIdAsync(request.ReviewId, cancellationToken);
                 if (review is null)
@@ -50,9 +60,10 @@ namespace AppointMan.Application.Features.Reviews.Commands.HideReview
             {
                 return Result<Guid>.Failure(Error.BusinessRule(ex.Message));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Result<Guid>.Failure(Error.Internal("Yorum gizlenirken bir hata olustu.", ex.Message));
+                // Beklenmeyen hata detayi istemciye sizdirilmaz.
+                return Result<Guid>.Failure(Error.Internal("Yorum gizlenirken bir hata olustu."));
             }
         }
 

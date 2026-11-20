@@ -1,4 +1,6 @@
-﻿using AppointMan.Application.Common.DTOs;
+﻿using AppointMan.Application.Common.Authorization;
+using AppointMan.Application.Common.DTOs;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Interfaces;
@@ -9,16 +11,23 @@ namespace AppointMan.Application.Features.Appointments.Queries.GetAppointmentByI
     public class GetAppointmentByIdQueryHandler : IRequestHandler<GetAppointmentByIdQuery, Result<AppointmentDto>>
     {
         private readonly IRepository<Appointment> _appointmentRepository;
+        private readonly ICurrentUserService _currentUser;
 
-        public GetAppointmentByIdQueryHandler(IRepository<Appointment> appointmentRepository)
+        public GetAppointmentByIdQueryHandler(
+            IRepository<Appointment> appointmentRepository,
+            ICurrentUserService currentUser)
         {
             _appointmentRepository = appointmentRepository;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<AppointmentDto>> Handle(GetAppointmentByIdQuery request, CancellationToken cancellationToken)
         {
             try
             {
+                if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
+                    return Result<AppointmentDto>.Failure(Error.Unauthorized("Auth.Unauthorized"));
+
                 // 1. Randevuyu ID'ye gore getir.
                 //    Include edilmezse personel, isletme, hizmet ve kullanici alanlari null doner.
                 //    Silinmis kayitlar da 404 dondurur.
@@ -39,7 +48,16 @@ namespace AppointMan.Application.Features.Appointments.Queries.GetAppointmentByI
                 if (appointment is null)
                     return Result<AppointmentDto>.Failure(Error.NotFound("Randevu", request.AppointmentId.ToString()));
 
-                // 3. Verileri DTO'ya donustur
+                // 3. Yetki: randevu sahibi, isletme sahibi veya yonetici.
+                var canRead =
+                    CallerAuthorization.CanActAsUser(_currentUser, appointment.UserId) ||
+                    (appointment.Business is not null &&
+                     CallerAuthorization.CanActForBusiness(_currentUser, appointment.Business.OwnerId));
+
+                if (!canRead)
+                    return Result<AppointmentDto>.Failure(Error.Forbidden("Bu randevuyu goruntuleme yetkiniz yok."));
+
+                // 4. Verileri DTO'ya donustur
                 var dto = new AppointmentDto
                 {
                     Id = appointment.Id,
@@ -69,9 +87,9 @@ namespace AppointMan.Application.Features.Appointments.Queries.GetAppointmentByI
 
                 return Result<AppointmentDto>.Success(dto);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Result<AppointmentDto>.Failure(Error.Internal("Randevu bilgileri getirilirken bir hata olustu.", ex.Message));
+                return Result<AppointmentDto>.Failure(Error.Internal("Randevu bilgileri getirilirken bir hata olustu."));
             }
         }
     }

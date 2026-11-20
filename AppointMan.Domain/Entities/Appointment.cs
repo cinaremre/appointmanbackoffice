@@ -238,6 +238,39 @@ namespace AppointMan.Domain.Entities
             AddDomainEvent(new AppointmentRescheduledEvent(Id, UserId, BusinessId, ServiceId, EmployeeId, oldDate, newDate, rescheduledBy));
         }
 
+        /// <summary>
+        /// Randevunun calisanini kalici olarak degistirir. Ayni calisan yeniden secilirse
+        /// hicbir degisiklik yapilmaz ve yeni domain event uretilmez.
+        /// </summary>
+        /// <param name="employeeId">Yeni calisan ID.</param>
+        /// <param name="changedBy">Degisikligi yapan kullanici.</param>
+        /// <param name="now">Islem zamani (UTC).</param>
+        public void ReassignEmployee(Guid employeeId, string? changedBy = null, DateTime? now = null)
+        {
+            if (employeeId == Guid.Empty)
+                throw new ArgumentException("Calisan ID bos olamaz.", nameof(employeeId));
+
+            if (EmployeeId == employeeId)
+                return;
+
+            var currentTime = now ?? DateTime.UtcNow;
+            var oldEmployeeId = EmployeeId;
+
+            EmployeeId = employeeId;
+            UpdatedAt = currentTime;
+
+            _histories.Add(new AppointmentHistory(
+                Id,
+                Status,
+                Status,
+                changedBy,
+                $"Calisan {oldEmployeeId} → {employeeId} olarak degistirildi",
+                changedAt: currentTime));
+
+            AddDomainEvent(new AppointmentEmployeeReassignedEvent(
+                Id, UserId, BusinessId, ServiceId, oldEmployeeId, employeeId, AppointmentDate, changedBy));
+        }
+
         /// <summary>Hatirlatma gonderildi olarak isaretler.</summary>
         /// <param name="now">Islem zamani (UTC).</param>
         public void MarkReminderSent(DateTime? now = null)

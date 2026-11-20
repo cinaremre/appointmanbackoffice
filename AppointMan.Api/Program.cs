@@ -114,6 +114,36 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddApiRateLimiting(builder.Configuration);
 
+// CORS: acik izin listesi disinda wildcard kullanilmaz; wildcard origin ile
+// credential birlikte asla acilmaz.
+var corsSettings = builder.Configuration.GetSection(CorsSettings.SectionName).Get<CorsSettings>()
+    ?? new CorsSettings();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(CorsSettings.PolicyName, policy =>
+    {
+        var origins = corsSettings.AllowedOrigins
+            .Where(origin => !string.IsNullOrWhiteSpace(origin))
+            .ToArray();
+
+        if (origins.Length == 0 && builder.Environment.IsDevelopment())
+        {
+            // Yalnizca gelistirme/test ortami icin: credential olmadan wildcard.
+            policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+            return;
+        }
+
+        // Uretimde bos liste = hicbir origin'e izin yok (wildcard yok).
+        policy.WithOrigins(origins)
+              .WithHeaders(corsSettings.AllowedHeaders.ToArray())
+              .WithMethods(corsSettings.AllowedMethods.ToArray());
+    });
+});
+
+// Saglik kontrolu: ek paket gerektirmeyen basit self-check ucu.
+builder.Services.AddHealthChecks();
+
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<LocalizedResultFilter>();
@@ -174,6 +204,9 @@ app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<RequestResponseLoggingMiddleware>();
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
+// Guvenlik basliklari HTTPS yonlendirmeleri dahil tum yanitlara eklenir.
+app.UseMiddleware<SecurityHeadersMiddleware>();
+
 // HSTS yalnizca HTTPS uzerinden servis edilen ortamlarda devrede.
 if (!app.Environment.IsDevelopment())
 {
@@ -181,9 +214,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-// Guvenlik basliklari tum yanitlara eklenir.
-app.UseMiddleware<SecurityHeadersMiddleware>();
 
 // CORS, yetkilendirmeden once calismalidir.
 app.UseCors(CorsSettings.PolicyName);
@@ -193,6 +223,9 @@ app.UseRateLimiter();
 
 app.UseAuthorization();
 app.MapControllers();
+
+// Saglik ucu: kimlik dogrulama gerektirmez, yalnizca process'in ayakta oldugunu gosterir.
+app.MapHealthChecks("/health").AllowAnonymous();
 
 // Prometheus kazima ucu. Canli ortamda ag seviyesinde kisitlanmalidir (reverse proxy / firewall).
 var metricsSettings = builder.Configuration.GetSection(MetricsSettings.SectionName).Get<MetricsSettings>()

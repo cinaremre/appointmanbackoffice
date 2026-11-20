@@ -498,6 +498,19 @@ namespace AppointMan.Domain.Entities
             return workingHour.IsWithinWorkingHours(dateTime);
         }
 
+        /// <summary>
+        /// Araligin tamaminin o gunun mesai saatleri icinde kaldigini kontrol eder.
+        /// Nokta kontrolu yerine kullanilir; aralik yerel duvar saatinde verilir.
+        /// </summary>
+        public bool IsOpenDuring(DateTime start, DateTime end)
+        {
+            var workingHour = GetWorkingHourByDay(start.DayOfWeek);
+            if (workingHour == null || workingHour.IsClosed)
+                return false;
+
+            return workingHour.IsWithinWorkingHours(start, end);
+        }
+
         // ============= RATING METHODS =============
 
         public void UpdateRating(decimal newRating)

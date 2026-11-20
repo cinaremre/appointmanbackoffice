@@ -19,19 +19,49 @@ namespace AppointMan.Infrastructure.Persistence.Repositories
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
+            ThrowIfDisposed();
+
             return await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
         {
+            ThrowIfDisposed();
+
+            if (_transaction is not null || _context.Database.CurrentTransaction is not null)
+                throw new InvalidOperationException("Zaten aktif bir transaction var.");
+
             _transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
         }
 
         public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
         {
-            if (_transaction is not null)
+            ThrowIfDisposed();
+
+            if (_transaction is null)
+                throw new InvalidOperationException("Aktif transaction yok.");
+
+            try
             {
+                // Kayit, exception cevirisi ve domain event dispatch'i AppDbContext'te toplanir.
+                await _context.SaveChangesAsync(cancellationToken);
                 await _transaction.CommitAsync(cancellationToken);
+            }
+            catch
+            {
+                try
+                {
+                    await _transaction.RollbackAsync(cancellationToken);
+                }
+                catch
+                {
+                    // Rollback hatasi asil hatayi mask elemeli.
+                }
+
+                throw;
+            }
+            finally
+            {
                 await _transaction.DisposeAsync();
                 _transaction = null;
             }
@@ -39,9 +69,17 @@ namespace AppointMan.Infrastructure.Persistence.Repositories
 
         public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
         {
-            if (_transaction is not null)
+            ThrowIfDisposed();
+
+            if (_transaction is null)
+                return;
+
+            try
             {
                 await _transaction.RollbackAsync(cancellationToken);
+            }
+            finally
+            {
                 await _transaction.DisposeAsync();
                 _transaction = null;
             }
@@ -49,6 +87,8 @@ namespace AppointMan.Infrastructure.Persistence.Repositories
 
         public IRepository<T> Repository<T>() where T : class, IAggregateRoot
         {
+            ThrowIfDisposed();
+
             return new GenericRepository<T>(_context);
         }
 
@@ -63,6 +103,8 @@ namespace AppointMan.Infrastructure.Persistence.Repositories
             IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,
             CancellationToken cancellationToken = default)
         {
+            ThrowIfDisposed();
+
             await using var transaction =
                 await _context.Database.BeginTransactionAsync(isolationLevel, cancellationToken);
 
@@ -101,12 +143,24 @@ namespace AppointMan.Infrastructure.Persistence.Repositories
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!_disposed && disposing)
+            if (_disposed)
+                return;
+
+            if (disposing)
             {
+                // Transaction bu birime ait; DbContext scoped oldugu icin
+                // yasam dongusunu DI konteyneri yonetir, burada dispose edilmez.
                 _transaction?.Dispose();
-                _context.Dispose();
+                _transaction = null;
             }
+
             _disposed = true;
+        }
+
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(nameof(UnitOfWork));
         }
     }
 }

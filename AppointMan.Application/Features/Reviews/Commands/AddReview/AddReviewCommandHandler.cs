@@ -1,5 +1,7 @@
 ﻿using AppointMan.Application.Common.Abstractions;
+using AppointMan.Application.Common.Authorization;
 using AppointMan.Application.Common.Errors;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
@@ -16,6 +18,7 @@ namespace AppointMan.Application.Features.Reviews.Commands.AddReview
         private readonly IRepository<Appointment> _appointmentRepository;
         private readonly IBusinessRatingUpdater _businessRatingUpdater;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService _currentUser;
 
         public AddReviewCommandHandler(
             IRepository<Review> reviewRepository,
@@ -23,7 +26,8 @@ namespace AppointMan.Application.Features.Reviews.Commands.AddReview
             IRepository<Business> businessRepository,
             IRepository<Appointment> appointmentRepository,
             IBusinessRatingUpdater businessRatingUpdater,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ICurrentUserService currentUser)
         {
             _reviewRepository = reviewRepository;
             _userRepository = userRepository;
@@ -31,12 +35,18 @@ namespace AppointMan.Application.Features.Reviews.Commands.AddReview
             _appointmentRepository = appointmentRepository;
             _businessRatingUpdater = businessRatingUpdater;
             _unitOfWork = unitOfWork;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<Guid>> Handle(AddReviewCommand request, CancellationToken cancellationToken)
         {
             try
             {
+                // 0. Aktor kimligi her zaman imzali token'dan gelir; govde UserId'si
+                //    tek basina yetki kaynagi degildir (IDOR korumasi).
+                if (!CallerAuthorization.CanActAsUser(_currentUser, request.UserId))
+                    return Result<Guid>.Failure(Error.Unauthorized("Baska kullanici adina yorum ekleme yetkiniz yok."));
+
                 // 1. Kullanici kontrolu
                 var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
                 if (user is null)
@@ -47,21 +57,26 @@ namespace AppointMan.Application.Features.Reviews.Commands.AddReview
                 if (business is null)
                     return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
 
-                // 3. Randevu kontrolu (opsiyonel)
-                if (request.AppointmentId.HasValue)
-                {
-                    var appointment = await _appointmentRepository.GetByIdAsync(request.AppointmentId.Value, cancellationToken);
-                    if (appointment is null)
-                        return Result<Guid>.Failure(Error.NotFound("Randevu", request.AppointmentId.Value.ToString()));
+                // 3. Randevu kontrolu (zorunlu)
+                if (request.AppointmentId is null)
+                    return Result<Guid>.Failure(Error.Validation("Randevu ID zorunludur."));
 
-                    // Kullanici randevuya ait mi?
-                    if (appointment.UserId != request.UserId)
-                        return Result<Guid>.Failure(Error.BusinessRule("Bu randevuya yorum yapma yetkiniz yok."));
+                var appointmentId = request.AppointmentId.Value;
+                var appointment = await _appointmentRepository.GetByIdAsync(appointmentId, cancellationToken);
+                if (appointment is null)
+                    return Result<Guid>.Failure(Error.NotFound("Randevu", appointmentId.ToString()));
 
-                    // Randevu tamamlanmis mi?
-                    if (appointment.Status != Domain.Enums.EnumAppointmentStatus.Completed)
-                        return Result<Guid>.Failure(Error.BusinessRule("Sadece tamamlanmis randevulara yorum yapilabilir."));
-                }
+                // Kullanici randevuya ait mi?
+                if (appointment.UserId != request.UserId)
+                    return Result<Guid>.Failure(Error.BusinessRule("Bu randevuya yorum yapma yetkiniz yok."));
+
+                // Randevu, yorum yapilan isletmeye ait mi?
+                if (appointment.BusinessId != request.BusinessId)
+                    return Result<Guid>.Failure(Error.BusinessRule("Randevu, yorum yapilan isletmeye ait degil."));
+
+                // Randevu tamamlanmis mi?
+                if (appointment.Status != Domain.Enums.EnumAppointmentStatus.Completed)
+                    return Result<Guid>.Failure(Error.BusinessRule("Sadece tamamlanmis randevulara yorum yapilabilir."));
 
                 // 4. Ayni randevu icin ikinci yorum on kontrolu YAPILMAZ:
                 //    UX_Reviews_AppointmentId unique index tek dogruluk kaynagidir.
@@ -99,9 +114,10 @@ namespace AppointMan.Application.Features.Reviews.Commands.AddReview
             {
                 return Result<Guid>.Failure(Error.BusinessRule(ex.Message));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Result<Guid>.Failure(Error.Internal("Yorum eklenirken bir hata olustu.", ex.Message));
+                // Beklenmeyen hata detayi istemciye sizdirilmaz.
+                return Result<Guid>.Failure(Error.Internal("Yorum eklenirken bir hata olustu."));
             }
         }
     }

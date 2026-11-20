@@ -25,6 +25,12 @@ namespace AppointMan.Api.Logging
         /// <summary>Returned when a value genuinely cannot be serialized.</summary>
         public const string SerializationFailedPlaceholder = "<serialization_failed>";
 
+        /// <summary>
+        /// Returned for malformed or non-JSON text: raw bytes may contain credentials
+        /// and must never be echoed back, not even truncated.
+        /// </summary>
+        public const string InvalidJsonPlaceholder = "<invalid_json_body>";
+
         private static readonly JsonSerializerOptions SerializerOptions = new()
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
@@ -95,10 +101,10 @@ namespace AppointMan.Api.Logging
         /// Masks sensitive fields inside an already serialized JSON document.
         /// Used for raw request bodies, which are read as strings rather than objects.
         /// </summary>
-        /// <param name="json">Raw JSON text; non-JSON input is returned truncated but otherwise unchanged.</param>
+        /// <param name="json">Raw JSON text; malformed or non-JSON input is replaced by a bounded placeholder.</param>
         /// <param name="sensitiveFields">Field names to mask; defaults are used when null or empty.</param>
         /// <param name="maxBytes">Maximum accepted size of the returned string.</param>
-        /// <returns>The masked JSON string, or null when the input is null or empty.</returns>
+        /// <returns>The masked JSON string, a placeholder for invalid JSON, or null when the input is null or empty.</returns>
         public static string? MaskJson(
             string? json,
             IReadOnlyCollection<string>? sensitiveFields = null,
@@ -120,9 +126,9 @@ namespace AppointMan.Api.Logging
             }
             catch
             {
-                // Form encoded or otherwise non-JSON bodies: return them bounded and let the
-                // caller decide; no sensitive structure can be reliably identified here.
-                return TruncateToBytes(json, maxBytes);
+                // Form encoded or otherwise malformed bodies: no sensitive structure can be
+                // identified reliably, so the raw text is never returned (not even truncated).
+                return InvalidJsonPlaceholder;
             }
         }
 

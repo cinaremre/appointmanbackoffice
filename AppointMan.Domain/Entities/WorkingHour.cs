@@ -100,6 +100,42 @@ namespace AppointMan.Domain.Entities
             return timeOfDay >= StartTime && timeOfDay < EndTime;
         }
 
+        /// <summary>
+        /// Araligin tamaminin mesai saatleri icinde kaldigini kontrol eder.
+        /// Mesai saatleri isletmenin yerel duvar saatidir; normalization icin
+        /// start/end ayni takvim gunune ait olmalidir.
+        /// </summary>
+        public bool IsWithinWorkingHours(DateTime start, DateTime end)
+        {
+            if (IsClosed || start >= end)
+                return false;
+
+            if (start.TimeOfDay < StartTime)
+                return false;
+
+            // 24:00, gunun sonundaki gece yarisidir. Bu sinir degeri yalnizca
+            // ayni gunun sonu (veya bir sonraki gunun 00:00'i) olarak kabul edilir.
+            if (EndTime >= TimeSpan.FromHours(24))
+            {
+                if (start.Date == end.Date)
+                    return true;
+
+                return end == start.Date.AddDays(1) && end.TimeOfDay == TimeSpan.Zero;
+            }
+
+            return start.Date == end.Date && end.TimeOfDay <= EndTime;
+        }
+
+        /// <summary>
+        /// Isletme genelinde mola tanimlanmaz; molalar calisan bazinda
+        /// (EmployeeWorkingHour) tutulur. Aralik API'si domain genelinde ayni
+        /// kalsin diye bu metot her zaman false doner.
+        /// </summary>
+        public bool OverlapsBreak(DateTime start, DateTime end)
+        {
+            return false;
+        }
+
         public TimeSpan GetDuration()
         {
             return EndTime - StartTime;

@@ -209,7 +209,7 @@ namespace AppointMan.Api.Middleware
                 StatusCode = (int)statusCode,
                 Code = code,
                 Message = message,
-                CorrelationId = context.TraceIdentifier
+                CorrelationId = ResolveCorrelationId(context)
             });
         }
 
@@ -231,7 +231,7 @@ namespace AppointMan.Api.Middleware
                 StatusCode = (int)statusCode,
                 Code = code,
                 Message = _localizer.Get(key),
-                CorrelationId = context.TraceIdentifier
+                CorrelationId = ResolveCorrelationId(context)
             });
         }
 
@@ -255,7 +255,7 @@ namespace AppointMan.Api.Middleware
                 Code = "validation_error",
                 Message = _localizer.Get("Error.Validation"),
                 Errors = errors,
-                CorrelationId = context.TraceIdentifier
+                CorrelationId = ResolveCorrelationId(context)
             });
         }
 
@@ -275,7 +275,7 @@ namespace AppointMan.Api.Middleware
                 Code = "unexpected_error",
                 Message = _localizer.Get("Error.Unexpected"),
                 Detail = detail,
-                CorrelationId = context.TraceIdentifier
+                CorrelationId = ResolveCorrelationId(context)
             });
         }
 

@@ -1,11 +1,16 @@
-﻿using FluentValidation;
+﻿using AppointMan.Domain.Interfaces;
+using FluentValidation;
 
 namespace AppointMan.Application.Features.Appointments.Commands.RescheduleAppointment
 {
     public class RescheduleAppointmentCommandValidator : AbstractValidator<RescheduleAppointmentCommand>
     {
-        public RescheduleAppointmentCommandValidator()
+        private readonly IDateTimeService _dateTimeService;
+
+        public RescheduleAppointmentCommandValidator(IDateTimeService dateTimeService)
         {
+            _dateTimeService = dateTimeService;
+
             RuleFor(x => x.AppointmentId)
                 .NotEmpty()
                 .WithMessage("Randevu ID bos olamaz.");
@@ -19,15 +24,15 @@ namespace AppointMan.Application.Features.Appointments.Commands.RescheduleAppoin
                 .WithMessage("Yeni randevu tarihi bos olamaz.");
 
             RuleFor(x => x.NewAppointmentDate)
-                .GreaterThan(DateTime.UtcNow)
+                .Must(BeInFuture)
                 .WithMessage("Randevu tarihi gecmis olamaz.");
 
             RuleFor(x => x.NewAppointmentDate)
-                .Must(BeValidHour)
-                .WithMessage("Randevu saati 06:00-23:00 arasinda olmalidir.");
+                .Must(BeValidLocalHour)
+                .WithMessage("Randevu saati 06:00-23:59 arasinda olmalidir.");
 
             RuleFor(x => x.NewAppointmentDate)
-                .Must(BeMultipleOfFiveMinutes)
+                .Must(BeMultipleOfFiveLocalMinutes)
                 .WithMessage("Randevu saati 5 dakikanin kati olmalidir.");
 
             RuleFor(x => x.NewEmployeeId)
@@ -35,14 +40,19 @@ namespace AppointMan.Application.Features.Appointments.Commands.RescheduleAppoin
                 .WithMessage("Yeni calisan ID gecersiz.");
         }
 
-        private bool BeValidHour(DateTime date)
+        // Istek tarihi UTC anidir; mesai saatleri ise isletmenin yerel duvar saatidir.
+        private bool BeInFuture(DateTime date) => date > _dateTimeService.UtcNow;
+
+        private bool BeValidLocalHour(DateTime date)
         {
-            return date.Hour >= 6 && date.Hour < 23;
+            var local = _dateTimeService.ToBusinessLocalTime(date);
+            return local.Hour >= 6 && local.Hour <= 23;
         }
 
-        private bool BeMultipleOfFiveMinutes(DateTime date)
+        private bool BeMultipleOfFiveLocalMinutes(DateTime date)
         {
-            return date.Minute % 5 == 0;
+            var local = _dateTimeService.ToBusinessLocalTime(date);
+            return local.Minute % 5 == 0;
         }
     }
 }

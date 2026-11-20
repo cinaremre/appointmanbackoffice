@@ -1,6 +1,11 @@
-﻿using AppointMan.Application.Common.Diagnostics;
+﻿using System.Data;
+using AppointMan.Application.Common.Abstractions;
+using AppointMan.Application.Common.Authorization;
+using AppointMan.Application.Common.Diagnostics;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
+using AppointMan.Domain.Enums;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
 using MediatR;
@@ -9,143 +14,209 @@ namespace AppointMan.Application.Features.Appointments.Commands.RescheduleAppoin
 {
     public class RescheduleAppointmentCommandHandler : IRequestHandler<RescheduleAppointmentCommand, Result<Guid>>
     {
+        private const string BlacklistMessage = "Randevunuz oluşturulamıyor, lütfen işletme ile iletişime geçiniz.";
+
         private readonly IRepository<Appointment> _appointmentRepository;
         private readonly IRepository<Business> _businessRepository;
         private readonly IRepository<Service> _serviceRepository;
         private readonly IRepository<Employee> _employeeRepository;
+        private readonly IRepository<BlacklistEntry> _blacklistRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IDateTimeService _dateTimeService;
+        private readonly IAppointmentBookingGuard _bookingGuard;
         private readonly AppointManMetrics _metrics;
+        private readonly ICurrentUserService _currentUser;
 
         public RescheduleAppointmentCommandHandler(
             IRepository<Appointment> appointmentRepository,
             IRepository<Business> businessRepository,
             IRepository<Service> serviceRepository,
             IRepository<Employee> employeeRepository,
+            IRepository<BlacklistEntry> blacklistRepository,
             IUnitOfWork unitOfWork,
-            AppointManMetrics metrics)
+            IDateTimeService dateTimeService,
+            IAppointmentBookingGuard bookingGuard,
+            AppointManMetrics metrics,
+            ICurrentUserService currentUser)
         {
             _appointmentRepository = appointmentRepository;
             _businessRepository = businessRepository;
             _serviceRepository = serviceRepository;
             _employeeRepository = employeeRepository;
+            _blacklistRepository = blacklistRepository;
             _unitOfWork = unitOfWork;
+            _dateTimeService = dateTimeService;
+            _bookingGuard = bookingGuard;
             _metrics = metrics;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<Guid>> Handle(RescheduleAppointmentCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                // 1. Randevu kontrolu
-                var appointment = await _appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken);
-                if (appointment is null)
-                    return Result<Guid>.Failure(Error.NotFound("Randevu", request.AppointmentId.ToString()));
+                if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
+                    return Result<Guid>.Failure(Error.Unauthorized("Auth.Unauthorized"));
 
-                // 2. Yetki kontrolu
-                if (appointment.UserId != request.UserId)
-                    return Result<Guid>.Failure(Error.Unauthorized("Bu randevuyu yeniden planlama yetkiniz yok."));
+                var now = _dateTimeService.UtcNow;
 
-                // 3. Isletme kontrolu
-                var business = await _businessRepository.GetByIdAsync(appointment.BusinessId, cancellationToken);
-                if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", appointment.BusinessId.ToString()));
+                // Butun kontroller ve mutation ayni SERIALIZABLE transaction icinde.
+                var result = await _unitOfWork.ExecuteInTransactionAsync(async token =>
+                {
+                    // 1. Randevu kontrolu
+                    var appointment = await _appointmentRepository.GetByIdAsync(request.AppointmentId, token);
+                    if (appointment is null)
+                        return Result<Guid>.Failure(Error.NotFound("Randevu", request.AppointmentId.ToString()));
 
-                if (!business.IsActive)
-                    return Result<Guid>.Failure(Error.BusinessRule("Isletme aktif degil."));
+                    // 2. Yetki kontrolu - randevu sahibi veya yonetici.
+                    if (!CallerAuthorization.CanActAsUser(_currentUser, appointment.UserId))
+                        return Result<Guid>.Failure(Error.Forbidden("Bu randevuyu yeniden planlama yetkiniz yok."));
 
-                // 4. Calisan kontrolu (degisebilir veya ayni kalir)
-                var employeeId = request.NewEmployeeId ?? appointment.EmployeeId;
+                    // 3. Isletme kontrolu
+                    var business = await _businessRepository.GetByIdWithIncludesAsync(
+                        appointment.BusinessId,
+                        token,
+                        b => b.WorkingHours);
 
-                var employee = await _employeeRepository.GetByIdAsync(employeeId, cancellationToken);
-                if (employee is null)
-                    return Result<Guid>.Failure(Error.NotFound("Calisan", employeeId.ToString()));
+                    if (business is null)
+                        return Result<Guid>.Failure(Error.NotFound("Isletme", appointment.BusinessId.ToString()));
 
-                if (!employee.IsActive)
-                    return Result<Guid>.Failure(Error.BusinessRule("Calisan aktif degil."));
+                    if (!business.IsActive)
+                        return Result<Guid>.Failure(Error.BusinessRule("Isletme aktif degil."));
 
-                if (!employee.IsAvailableForBooking)
-                    return Result<Guid>.Failure(Error.BusinessRule("Calisan su anda randevu kabul etmiyor."));
+                    // 4. Calisan kontrolu (degisebilir veya ayni kalir)
+                    var employeeId = request.NewEmployeeId ?? appointment.EmployeeId;
 
-                if (employee.BusinessId != appointment.BusinessId)
-                    return Result<Guid>.Failure(Error.BusinessRule("Calisan bu isletmeye ait degil."));
+                    var employee = await _employeeRepository.GetByIdWithIncludesAsync(
+                        employeeId,
+                        token,
+                        e => e.EmployeeServices,
+                        e => e.WorkingHours,
+                        e => e.TimeOffs);
 
-                // 5. Hizmet kontrolu
-                var service = await _serviceRepository.GetByIdAsync(appointment.ServiceId, cancellationToken);
-                if (service is null)
-                    return Result<Guid>.Failure(Error.NotFound("Hizmet", appointment.ServiceId.ToString()));
+                    if (employee is null)
+                        return Result<Guid>.Failure(Error.NotFound("Calisan", employeeId.ToString()));
 
-                if (!service.IsActive)
-                    return Result<Guid>.Failure(Error.BusinessRule("Hizmet aktif degil."));
+                    if (!employee.IsActive)
+                        return Result<Guid>.Failure(Error.BusinessRule("Calisan aktif degil."));
 
-                // 6. Calisan bu hizmeti verebiliyor mu?
-                if (!employee.CanProvideService(appointment.ServiceId))
-                    return Result<Guid>.Failure(Error.BusinessRule("Calisan bu hizmeti veremiyor."));
+                    if (!employee.IsAvailableForBooking)
+                        return Result<Guid>.Failure(Error.BusinessRule("Calisan su anda randevu kabul etmiyor."));
 
-                // 7. Calisma saati kontrolu
-                if (!business.IsOpenOn(request.NewAppointmentDate))
-                    return Result<Guid>.Failure(Error.BusinessRule("Isletme bu saatte calismiyor."));
+                    if (employee.BusinessId != appointment.BusinessId)
+                        return Result<Guid>.Failure(Error.BusinessRule("Calisan bu isletmeye ait degil."));
 
-                if (!employee.IsWorkingOn(request.NewAppointmentDate))
-                    return Result<Guid>.Failure(Error.BusinessRule("Calisan bu saatte calismiyor."));
+                    // 5. Hizmet kontrolu
+                    var service = await _serviceRepository.GetByIdAsync(appointment.ServiceId, token);
+                    if (service is null)
+                        return Result<Guid>.Failure(Error.NotFound("Hizmet", appointment.ServiceId.ToString()));
 
-                // 8. Calisan izinde mi?
-                if (employee.IsOnTimeOff(request.NewAppointmentDate))
-                    return Result<Guid>.Failure(Error.BusinessRule("Calisan bu tarihte izinde."));
+                    if (!service.IsActive)
+                        return Result<Guid>.Failure(Error.BusinessRule("Hizmet aktif degil."));
 
-                // 9. Cakisma kontrolu (calisan bazli)
-                var hasConflict = await CheckForConflicts(
-                    appointment,
-                    employeeId,
-                    request.NewAppointmentDate,
-                    service,
-                    cancellationToken);
+                    // 6. Calisan bu hizmeti verebiliyor mu?
+                    if (!employee.CanProvideService(appointment.ServiceId))
+                        return Result<Guid>.Failure(Error.BusinessRule("Calisan bu hizmeti veremiyor."));
 
-                if (hasConflict)
-                    return Result<Guid>.Failure(Error.Conflict("Calisanin bu saatte baska bir randevusu var."));
+                    // 7. Calisma saati kontrolu - UTC anini isletme yerel zamanina cevir.
+                    var start = request.NewAppointmentDate;
+                    var durationMinutes = service.DurationInMinutes;
+                    var end = start.AddMinutes(durationMinutes);
+                    var localStart = _dateTimeService.ToBusinessLocalTime(start);
+                    var localEnd = localStart.AddMinutes(durationMinutes);
 
-                // 10. Randevuyu yeniden planla
-                appointment.Reschedule(request.NewAppointmentDate, request.RescheduledBy ?? "User");
+                    if (!business.IsOpenDuring(localStart, localEnd))
+                        return Result<Guid>.Failure(Error.BusinessRule("Isletme bu saatte calismiyor."));
 
-                // 11. Bitis saati guncelle
-                var endTime = request.NewAppointmentDate.AddMinutes(service.DurationInMinutes);
-                appointment.SetEndTime(endTime);
+                    if (!employee.IsWorkingDuring(localStart, localEnd))
+                        return Result<Guid>.Failure(Error.BusinessRule("Calisan bu saatte calismiyor."));
 
-                // 12. Kaydet
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                    if (employee.IsOnApprovedTimeOff(localStart, localEnd))
+                        return Result<Guid>.Failure(Error.BusinessRule("Calisan bu tarihte izinde."));
 
-                _metrics.RecordAppointmentRescheduled();
+                    // 8. Cakisma kontrolu. Domain overlap formulu:
+                    //    appointment.EndTime ?? appointment.AppointmentDate.AddMinutes(service.DurationInMinutes)
+                    //    DB tarafinda a.Service.DurationInMinutes kullanilmadan fallback sure ile uygulanir.
+                    var hasConflict = await _bookingGuard.HasConflictAsync(
+                        employeeId,
+                        start,
+                        end,
+                        durationMinutes,
+                        excludeAppointmentId: appointment.Id,
+                        cancellationToken: token);
 
-                return Result<Guid>.Success(appointment.Id);
+                    if (hasConflict)
+                        return Result<Guid>.Failure(Error.Conflict("Calisanin bu saatte baska bir randevusu var."));
+
+                    // 9. Kara liste tekrar kontrolu (bu islemde yeni kayit olusturulmaz).
+                    if (await IsBlacklistedAsync(request.UserId, appointment.BusinessId, token))
+                        return Result<Guid>.Failure(Error.BusinessRule(BlacklistMessage));
+
+                    // 10. Aktif randevu limiti, yeniden planlanan randevu haric.
+                    var activeAppointmentCount = await CountActiveAppointmentsAsync(
+                        request.UserId, appointment.BusinessId, appointment.Id, now, token);
+
+                    if (activeAppointmentCount >= 2)
+                        return Result<Guid>.Failure(
+                            Error.BusinessRule("Aktif randevu limiti nedeniyle yeniden planlanamaz."));
+
+                    // 11. Calisan degisikligi kalici uygulanir; ayni calisansa domain no-op yapar.
+                    var changedBy = request.RescheduledBy ?? "User";
+                    if (request.NewEmployeeId.HasValue)
+                        appointment.ReassignEmployee(request.NewEmployeeId.Value, changedBy, now);
+
+                    // 12. Randevuyu yeni tarihe tasir ve bitis saatini servis suresinden yazar.
+                    appointment.Reschedule(start, changedBy, now);
+                    appointment.SetEndTime(end);
+
+                    return Result<Guid>.Success(appointment.Id);
+                }, IsolationLevel.Serializable, cancellationToken);
+
+                if (result.IsSuccess)
+                    _metrics.RecordAppointmentRescheduled();
+
+                return result;
             }
             catch (DomainException ex)
             {
                 return Result<Guid>.Failure(Error.BusinessRule(ex.Message));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Result<Guid>.Failure(Error.Internal("Randevu yeniden planlanirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Randevu yeniden planlanirken bir hata olustu."));
             }
         }
 
-        private async Task<bool> CheckForConflicts(
-            Appointment appointment,
-            Guid employeeId,
-            DateTime newDate,
-            Service service,
+        private async Task<bool> IsBlacklistedAsync(
+            Guid userId,
+            Guid businessId,
             CancellationToken cancellationToken)
         {
-            var startTime = newDate;
-            var endTime = startTime.AddMinutes(service.DurationInMinutes);
+            return await _blacklistRepository.ExistsAsync(
+                b => b.UserId == userId &&
+                     b.BusinessId == businessId &&
+                     !b.IsDeleted,
+                cancellationToken);
+        }
 
-            var existingAppointments = await _appointmentRepository.FindAsync(
-                a => a.EmployeeId == employeeId &&
-                     a.Id != appointment.Id &&
-                     a.Status != Domain.Enums.EnumAppointmentStatus.Cancelled &&
-                     a.AppointmentDate < endTime &&
-                     a.AppointmentDate.AddMinutes(a.Service.DurationInMinutes) > startTime,
+        private async Task<int> CountActiveAppointmentsAsync(
+            Guid userId,
+            Guid businessId,
+            Guid excludeAppointmentId,
+            DateTime now,
+            CancellationToken cancellationToken)
+        {
+            var appointments = await _appointmentRepository.FindAsync(
+                a => a.UserId == userId &&
+                     a.BusinessId == businessId &&
+                     a.Id != excludeAppointmentId &&
+                     a.Status != EnumAppointmentStatus.Cancelled &&
+                     a.Status != EnumAppointmentStatus.Completed &&
+                     a.AppointmentDate > now &&
+                     !a.IsDeleted,
                 cancellationToken);
 
-            return existingAppointments.Any();
+            return appointments.Count;
         }
     }
 }

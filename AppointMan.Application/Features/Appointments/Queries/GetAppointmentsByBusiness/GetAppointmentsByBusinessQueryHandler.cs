@@ -1,5 +1,7 @@
-﻿using AppointMan.Application.Common.DTOs;
+﻿using AppointMan.Application.Common.Authorization;
+using AppointMan.Application.Common.DTOs;
 using AppointMan.Application.Common.Helpers;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Enums;
@@ -12,16 +14,34 @@ namespace AppointMan.Application.Features.Appointments.Queries.GetAppointmentsBy
     public class GetAppointmentsByBusinessQueryHandler : IRequestHandler<GetAppointmentsByBusinessQuery, Result<List<AppointmentDto>>>
     {
         private readonly IRepository<Appointment> _appointmentRepository;
+        private readonly IRepository<Business> _businessRepository;
+        private readonly ICurrentUserService _currentUser;
 
-        public GetAppointmentsByBusinessQueryHandler(IRepository<Appointment> appointmentRepository)
+        public GetAppointmentsByBusinessQueryHandler(
+            IRepository<Appointment> appointmentRepository,
+            IRepository<Business> businessRepository,
+            ICurrentUserService currentUser)
         {
             _appointmentRepository = appointmentRepository;
+            _businessRepository = businessRepository;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<List<AppointmentDto>>> Handle(GetAppointmentsByBusinessQuery request, CancellationToken cancellationToken)
         {
             try
             {
+                if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
+                    return Result<List<AppointmentDto>>.Failure(Error.Unauthorized("Auth.Unauthorized"));
+
+                // Yetki, govdedeki id'ye degil yuklenen isletmenin sahibine gore verilir.
+                var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
+                if (business is null)
+                    return Result<List<AppointmentDto>>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+
+                if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
+                    return Result<List<AppointmentDto>>.Failure(Error.Forbidden("Bu isletmenin randevularini goruntuleme yetkiniz yok."));
+
                 // 1. Filtreleme
                 Expression<Func<Appointment, bool>> predicate = a => a.BusinessId == request.BusinessId && !a.IsDeleted;
 
@@ -73,10 +93,10 @@ namespace AppointMan.Application.Features.Appointments.Queries.GetAppointmentsBy
 
                 return Result<List<AppointmentDto>>.Success(dtos);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Result<List<AppointmentDto>>.Failure(
-                    Error.Internal("Randevular getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Randevular getirilirken bir hata olustu."));
             }
         }
     }

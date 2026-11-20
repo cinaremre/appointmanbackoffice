@@ -20,6 +20,7 @@ namespace AppointMan.Application.Common.Abstractions
         /// <param name="start">Aranilan araligin baslangici.</param>
         /// <param name="end">Aranilan araligin bitisi.</param>
         /// <param name="fallbackDurationMinutes">Bitis saati bos ise kullanilacak sure (dakika).</param>
+        /// <param name="excludeAppointmentId">Guncelleme sirasinda kendiyle cakismamasi icin dislanan randevu.</param>
         /// <param name="cancellationToken">Iptal tokeni.</param>
         /// <returns>Cakisan randevu varsa true.</returns>
         Task<bool> HasConflictAsync(
@@ -27,6 +28,7 @@ namespace AppointMan.Application.Common.Abstractions
             DateTime start,
             DateTime end,
             int fallbackDurationMinutes,
+            Guid? excludeAppointmentId = null,
             CancellationToken cancellationToken = default);
     }
 }

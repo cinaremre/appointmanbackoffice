@@ -1,4 +1,6 @@
-﻿using AppointMan.Application.Common.Results;
+﻿using AppointMan.Application.Common.Authorization;
+using AppointMan.Application.Common.Interfaces;
+using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
@@ -11,15 +13,18 @@ namespace AppointMan.Application.Features.Reviews.Commands.DeleteReview
         private readonly IRepository<Review> _reviewRepository;
         private readonly IRepository<Business> _businessRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService _currentUser;
 
         public DeleteReviewCommandHandler(
             IRepository<Review> reviewRepository,
             IRepository<Business> businessRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ICurrentUserService currentUser)
         {
             _reviewRepository = reviewRepository;
             _businessRepository = businessRepository;
             _unitOfWork = unitOfWork;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<Guid>> Handle(DeleteReviewCommand request, CancellationToken cancellationToken)
@@ -31,8 +36,9 @@ namespace AppointMan.Application.Features.Reviews.Commands.DeleteReview
                 if (review is null)
                     return Result<Guid>.Failure(Error.NotFound("Yorum", request.ReviewId.ToString()));
 
-                // 2. Yetki kontrolu
-                if (review.UserId != request.UserId)
+                // 2. Yetki kontrolu. Aktor kimligi imzali token'dan gelir;
+                //    istek govdesindeki UserId tek basina guvenilmez.
+                if (!CallerAuthorization.CanActAsUser(_currentUser, review.UserId))
                     return Result<Guid>.Failure(Error.Unauthorized("Bu yorumu silme yetkiniz yok."));
 
                 // 3. Yorumu sil
@@ -50,9 +56,10 @@ namespace AppointMan.Application.Features.Reviews.Commands.DeleteReview
             {
                 return Result<Guid>.Failure(Error.BusinessRule(ex.Message));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Result<Guid>.Failure(Error.Internal("Yorum silinirken bir hata olustu.", ex.Message));
+                // Beklenmeyen hata detayi istemciye sizdirilmaz.
+                return Result<Guid>.Failure(Error.Internal("Yorum silinirken bir hata olustu."));
             }
         }
 

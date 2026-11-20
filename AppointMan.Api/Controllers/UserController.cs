@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.DTOs;
+﻿using AppointMan.Api.Authorization;
+using AppointMan.Application.Common.DTOs;
 using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Application.Features.Users.Commands.ChangePassword;
@@ -152,7 +153,7 @@ namespace AppointMan.Api.Controllers
         /// <param name="email">Kullanici email adresi</param>
         /// <returns>Kullanici detayi</returns>
         [HttpGet("email/{email}")]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Policy = AuthorizationPolicies.AdministratorOnly)]
         [ProducesResponseType(typeof(Result<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<UserDto>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUserByEmail(string email)

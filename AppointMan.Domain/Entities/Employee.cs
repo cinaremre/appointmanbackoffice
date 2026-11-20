@@ -295,7 +295,23 @@ namespace AppointMan.Domain.Entities
             if (workingHour == null || workingHour.IsClosed)
                 return false;
 
-            return workingHour.IsWithinWorkingHours(dateTime);
+            // Mola ve onayli izin kontrolleri aralik bazli metodlarda yapilir.
+            return workingHour.IsWithinWorkingHours(dateTime) &&
+                   !workingHour.IsWithinBreakTime(dateTime);
+        }
+
+        /// <summary>
+        /// Araligin tamaminin calisanin mesai saatlerinde ve mola disinda oldugunu kontrol eder.
+        /// Onayli izin kontrolu ayri bir metottur (IsOnApprovedTimeOff).
+        /// </summary>
+        public bool IsWorkingDuring(DateTime start, DateTime end)
+        {
+            var workingHour = GetWorkingHourByDay(start.DayOfWeek);
+            if (workingHour == null || workingHour.IsClosed)
+                return false;
+
+            return workingHour.IsWithinWorkingHours(start, end) &&
+                   !workingHour.OverlapsBreak(start, end);
         }
 
         // ===== TIME OFF METHODS =====
@@ -329,7 +345,17 @@ namespace AppointMan.Domain.Entities
 
         public bool IsOnTimeOff(DateTime dateTime)
         {
-            return _timeOffs.Any(t => t.IsDateWithinTimeOff(dateTime) && !t.IsDeleted);
+            // Onaylanmamis (bekleyen/reddedilmis) izinler calisani mesaiten dusurmez.
+            return _timeOffs.Any(t => t.IsApproved && !t.IsDeleted && t.IsDateWithinTimeOff(dateTime));
+        }
+
+        /// <summary>
+        /// Onayli ve silinmemis izinlerin verilen aralikla kesisip kesmedigini kontrol eder.
+        /// Aralik yerel duvar saatinde verilir.
+        /// </summary>
+        public bool IsOnApprovedTimeOff(DateTime start, DateTime end)
+        {
+            return _timeOffs.Any(t => t.IsApproved && !t.IsDeleted && t.OverlapsWith(start, end));
         }
 
         // ===== HELPER METHODS =====

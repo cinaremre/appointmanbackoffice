@@ -2,6 +2,7 @@
 using AppointMan.Application.Common.Diagnostics;
 using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Services;
+using AppointMan.Domain.Interfaces;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +26,9 @@ namespace AppointMan.Application
 
             // TokenService
             services.AddScoped<ITokenService, TokenService>();
+
+            // Domain event'leri kalici kayit sonrasi MediatR ile yayinlar.
+            services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
             // Business metrics: a single singleton owns the Meter and its instruments.
             services.AddSingleton<AppointManMetrics>();

@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.DTOs;
+﻿using AppointMan.Api.Authorization;
+using AppointMan.Application.Common.DTOs;
 using AppointMan.Application.Common.Results;
 using AppointMan.Application.Features.BusinessCategories.Commands.CreateCategory;
 using AppointMan.Application.Features.BusinessCategories.Commands.DeleteCategory;
@@ -101,7 +102,7 @@ namespace AppointMan.Api.Controllers
         /// <param name="command">Kategori bilgileri</param>
         /// <returns>Olusturulan kategorinin ID'si</returns>
         [HttpPost]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Policy = AuthorizationPolicies.AdministratorOnly)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] CreateCategoryCommand command)
@@ -122,7 +123,7 @@ namespace AppointMan.Api.Controllers
         /// <param name="command">Guncelleme bilgileri</param>
         /// <returns>Guncellenen kategorinin ID'si</returns>
         [HttpPut]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Policy = AuthorizationPolicies.AdministratorOnly)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update([FromBody] UpdateCategoryCommand command)
@@ -144,7 +145,7 @@ namespace AppointMan.Api.Controllers
         /// <param name="command">Silme bilgileri</param>
         /// <returns>Silinen kategorinin ID'si</returns>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Policy = AuthorizationPolicies.AdministratorOnly)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(Guid id, [FromBody] DeleteCategoryCommand command)
