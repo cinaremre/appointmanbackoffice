@@ -31,7 +31,11 @@ namespace AppointMan.Application.Common.Services
         {
             foreach (var domainEvent in domainEvents)
             {
-                await _publisher.Publish(domainEvent, cancellationToken);
+                // MediatR 13 Publish yalnizca INotification kabul eder; IDomainEvent
+                // bu arayuzu uygulamaz (Domain katmani MediatR'a bagimli degildir).
+                // Event'ler adaptor uzerinden yayinlanir, aksi halde
+                // "notification does not implement INotification" hatasi alinir.
+                await _publisher.Publish(new DomainEventNotification(domainEvent), cancellationToken);
             }
         }
     }
