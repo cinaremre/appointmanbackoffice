@@ -1,4 +1,5 @@
 ﻿using AppointMan.Application.Common.DTOs;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Application.Features.WorkingHours.Commands.AddWorkingHour;
 using AppointMan.Application.Features.WorkingHours.Commands.RemoveWorkingHour;
@@ -22,10 +23,27 @@ namespace AppointMan.Api.Controllers
     public class WorkingHourController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ICurrentUserService _currentUser;
 
-        public WorkingHourController(IMediator mediator)
+        public WorkingHourController(IMediator mediator, ICurrentUserService currentUser)
         {
             _mediator = mediator;
+            _currentUser = currentUser;
+        }
+
+        /// <summary>
+        /// Sahip ID'si her zaman JWT'den cozulur; govde OwnerId degeri yetki kaynagi degildir.
+        /// </summary>
+        private IActionResult? ResolveCurrentUserId(out Guid userId)
+        {
+            if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
+            {
+                userId = Guid.Empty;
+                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
+            }
+
+            userId = _currentUser.UserId.Value;
+            return null;
         }
 
         /// <summary>
@@ -85,7 +103,13 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Add([FromBody] AddWorkingHourCommand command)
         {
-            // 1. Command'i mediator ile gonder
+            // 1. OwnerId JWT'den gelir; govde degerine guvenilmez.
+            if (ResolveCurrentUserId(out var userId) is { } unauthorized)
+                return unauthorized;
+
+            command.OwnerId = userId;
+
+            // 2. Command'i mediator ile gonder
             var result = await _mediator.Send(command);
 
             // 2. Sonuca gore cevap dondur
@@ -105,7 +129,13 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update([FromBody] UpdateWorkingHourCommand command)
         {
-            // 1. Command'i mediator ile gonder
+            // 1. OwnerId JWT'den gelir; govde degerine guvenilmez.
+            if (ResolveCurrentUserId(out var userId) is { } unauthorized)
+                return unauthorized;
+
+            command.OwnerId = userId;
+
+            // 2. Command'i mediator ile gonder
             var result = await _mediator.Send(command);
 
             // 2. Sonuca gore cevap dondur
@@ -126,8 +156,12 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Remove(Guid id, [FromBody] RemoveWorkingHourCommand command)
         {
-            // 1. ID'yi command'e ata
+            // 1. ID ve sahip kimligi guvenilir kaynaklardan alinir.
+            if (ResolveCurrentUserId(out var userId) is { } unauthorized)
+                return unauthorized;
+
             command.WorkingHourId = id;
+            command.OwnerId = userId;
 
             // 2. Mediator ile gonder
             var result = await _mediator.Send(command);
@@ -150,8 +184,12 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> SetClosed(Guid id, [FromBody] SetClosedCommand command)
         {
-            // 1. ID'yi command'e ata
+            // 1. ID ve sahip kimligi guvenilir kaynaklardan alinir.
+            if (ResolveCurrentUserId(out var userId) is { } unauthorized)
+                return unauthorized;
+
             command.WorkingHourId = id;
+            command.OwnerId = userId;
 
             // 2. Mediator ile gonder
             var result = await _mediator.Send(command);
@@ -174,8 +212,12 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> SetOpen(Guid id, [FromBody] SetOpenCommand command)
         {
-            // 1. ID'yi command'e ata
+            // 1. ID ve sahip kimligi guvenilir kaynaklardan alinir.
+            if (ResolveCurrentUserId(out var userId) is { } unauthorized)
+                return unauthorized;
+
             command.WorkingHourId = id;
+            command.OwnerId = userId;
 
             // 2. Mediator ile gonder
             var result = await _mediator.Send(command);

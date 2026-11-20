@@ -40,7 +40,7 @@ public class LoginPhoneVerificationTests
         var result = await sut.Handle(NewCommand(user), CancellationToken.None);
 
         Assert.True(result.IsFailure);
-        Assert.Contains("EmailNotVerified", result.Error!.Message);
+        Assert.Contains("PhoneNotVerified", result.Error!.Message);
     }
 
     [Fact]

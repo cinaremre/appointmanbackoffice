@@ -1,4 +1,6 @@
-﻿using AppointMan.Application.Common.Results;
+﻿using AppointMan.Application.Common.Authorization;
+using AppointMan.Application.Common.Interfaces;
+using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
@@ -11,15 +13,18 @@ namespace AppointMan.Application.Features.Services.Commands.DeactivateService
         private readonly IRepository<Service> _serviceRepository;
         private readonly IRepository<Business> _businessRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService _currentUser;
 
         public DeactivateServiceCommandHandler(
             IRepository<Service> serviceRepository,
             IRepository<Business> businessRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ICurrentUserService currentUser)
         {
             _serviceRepository = serviceRepository;
             _businessRepository = businessRepository;
             _unitOfWork = unitOfWork;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<Guid>> Handle(DeactivateServiceCommand request, CancellationToken cancellationToken)
@@ -31,8 +36,8 @@ namespace AppointMan.Application.Features.Services.Commands.DeactivateService
                 if (business is null)
                     return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu - Isletme sahibi mi?
-                if (business.OwnerId != request.OwnerId)
+                // 2. Yetki kontrolu - JWT'den cozulen isletme sahibi veya yonetici mi?
+                if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
                     return Result<Guid>.Failure(Error.Unauthorized("Bu hizmeti pasif etme yetkiniz yok."));
 
                 // 3. Hizmet kontrolu
@@ -49,7 +54,8 @@ namespace AppointMan.Application.Features.Services.Commands.DeactivateService
                     return Result<Guid>.Failure(Error.Conflict("Hizmet zaten pasif."));
 
                 // 6. Pasif et
-                service.Deactivate(request.DeactivatedBy, request.Reason);
+                // Denetim kaydi da govde degil, JWT kimliginden yazilir.
+                service.Deactivate(_currentUser.UserId?.ToString() ?? "System", request.Reason);
 
                 // 7. Kaydet
                 await _unitOfWork.SaveChangesAsync(cancellationToken);

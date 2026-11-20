@@ -7,8 +7,10 @@ using AppointMan.Api.Metrics;
 using AppointMan.Api.Middleware;
 using AppointMan.Api.RateLimiting;
 using AppointMan.Api.Services;
+using AppointMan.Api.Workflow;
 using AppointMan.Application;
 using AppointMan.Application.Common.Interfaces;
+using AppointMan.Application.Common.Services;
 using AppointMan.Infrastructure;
 using AppointMan.Infrastructure.Extensions;
 using AppointMan.Infrastructure.Persistence.Context;
@@ -44,6 +46,9 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 // Gonderim arka planda yurur; kayit akisi SMTP beklemez ve SMTP hatasi kaydi bozmaz.
 builder.Services.AddEmailInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
 builder.Services.AddHostedService<EmailBackgroundService>();
+
+// Zaman tabanli randevu akislari: hatirlatici, otomatik tamamlama ve no-show.
+builder.Services.AddHostedService<AppointmentWorkflowBackgroundService>();
 
 // Telefon dogrulama (OTP) hatti: saglayici baglanana kadar log tabanli SMS tasimasi.
 builder.Services.AddSmsInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
@@ -247,8 +252,19 @@ using (var scope = app.Services.CreateScope())
 
     await dbContext.Database.MigrateAsync();
 
-    // Seed data
-    await SeedOrchestrator.SeedAllAsync(dbContext, logger);
+    // Seed sırasında üretilen domain event'leri e-posta/audit yan etkisi oluşturmaz.
+    var sideEffects = scope.ServiceProvider.GetRequiredService<EventSideEffectDeduplicator>();
+    var sideEffectsWereEnabled = sideEffects.Enabled;
+    sideEffects.Enabled = false;
+
+    try
+    {
+        await SeedOrchestrator.SeedAllAsync(dbContext, logger);
+    }
+    finally
+    {
+        sideEffects.Enabled = sideEffectsWereEnabled;
+    }
 }
 
 app.Run();

@@ -56,5 +56,33 @@ namespace AppointMan.Infrastructure.Persistence.Services
                                 : ((b.Rating ?? 0m) * b.TotalReviews - score) / (b.TotalReviews - 1)),
                     cancellationToken);
         }
+
+        /// <summary>
+        /// Görünür yorumlardan puan ve sayacı yeniden hesaplar. Yorum güncelleme,
+        /// silme ve görünürlük değişikliklerinde artımlı aritmetiğe güvenmek yerine
+        /// tek bir UPDATE ile kesin değerler yazılır; böylece TotalReviews kaymaz.
+        /// </summary>
+        public async Task<int> RecalculateAsync(Guid businessId, CancellationToken cancellationToken = default)
+        {
+            // Önce yorum değişikliğinin SaveChanges ile veritabanına yazıldığından
+            // emin olunmalı; aksi halde silinen/gizlenen yorum hâlâ sayılır.
+            var stats = await _context.Reviews
+                .Where(r => r.BusinessId == businessId && r.IsVisible && !r.IsDeleted)
+                .GroupBy(r => r.BusinessId)
+                .Select(g => new
+                {
+                    Count = g.Count(),
+                    Average = g.Average(r => (decimal)r.Rating)
+                })
+                .FirstOrDefaultAsync(cancellationToken);
+
+            return await _context.Businesses
+                .Where(b => b.Id == businessId)
+                .ExecuteUpdateAsync(
+                    setters => setters
+                        .SetProperty(b => b.TotalReviews, stats?.Count ?? 0)
+                        .SetProperty(b => b.Rating, Math.Round(stats?.Average ?? 0m, 1)),
+                    cancellationToken);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AppointMan.Application.Common.Abstractions;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Domain.Interfaces;
 using AppointMan.Infrastructure.Persistence.Context;
 using AppointMan.Infrastructure.Persistence.Repositories;
@@ -32,6 +33,8 @@ namespace AppointMan.Infrastructure
             services.AddScoped<IBusinessRatingUpdater, BusinessRatingUpdater>();
             // Rezervasyon aralik kilidi (cift rezervasyon korumasi)
             services.AddScoped<IAppointmentBookingGuard, AppointmentBookingGuard>();
+            // Domain event yan etkilerinin yapilandirilmis denetim kaydi
+            services.AddScoped<IWorkflowAuditSink, LoggingWorkflowAuditSink>();
             return services;
         }
     }

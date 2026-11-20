@@ -141,11 +141,53 @@ namespace AppointMan.Domain.Entities
         /// </summary>
         /// <param name="confirmedBy">Onaylayan kullanici.</param>
         /// <param name="now">Islem zamani (UTC).</param>
+        /// <summary>
+        /// Geçerli durum geçişlerinin tek kaynağı. Handler'lar ve arka plan
+        /// servisleri aynı matrisi kullanır; dağınık if kontrolleri kaldırılmıştır.
+        /// </summary>
+        public static bool IsValidStatusTransition(EnumAppointmentStatus from, EnumAppointmentStatus to)
+        {
+            return (from, to) switch
+            {
+                // Pending → Pending yalnızca yeniden planlamada kullanılır.
+                (EnumAppointmentStatus.Pending, EnumAppointmentStatus.Pending) => true,
+                (EnumAppointmentStatus.Pending, EnumAppointmentStatus.Confirmed) => true,
+                (EnumAppointmentStatus.Pending, EnumAppointmentStatus.Cancelled) => true,
+                (EnumAppointmentStatus.Pending, EnumAppointmentStatus.NoShow) => true,
+                // Confirmed → Pending yalnızca yeniden planlamada kullanılır.
+                (EnumAppointmentStatus.Confirmed, EnumAppointmentStatus.Pending) => true,
+                (EnumAppointmentStatus.Confirmed, EnumAppointmentStatus.Completed) => true,
+                (EnumAppointmentStatus.Confirmed, EnumAppointmentStatus.Cancelled) => true,
+                (EnumAppointmentStatus.Confirmed, EnumAppointmentStatus.NoShow) => true,
+                _ => false
+            };
+        }
+
+        /// <summary>
+        /// Durum matrisini ve zaman kurallarını birlikte uygular.
+        /// </summary>
+        public bool CanTransitionTo(EnumAppointmentStatus target, DateTime? now = null)
+        {
+            if (!IsValidStatusTransition(Status, target))
+                return false;
+
+            var currentTime = now ?? DateTime.UtcNow;
+
+            return target switch
+            {
+                EnumAppointmentStatus.Cancelled => AppointmentDate > currentTime,
+                EnumAppointmentStatus.Completed => AppointmentDate <= currentTime,
+                EnumAppointmentStatus.NoShow => AppointmentDate <= currentTime,
+                EnumAppointmentStatus.Confirmed or EnumAppointmentStatus.Pending => true,
+                _ => false
+            };
+        }
+
         public void Confirm(string? confirmedBy = null, DateTime? now = null)
         {
             var currentTime = now ?? DateTime.UtcNow;
 
-            if (Status != EnumAppointmentStatus.Pending)
+            if (!CanTransitionTo(EnumAppointmentStatus.Confirmed, currentTime))
                 throw new DomainException("Sadece bekleyen randevular onaylanabilir.");
 
             var oldStatus = Status;
@@ -166,11 +208,8 @@ namespace AppointMan.Domain.Entities
         {
             var currentTime = now ?? DateTime.UtcNow;
 
-            if (Status == EnumAppointmentStatus.Completed)
-                throw new DomainException("Tamamlanmış randevu iptal edilemez.");
-
-            if (Status == EnumAppointmentStatus.Cancelled)
-                throw new DomainException("Randevu zaten iptal edilmiş.");
+            if (!IsValidStatusTransition(Status, EnumAppointmentStatus.Cancelled))
+                throw new DomainException("Tamamlanmış, iptal edilmiş veya gelmedi olarak işaretlenmiş randevu iptal edilemez.");
 
             if (AppointmentDate < currentTime)
                 throw new DomainException("Geçmiş randevu iptal edilemez.");
@@ -194,7 +233,7 @@ namespace AppointMan.Domain.Entities
         {
             var currentTime = now ?? DateTime.UtcNow;
 
-            if (Status != EnumAppointmentStatus.Confirmed)
+            if (!IsValidStatusTransition(Status, EnumAppointmentStatus.Completed))
                 throw new DomainException("Sadece onaylanmış randevular tamamlanabilir.");
 
             if (AppointmentDate > currentTime)
@@ -219,11 +258,8 @@ namespace AppointMan.Domain.Entities
         {
             var currentTime = now ?? DateTime.UtcNow;
 
-            if (Status == EnumAppointmentStatus.Completed)
-                throw new DomainException("Tamamlanmış randevu yeniden planlanamaz.");
-
-            if (Status == EnumAppointmentStatus.Cancelled)
-                throw new DomainException("İptal edilmiş randevu yeniden planlanamaz.");
+            if (!CanTransitionTo(EnumAppointmentStatus.Pending, currentTime))
+                throw new DomainException("İptal edilmiş, tamamlanmış veya gelmedi olarak işaretlenmiş randevu yeniden planlanamaz.");
 
             var oldStatus = Status;
             var oldDate = AppointmentDate;
@@ -286,7 +322,7 @@ namespace AppointMan.Domain.Entities
         /// Musterinin randevu uzerinde degisiklik yapabilecegi en yakin sure (saat).
         /// Isletme sahibi ve randevunun calisani bu sinirlamaya tabi degildir.
         /// </summary>
-        public const int CustomerChangeCutoffHours = 2;
+        public const int CustomerChangeCutoffHours = Common.WorkflowPolicy.CustomerChangeCutoffHours;
 
         /// <summary>Randevu "gelmedi" olarak isaretlenmis mi?</summary>
         public bool IsNoShow => Status == EnumAppointmentStatus.NoShow;
@@ -315,11 +351,8 @@ namespace AppointMan.Domain.Entities
         {
             var currentTime = now ?? DateTime.UtcNow;
 
-            if (AppointmentDate > currentTime)
-                throw new DomainException("Gelecek randevu gelmedi olarak isaretlenemez.");
-
-            if (Status != EnumAppointmentStatus.Pending && Status != EnumAppointmentStatus.Confirmed)
-                throw new DomainException("Sadece bekleyen veya onaylanmis randevular gelmedi olarak isaretlenebilir.");
+            if (!CanTransitionTo(EnumAppointmentStatus.NoShow, currentTime))
+                throw new DomainException("Sadece gecmis, bekleyen veya onaylanmis randevular gelmedi olarak isaretlenebilir.");
 
             var oldStatus = Status;
             Status = EnumAppointmentStatus.NoShow;
@@ -332,11 +365,7 @@ namespace AppointMan.Domain.Entities
         /// <param name="now">Referans alinacak guncel UTC zamani.</param>
         public bool CanBeCancelled(DateTime? now = null)
         {
-            var currentTime = now ?? DateTime.UtcNow;
-
-            return Status != EnumAppointmentStatus.Completed &&
-                   Status != EnumAppointmentStatus.Cancelled &&
-                   AppointmentDate > currentTime;
+            return CanTransitionTo(EnumAppointmentStatus.Cancelled, now);
         }
 
         /// <summary>Randevunun yaklasan (onayli ve gelecekte) olup olmadigini belirler.</summary>

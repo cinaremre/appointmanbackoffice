@@ -96,13 +96,15 @@ namespace AppointMan.Application.Features.Users.Commands.Login
                     return Result<LoginResponse>.Failure(Error.Unauthorized("Auth.InvalidCredentials"));
                 }
 
-                // Sifre dogru ama ne e-posta ne telefon dogrulanmis: giris engellenir.
-                // Telefon (OTP) dogrulamasi tek basina yeterlidir; kayit + otp akisinda
-                // kullanici OTP'yi girdigi anda giris yapabilir.
+                // Sifre dogru ama hicbir dogrulama tamamlanmamis: giris engellenir.
+                // OTP (telefon) dogrulamasi tek basina yeterlidir; e-posta dogrulanmamis
+                // olsa bile kullanici "123456" kodunu girdigi anda giris yapabilir.
+                // E-posta gonderilemeyen test ortaminda yanlis yonlendirme olmamasi icin
+                // hata mesaji artik OTP'yi isaret eder.
                 if (!user.IsEmailVerified && !user.IsPhoneVerified)
                 {
-                    _metrics.RecordLoginAttempt("email_not_verified");
-                    return Result<LoginResponse>.Failure(Error.Unauthorized("Auth.EmailNotVerified"));
+                    _metrics.RecordLoginAttempt("phone_not_verified");
+                    return Result<LoginResponse>.Failure(Error.Unauthorized("Auth.PhoneNotVerified"));
                 }
 
                 var accessToken = _tokenService.GenerateAccessToken(user);

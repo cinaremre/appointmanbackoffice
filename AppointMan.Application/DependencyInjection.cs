@@ -29,6 +29,8 @@ namespace AppointMan.Application
 
             // Domain event'leri kalici kayit sonrasi MediatR ile yayinlar.
             services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+            // Yinelenen event'lerin yan etki uretmesini engelleyen surec genelinde tek kayit.
+            services.AddSingleton<EventSideEffectDeduplicator>();
 
             // Business metrics: a single singleton owns the Meter and its instruments.
             services.AddSingleton<AppointManMetrics>();

@@ -24,6 +24,7 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
         private readonly ILocalizationService _localizationService;
         private readonly IOtpCodeService _otpCodeService;
         private readonly ISmsCodeSender _smsCodeSender;
+        private readonly IDateTimeService _dateTimeService;
 
         public RegisterUserCommandHandler(
             IRepository<User> userRepository,
@@ -33,7 +34,8 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
             EmailOptions emailOptions,
             ILocalizationService localizationService,
             IOtpCodeService otpCodeService,
-            ISmsCodeSender smsCodeSender)
+            ISmsCodeSender smsCodeSender,
+            IDateTimeService dateTimeService)
         {
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
@@ -43,6 +45,7 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
             _localizationService = localizationService;
             _otpCodeService = otpCodeService;
             _smsCodeSender = smsCodeSender;
+            _dateTimeService = dateTimeService;
         }
 
         public async Task<Result<Guid>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -157,7 +160,7 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
         {
             try
             {
-                var code = _otpCodeService.IssueCode(user, DateTime.UtcNow);
+                var code = _otpCodeService.IssueCode(user, _dateTimeService.UtcNow);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
                 await _smsCodeSender.SendAsync(user.PhoneNumber.Value, code, cancellationToken);

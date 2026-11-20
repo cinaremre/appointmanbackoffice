@@ -66,16 +66,14 @@ namespace AppointMan.Application.Features.Appointments.Commands.MarkAppointmentN
                         Error.Forbidden("Bu randevuyu gelmedi olarak isaretleme yetkiniz yok."));
 
                 // Domain cagrilmadan once on kontrol: generic domain mesajina dusmeyi engeller.
-                if (appointment.Status != EnumAppointmentStatus.Pending &&
-                    appointment.Status != EnumAppointmentStatus.Confirmed)
-                    return Result<Guid>.Failure(Error.BusinessRule(
-                        "Sadece bekleyen veya onaylanmis randevular gelmedi olarak isaretlenebilir."));
+                // Tek referans zamani kullanilir; status matrisi domain'de tek kaynaktir.
+                var now = _dateTimeService.UtcNow;
 
-                if (!appointment.IsPast(_dateTimeService.UtcNow))
+                if (!appointment.CanTransitionTo(EnumAppointmentStatus.NoShow, now))
                     return Result<Guid>.Failure(Error.BusinessRule(
-                        "Gelecek randevu gelmedi olarak isaretlenemez."));
+                        "Sadece gecmis, bekleyen veya onaylanmis randevular gelmedi olarak isaretlenebilir."));
 
-                appointment.MarkAsNoShow(request.ChangedBy ?? "User", _dateTimeService.UtcNow);
+                appointment.MarkAsNoShow(request.ChangedBy ?? "User", now);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 

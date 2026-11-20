@@ -1,8 +1,12 @@
-﻿using AppointMan.Application.Common.DTOs;
+﻿using System.Security.Claims;
+using AppointMan.Application.Common.DTOs;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Application.Features.Employees.Commands.ActivateEmployee;
+using AppointMan.Application.Features.Employees.Commands.ApproveTimeOff;
 using AppointMan.Application.Features.Employees.Commands.CreateEmployee;
 using AppointMan.Application.Features.Employees.Commands.DeactivateEmployee;
+using AppointMan.Application.Features.Employees.Commands.RejectTimeOff;
 using AppointMan.Application.Features.Employees.Commands.UpdateEmployee;
 using AppointMan.Application.Features.Employees.Queries.GetAvailableEmployees;
 using AppointMan.Application.Features.Employees.Queries.GetEmployeeById;
@@ -22,10 +26,27 @@ namespace AppointMan.Api.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ICurrentUserService _currentUser;
 
-        public EmployeeController(IMediator mediator)
+        public EmployeeController(IMediator mediator, ICurrentUserService currentUser)
         {
             _mediator = mediator;
+            _currentUser = currentUser;
+        }
+
+        /// <summary>
+        /// Sahip ID'si her zaman JWT'den cozulur; govde OwnerId degeri yetki kaynagi degildir.
+        /// </summary>
+        private IActionResult? ResolveCurrentUserId(out Guid userId)
+        {
+            if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
+            {
+                userId = Guid.Empty;
+                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
+            }
+
+            userId = _currentUser.UserId.Value;
+            return null;
         }
 
         /// <summary>
@@ -36,6 +57,12 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] CreateEmployeeCommand command)
         {
+            // OwnerId JWT'den gelir; govde degerine guvenilmez.
+            if (ResolveCurrentUserId(out var userId) is { } unauthorized)
+                return unauthorized;
+
+            command.OwnerId = userId;
+
             var result = await _mediator.Send(command);
 
             if (result.IsSuccess)
@@ -52,6 +79,12 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update([FromBody] UpdateEmployeeCommand command)
         {
+            // OwnerId JWT'den gelir; govde degerine guvenilmez.
+            if (ResolveCurrentUserId(out var userId) is { } unauthorized)
+                return unauthorized;
+
+            command.OwnerId = userId;
+
             var result = await _mediator.Send(command);
 
             if (result.IsSuccess)
@@ -68,7 +101,12 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Activate(Guid id, [FromBody] ActivateEmployeeCommand command)
         {
+            // ID ve sahip kimligi guvenilir kaynaklardan alinir.
+            if (ResolveCurrentUserId(out var userId) is { } unauthorized)
+                return unauthorized;
+
             command.EmployeeId = id;
+            command.OwnerId = userId;
             var result = await _mediator.Send(command);
 
             if (result.IsSuccess)
@@ -85,7 +123,66 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Deactivate(Guid id, [FromBody] DeactivateEmployeeCommand command)
         {
+            // ID ve sahip kimligi guvenilir kaynaklardan alinir.
+            if (ResolveCurrentUserId(out var userId) is { } unauthorized)
+                return unauthorized;
+
             command.EmployeeId = id;
+            command.OwnerId = userId;
+            var result = await _mediator.Send(command);
+
+            if (result.IsSuccess)
+                return Ok(result);
+
+            return BadRequest(result);
+        }
+
+        /// <summary>
+        /// Calisan iznini onaylar.
+        /// </summary>
+        [HttpPost("{timeOffId}/approve")]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> ApproveTimeOff(
+            Guid timeOffId,
+            [FromBody] ApproveTimeOffCommand command)
+        {
+            // JWT'den gelen kimlik govdeye yazilan RequesterId'nin yerine gecer.
+            var requesterId = GetRequesterId();
+            if (requesterId == Guid.Empty)
+                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
+
+            command.TimeOffId = timeOffId;
+            command.RequesterId = requesterId;
+
+            var result = await _mediator.Send(command);
+
+            if (result.IsSuccess)
+                return Ok(result);
+
+            return BadRequest(result);
+        }
+
+        /// <summary>
+        /// Calisan iznini reddeder.
+        /// </summary>
+        [HttpPost("{timeOffId}/reject")]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> RejectTimeOff(
+            Guid timeOffId,
+            [FromBody] RejectTimeOffCommand command)
+        {
+            // JWT'den gelen kimlik govdeye yazilan RequesterId'nin yerine gecer.
+            var requesterId = GetRequesterId();
+            if (requesterId == Guid.Empty)
+                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
+
+            command.TimeOffId = timeOffId;
+            command.RequesterId = requesterId;
+
             var result = await _mediator.Send(command);
 
             if (result.IsSuccess)
@@ -161,6 +258,23 @@ namespace AppointMan.Api.Controllers
                 return Ok(result);
 
             return NotFound(result);
+        }
+
+        // ===== HELPER =====
+
+        /// <summary>
+        /// AppointmentsController ile ayni sekilde JWT claim'lerinden istek sahibini okur.
+        /// </summary>
+        private Guid GetRequesterId()
+        {
+            var userIdClaim = User.FindFirst("userId")?.Value
+                ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                ?? User.FindFirst(ClaimTypes.Name)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim))
+                return Guid.Empty;
+
+            return Guid.TryParse(userIdClaim, out var userId) ? userId : Guid.Empty;
         }
     }
 }

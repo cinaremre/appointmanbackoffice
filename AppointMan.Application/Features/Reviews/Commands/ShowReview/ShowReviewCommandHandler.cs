@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.Authorization;
+﻿using AppointMan.Application.Common.Abstractions;
+using AppointMan.Application.Common.Authorization;
 using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
@@ -11,20 +12,20 @@ namespace AppointMan.Application.Features.Reviews.Commands.ShowReview
     public class ShowReviewCommandHandler : IRequestHandler<ShowReviewCommand, Result<Guid>>
     {
         private readonly IRepository<Review> _reviewRepository;
-        private readonly IRepository<Business> _businessRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUser;
+        private readonly IBusinessRatingUpdater _ratingUpdater;
 
         public ShowReviewCommandHandler(
             IRepository<Review> reviewRepository,
-            IRepository<Business> businessRepository,
             IUnitOfWork unitOfWork,
-            ICurrentUserService currentUser)
+            ICurrentUserService currentUser,
+            IBusinessRatingUpdater ratingUpdater)
         {
             _reviewRepository = reviewRepository;
-            _businessRepository = businessRepository;
             _unitOfWork = unitOfWork;
             _currentUser = currentUser;
+            _ratingUpdater = ratingUpdater;
         }
 
         public async Task<Result<Guid>> Handle(ShowReviewCommand request, CancellationToken cancellationToken)
@@ -45,14 +46,13 @@ namespace AppointMan.Application.Features.Reviews.Commands.ShowReview
                 if (review.IsVisible)
                     return Result<Guid>.Failure(Error.Conflict("Review.AlreadyVisible"));
 
-                // 3. Goster
-                review.Show();
-
-                // 4. Isletme puanini guncelle
-                await UpdateBusinessRating(review.BusinessId, cancellationToken);
-
-                // 5. Kaydet
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                // 3. Gösterme ve puan yeniden hesaplaması aynı transaction'da.
+                await _unitOfWork.ExecuteInTransactionAsync(async token =>
+                {
+                    review.Show();
+                    await _unitOfWork.SaveChangesAsync(token);
+                    await _ratingUpdater.RecalculateAsync(review.BusinessId, token);
+                }, cancellationToken: cancellationToken);
 
                 return Result<Guid>.Success(review.Id);
             }
@@ -67,25 +67,5 @@ namespace AppointMan.Application.Features.Reviews.Commands.ShowReview
             }
         }
 
-        private async Task UpdateBusinessRating(Guid businessId, CancellationToken cancellationToken)
-        {
-            var reviews = await _reviewRepository.FindAsync(
-                r => r.BusinessId == businessId && r.IsVisible && !r.IsDeleted,
-                cancellationToken);
-
-            var business = await _businessRepository.GetByIdAsync(businessId, cancellationToken);
-            if (business is not null)
-            {
-                if (!reviews.Any())
-                {
-                    business.UpdateRating(0);
-                }
-                else
-                {
-                    var averageRating = reviews.Average(r => r.Rating);
-                    business.UpdateRating((decimal)averageRating);
-                }
-            }
-        }
     }
 }

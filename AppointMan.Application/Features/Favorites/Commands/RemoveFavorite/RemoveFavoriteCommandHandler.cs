@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.Results;
+﻿using AppointMan.Application.Common.Interfaces;
+using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
@@ -10,19 +11,30 @@ namespace AppointMan.Application.Features.Favorites.Commands.RemoveFavorite
     {
         private readonly IRepository<Favorite> _favoriteRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService _currentUser;
 
         public RemoveFavoriteCommandHandler(
             IRepository<Favorite> favoriteRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ICurrentUserService currentUser)
         {
             _favoriteRepository = favoriteRepository;
             _unitOfWork = unitOfWork;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<Guid>> Handle(RemoveFavoriteCommand request, CancellationToken cancellationToken)
         {
             try
             {
+                // 0. Favori yalnizca kendi sahibi tarafindan silinebilir.
+                //    Govde UserId'si yetki kaynagi degildir.
+                if (!_currentUser.IsAuthenticated ||
+                    _currentUser.UserId is null ||
+                    _currentUser.UserId.Value != request.UserId)
+                    return Result<Guid>.Failure(
+                        Error.Unauthorized("Baska kullaniciya ait favoriyi silme yetkiniz yok."));
+
                 // 1. Favoriyi bul
                 var favorites = await _favoriteRepository.FindAsync(
                     f => f.UserId == request.UserId && f.BusinessId == request.BusinessId && !f.IsDeleted,

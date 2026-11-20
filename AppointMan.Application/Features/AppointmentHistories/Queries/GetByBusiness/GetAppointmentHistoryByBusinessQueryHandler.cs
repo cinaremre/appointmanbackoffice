@@ -1,5 +1,7 @@
-﻿using AppointMan.Application.Common.DTOs;
+﻿using AppointMan.Application.Common.Authorization;
+using AppointMan.Application.Common.DTOs;
 using AppointMan.Application.Common.Helpers;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Interfaces;
@@ -12,19 +14,41 @@ namespace AppointMan.Application.Features.AppointmentHistories.Queries.GetByBusi
     {
         private readonly IRepository<AppointmentHistory> _historyRepository;
         private readonly IRepository<Appointment> _appointmentRepository;
+        private readonly IRepository<Business> _businessRepository;
+        private readonly ICurrentUserService _currentUser;
 
         public GetAppointmentHistoryByBusinessQueryHandler(
             IRepository<AppointmentHistory> historyRepository,
-            IRepository<Appointment> appointmentRepository)
+            IRepository<Appointment> appointmentRepository,
+            IRepository<Business> businessRepository,
+            ICurrentUserService currentUser)
         {
             _historyRepository = historyRepository;
             _appointmentRepository = appointmentRepository;
+            _businessRepository = businessRepository;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<List<AppointmentHistoryDto>>> Handle(GetAppointmentHistoryByBusinessQuery request, CancellationToken cancellationToken)
         {
             try
             {
+                // 0. Rol kontrolu-controller'da; burada isletme bazli yetki kontrolu
+                //    JWT kimligiyle yapilir. Admin/SuperAdmin sahip kontrolunu atlar.
+                if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
+                    return Result<List<AppointmentHistoryDto>>.Failure(
+                        Error.Unauthorized("Auth.Unauthorized"));
+
+                var business = await _businessRepository.GetByIdAsync(
+                    request.BusinessId, cancellationToken);
+                if (business is null)
+                    return Result<List<AppointmentHistoryDto>>.Failure(
+                        Error.NotFound("Isletme", request.BusinessId.ToString()));
+
+                if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
+                    return Result<List<AppointmentHistoryDto>>.Failure(
+                        Error.Forbidden("Bu isletmenin randevu gecmisini goruntuleme yetkiniz yok."));
+
                 // 1. Once isletmeye ait randevu ID'lerini bul
                 var appointments = await _appointmentRepository.FindAsync(
                     a => a.BusinessId == request.BusinessId && !a.IsDeleted,

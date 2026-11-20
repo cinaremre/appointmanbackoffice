@@ -1,4 +1,6 @@
-﻿using AppointMan.Application.Common.Results;
+﻿using AppointMan.Application.Common.Authorization;
+using AppointMan.Application.Common.Interfaces;
+using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
@@ -11,21 +13,30 @@ namespace AppointMan.Application.Features.Businesses.Commands.CreateBusiness
         private readonly IRepository<Business> _businessRepository;
         private readonly IRepository<User> _userRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService _currentUser;
 
         public CreateBusinessCommandHandler(
             IRepository<Business> businessRepository,
             IRepository<User> userRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ICurrentUserService currentUser)
         {
             _businessRepository = businessRepository;
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<Guid>> Handle(CreateBusinessCommand request, CancellationToken cancellationToken)
         {
             try
             {
+                // 0. Isletme yalnizca kendisi veya yonetici adina olusturulabilir.
+                //    Sahip ID'si govdeden degil, JWT kimliginden dogrulanir.
+                if (!CallerAuthorization.CanActAsUser(_currentUser, request.OwnerId))
+                    return Result<Guid>.Failure(
+                        Error.Unauthorized("Baska kullanici adina isletme olusturma yetkiniz yok."));
+
                 // 1. Kullanici kontrolu
                 var user = await _userRepository.GetByIdAsync(request.OwnerId, cancellationToken);
                 if (user is null)

@@ -1,4 +1,6 @@
-﻿using AppointMan.Application.Common.Results;
+﻿using AppointMan.Application.Common.Authorization;
+using AppointMan.Application.Common.Interfaces;
+using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
@@ -11,15 +13,18 @@ namespace AppointMan.Application.Features.WorkingHours.Commands.UpdateWorkingHou
         private readonly IRepository<WorkingHour> _workingHourRepository;
         private readonly IRepository<Business> _businessRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService _currentUser;
 
         public UpdateWorkingHourCommandHandler(
             IRepository<WorkingHour> workingHourRepository,
             IRepository<Business> businessRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ICurrentUserService currentUser)
         {
             _workingHourRepository = workingHourRepository;
             _businessRepository = businessRepository;
             _unitOfWork = unitOfWork;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<Guid>> Handle(UpdateWorkingHourCommand request, CancellationToken cancellationToken)
@@ -31,8 +36,8 @@ namespace AppointMan.Application.Features.WorkingHours.Commands.UpdateWorkingHou
                 if (business is null)
                     return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu
-                if (business.OwnerId != request.OwnerId)
+                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
                     return Result<Guid>.Failure(Error.Unauthorized("Bu calisma saatini guncelleme yetkiniz yok."));
 
                 // 3. Calisma saati kontrolu

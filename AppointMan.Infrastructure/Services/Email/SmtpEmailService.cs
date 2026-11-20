@@ -8,7 +8,8 @@ namespace AppointMan.Infrastructure.Services.Email
 {
     /// <summary>
     /// BCL <see cref="SmtpClient"/> tabanli gonderim. Ek NuGet paketi gerektirmez.
-    /// Tasima hatalari yutulur ve loglanir; hicbir zaman istisna sizmaz.
+    /// Gecici tasima hatalari fırlatılır; yeniden deneme ve dead-letter kaydı
+    /// <see cref="Api.Email.EmailBackgroundService"/> tarafından yapılır.
     /// </summary>
     internal sealed class SmtpEmailService : IEmailService
     {
@@ -26,47 +27,36 @@ namespace AppointMan.Infrastructure.Services.Email
         /// <inheritdoc />
         public async Task SendAsync(EmailMessage message, CancellationToken cancellationToken = default)
         {
-            try
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using var client = new SmtpClient(_options.Host, _options.Port)
             {
-                using var client = new SmtpClient(_options.Host, _options.Port)
-                {
-                    EnableSsl = _options.UseSsl,
-                    Timeout = _options.SmtpTimeoutMilliseconds,
-                    DeliveryMethod = SmtpDeliveryMethod.Network
-                };
+                EnableSsl = _options.UseSsl,
+                Timeout = _options.SmtpTimeoutMilliseconds,
+                DeliveryMethod = SmtpDeliveryMethod.Network
+            };
 
-                // Kimlik bilgisi bos ise anonim gonderim denenir (ic SMTP relay senaryosu).
-                if (!string.IsNullOrWhiteSpace(_options.UserName))
-                    client.Credentials = new NetworkCredential(_options.UserName, _options.Password);
+            // Kimlik bilgisi bos ise anonim gonderim denenir (ic SMTP relay senaryosu).
+            if (!string.IsNullOrWhiteSpace(_options.UserName))
+                client.Credentials = new NetworkCredential(_options.UserName, _options.Password);
 
-                using var mail = new MailMessage
-                {
-                    From = new MailAddress(_options.FromAddress, _options.FromName),
-                    Subject = message.Subject,
-                    Body = message.HtmlBody,
-                    IsBodyHtml = true
-                };
-
-                mail.To.Add(message.To);
-
-                if (!string.IsNullOrWhiteSpace(message.TextBody))
-                    mail.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(
-                        message.TextBody, null, "text/plain"));
-
-                await client.SendMailAsync(mail, cancellationToken).ConfigureAwait(false);
-
-                _logger.LogInformation("E-posta gonderildi. To={To}", message.To);
-            }
-            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            using var mail = new MailMessage
             {
-                // Kapanis sirasinda iptal normaldir; mesaj kayboldu olarak loglanir.
-                _logger.LogWarning("E-posta gonderimi iptal edildi. To={To}", message.To);
-            }
-            catch (Exception ex)
-            {
-                // SMTP hatasi kayit akisini bozmamali; yalnizca raporlanir.
-                _logger.LogError(ex, "SMTP ile e-posta gonderilemedi. To={To}", message.To);
-            }
+                From = new MailAddress(_options.FromAddress, _options.FromName),
+                Subject = message.Subject,
+                Body = message.HtmlBody,
+                IsBodyHtml = true
+            };
+
+            mail.To.Add(message.To);
+
+            if (!string.IsNullOrWhiteSpace(message.TextBody))
+                mail.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(
+                    message.TextBody, null, "text/plain"));
+
+            await client.SendMailAsync(mail, cancellationToken).ConfigureAwait(false);
+
+            _logger.LogInformation("E-posta gonderildi. To={To}", message.To);
         }
     }
 }

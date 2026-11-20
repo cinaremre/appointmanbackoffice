@@ -90,15 +90,16 @@ namespace AppointMan.Application.Features.Reviews.Commands.AddReview
                     request.Comment,
                     request.AppointmentId);
 
-                // 6. Kaydet (unique index ihlali burada yakalanir)
-                await _reviewRepository.AddAsync(review, cancellationToken);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-                // 7. Isletme puanini atomik olarak guncelle.
-                //    Read-modify-write yerine tek UPDATE kullanildigi icin
-                //    es zamanli yorumlarda sayac kaybi olusmaz.
-                await _businessRatingUpdater.UpdateOnNewReviewAsync(
-                    request.BusinessId, request.Rating, cancellationToken);
+                // 6-7. Yorum kaydı ve atomik puan güncellemesi aynı transaction'da.
+                //      Read-modify-write yerine tek UPDATE kullanılır; bir adım
+                //      başarısız olursa yorum da geri alınır.
+                await _unitOfWork.ExecuteInTransactionAsync(async token =>
+                {
+                    await _reviewRepository.AddAsync(review, token);
+                    await _unitOfWork.SaveChangesAsync(token);
+                    await _businessRatingUpdater.UpdateOnNewReviewAsync(
+                        request.BusinessId, request.Rating, token);
+                }, cancellationToken: cancellationToken);
 
                 return Result<Guid>.Success(review.Id);
             }

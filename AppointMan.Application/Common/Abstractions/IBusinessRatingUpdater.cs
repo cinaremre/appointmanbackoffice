@@ -30,5 +30,14 @@ namespace AppointMan.Application.Common.Abstractions
         /// <param name="cancellationToken">Iptal tokeni.</param>
         /// <returns>Guncellenen satir sayisi.</returns>
         Task<int> UpdateOnReviewRemovedAsync(Guid businessId, int score, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Yorum guncelleme, silme ve gorunurluk degisikliklerinden sonra
+        /// puan ve sayaci gorunur yorumlardan tek SQL ifadesiyle yeniden hesaplar.
+        /// </summary>
+        /// <param name="businessId">Isletme kimligi.</param>
+        /// <param name="cancellationToken">Iptal tokeni.</param>
+        /// <returns>Guncellenen satir sayisi.</returns>
+        Task<int> RecalculateAsync(Guid businessId, CancellationToken cancellationToken = default);
     }
 }

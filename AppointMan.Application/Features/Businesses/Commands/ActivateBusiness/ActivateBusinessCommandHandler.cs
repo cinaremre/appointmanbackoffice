@@ -1,4 +1,6 @@
-﻿using AppointMan.Application.Common.Results;
+﻿using AppointMan.Application.Common.Authorization;
+using AppointMan.Application.Common.Interfaces;
+using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
 using AppointMan.Domain.Interfaces;
@@ -10,13 +12,16 @@ namespace AppointMan.Application.Features.Businesses.Commands.ActivateBusiness
     {
         private readonly IRepository<Business> _businessRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService _currentUser;
 
         public ActivateBusinessCommandHandler(
             IRepository<Business> businessRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ICurrentUserService currentUser)
         {
             _businessRepository = businessRepository;
             _unitOfWork = unitOfWork;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<Guid>> Handle(ActivateBusinessCommand request, CancellationToken cancellationToken)
@@ -28,8 +33,8 @@ namespace AppointMan.Application.Features.Businesses.Commands.ActivateBusiness
                 if (business is null)
                     return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu - Isletme sahibi mi?
-                if (business.OwnerId != request.OwnerId)
+                // 2. Yetki kontrolu - JWT'den cozulen isletme sahibi veya yonetici mi?
+                if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
                     return Result<Guid>.Failure(Error.Unauthorized("Bu isletmeyi aktif etme yetkiniz yok."));
 
                 // 3. Zaten aktif mi?
@@ -37,7 +42,8 @@ namespace AppointMan.Application.Features.Businesses.Commands.ActivateBusiness
                     return Result<Guid>.Failure(Error.Conflict("Isletme zaten aktif."));
 
                 // 4. Aktif et
-                business.Activate(request.ActivatedBy);
+                // Denetim kaydi da govde degil, JWT kimliginden yazilir.
+                business.Activate(_currentUser.UserId?.ToString() ?? "System");
 
                 // 5. Kaydet
                 await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -1,3 +1,4 @@
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Features.Favorites.Commands.AddFavorite;
 using AppointMan.Application.Features.Favorites.Commands.RemoveFavorite;
 using AppointMan.Application.Features.Favorites.Queries.CheckFavorite;
@@ -91,7 +92,8 @@ public class FavoriteCommandHandlerTests
             new FakeRepository<Favorite>(),
             new FakeRepository<User>(),
             new FakeRepository<Business>(new[] { TestData.NewBusiness(Guid.NewGuid(), BusinessId) }),
-            new FakeUnitOfWork());
+            new FakeUnitOfWork(),
+            CurrentUser());
 
         var result = await sut.Handle(NewAddCommand(), CancellationToken.None);
 
@@ -105,11 +107,28 @@ public class FavoriteCommandHandlerTests
             new FakeRepository<Favorite>(),
             new FakeRepository<User>(new[] { TestData.NewUser(UserId) }),
             new FakeRepository<Business>(),
-            new FakeUnitOfWork());
+            new FakeUnitOfWork(),
+            CurrentUser());
 
         var result = await sut.Handle(NewAddCommand(), CancellationToken.None);
 
         Assert.True(result.IsFailure);
+    }
+
+    [Fact]
+    public async Task Add_ShouldFail_WhenCallerIsDifferentUser()
+    {
+        var sut = new AddFavoriteCommandHandler(
+            new FakeRepository<Favorite>(),
+            new FakeRepository<User>(new[] { TestData.NewUser(UserId) }),
+            new FakeRepository<Business>(new[] { TestData.NewBusiness(Guid.NewGuid(), BusinessId) }),
+            new FakeUnitOfWork(),
+            TestCurrentUserService.For(Guid.NewGuid()));
+
+        var result = await sut.Handle(NewAddCommand(), CancellationToken.None);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("UNAUTHORIZED", result.Error!.Code);
     }
 
     // ===== Silme =====
@@ -119,7 +138,7 @@ public class FavoriteCommandHandlerTests
     {
         var favorite = NewFavorite();
         var sut = new RemoveFavoriteCommandHandler(
-            new FakeRepository<Favorite>(new[] { favorite }), new FakeUnitOfWork());
+            new FakeRepository<Favorite>(new[] { favorite }), new FakeUnitOfWork(), CurrentUser());
 
         var result = await sut.Handle(NewRemoveCommand(), CancellationToken.None);
 
@@ -131,7 +150,8 @@ public class FavoriteCommandHandlerTests
     [Fact]
     public async Task Remove_ShouldFail_WhenNoActiveFavoriteExists()
     {
-        var sut = new RemoveFavoriteCommandHandler(new FakeRepository<Favorite>(), new FakeUnitOfWork());
+        var sut = new RemoveFavoriteCommandHandler(
+            new FakeRepository<Favorite>(), new FakeUnitOfWork(), CurrentUser());
 
         var result = await sut.Handle(NewRemoveCommand(), CancellationToken.None);
 
@@ -147,7 +167,7 @@ public class FavoriteCommandHandlerTests
         favorite.ClearDomainEvents();
 
         var sut = new RemoveFavoriteCommandHandler(
-            new FakeRepository<Favorite>(new[] { favorite }), new FakeUnitOfWork());
+            new FakeRepository<Favorite>(new[] { favorite }), new FakeUnitOfWork(), CurrentUser());
 
         var result = await sut.Handle(NewRemoveCommand(), CancellationToken.None);
 
@@ -161,13 +181,29 @@ public class FavoriteCommandHandlerTests
         var other = NewFavorite(OtherBusinessId);
 
         var sut = new RemoveFavoriteCommandHandler(
-            new FakeRepository<Favorite>(new[] { target, other }), new FakeUnitOfWork());
+            new FakeRepository<Favorite>(new[] { target, other }), new FakeUnitOfWork(), CurrentUser());
 
         var result = await sut.Handle(NewRemoveCommand(), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
         Assert.True(target.IsDeleted);
         Assert.False(other.IsDeleted);
+    }
+
+    [Fact]
+    public async Task Remove_ShouldFail_WhenCallerIsDifferentUser()
+    {
+        var favorite = NewFavorite();
+        var sut = new RemoveFavoriteCommandHandler(
+            new FakeRepository<Favorite>(new[] { favorite }),
+            new FakeUnitOfWork(),
+            TestCurrentUserService.For(Guid.NewGuid()));
+
+        var result = await sut.Handle(NewRemoveCommand(), CancellationToken.None);
+
+        Assert.True(result.IsFailure);
+        Assert.False(favorite.IsDeleted);
+        Assert.Equal("UNAUTHORIZED", result.Error!.Code);
     }
 
     // ===== Uctan uca =====
@@ -177,7 +213,7 @@ public class FavoriteCommandHandlerTests
     {
         // Ekle -> cikar -> tekrar ekle zinciri kesintisiz calismali.
         var (addSut, favorites, _) = CreateAddSut();
-        var removeSut = new RemoveFavoriteCommandHandler(favorites, new FakeUnitOfWork());
+        var removeSut = new RemoveFavoriteCommandHandler(favorites, new FakeUnitOfWork(), CurrentUser());
 
         var added = await addSut.Handle(NewAddCommand(), CancellationToken.None);
         var removed = await removeSut.Handle(NewRemoveCommand(), CancellationToken.None);
@@ -195,7 +231,7 @@ public class FavoriteCommandHandlerTests
     public async Task Check_ShouldReportFalse_AfterRemove()
     {
         var (addSut, favorites, _) = CreateAddSut();
-        var removeSut = new RemoveFavoriteCommandHandler(favorites, new FakeUnitOfWork());
+        var removeSut = new RemoveFavoriteCommandHandler(favorites, new FakeUnitOfWork(), CurrentUser());
         var checkSut = new CheckFavoriteQueryHandler(favorites);
 
         await addSut.Handle(NewAddCommand(), CancellationToken.None);
@@ -208,6 +244,8 @@ public class FavoriteCommandHandlerTests
     }
 
     // ===== Yardimcilar =====
+
+    private static ICurrentUserService CurrentUser() => TestCurrentUserService.For(UserId);
 
     private static (AddFavoriteCommandHandler Sut, FakeRepository<Favorite> Favorites, FakeUnitOfWork UnitOfWork)
         CreateAddSut()
@@ -229,7 +267,8 @@ public class FavoriteCommandHandlerTests
                 TestData.NewBusiness(Guid.NewGuid(), BusinessId),
                 TestData.NewBusiness(Guid.NewGuid(), OtherBusinessId)
             }),
-            unitOfWork ?? new FakeUnitOfWork());
+            unitOfWork ?? new FakeUnitOfWork(),
+            CurrentUser());
 
     private static AddFavoriteCommand NewAddCommand(Guid? businessId = null) => new()
     {

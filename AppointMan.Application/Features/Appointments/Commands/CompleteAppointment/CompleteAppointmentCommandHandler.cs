@@ -16,19 +16,22 @@ namespace AppointMan.Application.Features.Appointments.Commands.CompleteAppointm
         private readonly IUnitOfWork _unitOfWork;
         private readonly AppointManMetrics _metrics;
         private readonly ICurrentUserService _currentUser;
+        private readonly IDateTimeService _dateTimeService;
 
         public CompleteAppointmentCommandHandler(
             IRepository<Appointment> appointmentRepository,
             IRepository<Business> businessRepository,
             IUnitOfWork unitOfWork,
             AppointManMetrics metrics,
-            ICurrentUserService currentUser)
+            ICurrentUserService currentUser,
+            IDateTimeService dateTimeService)
         {
             _appointmentRepository = appointmentRepository;
             _businessRepository = businessRepository;
             _unitOfWork = unitOfWork;
             _metrics = metrics;
             _currentUser = currentUser;
+            _dateTimeService = dateTimeService;
         }
 
         public async Task<Result<Guid>> Handle(CompleteAppointmentCommand request, CancellationToken cancellationToken)
@@ -52,8 +55,8 @@ namespace AppointMan.Application.Features.Appointments.Commands.CompleteAppointm
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
                     return Result<Guid>.Failure(Error.Forbidden("Bu randevuyu tamamlama yetkiniz yok."));
 
-                // 4. Domain kurallari ile tamamla
-                appointment.Complete(request.CompletedBy ?? "Business");
+                // 4. Domain kurallari ile tamamla. Referans zaman tek kaynaktan gelir.
+                appointment.Complete(request.CompletedBy ?? "Business", _dateTimeService.UtcNow);
 
                 // 5. Kaydet
                 await _unitOfWork.SaveChangesAsync(cancellationToken);

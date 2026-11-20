@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using AppointMan.Application.Common.DTOs;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Application.Features.Businesses.Commands.ActivateBusiness;
 using AppointMan.Application.Features.Businesses.Commands.CreateBusiness;
@@ -24,10 +25,27 @@ namespace AppointMan.Api.Controllers
     public class BusinessController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ICurrentUserService _currentUser;
 
-        public BusinessController(IMediator mediator)
+        public BusinessController(IMediator mediator, ICurrentUserService currentUser)
         {
             _mediator = mediator;
+            _currentUser = currentUser;
+        }
+
+        /// <summary>
+        /// Sahip ID'si her zaman JWT'den cozulur; govde OwnerId degeri yetki kaynagi degildir.
+        /// </summary>
+        private IActionResult? ResolveCurrentUserId(out Guid userId)
+        {
+            if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
+            {
+                userId = Guid.Empty;
+                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
+            }
+
+            userId = _currentUser.UserId.Value;
+            return null;
         }
 
         /// <summary>
@@ -38,6 +56,12 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] CreateBusinessCommand command)
         {
+            // OwnerId JWT'den gelir; govde degerine guvenilmez.
+            if (ResolveCurrentUserId(out var userId) is { } unauthorized)
+                return unauthorized;
+
+            command.OwnerId = userId;
+
             var result = await _mediator.Send(command);
 
             if (result.IsSuccess)
@@ -54,6 +78,12 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update([FromBody] UpdateBusinessCommand command)
         {
+            // OwnerId JWT'den gelir; govde degerine guvenilmez.
+            if (ResolveCurrentUserId(out var userId) is { } unauthorized)
+                return unauthorized;
+
+            command.OwnerId = userId;
+
             var result = await _mediator.Send(command);
 
             if (result.IsSuccess)
@@ -70,7 +100,13 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Activate(Guid id, [FromBody] ActivateBusinessCommand command)
         {
+            // ID ve sahip kimligi guvenilir kaynaklardan alinir.
+            if (ResolveCurrentUserId(out var userId) is { } unauthorized)
+                return unauthorized;
+
             command.BusinessId = id;
+            command.OwnerId = userId;
+            command.ActivatedBy = userId.ToString();
             var result = await _mediator.Send(command);
 
             if (result.IsSuccess)
@@ -87,7 +123,13 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Deactivate(Guid id, [FromBody] DeactivateBusinessCommand command)
         {
+            // ID ve sahip kimligi guvenilir kaynaklardan alinir.
+            if (ResolveCurrentUserId(out var userId) is { } unauthorized)
+                return unauthorized;
+
             command.BusinessId = id;
+            command.OwnerId = userId;
+            command.DeactivatedBy = userId.ToString();
             var result = await _mediator.Send(command);
 
             if (result.IsSuccess)

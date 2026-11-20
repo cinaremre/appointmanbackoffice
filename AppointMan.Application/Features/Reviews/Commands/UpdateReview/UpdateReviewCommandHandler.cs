@@ -1,4 +1,5 @@
-﻿using AppointMan.Application.Common.Authorization;
+﻿using AppointMan.Application.Common.Abstractions;
+using AppointMan.Application.Common.Authorization;
 using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
@@ -11,20 +12,20 @@ namespace AppointMan.Application.Features.Reviews.Commands.UpdateReview
     public class UpdateReviewCommandHandler : IRequestHandler<UpdateReviewCommand, Result<Guid>>
     {
         private readonly IRepository<Review> _reviewRepository;
-        private readonly IRepository<Business> _businessRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUser;
+        private readonly IBusinessRatingUpdater _ratingUpdater;
 
         public UpdateReviewCommandHandler(
             IRepository<Review> reviewRepository,
-            IRepository<Business> businessRepository,
             IUnitOfWork unitOfWork,
-            ICurrentUserService currentUser)
+            ICurrentUserService currentUser,
+            IBusinessRatingUpdater ratingUpdater)
         {
             _reviewRepository = reviewRepository;
-            _businessRepository = businessRepository;
             _unitOfWork = unitOfWork;
             _currentUser = currentUser;
+            _ratingUpdater = ratingUpdater;
         }
 
         public async Task<Result<Guid>> Handle(UpdateReviewCommand request, CancellationToken cancellationToken)
@@ -41,14 +42,14 @@ namespace AppointMan.Application.Features.Reviews.Commands.UpdateReview
                 if (!CallerAuthorization.CanActAsUser(_currentUser, review.UserId))
                     return Result<Guid>.Failure(Error.Unauthorized("Bu yorumu guncelleme yetkiniz yok."));
 
-                // 3. Yorumu guncelle
-                review.UpdateReview(request.Rating, request.Comment);
-
-                // 4. Isletme puanini guncelle
-                await UpdateBusinessRating(review.BusinessId, cancellationToken);
-
-                // 5. Kaydet
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                // 3. Yorum değişikliği ve puan yeniden hesaplaması aynı transaction'da.
+                //    RecalculateAsync yorum veritabanına yazıldıktan sonra çalışmalı.
+                await _unitOfWork.ExecuteInTransactionAsync(async token =>
+                {
+                    review.UpdateReview(request.Rating, request.Comment);
+                    await _unitOfWork.SaveChangesAsync(token);
+                    await _ratingUpdater.RecalculateAsync(review.BusinessId, token);
+                }, cancellationToken: cancellationToken);
 
                 return Result<Guid>.Success(review.Id);
             }
@@ -63,22 +64,5 @@ namespace AppointMan.Application.Features.Reviews.Commands.UpdateReview
             }
         }
 
-        private async Task UpdateBusinessRating(Guid businessId, CancellationToken cancellationToken)
-        {
-            var reviews = await _reviewRepository.FindAsync(
-                r => r.BusinessId == businessId && r.IsVisible && !r.IsDeleted,
-                cancellationToken);
-
-            if (!reviews.Any())
-                return;
-
-            var averageRating = reviews.Average(r => r.Rating);
-
-            var business = await _businessRepository.GetByIdAsync(businessId, cancellationToken);
-            if (business is not null)
-            {
-                business.UpdateRating((decimal)averageRating);
-            }
-        }
     }
 }

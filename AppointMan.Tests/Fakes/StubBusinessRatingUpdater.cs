@@ -16,6 +16,14 @@ public sealed class StubBusinessRatingUpdater : IBusinessRatingUpdater
         return Task.FromResult(1);
     }
 
+    public List<Guid> Recalculated { get; } = new();
+
+    public Task<int> RecalculateAsync(Guid businessId, CancellationToken cancellationToken = default)
+    {
+        Recalculated.Add(businessId);
+        return Task.FromResult(1);
+    }
+
     public Task<int> UpdateOnReviewRemovedAsync(
         Guid businessId,
         int score,

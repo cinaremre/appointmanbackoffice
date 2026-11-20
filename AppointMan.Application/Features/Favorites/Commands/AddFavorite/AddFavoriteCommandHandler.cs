@@ -1,4 +1,5 @@
 ﻿using AppointMan.Application.Common.Errors;
+using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
 using AppointMan.Domain.Entities;
 using AppointMan.Domain.Exceptions;
@@ -13,23 +14,34 @@ namespace AppointMan.Application.Features.Favorites.Commands.AddFavorite
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<Business> _businessRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService _currentUser;
 
         public AddFavoriteCommandHandler(
             IRepository<Favorite> favoriteRepository,
             IRepository<User> userRepository,
             IRepository<Business> businessRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ICurrentUserService currentUser)
         {
             _favoriteRepository = favoriteRepository;
             _userRepository = userRepository;
             _businessRepository = businessRepository;
             _unitOfWork = unitOfWork;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<Guid>> Handle(AddFavoriteCommand request, CancellationToken cancellationToken)
         {
             try
             {
+                // 0. Favori yalnizca JWT kimligine ait kullanici icin olusturulabilir.
+                //    Govde UserId'si yetki kaynagi degildir.
+                if (!_currentUser.IsAuthenticated ||
+                    _currentUser.UserId is null ||
+                    _currentUser.UserId.Value != request.UserId)
+                    return Result<Guid>.Failure(
+                        Error.Unauthorized("Baska kullanici adina favori ekleme yetkiniz yok."));
+
                 // 1. Kullanici kontrolu
                 var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
                 if (user is null)
