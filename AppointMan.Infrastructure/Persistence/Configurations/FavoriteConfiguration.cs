@@ -37,7 +37,13 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
 
             builder.HasIndex(x => x.UserId);
             builder.HasIndex(x => x.BusinessId);
-            builder.HasIndex(x => new { x.UserId, x.BusinessId }).IsUnique();
+
+            // Filtreli unique index: soft-delete edilmis kayitlar anahtari isgal etmez.
+            // Filtresiz index, favori cikarildiktan sonra yeniden eklemeyi
+            // "zaten favorilerinizde" hatasina dusuruyordu.
+            builder.HasIndex(x => new { x.UserId, x.BusinessId })
+                .IsUnique()
+                .HasFilter("[IsDeleted] = 0");
         }
     }
 }

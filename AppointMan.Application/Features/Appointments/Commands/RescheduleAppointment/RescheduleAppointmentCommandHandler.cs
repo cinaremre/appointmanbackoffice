@@ -68,9 +68,9 @@ namespace AppointMan.Application.Features.Appointments.Commands.RescheduleAppoin
                     if (appointment is null)
                         return Result<Guid>.Failure(Error.NotFound("Randevu", request.AppointmentId.ToString()));
 
-                    // 2. Yetki kontrolu - randevu sahibi veya yonetici.
-                    if (!CallerAuthorization.CanActAsUser(_currentUser, appointment.UserId))
-                        return Result<Guid>.Failure(Error.Forbidden("Bu randevuyu yeniden planlama yetkiniz yok."));
+                    // 2. Yetki kontrolu, isletme ve calisan bilgisi yuklendikten sonra
+                    //    (4b) numarali adimda yapilir; boylece isletme sahibi ve randevunun
+                    //    calisani da randevuyu yeniden planlayabilir.
 
                     // 3. Isletme kontrolu
                     var business = await _businessRepository.GetByIdWithIncludesAsync(
@@ -105,6 +105,19 @@ namespace AppointMan.Application.Features.Appointments.Commands.RescheduleAppoin
 
                     if (employee.BusinessId != appointment.BusinessId)
                         return Result<Guid>.Failure(Error.BusinessRule("Calisan bu isletmeye ait degil."));
+
+                    // 4b. Yetki kontrolu - randevu sahibi musteri, isletme sahibi veya atanmis calisan.
+                    var isBusinessSide =
+                        CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId) ||
+                        employee.IsLinkedToUser(_currentUser.UserId.Value);
+
+                    if (!isBusinessSide && !CallerAuthorization.CanActAsUser(_currentUser, appointment.UserId))
+                        return Result<Guid>.Failure(Error.Forbidden("Bu randevuyu yeniden planlama yetkiniz yok."));
+
+                    // 4c. Musteri son 2 saatte degisiklik yapamaz; isletme ve calisan muaf.
+                    if (!isBusinessSide && appointment.IsWithinCustomerCutoff(now))
+                        return Result<Guid>.Failure(Error.BusinessRule(
+                            $"Randevuya {Appointment.CustomerChangeCutoffHours} saatten az kaldigi icin degistirilemez."));
 
                     // 5. Hizmet kontrolu
                     var service = await _serviceRepository.GetByIdAsync(appointment.ServiceId, token);

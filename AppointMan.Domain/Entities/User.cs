@@ -223,6 +223,47 @@ namespace AppointMan.Domain.Entities
             EmailVerificationRequestedAt = null;
         }
 
+        // Guvenlik: telefon (OTP) dogrulama kodu da yalnizca hash'lenmis olarak saklanir.
+        // Kullanici basina tek aktif kod tutulur; yeni kod eskisini gecersiz kilar.
+        public string? PhoneVerificationCodeHash { get; private set; }
+        public DateTime? PhoneVerificationCodeExpiresAt { get; private set; }
+        public DateTime? PhoneVerificationRequestedAt { get; private set; }
+        public int PhoneVerificationAttemptCount { get; private set; }
+
+        /// <summary>
+        /// Yeni telefon dogrulama kodunun hash'ini kaydeder ve deneme sayacini sifirlar.
+        /// </summary>
+        /// <param name="codeHash">Kodun SHA-256 hash'i; ham kod asla saklanmaz.</param>
+        /// <param name="expiresAt">Kodun mutlak bitis zamani (UTC).</param>
+        /// <param name="requestedAt">Kodun uretildigi zaman (UTC).</param>
+        /// <exception cref="DomainException">Hash bos oldugunda firlatilir.</exception>
+        public void IssuePhoneVerificationCode(string codeHash, DateTime expiresAt, DateTime requestedAt)
+        {
+            if (string.IsNullOrWhiteSpace(codeHash))
+                throw new DomainException("User.PhoneVerificationCodeRequired");
+
+            PhoneVerificationCodeHash = codeHash;
+            PhoneVerificationCodeExpiresAt = expiresAt;
+            PhoneVerificationRequestedAt = requestedAt;
+            PhoneVerificationAttemptCount = 0;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        /// <summary>Aktif telefon dogrulama kodunu temizler.</summary>
+        public void ClearPhoneVerificationCode()
+        {
+            PhoneVerificationCodeHash = null;
+            PhoneVerificationCodeExpiresAt = null;
+            PhoneVerificationAttemptCount = 0;
+        }
+
+        /// <summary>Basarisiz dogrulama denemesi sayacini arttirir.</summary>
+        public void IncrementPhoneVerificationAttempt()
+        {
+            PhoneVerificationAttemptCount++;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
         public void VerifyPhone()
         {
             if (IsPhoneVerified)

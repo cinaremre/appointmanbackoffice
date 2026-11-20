@@ -282,6 +282,52 @@ namespace AppointMan.Domain.Entities
             UpdatedAt = currentTime;
         }
 
+        /// <summary>
+        /// Musterinin randevu uzerinde degisiklik yapabilecegi en yakin sure (saat).
+        /// Isletme sahibi ve randevunun calisani bu sinirlamaya tabi degildir.
+        /// </summary>
+        public const int CustomerChangeCutoffHours = 2;
+
+        /// <summary>Randevu "gelmedi" olarak isaretlenmis mi?</summary>
+        public bool IsNoShow => Status == EnumAppointmentStatus.NoShow;
+
+        /// <summary>
+        /// Randevuya kalan sure musteri degisiklik sinirinin altinda mi?
+        /// Musteri iptal/erteleme kararini son Anda vermemeli; isletme tarafi muaf.
+        /// </summary>
+        /// <param name="now">Referans alinacak guncel UTC zamani.</param>
+        /// <returns>Kalan sure <see cref="CustomerChangeCutoffHours"/> saatten az ise true.</returns>
+        public bool IsWithinCustomerCutoff(DateTime? now = null)
+        {
+            var currentTime = now ?? DateTime.UtcNow;
+
+            return AppointmentDate - currentTime < TimeSpan.FromHours(CustomerChangeCutoffHours);
+        }
+
+        /// <summary>
+        /// Randevuyu "gelmedi" olarak isaretler. Yalnizca randevu saati geldikten
+        /// sonra ve bekleyen/onaylanmis randevular icin gecerlidir.
+        /// </summary>
+        /// <param name="changedBy">Islemi yapan kullanici.</param>
+        /// <param name="now">Islem zamani (UTC).</param>
+        /// <exception cref="DomainException">Durum gecisi veya zaman kurali gecersizse.</exception>
+        public void MarkAsNoShow(string? changedBy = null, DateTime? now = null)
+        {
+            var currentTime = now ?? DateTime.UtcNow;
+
+            if (AppointmentDate > currentTime)
+                throw new DomainException("Gelecek randevu gelmedi olarak isaretlenemez.");
+
+            if (Status != EnumAppointmentStatus.Pending && Status != EnumAppointmentStatus.Confirmed)
+                throw new DomainException("Sadece bekleyen veya onaylanmis randevular gelmedi olarak isaretlenebilir.");
+
+            var oldStatus = Status;
+            Status = EnumAppointmentStatus.NoShow;
+            UpdatedAt = currentTime;
+
+            AddHistory(oldStatus, Status, changedBy, "Randevuya gelinmedi", currentTime);
+        }
+
         /// <summary>Randevunun iptal edilebilir olup olmadigini belirler.</summary>
         /// <param name="now">Referans alinacak guncel UTC zamani.</param>
         public bool CanBeCancelled(DateTime? now = null)

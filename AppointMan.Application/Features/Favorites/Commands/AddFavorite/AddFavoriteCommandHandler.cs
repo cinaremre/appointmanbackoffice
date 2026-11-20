@@ -40,9 +40,19 @@ namespace AppointMan.Application.Features.Favorites.Commands.AddFavorite
                 if (business is null)
                     return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
 
-                // 3. On kontrol YAPILMAZ: (UserId, BusinessId) uzerindeki unique index
-                //    tek dogruluk kaynagidir. Es zamanli iki ekleme denemesinde
-                //    ikincisi DuplicateKeyException alir ve 409 Conflict doner.
+                // 3. Idempotent kontrol: ayni cift icin aktif favori varsa yeni kayit
+                //    olusturulmaz, mevcut kayit doner. Istemci tekrar denemesi 409 uretmez.
+                var existingFavorites = await _favoriteRepository.FindAsync(
+                    f => f.UserId == request.UserId && f.BusinessId == request.BusinessId && !f.IsDeleted,
+                    cancellationToken);
+
+                var existing = existingFavorites.FirstOrDefault();
+                if (existing is not null)
+                    return Result<Guid>.Success(existing.Id);
+
+                // 4. Yeni kayit. (UserId, BusinessId) uzerindeki FILTRELI unique index
+                //    yalnizca aktif kayitlari kapsar; soft-delete edilmis kayit yeniden
+                //    eklemeyi engellemez.
                 var favorite = new Favorite(request.UserId, request.BusinessId, request.Note);
 
                 await _favoriteRepository.AddAsync(favorite, cancellationToken);
@@ -52,6 +62,15 @@ namespace AppointMan.Application.Features.Favorites.Commands.AddFavorite
             }
             catch (DuplicateKeyException)
             {
+                // Es zamanli iki ekleme denemesi: aktif kayit olustuysa idempotent don.
+                var raced = await _favoriteRepository.FindAsync(
+                    f => f.UserId == request.UserId && f.BusinessId == request.BusinessId && !f.IsDeleted,
+                    CancellationToken.None);
+
+                var winner = raced.FirstOrDefault();
+                if (winner is not null)
+                    return Result<Guid>.Success(winner.Id);
+
                 return Result<Guid>.Failure(ConcurrencyErrors.DuplicateFavorite());
             }
             catch (ConcurrencyConflictException)

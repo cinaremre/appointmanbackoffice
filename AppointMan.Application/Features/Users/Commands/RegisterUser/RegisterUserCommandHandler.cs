@@ -22,6 +22,8 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
         private readonly IEmailQueue _emailQueue;
         private readonly EmailOptions _emailOptions;
         private readonly ILocalizationService _localizationService;
+        private readonly IOtpCodeService _otpCodeService;
+        private readonly ISmsCodeSender _smsCodeSender;
 
         public RegisterUserCommandHandler(
             IRepository<User> userRepository,
@@ -29,7 +31,9 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
             AppointManMetrics metrics,
             IEmailQueue emailQueue,
             EmailOptions emailOptions,
-            ILocalizationService localizationService)
+            ILocalizationService localizationService,
+            IOtpCodeService otpCodeService,
+            ISmsCodeSender smsCodeSender)
         {
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
@@ -37,6 +41,8 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
             _emailQueue = emailQueue;
             _emailOptions = emailOptions;
             _localizationService = localizationService;
+            _otpCodeService = otpCodeService;
+            _smsCodeSender = smsCodeSender;
         }
 
         public async Task<Result<Guid>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -116,6 +122,10 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
                 //    Gonderim hatasi kaydi basarisiz gostermemelidir.
                 TryQueueVerificationEmail(user, rawVerificationToken);
 
+                // 10. Telefon dogrulama kodu uretilir ve gonderilir. OTP dogrulandiginda
+                //     kullanici aktiflesir ve giris yapabilir (e-posta dogrulamasi korunur).
+                await TrySendPhoneVerificationCode(user, cancellationToken);
+
                 return Result<Guid>.Success(user.Id);
             }
             catch (DuplicateKeyException)
@@ -134,6 +144,27 @@ namespace AppointMan.Application.Features.Users.Commands.RegisterUser
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(Error.Internal("User.RegisterFailed", ex.Message));
+            }
+        }
+
+        /// <summary>
+        /// Telefon dogrulama kodunu uretir ve SMS hattina birakir. Gonderim veya
+        /// yapilandirma hatasi kayit akisini bozmaz; kullanici kodu yeniden isteyebilir.
+        /// </summary>
+        /// <param name="user">Kodu alacak kullanici.</param>
+        /// <param name="cancellationToken">Iptal token'i.</param>
+        private async Task TrySendPhoneVerificationCode(User user, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var code = _otpCodeService.IssueCode(user, DateTime.UtcNow);
+
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                await _smsCodeSender.SendAsync(user.PhoneNumber.Value, code, cancellationToken);
+            }
+            catch (Exception)
+            {
+                // SMS/OTP hatasi kullanici olusturmayi geri almaz.
             }
         }
 

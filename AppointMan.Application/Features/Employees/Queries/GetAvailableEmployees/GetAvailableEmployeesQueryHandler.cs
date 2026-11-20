@@ -11,17 +11,20 @@ namespace AppointMan.Application.Features.Employees.Queries.GetAvailableEmployee
         private readonly IRepository<Employee> _employeeRepository;
         private readonly IRepository<Appointment> _appointmentRepository;
         private readonly IRepository<Service> _serviceRepository;
+        private readonly IRepository<Business> _businessRepository;
         private readonly IDateTimeService _dateTimeService;
 
         public GetAvailableEmployeesQueryHandler(
             IRepository<Employee> employeeRepository,
             IRepository<Appointment> appointmentRepository,
             IRepository<Service> serviceRepository,
+            IRepository<Business> businessRepository,
             IDateTimeService dateTimeService)
         {
             _employeeRepository = employeeRepository;
             _appointmentRepository = appointmentRepository;
             _serviceRepository = serviceRepository;
+            _businessRepository = businessRepository;
             _dateTimeService = dateTimeService;
         }
 
@@ -63,12 +66,21 @@ namespace AppointMan.Application.Features.Employees.Queries.GetAvailableEmployee
                     if (service is null)
                         return Result<List<EmployeeDto>>.Failure(Error.NotFound("Hizmet", request.ServiceId.Value.ToString()));
 
+                    // Isletme mesaisi yalnizca calisanin kendi mesai kaydi yoksa devreye girer.
+                    var businesses = await _businessRepository.FindWithIncludesAsync(
+                        b => b.Id == request.BusinessId && !b.IsDeleted,
+                        new[] { nameof(Business.WorkingHours) },
+                        cancellationToken);
+
+                    var business = businesses.FirstOrDefault();
+
                     var appointmentDate = request.AppointmentDate.Value;
 
                     // The API receives UTC instants, but opening hours are stored as local
                     // wall-clock time-of-day. Comparing against the raw UTC value would shift
                     // every availability decision by the configured offset.
-                    var businessLocalDate = _dateTimeService.ToBusinessLocalTime(appointmentDate);
+                    var businessLocalStart = _dateTimeService.ToBusinessLocalTime(appointmentDate);
+                    var businessLocalEnd = businessLocalStart.AddMinutes(service.DurationInMinutes);
 
                     // Conflict detection keeps using UTC because appointments are persisted in UTC.
                     var startTime = appointmentDate;
@@ -76,7 +88,7 @@ namespace AppointMan.Application.Features.Employees.Queries.GetAvailableEmployee
 
                     // Calisma saati ve izin kontrolleri bellekte yapilir; navigasyonlar zaten yuklu.
                     var scheduleEligible = availableEmployees
-                        .Where(e => e.IsWorkingOn(businessLocalDate) && !e.IsOnTimeOff(businessLocalDate))
+                        .Where(e => IsScheduled(e, business, businessLocalStart, businessLocalEnd))
                         .ToList();
 
                     if (scheduleEligible.Count == 0)
@@ -88,9 +100,11 @@ namespace AppointMan.Application.Features.Employees.Queries.GetAvailableEmployee
                         // Cakisma kontrolu tek sorguda yapilir: calisan basina sorgu (N+1) yerine 1 sorgu.
                         var candidateIds = scheduleEligible.Select(e => e.Id).ToList();
 
+                        // No-show ve iptal edilmis randevular saati isgal etmez.
                         var conflicts = await _appointmentRepository.FindAsync(
                             a => candidateIds.Contains(a.EmployeeId) &&
                                  a.Status != Domain.Enums.EnumAppointmentStatus.Cancelled &&
+                                 a.Status != Domain.Enums.EnumAppointmentStatus.NoShow &&
                                  a.AppointmentDate < endTime &&
                                  a.AppointmentDate.AddMinutes(a.Service.DurationInMinutes) > startTime,
                             cancellationToken);
@@ -134,6 +148,26 @@ namespace AppointMan.Application.Features.Employees.Queries.GetAvailableEmployee
                 return Result<List<EmployeeDto>>.Failure(
                     Error.Internal("Musait calisanlar getirilirken bir hata olustu.", ex.Message));
             }
+        }
+
+        /// <summary>
+        /// Calisanin verilen yerel zaman araliginda gorevli olup olmadigini belirler.
+        /// Calisanin kendi mesai kaydi yoksa isletme mesaisi esas alinir; aksi halde
+        /// mesai kaydi olmayan calisanlar hicbir zaman musait donmez.
+        /// </summary>
+        /// <param name="employee">Kontrol edilecek calisan.</param>
+        /// <param name="business">Isletme (mesai saatleri yuklu olmali).</param>
+        /// <param name="localStart">Isletme yerel saatinde aralik baslangici.</param>
+        /// <param name="localEnd">Isletme yerel saatinde aralik bitisi.</param>
+        /// <returns>Calisan bu araligi verebiliyorsa true.</returns>
+        private static bool IsScheduled(Employee employee, Business? business, DateTime localStart, DateTime localEnd)
+        {
+            if (employee.IsOnTimeOff(localStart))
+                return false;
+
+            return employee.WorkingHours.Count > 0
+                ? employee.IsWorkingOn(localStart)
+                : business?.IsOpenDuring(localStart, localEnd) == true;
         }
     }
 }

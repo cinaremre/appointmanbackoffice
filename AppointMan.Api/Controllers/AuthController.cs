@@ -2,8 +2,10 @@
 using AppointMan.Application.Features.Users.Commands.Login;
 using AppointMan.Application.Features.Users.Commands.RefreshToken;
 using AppointMan.Application.Features.Users.Commands.RegisterUser;
+using AppointMan.Application.Features.Users.Commands.ResendPhoneOtp;
 using AppointMan.Application.Features.Users.Commands.ResendVerificationEmail;
 using AppointMan.Application.Features.Users.Commands.VerifyEmailToken;
+using AppointMan.Application.Features.Users.Commands.VerifyPhoneOtp;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -128,6 +130,46 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ResendVerification([FromBody] ResendVerificationEmailCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            if (result.IsSuccess)
+                return Ok(result);
+
+            return BadRequest(result);
+        }
+
+        /// <summary>
+        /// Kayit sonrasi gonderilen telefon dogrulama kodunu dogrular. Basarili
+        /// dogrulamada kullanici aktiflesir ve giris yapabilir.
+        /// </summary>
+        /// <param name="command">Telefon numarasi ve kod</param>
+        /// <returns>Dogrulanan kullanicinin ID'si</returns>
+        [AllowAnonymous]
+        [HttpPost("verify-phone")]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> VerifyPhone([FromBody] VerifyPhoneOtpCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            if (result.IsSuccess)
+                return Ok(result);
+
+            return BadRequest(result);
+        }
+
+        /// <summary>
+        /// Telefon dogrulama kodunu yeniden gonderir. Yanit, numaranin kayitli olup
+        /// olmadigini sizdirmamak icin her durumda basarili doner.
+        /// </summary>
+        /// <param name="command">Telefon numarasini tasiyan komut</param>
+        /// <returns>Istek kabul edildi bilgisi</returns>
+        [AllowAnonymous]
+        [HttpPost("resend-phone-code")]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ResendPhoneCode([FromBody] ResendPhoneOtpCommand command)
         {
             var result = await _mediator.Send(command);
 

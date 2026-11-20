@@ -45,6 +45,9 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddEmailInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
 builder.Services.AddHostedService<EmailBackgroundService>();
 
+// Telefon dogrulama (OTP) hatti: saglayici baglanana kadar log tabanli SMS tasimasi.
+builder.Services.AddSmsInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
+
 // Lokalizasyon: tr/en kataloglari baslangicta bellege yuklenir (runtime izleme yok)
 builder.Services.AddSingleton<ILocalizationService, JsonLocalizationService>();
 

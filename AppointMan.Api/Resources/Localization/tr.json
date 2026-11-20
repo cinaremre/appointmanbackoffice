@@ -27,6 +27,14 @@
     "AccountDeletionFailed": "Hesap silinirken bir hata oluştu.",
     "UserIdRequired": "Kullanıcı bilgisi bulunamadı."
   },
+  "Otp": {
+    "CodeRequired": "Doğrulama kodu zorunludur.",
+    "CodeNotIssued": "Aktif bir doğrulama kodu bulunamadı. Lütfen yeni kod isteyin.",
+    "InvalidCode": "Doğrulama kodu hatalı.",
+    "Expired": "Doğrulama kodunun süresi dolmuş. Lütfen yeni kod isteyin.",
+    "TooManyAttempts": "Çok fazla hatalı deneme yapıldı. Lütfen yeni kod isteyin.",
+    "PhoneVerified": "Telefon numaranız doğrulandı."
+  },
   "Email": {
     "VerifySubject": "E-posta adresinizi doğrulayın",
     "VerifyBody": "Merhaba,<br/><br/>Hesabınızı doğrulamak için aşağıdaki bağlantıya tıklayın:<br/><a href=\"{0}\">{0}</a><br/><br/>Bu bağlantı 24 saat geçerlidir. Bu isteği siz yapmadıysanız bu e-postayı yok sayabilirsiniz."

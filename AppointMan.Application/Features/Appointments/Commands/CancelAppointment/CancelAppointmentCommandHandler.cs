@@ -39,19 +39,37 @@ namespace AppointMan.Application.Features.Appointments.Commands.CancelAppointmen
                 if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
                     return Result<Guid>.Failure(Error.Unauthorized("Auth.Unauthorized"));
 
-                // 1. Randevu kontrolu
-                var appointment = await _appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken);
+                // 1. Randevu kontrolu (isletme/calisan yetkisi icin iliskiler yuklenir).
+                var appointment = await _appointmentRepository.GetByIdWithIncludesAsync(
+                    request.AppointmentId,
+                    cancellationToken,
+                    a => a.Business,
+                    a => a.Employee);
+
                 if (appointment is null)
                     return Result<Guid>.Failure(Error.NotFound("Randevu", request.AppointmentId.ToString()));
 
-                // 2. Yetki kontrolu - randevu sahibi veya yonetici.
-                if (!CallerAuthorization.CanActAsUser(_currentUser, appointment.UserId))
+                // 2. Yetki kontrolu - randevu sahibi musteri, isletme sahibi veya atanmis calisan.
+                var isBusinessSide =
+                    (appointment.Business is not null &&
+                     CallerAuthorization.CanActForBusiness(_currentUser, appointment.Business.OwnerId)) ||
+                    (appointment.Employee is not null &&
+                     appointment.Employee.IsLinkedToUser(_currentUser.UserId.Value));
+
+                if (!isBusinessSide && !CallerAuthorization.CanActAsUser(_currentUser, appointment.UserId))
                     return Result<Guid>.Failure(Error.Forbidden("Bu randevuyu iptal etme yetkiniz yok."));
+
+                var now = _dateTimeService.UtcNow;
+
+                // 2b. Musteri son 2 saatte iptal edemez; isletme ve calisan muaf.
+                if (!isBusinessSide && appointment.IsWithinCustomerCutoff(now))
+                    return Result<Guid>.Failure(Error.BusinessRule(
+                        $"Randevuya {Appointment.CustomerChangeCutoffHours} saatten az kaldigi icin iptal edilemez."));
 
                 // 3. Domain kurallari ile iptal et.
                 //    Ayni referans zamani kullanildigi icin es zamanli iki iptal
                 //    isteginden ikincisi rowversion cakismasi ile reddedilir.
-                appointment.Cancel(request.Reason, request.CancelledBy ?? "User", _dateTimeService.UtcNow);
+                appointment.Cancel(request.Reason, request.CancelledBy ?? "User", now);
 
                 // 4. Kaydet
                 await _unitOfWork.SaveChangesAsync(cancellationToken);

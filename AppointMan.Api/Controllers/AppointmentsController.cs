@@ -4,6 +4,7 @@ using AppointMan.Application.Features.Appointments.Commands.CancelAppointment;
 using AppointMan.Application.Features.Appointments.Commands.CompleteAppointment;
 using AppointMan.Application.Features.Appointments.Commands.ConfirmAppointment;
 using AppointMan.Application.Features.Appointments.Commands.CreateAppointment;
+using AppointMan.Application.Features.Appointments.Commands.MarkAppointmentNoShow;
 using AppointMan.Application.Features.Appointments.Commands.RescheduleAppointment;
 using AppointMan.Application.Features.Appointments.Queries.GetAppointmentById;
 using AppointMan.Application.Features.Appointments.Queries.GetAppointmentsByBusiness;
@@ -72,6 +73,32 @@ namespace AppointMan.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Cancel([FromBody] CancelAppointmentCommand command)
+        {
+            // JWT'den gelen kimlik govdeye yazilan UserId'nin yerine gecer.
+            var requesterId = GetRequesterId();
+            if (requesterId == Guid.Empty)
+                return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
+
+            command.UserId = requesterId;
+
+            var result = await _mediator.Send(command);
+
+            if (result.IsSuccess)
+                return Ok(result);
+
+            return BadRequest(result);
+        }
+
+        /// <summary>
+        /// Randevuyu "gelmedi" (no-show) olarak isaretler.
+        /// </summary>
+        /// <param name="command">Isaretlenecek randevu bilgisi</param>
+        /// <returns>Isaretlenen randevunun ID'si</returns>
+        [HttpPost("no-show")]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> MarkNoShow([FromBody] MarkAppointmentNoShowCommand command)
         {
             // JWT'den gelen kimlik govdeye yazilan UserId'nin yerine gecer.
             var requesterId = GetRequesterId();

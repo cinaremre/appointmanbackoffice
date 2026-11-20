@@ -96,9 +96,10 @@ namespace AppointMan.Application.Features.Users.Commands.Login
                     return Result<LoginResponse>.Failure(Error.Unauthorized("Auth.InvalidCredentials"));
                 }
 
-                // Sifre dogru ama adres dogrulanmamis: giris engellenir.
-                // Kod ayirt edilebilir; istemci dogrulama ekranina yonlendirebilir.
-                if (!user.IsEmailVerified)
+                // Sifre dogru ama ne e-posta ne telefon dogrulanmis: giris engellenir.
+                // Telefon (OTP) dogrulamasi tek basina yeterlidir; kayit + otp akisinda
+                // kullanici OTP'yi girdigi anda giris yapabilir.
+                if (!user.IsEmailVerified && !user.IsPhoneVerified)
                 {
                     _metrics.RecordLoginAttempt("email_not_verified");
                     return Result<LoginResponse>.Failure(Error.Unauthorized("Auth.EmailNotVerified"));

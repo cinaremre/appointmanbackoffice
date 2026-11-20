@@ -16,5 +16,11 @@ namespace AppointMan.Application.Common.DTOs
         public string? ParentCategoryName { get; set; }
         public int SubCategoryCount { get; set; }
         public int BusinessCount { get; set; }
+
+        /// <summary>
+        /// Alt kategoriler. Yalnizca ana kategorilerde doludur; her alt kategori
+        /// kendi sayaclarini tasir.
+        /// </summary>
+        public List<BusinessCategoryDto> SubCategories { get; set; } = new();
     }
 }

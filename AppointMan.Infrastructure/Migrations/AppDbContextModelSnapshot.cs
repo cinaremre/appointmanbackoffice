@@ -851,7 +851,8 @@ namespace AppointMan.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.HasIndex("UserId", "BusinessId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("Favorites", (string)null);
                 });
@@ -1386,6 +1387,21 @@ namespace AppointMan.Infrastructure.Migrations
                         .HasColumnType("nvarchar(20)")
                         .HasColumnName("PhoneNumber");
 
+                    b.Property<int>("PhoneVerificationAttemptCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTime?>("PhoneVerificationCodeExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PhoneVerificationCodeHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime?>("PhoneVerificationRequestedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("PreviousRefreshTokenHash")
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
@@ -1437,6 +1453,10 @@ namespace AppointMan.Infrastructure.Migrations
 
                     b.HasIndex("PhoneNumber")
                         .IsUnique();
+
+                    b.HasIndex("PhoneVerificationCodeHash")
+                        .HasDatabaseName("IX_Users_PhoneVerificationCodeHash")
+                        .HasFilter("[PhoneVerificationCodeHash] IS NOT NULL");
 
                     b.ToTable("Users", (string)null);
                 });

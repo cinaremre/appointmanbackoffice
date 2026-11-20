@@ -70,6 +70,23 @@ namespace AppointMan.Domain.ValueObjects
             return Value == other.Value;
         }
 
+        /// <summary>
+        /// Deger esitligi. Operator tanimlanmadiginda '==' referans karsilastirmasi
+        /// yaptigi icin ayni numarayi tasiyan iki PhoneNumber farkli sayiliyordu.
+        /// </summary>
+        /// <param name="left">Sol taraf.</param>
+        /// <param name="right">Sag taraf.</param>
+        /// <returns>Numaralar ayniysa true.</returns>
+        public static bool operator ==(PhoneNumber? left, PhoneNumber? right)
+            => object.Equals(left, right);
+
+        /// <summary>Deger esitsizligi.</summary>
+        /// <param name="left">Sol taraf.</param>
+        /// <param name="right">Sag taraf.</param>
+        /// <returns>Numaralar farkliysa true.</returns>
+        public static bool operator !=(PhoneNumber? left, PhoneNumber? right)
+            => !object.Equals(left, right);
+
         public override int GetHashCode()
         {
             return Value.GetHashCode();

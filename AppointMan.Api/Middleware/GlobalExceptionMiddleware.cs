@@ -246,7 +246,7 @@ namespace AppointMan.Api.Middleware
                 .GroupBy(e => e.PropertyName)
                 .ToDictionary(
                     g => g.Key,
-                    g => g.Select(e => ResolveMessage(e.ErrorMessage, e.ErrorMessage)).ToArray()
+                    g => g.Select(e => ResolveValidationMessage(e.ErrorMessage)).ToArray()
                 );
 
             return WriteAsync(context, HttpStatusCode.BadRequest, new
@@ -257,6 +257,25 @@ namespace AppointMan.Api.Middleware
                 Errors = errors,
                 CorrelationId = ResolveCorrelationId(context)
             });
+        }
+
+        /// <summary>
+        /// Validator mesajini cozer. Mesaj zaten lokalize edilmis bir cumleyse
+        /// oldugu gibi birakilir; aksi halde anahtar olarak kataloğa bakilir.
+        /// </summary>
+        /// <param name="message">Validator'un urettigi mesaj.</param>
+        /// <returns>Istemciye donen mesaj.</returns>
+        private string ResolveValidationMessage(string message)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+                return _localizer.Get("Error.Unexpected");
+
+            // Validatorlar cogu zaman zaten lokalize edilmis cumle uretir. Cumleyi
+            // anahtar gibi tekrar cozmek katalogda bulunamayip "Unexpected" mesajina
+            // dusuruyordu (DateOfBirth hatasinin kok nedeni).
+            var looksLikeKey = !message.Any(char.IsWhiteSpace) && message.Contains('.');
+
+            return looksLikeKey ? ResolveMessage(message, message) : message;
         }
 
         /// <summary>

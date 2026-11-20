@@ -6,7 +6,13 @@ using MediatR;
 
 namespace AppointMan.Application.Features.BusinessCategories.Queries.GetAll
 {
-    public class GetAllCategoriesQueryHandler : IRequestHandler<GetAllCategoriesQuery, Result<List<BusinessCategoryDto>>>
+    /// <summary>
+    /// Isletme kategorilerini ana/alt kategori hiyerarsisi olarak dondurur.
+    /// Sayaclar iliskiler uzerinden hesaplanir; boylece subCategoryCount ve
+    /// businessCount her zaman gercek degerleri yansitir.
+    /// </summary>
+    public class GetAllCategoriesQueryHandler
+        : IRequestHandler<GetAllCategoriesQuery, Result<List<BusinessCategoryDto>>>
     {
         private readonly IRepository<BusinessCategory> _categoryRepository;
 
@@ -15,47 +21,64 @@ namespace AppointMan.Application.Features.BusinessCategories.Queries.GetAll
             _categoryRepository = categoryRepository;
         }
 
-        public async Task<Result<List<BusinessCategoryDto>>> Handle(GetAllCategoriesQuery request, CancellationToken cancellationToken)
+        public async Task<Result<List<BusinessCategoryDto>>> Handle(
+            GetAllCategoriesQuery request,
+            CancellationToken cancellationToken)
         {
             try
             {
-                // 1. Kategorileri getir
-                var categories = await _categoryRepository.FindAsync(
+                // Sayaclar ve parent adi icin iliskiler tek sorguda yuklenir;
+                // aksi halde navigation koleksiyonlari bos gelir ve sayaclar 0 doner.
+                var categories = await _categoryRepository.FindWithIncludesAsync(
                     c => !c.IsDeleted,
+                    new[] { "ParentCategory", "SubCategories", "Businesses" },
                     cancellationToken);
 
-                // 2. Aktif filtreleme
-                var filteredCategories = categories.AsEnumerable();
+                var onlyActive = request.OnlyActive == true;
 
-                if (request.OnlyActive.HasValue && request.OnlyActive.Value)
+                var dtosById = categories
+                    .Where(c => !onlyActive || c.IsActive)
+                    .ToDictionary(c => c.Id, c => new BusinessCategoryDto
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                        Description = c.Description,
+                        IconUrl = c.IconUrl,
+                        ImageUrl = c.ImageUrl,
+                        DisplayOrder = c.DisplayOrder,
+                        IsActive = c.IsActive,
+                        CorrespondingBusinessType = c.CorrespondingBusinessType,
+                        ParentCategoryId = c.ParentCategoryId,
+                        ParentCategoryName = c.ParentCategory?.Name,
+                        SubCategoryCount = c.GetSubCategoryCount(),
+                        BusinessCount = c.GetBusinessCount()
+                    });
+
+                // Alt kategoriler ana kategorilerin altina yerlestirilir.
+                foreach (var dto in dtosById.Values.Where(d => d.ParentCategoryId.HasValue).ToList())
                 {
-                    filteredCategories = filteredCategories.Where(c => c.IsActive);
+                    if (dtosById.TryGetValue(dto.ParentCategoryId!.Value, out var parent))
+                        parent.SubCategories.Add(dto);
                 }
 
-                // 3. Siralama
-                var sortedCategories = filteredCategories
-                    .OrderBy(c => c.DisplayOrder)
-                    .ThenBy(c => c.Name)
+                var roots = dtosById.Values
+                    .Where(d => !d.ParentCategoryId.HasValue)
+                    .OrderBy(d => d.DisplayOrder)
+                    .ThenBy(d => d.Name)
                     .ToList();
 
-                // 4. DTO'ya donustur
-                var dtos = sortedCategories.Select(c => new BusinessCategoryDto
+                foreach (var root in roots)
                 {
-                    Id = c.Id,
-                    Name = c.Name,
-                    Description = c.Description,
-                    IconUrl = c.IconUrl,
-                    ImageUrl = c.ImageUrl,
-                    DisplayOrder = c.DisplayOrder,
-                    IsActive = c.IsActive,
-                    CorrespondingBusinessType = c.CorrespondingBusinessType,
-                    ParentCategoryId = c.ParentCategoryId,
-                    ParentCategoryName = c.ParentCategory?.Name,
-                    SubCategoryCount = c.GetSubCategoryCount(),
-                    BusinessCount = c.GetBusinessCount()
-                }).ToList();
+                    // Filtre sonrasi gercek alt kategori sayisi ve sirasi.
+                    root.SubCategories = root.SubCategories
+                        .OrderBy(s => s.DisplayOrder)
+                        .ThenBy(s => s.Name)
+                        .ToList();
 
-                return Result<List<BusinessCategoryDto>>.Success(dtos);
+                    root.SubCategoryCount = root.SubCategories.Count;
+                }
+
+                return Result<List<BusinessCategoryDto>>.Success(roots);
             }
             catch (Exception ex)
             {

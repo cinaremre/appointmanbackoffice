@@ -79,6 +79,25 @@ namespace AppointMan.Infrastructure.Persistence.Configurations
                 .HasDatabaseName("IX_Users_EmailVerificationTokenHash")
                 .HasFilter("[EmailVerificationTokenHash] IS NOT NULL");
 
+            // Guvenlik: telefon dogrulama kodu da yalnizca SHA-256 hash'i olarak saklanir.
+            builder.Property(x => x.PhoneVerificationCodeHash)
+                .IsRequired(false)
+                .HasMaxLength(64);
+
+            builder.Property(x => x.PhoneVerificationCodeExpiresAt)
+                .IsRequired(false);
+
+            builder.Property(x => x.PhoneVerificationRequestedAt)
+                .IsRequired(false);
+
+            builder.Property(x => x.PhoneVerificationAttemptCount)
+                .IsRequired()
+                .HasDefaultValue(0);
+
+            builder.HasIndex(x => x.PhoneVerificationCodeHash)
+                .HasDatabaseName("IX_Users_PhoneVerificationCodeHash")
+                .HasFilter("[PhoneVerificationCodeHash] IS NOT NULL");
+
             builder.Property(x => x.LastLoginDate)
                 .IsRequired(false);
 
