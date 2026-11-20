@@ -21,7 +21,9 @@ public sealed class RegisterVerifyLoginFlowTests
 {
     private const string Password = "Passw0rd!23";
     private const string TestOtp = "123456";
-    private const string Phone = "+905551112233";
+    private const string Phone = "+905333502650";
+    private const string FirstName = "İbrahim";
+    private const string LastName = "Aydın";
 
     [Fact]
     public async Task Register_ThenVerifyOtp_ThenLogin_SucceedsWithoutEmailVerification()
@@ -46,7 +48,8 @@ public sealed class RegisterVerifyLoginFlowTests
         var metrics = new AppointManMetrics();
         var dateTimeService = new StubDateTimeService(DateTime.UtcNow);
 
-        var email = $"flow-{Guid.NewGuid():N}@test.com";
+        // Log'dakiyle ayni yapida veri: Turkce karakterli ad, gmail adresi, +90'li telefon.
+        var email = $"ibay9206+{Guid.NewGuid():N}@gmail.com";
 
         // 1) Register
         var registerHandler = new RegisterUserCommandHandler(
@@ -62,8 +65,8 @@ public sealed class RegisterVerifyLoginFlowTests
 
         var register = await registerHandler.Handle(new RegisterUserCommand
         {
-            FirstName = "Test",
-            LastName = "Kullanici",
+            FirstName = FirstName,
+            LastName = LastName,
             Email = email,
             PhoneNumber = Phone,
             Password = Password,
@@ -119,8 +122,8 @@ public sealed class RegisterVerifyLoginFlowTests
     public async Task Login_BeforeOtpVerification_Fails()
     {
         var user = new User(
-            Guid.NewGuid(), "Test", "Kullanici",
-            new Email($"pending-{Guid.NewGuid():N}@test.com"),
+            Guid.NewGuid(), FirstName, LastName,
+            new Email($"pending-{Guid.NewGuid():N}@gmail.com"),
             new PhoneNumber(Phone),
             EnumUserRole.Customer);
 
