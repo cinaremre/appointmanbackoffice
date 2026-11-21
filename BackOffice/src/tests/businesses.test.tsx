@@ -1,0 +1,92 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AuthProvider } from "../app/providers/AuthContext";
+import { BusinessListPage } from "../features/businesses/pages/BusinessListPage";
+import type { AdminEnvelope } from "../shared/api/types";
+
+/**
+ * ISLETME liste sayfasi testleri (dokuman 9).
+ * Sayfa AuthProvider + QueryClientProvider + MemoryRouter ile sarmalanir;
+ * oturum sessionStorage'daki sahte auth ile kurulur, fetch mock'lanir.
+ */
+
+const BUSINESS_ITEM = {
+  id: "b-1",
+  name: "Kuafor Altin Makas",
+  status: "Active",
+  cityId: "34",
+  ownerId: "o-1",
+  createdAt: "2026-01-15T10:00:00Z",
+  rating: 4.7,
+  totalReviews: 128,
+};
+
+function envelope(items: unknown[], totalCount: number): AdminEnvelope<unknown[]> {
+  return {
+    data: items,
+    pagination: { page: 1, pageSize: 50, totalCount, totalPages: 1, hasMore: false },
+  };
+}
+
+/** client'in bekledigi minimal Response taklidi (ok + json). */
+function jsonResponse(body: unknown): Response {
+  return {
+    ok: true,
+    status: 200,
+    json: async () => body,
+  } as unknown as Response;
+}
+
+/** Login akisini atlamak icin sahte oturum; AuthContext sessionStorage'dan okur. */
+function seedSession(): void {
+  sessionStorage.setItem(
+    "backoffice.auth",
+    JSON.stringify({ token: "t", userId: "u", email: "e@x.com", role: "SuperAdmin" }),
+  );
+  sessionStorage.setItem("backoffice.token", "t");
+}
+
+function renderListPage(): void {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  render(
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <MemoryRouter>
+          <BusinessListPage />
+        </MemoryRouter>
+      </AuthProvider>
+    </QueryClientProvider>,
+  );
+}
+
+describe("BusinessListPage", () => {
+  beforeEach(() => {
+    seedSession();
+  });
+
+  afterEach(() => {
+    cleanup();
+    sessionStorage.clear();
+    vi.unstubAllGlobals();
+  });
+
+  it("isletme listesini yukler ve isletme adini gosterir", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse(envelope([BUSINESS_ITEM], 1))));
+
+    renderListPage();
+
+    expect(await screen.findByText("Kuafor Altin Makas")).toBeVisible();
+  });
+
+  it("bos listede bos durum mesaji gorunur", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse(envelope([], 0))));
+
+    renderListPage();
+
+    expect(await screen.findByText("Filtreye uygun isletme bulunamadi.")).toBeVisible();
+  });
+});

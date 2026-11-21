@@ -10,6 +10,12 @@
 *.userosscache
 *.sln.docstates
 
+# Ortam sirlari (compose) - .env repoya girmez.
+.env
+
+# Docker
+docker-compose.override.yml
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

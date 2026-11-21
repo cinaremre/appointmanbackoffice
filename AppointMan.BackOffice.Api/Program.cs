@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AppointMan.Application;
+using AppointMan.Infrastructure;
+using AppointMan.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +28,13 @@ builder.Services.AddSingleton(paginationSettings);
 // ===== Katmanlar =====
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
+
+// MediatR tum Application assembly'sini tarar: musteri handler'larinin
+// bagimlilikleri (e-posta kuyrugu, OTP, lokalizasyon) DI dogrulamasi icin
+// burada da karsilanir; musteri HTTP uclari backoffice'te acik DEGILDIR.
+builder.Services.AddEmailInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
+builder.Services.AddSmsInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
+builder.Services.AddSingleton<AppointMan.Application.Common.Interfaces.ILocalizationService, BackOfficeLocalizationService>();
 
 // ===== Yonetici kimligi: claim'lerden cozelir, govdeye guvenilmez =====
 builder.Services.AddBackOfficeCurrentUser();
@@ -143,5 +153,30 @@ app.MapGet("/health", () => Results.Ok(new { status = "healthy" }))
     .AllowAnonymous();
 
 app.MapControllers();
+
+// Veritabanini otomatik migrate et. Docker/Sunucu kurulumlarinda tek
+// host kalkinca ornek veri de hazirlansin diye migrate sonrasi seed
+// calistirilir (musteri API'si ile ayni desen: yan etkiler kapatilir).
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppointMan.Infrastructure.Persistence.Context.AppDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+    await dbContext.Database.MigrateAsync();
+
+    // Seed sirasinda uretilen domain event'leri e-posta/audit yan etkisi uretmez.
+    var sideEffects = scope.ServiceProvider.GetRequiredService<AppointMan.Application.Common.Services.EventSideEffectDeduplicator>();
+    var sideEffectsWereEnabled = sideEffects.Enabled;
+    sideEffects.Enabled = false;
+
+    try
+    {
+        await AppointMan.Infrastructure.Persistence.SeedData.SeedOrchestrator.SeedAllAsync(dbContext, logger);
+    }
+    finally
+    {
+        sideEffects.Enabled = sideEffectsWereEnabled;
+    }
+}
 
 app.Run();
