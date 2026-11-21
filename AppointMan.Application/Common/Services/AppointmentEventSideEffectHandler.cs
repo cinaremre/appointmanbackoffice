@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Models;
 using AppointMan.Domain.Events;
@@ -9,24 +10,32 @@ namespace AppointMan.Application.Common.Services
 {
     /// <summary>
     /// Randevu domain event'lerini gerçek iş akışı yan etkilerine bağlar:
-    /// yapılandırılmış denetim kaydı ve müşteriye e-posta kuyruğu.
-    /// Event kimliği ile dedupe yapılır; aynı olay iki kez yan etki üretmez.
+    /// yapılandırılmış denetim kaydı, müşteriye e-posta kuyruğu ve mobil push
+    /// kuyruğu. Event kimliği ile dedupe yapılır; aynı olay iki kez yan etki üretmez.
     /// </summary>
     public sealed class AppointmentEventSideEffectHandler : INotificationHandler<DomainEventNotification>
     {
+        private static readonly Regex HtmlTagPattern = new("<[^>]+>", RegexOptions.Compiled);
+
         private readonly IEmailQueue _emailQueue;
+        private readonly IPushQueue _pushQueue;
         private readonly IRepository<Domain.Entities.User> _users;
+        private readonly IRepository<Domain.Entities.DeviceToken> _deviceTokens;
         private readonly IWorkflowAuditSink _audit;
         private readonly EventSideEffectDeduplicator _deduplicator;
 
         public AppointmentEventSideEffectHandler(
             IEmailQueue emailQueue,
+            IPushQueue pushQueue,
             IRepository<Domain.Entities.User> users,
+            IRepository<Domain.Entities.DeviceToken> deviceTokens,
             IWorkflowAuditSink audit,
             EventSideEffectDeduplicator deduplicator)
         {
             _emailQueue = emailQueue;
+            _pushQueue = pushQueue;
             _users = users;
+            _deviceTokens = deviceTokens;
             _audit = audit;
             _deduplicator = deduplicator;
         }
@@ -65,6 +74,32 @@ namespace AppointMan.Application.Common.Services
                 HtmlBody = plan.HtmlBody,
                 TextBody = plan.TextBody
             });
+
+            // Mobil push: ayni icerigin kisa bicimi kuyruga verilir. Cihazi
+            // olmayan kullaniciya hic kuyruk yazilmaz; gonderim kuyruga alinir,
+            // istek thread'i saglayici beklemez.
+            var tokens = await _deviceTokens.FindAsync(
+                t => t.UserId == user.Id && t.IsActive,
+                cancellationToken);
+
+            foreach (var token in tokens)
+            {
+                _pushQueue.TryEnqueue(new PushMessage
+                {
+                    Token = token.Token,
+                    UserId = user.Id,
+                    Title = plan.Subject,
+                    // HTML govdeden etiketleri soyarak kisa bildirim metni uret.
+                    Body = ToPlainBody(plan.HtmlBody)
+                });
+            }
+        }
+
+        /// <summary>E-posta govdesinden push icin kisa duz metin uretir.</summary>
+        private static string ToPlainBody(string htmlBody)
+        {
+            var plain = HtmlTagPattern.Replace(htmlBody, " ").Trim();
+            return plain.Length > 160 ? plain[..160] : plain;
         }
 
         private static Guid? GetAggregateId(IDomainEvent domainEvent)

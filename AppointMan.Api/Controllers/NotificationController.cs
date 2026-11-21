@@ -1,6 +1,8 @@
 ﻿using AppointMan.Application.Common.DTOs;
 using AppointMan.Application.Common.Interfaces;
 using AppointMan.Application.Common.Results;
+using AppointMan.Application.Features.DeviceTokens.Commands.RegisterDeviceToken;
+using AppointMan.Application.Features.DeviceTokens.Commands.UnregisterDeviceToken;
 using AppointMan.Application.Features.Notifications.Commands.DeleteNotification;
 using AppointMan.Application.Features.Notifications.Commands.MarkAllAsRead;
 using AppointMan.Application.Features.Notifications.Commands.MarkAsRead;
@@ -223,6 +225,61 @@ namespace AppointMan.Api.Controllers
             var result = await _mediator.Send(command);
 
             // 3. Sonuca gore cevap dondur
+            if (result.IsSuccess)
+                return Ok(result);
+
+            return FromError(result);
+        }
+
+        // ===== Push bildirim cihaz kaydi =====
+
+        /// <summary>
+        /// Mobil cihazin FCM token'ini kaydeder. Kullanici yalnizca KENDI
+        /// cihazini kaydedebilir (route'taki userId token kimligiyle eslesmelidir).
+        /// </summary>
+        /// <param name="userId">Kullanici ID'si</param>
+        /// <param name="command">Token ve platform bilgileri</param>
+        /// <returns>Kayit ID'si</returns>
+        [HttpPost("user/{userId}/device-token")]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> RegisterDeviceToken(Guid userId, [FromBody] RegisterDeviceTokenCommand command)
+        {
+            // Kimlik token'dan cozulur; route'taki ID yalnizca sahiplik dogrulamasi icin kullanilir.
+            var ownership = EnsureOwnership(userId);
+            if (ownership is not null)
+                return ownership;
+
+            command.UserId = userId;
+
+            var result = await _mediator.Send(command);
+
+            if (result.IsSuccess)
+                return Ok(result);
+
+            return FromError(result);
+        }
+
+        /// <summary>
+        /// Cihaz token'ini gonderime kapatir (cikis / uygulama kaldirma).
+        /// </summary>
+        /// <param name="userId">Kullanici ID'si</param>
+        /// <param name="command">Kapatilacak token</param>
+        /// <returns>Islem kabul bilgisi</returns>
+        [HttpDelete("user/{userId}/device-token")]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> UnregisterDeviceToken(Guid userId, [FromBody] UnregisterDeviceTokenCommand command)
+        {
+            var ownership = EnsureOwnership(userId);
+            if (ownership is not null)
+                return ownership;
+
+            command.UserId = userId;
+
+            var result = await _mediator.Send(command);
+
             if (result.IsSuccess)
                 return Ok(result);
 

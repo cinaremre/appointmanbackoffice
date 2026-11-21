@@ -45,6 +45,7 @@ namespace AppointMan.Infrastructure.Persistence.Context
         public DbSet<Favorite> Favorites { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<IdempotencyRecord> IdempotencyRecords { get; set; }
+        public DbSet<DeviceToken> DeviceTokens { get; set; }
 
         // ===== Kasa ve satis (Modul 2) =====
         public DbSet<CashRegister> CashRegisters { get; set; }

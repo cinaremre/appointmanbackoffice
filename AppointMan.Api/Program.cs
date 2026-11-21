@@ -5,6 +5,7 @@ using AppointMan.Api.Localization;
 using AppointMan.Api.Logging;
 using AppointMan.Api.Metrics;
 using AppointMan.Api.Middleware;
+using AppointMan.Api.Push;
 using AppointMan.Api.RateLimiting;
 using AppointMan.Api.Services;
 using AppointMan.Api.Workflow;
@@ -46,6 +47,11 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 // Gonderim arka planda yurur; kayit akisi SMTP beklemez ve SMTP hatasi kaydi bozmaz.
 builder.Services.AddEmailInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
 builder.Services.AddHostedService<EmailBackgroundService>();
+
+// Push bildirim hatti: FCM yapilandirilmissa gercek gonderim, aksi halde log modu.
+// UNREGISTERED token'lar arka planda pasiflestirilir; gonderim 3 deneme ile yurur.
+builder.Services.AddPushInfrastructure(builder.Configuration);
+builder.Services.AddHostedService<PushBackgroundService>();
 
 // Zaman tabanli randevu akislari: hatirlatici, otomatik tamamlama ve no-show.
 builder.Services.AddHostedService<AppointmentWorkflowBackgroundService>();
