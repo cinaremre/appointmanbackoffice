@@ -22,7 +22,10 @@ export function LoginPage() {
     setError(null);
     try {
       await login(email, password);
-      navigate(from, { replace: true });
+      // Isletme sahibi kendi portalina, yonetim rolu dashboard'a yonlenir.
+      const role = JSON.parse(sessionStorage.getItem("backoffice.auth") ?? "{}").role;
+      const target = from !== "/" ? from : role === "BusinessOwner" ? "/owner" : "/";
+      navigate(target, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Giris basarisiz.");
     } finally {
@@ -33,7 +36,7 @@ export function LoginPage() {
   return (
     <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", p: 2 }}>
       <Card sx={{ maxWidth: 400, width: "100%" }}>
-        <CardContent sx={{ p: 4 }}>
+        <CardContent sx={{ p: { xs: 2, sm: 4 } }}>
           <Typography variant="h5" gutterBottom>
             Rezervise Backoffice
           </Typography>

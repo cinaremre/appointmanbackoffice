@@ -20,6 +20,8 @@ import {
   Switch,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { useState } from "react";
@@ -97,6 +99,8 @@ function todayIsoDate(): string {
 export function SubscriptionsPage() {
   const { has_permission } = useAuth();
   const queryClient = useQueryClient();
+  const theme = useTheme();
+  const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const canUpdate = has_permission(PERMISSIONS.subscriptionUpdate);
   const canOverride = has_permission(PERMISSIONS.featureOverride);
 
@@ -345,11 +349,11 @@ export function SubscriptionsPage() {
         <Typography variant="h6" component="h2" gutterBottom>
           Isletme Bazli Ozellik Erisimi
         </Typography>
-        <Stack direction="row" spacing={2} sx={{ alignItems: "flex-start", flexWrap: "wrap" }}>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ alignItems: { xs: "stretch", sm: "center" } }}>
           <TextField
             label="Isletme Kimligi (GUID)"
             size="small"
-            sx={{ minWidth: 320 }}
+            sx={{ minWidth: { sm: 320 } }}
             value={businessInput}
             onChange={(e) => setBusinessInput(e.target.value)}
             onBlur={loadBusiness}
@@ -464,10 +468,10 @@ export function SubscriptionsPage() {
                         />
                       )}
                     />
-                    <Stack direction="row" spacing={2} sx={{ flexWrap: "wrap" }}>
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ alignItems: { xs: "stretch", sm: "center" } }}>
                       <TextField
                         label="Kota Override (ops.)"
-                        sx={{ minWidth: 180 }}
+                        sx={{ minWidth: { sm: 180 } }}
                         {...registerOverride("quota")}
                         error={overrideErrors.quota !== undefined}
                         helperText={overrideErrors.quota?.message ?? "Bos birakilirsa plan kotasi gecerli kalir."}
@@ -475,7 +479,7 @@ export function SubscriptionsPage() {
                       <TextField
                         label="Baslangic"
                         type="date"
-                        sx={{ minWidth: 180 }}
+                        sx={{ minWidth: { sm: 180 } }}
                         slotProps={{ inputLabel: { shrink: true } }}
                         {...registerOverride("validFrom")}
                         error={overrideErrors.validFrom !== undefined}
@@ -484,7 +488,7 @@ export function SubscriptionsPage() {
                       <TextField
                         label="Bitis (ops.)"
                         type="date"
-                        sx={{ minWidth: 180 }}
+                        sx={{ minWidth: { sm: 180 } }}
                         slotProps={{ inputLabel: { shrink: true } }}
                         {...registerOverride("validUntil")}
                         error={overrideErrors.validUntil !== undefined}
@@ -518,7 +522,13 @@ export function SubscriptionsPage() {
       </Box>
 
       {/* Plan olusturma diyalogu */}
-      <Dialog open={planOpen} onClose={planOpen ? closePlanDialog : undefined} maxWidth="sm" fullWidth>
+      <Dialog
+        open={planOpen}
+        onClose={planOpen ? closePlanDialog : undefined}
+        maxWidth="sm"
+        fullWidth
+        fullScreen={is_mobile}
+      >
         <DialogTitle>Yeni Abonelik Plani</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
@@ -562,7 +572,12 @@ export function SubscriptionsPage() {
                     {(featuresQuery.data?.items ?? []).map((feature) => {
                       const checked = field.value.includes(feature.id);
                       return (
-                        <Stack key={feature.id} direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                        <Stack
+                          key={feature.id}
+                          direction={{ xs: "column", sm: "row" }}
+                          spacing={1}
+                          sx={{ alignItems: { xs: "stretch", sm: "center" } }}
+                        >
                           <FormControlLabel
                             sx={{ flexGrow: 1, m: 0 }}
                             control={
@@ -583,7 +598,7 @@ export function SubscriptionsPage() {
                           <TextField
                             size="small"
                             label="Kota (ops.)"
-                            sx={{ width: 150 }}
+                            sx={{ width: { xs: "100%", sm: 150 } }}
                             disabled={!checked}
                             value={quotas[feature.id] ?? ""}
                             onChange={(e) =>

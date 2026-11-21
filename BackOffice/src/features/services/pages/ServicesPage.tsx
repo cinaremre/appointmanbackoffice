@@ -22,6 +22,8 @@ import {
   Stepper,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -87,6 +89,8 @@ function ServiceEditForm({
   notify: Notify;
 }) {
   const queryClient = useQueryClient();
+  const theme = useTheme();
+  const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const {
     register,
     handleSubmit,
@@ -120,7 +124,13 @@ function ServiceEditForm({
   });
 
   return (
-    <Dialog open onClose={updateMutation.isPending ? undefined : onClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open
+      onClose={updateMutation.isPending ? undefined : onClose}
+      maxWidth="sm"
+      fullWidth
+      fullScreen={is_mobile}
+    >
       <DialogTitle>Servisi Duzenle</DialogTitle>
       <form onSubmit={submit} noValidate>
         <DialogContent>
@@ -190,6 +200,9 @@ const BULK_OPERATION_OPTIONS: Array<{ value: BulkOperationType; label: string; d
  */
 function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: Notify }) {
   const queryClient = useQueryClient();
+  const theme = useTheme();
+  // Mobilde sihirbaz tam ekran acilir; Stepper normal (dikey esikli) akar.
+  const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [activeStep, setActiveStep] = useState(0);
   const [operation, setOperation] = useState<BulkOperationType>("DeactivateServices");
   const [idsText, setIdsText] = useState("");
@@ -287,10 +300,18 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
   };
 
   return (
-    <Dialog open onClose={busy ? undefined : onClose} maxWidth="md" fullWidth>
+    <Dialog open onClose={busy ? undefined : onClose} maxWidth="md" fullWidth fullScreen={is_mobile}>
       <DialogTitle>Toplu Servis Islemi</DialogTitle>
       <DialogContent>
-        <Stepper activeStep={activeStep} sx={{ my: 2 }}>
+        <Stepper
+          activeStep={activeStep}
+          sx={{
+            my: 2,
+            flexWrap: "wrap",
+            "& .MuiStep-labelContainer": { overflow: "hidden" },
+            "& .MuiStepLabel-label": { fontSize: { xs: "0.7rem", sm: "0.75rem" } },
+          }}
+        >
           {BULK_STEP_LABELS.map((label) => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
@@ -526,7 +547,7 @@ export function ServicesPage() {
       key: "businessId",
       header: "Isletme",
       render: (row) => (
-        <Typography variant="body2" sx={{ fontFamily: "monospace" }}>
+        <Typography variant="body2" noWrap title={row.businessId} sx={{ fontFamily: "monospace", maxWidth: 220 }}>
           {row.businessId}
         </Typography>
       ),
@@ -566,11 +587,11 @@ export function ServicesPage() {
         <TextField
           label="Ara"
           size="small"
-          sx={{ minWidth: 240 }}
+          sx={{ minWidth: { xs: "100%", sm: 240 } }}
           value={searchInput}
           onChange={(event) => setSearchInput(event.target.value)}
         />
-        <FormControl size="small" sx={{ minWidth: 160 }}>
+        <FormControl size="small" sx={{ minWidth: { xs: "100%", sm: 160 } }}>
           <InputLabel id="services-active-filter">Durum</InputLabel>
           <Select
             labelId="services-active-filter"

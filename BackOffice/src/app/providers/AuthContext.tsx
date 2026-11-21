@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { hasPermission } from "../../shared/constants/permissions";
-import type { Permission } from "../../shared/constants/permissions";
+import type { OwnerPermission, Permission } from "../../shared/constants/permissions";
 
 /**
  * Oturum yonetimi (dokuman 7). Token localStorage'da TUTULMAZ;
@@ -21,7 +21,7 @@ interface AuthContextValue {
   is_authenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  has_permission: (permission: Permission) => boolean;
+  has_permission: (permission: Permission | OwnerPermission) => boolean;
 }
 
 const STORAGE_KEY = "backoffice.auth";

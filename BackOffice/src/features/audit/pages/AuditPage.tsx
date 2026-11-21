@@ -8,6 +8,8 @@ import {
   Stack,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
@@ -79,6 +81,8 @@ const auditColumns: DataTableColumn<AuditLog>[] = [
 
 export function AuditPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const theme = useTheme();
+  const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // URL'den okunan aktif filtre degerleri.
   const actorUserIdParam = searchParams.get("actorUserId") ?? "";
@@ -173,27 +177,32 @@ export function AuditPage() {
       <PageHeader title="Denetim Kayitlari" />
 
       <Box component="form" onSubmit={applyFilters} sx={{ mb: 2 }} aria-label="denetim filtreleri">
-        <Stack direction="row" spacing={2} useFlexGap sx={{ flexWrap: "wrap" }}>
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          spacing={2}
+          useFlexGap
+          sx={{ flexWrap: "wrap", alignItems: { xs: "stretch", md: "center" } }}
+        >
           <TextField
             label="Aktor ID (UUID)"
             value={actorUserId}
             onChange={(e) => setActorUserId(e.target.value)}
             size="small"
-            sx={{ minWidth: 240 }}
+            sx={{ minWidth: { xs: 0, md: 240 } }}
           />
           <TextField
             label="Isletme ID (UUID)"
             value={businessId}
             onChange={(e) => setBusinessId(e.target.value)}
             size="small"
-            sx={{ minWidth: 240 }}
+            sx={{ minWidth: { xs: 0, md: 240 } }}
           />
           <TextField
             label="Varlik Tipi"
             value={entityType}
             onChange={(e) => setEntityType(e.target.value)}
             size="small"
-            sx={{ minWidth: 180 }}
+            sx={{ minWidth: { xs: 0, md: 180 } }}
           />
           <TextField
             label="Baslangic"
@@ -202,7 +211,7 @@ export function AuditPage() {
             onChange={(e) => setFromDate(e.target.value)}
             size="small"
             slotProps={{ inputLabel: { shrink: true } }}
-            sx={{ minWidth: 170 }}
+            sx={{ minWidth: { xs: 0, md: 170 } }}
           />
           <TextField
             label="Bitis"
@@ -211,7 +220,7 @@ export function AuditPage() {
             onChange={(e) => setToDate(e.target.value)}
             size="small"
             slotProps={{ inputLabel: { shrink: true } }}
-            sx={{ minWidth: 170 }}
+            sx={{ minWidth: { xs: 0, md: 170 } }}
           />
           <Button type="submit" variant="contained">
             Filtrele
@@ -248,6 +257,7 @@ export function AuditPage() {
         onClose={() => setSelectedLog(null)}
         fullWidth
         maxWidth="md"
+        fullScreen={is_mobile}
       >
         <DialogTitle>Denetim Kaydi Detayi</DialogTitle>
         <DialogContent>

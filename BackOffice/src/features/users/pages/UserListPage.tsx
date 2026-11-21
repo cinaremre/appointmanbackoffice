@@ -10,6 +10,8 @@ import {
   Stack,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -68,6 +70,8 @@ function errorText(error: unknown): string {
 
 /** Detay diyalogu: GET /users/{id} — profil, uyelikler ve pozisyonlar. */
 function UserDetailDialog({ userId, onClose }: { userId: string | null; onClose: () => void }) {
+  const theme = useTheme();
+  const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const detailQuery = useQuery({
     queryKey: ["users", "detail", userId],
     queryFn: (ctx) => getItem<UserDetail>(`/users/${userId!}`, ctx.signal),
@@ -77,7 +81,7 @@ function UserDetailDialog({ userId, onClose }: { userId: string | null; onClose:
   const detail = detailQuery.data;
 
   return (
-    <Dialog open={userId !== null} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={userId !== null} onClose={onClose} maxWidth="sm" fullWidth fullScreen={is_mobile}>
       <DialogTitle>Kullanici Detayi</DialogTitle>
       <DialogContent>
         {detailQuery.isLoading ? (
@@ -216,14 +220,14 @@ export function UserListPage() {
           label="Arama (ad)"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          sx={{ minWidth: 220 }}
+          sx={{ minWidth: { xs: 0, sm: 220 } }}
         />
         <TextField
           size="small"
           label="E-posta filtresi"
           value={emailInput}
           onChange={(e) => setEmailInput(e.target.value)}
-          sx={{ minWidth: 220 }}
+          sx={{ minWidth: { xs: 0, sm: 220 } }}
         />
         <TextField
           select
@@ -231,7 +235,7 @@ export function UserListPage() {
           label="Hesap Durumu"
           value={isActiveInput}
           onChange={(e) => setIsActiveInput(e.target.value)}
-          sx={{ minWidth: 160 }}
+          sx={{ minWidth: { xs: 0, sm: 160 } }}
         >
           <MenuItem value="">Tumu</MenuItem>
           <MenuItem value="true">Aktif</MenuItem>

@@ -36,6 +36,24 @@ export const PERMISSIONS = {
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 
+/**
+ * Isletme sahibi izinleri: owner portal uc'lari. Scope her zaman
+ * JWT kimliginden turetilen isletme kapsamidir; nihai kontrol sunucudadir.
+ */
+export const OWNER_PERMISSIONS = {
+  dashboard: "owner.dashboard",
+  business: "owner.business",
+  employees: "owner.employees",
+  services: "owner.services",
+  appointments: "owner.appointments",
+  finance: "owner.finance",
+  stock: "owner.stock",
+  packages: "owner.packages",
+  reviews: "owner.reviews",
+} as const;
+
+export type OwnerPermission = (typeof OWNER_PERMISSIONS)[keyof typeof OWNER_PERMISSIONS];
+
 const PLATFORM_ADMIN: Permission[] = [
   PERMISSIONS.businessRead, PERMISSIONS.businessUpdate, PERMISSIONS.businessSuspend,
   PERMISSIONS.categoryRead, PERMISSIONS.categoryCreate, PERMISSIONS.categoryUpdate, PERMISSIONS.categoryArchive,
@@ -48,7 +66,7 @@ const PLATFORM_ADMIN: Permission[] = [
   PERMISSIONS.operationsRead,
 ];
 
-export const ROLE_PERMISSIONS: Record<string, Permission[]> = {
+export const ROLE_PERMISSIONS: Record<string, (Permission | OwnerPermission)[]> = {
   SuperAdmin: Object.values(PERMISSIONS),
   PlatformAdmin: PLATFORM_ADMIN,
   FinanceAdmin: [
@@ -83,10 +101,17 @@ export const ROLE_PERMISSIONS: Record<string, Permission[]> = {
     PERMISSIONS.notificationRead, PERMISSIONS.marketingRead, PERMISSIONS.reportRead, PERMISSIONS.auditRead,
     PERMISSIONS.operationsRead,
   ],
+  // Isletme sahibi: yalnizca owner portal uc'lari (kendi isletmesi).
+  BusinessOwner: Object.values(OWNER_PERMISSIONS),
 };
 
 /** Rol listesinden permission'a sahip mi? SuperAdmin her izne sahiptir. */
-export function hasPermission(roles: string[], permission: Permission): boolean {
+export function hasPermission(
+  roles: string[],
+  permission: Permission | OwnerPermission,
+): boolean {
   if (roles.includes("SuperAdmin")) return true;
-  return roles.some((role) => ROLE_PERMISSIONS[role]?.includes(permission));
+  return roles.some(
+    (role) => ROLE_PERMISSIONS[role]?.includes(permission as Permission),
+  );
 }

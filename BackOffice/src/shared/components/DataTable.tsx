@@ -83,7 +83,15 @@ export function DataTable<T extends { id: string }>({
           </TableBody>
         </Table>
       </TableContainer>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 1,
+          flexWrap: "wrap",
+        }}
+      >
         <Button size="small" onClick={() => onRefresh?.()}>
           Yenile
         </Button>
@@ -96,6 +104,13 @@ export function DataTable<T extends { id: string }>({
           onRowsPerPageChange={(e) => onPageSizeChange(Number(e.target.value) || 50)}
           rowsPerPageOptions={[25, 50, 100, 200]}
           labelDisplayedRows={({ from, to, count }) => `${from}-${to} / ${count}`}
+          // Mobilde "sayfa basina satir" etiketi ve select gizlenir; dar
+          // ekranda sayfalama altligi tek satira sigar.
+          sx={{
+            "& .MuiTablePagination-selectLabel, & .MuiTablePagination-input": {
+              display: { xs: "none", md: "revert" },
+            },
+          }}
         />
       </Box>
     </Box>

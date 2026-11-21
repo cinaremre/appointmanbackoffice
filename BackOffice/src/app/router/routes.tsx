@@ -2,11 +2,19 @@ import { lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AdminLayout } from "../layouts/AdminLayout";
 import { RequireAuth, RequirePermission } from "../guards/RouteGuards";
-import { PERMISSIONS } from "../../shared/constants/permissions";
+import { PERMISSIONS, OWNER_PERMISSIONS } from "../../shared/constants/permissions";
 
 /** Lazy yuklenen feature modülleri (dokuman 26.1 code splitting). */
 const LoginPage = lazy(() => import("../../features/auth/pages/LoginPage").then((m) => ({ default: m.LoginPage })));
 const DashboardPage = lazy(() => import("../../features/dashboard/DashboardPage").then((m) => ({ default: m.DashboardPage })));
+const OwnerDashboardPage = lazy(() => import("../../features/owner/pages/OwnerDashboardPage").then((m) => ({ default: m.OwnerDashboardPage })));
+const OwnerBusinessPage = lazy(() => import("../../features/owner/pages/OwnerBusinessPage").then((m) => ({ default: m.OwnerBusinessPage })));
+const OwnerServicesPage = lazy(() => import("../../features/owner/pages/OwnerServicesPage").then((m) => ({ default: m.OwnerServicesPage })));
+const OwnerEmployeesPage = lazy(() => import("../../features/owner/pages/OwnerEmployeesPage").then((m) => ({ default: m.OwnerEmployeesPage })));
+const OwnerAppointmentsPage = lazy(() => import("../../features/owner/pages/OwnerAppointmentsPage").then((m) => ({ default: m.OwnerAppointmentsPage })));
+const OwnerFinancePage = lazy(() => import("../../features/owner/pages/OwnerFinancePage").then((m) => ({ default: m.OwnerFinancePage })));
+const OwnerStockPage = lazy(() => import("../../features/owner/pages/OwnerStockPage").then((m) => ({ default: m.OwnerStockPage })));
+const OwnerReviewsPage = lazy(() => import("../../features/owner/pages/OwnerReviewsPage").then((m) => ({ default: m.OwnerReviewsPage })));
 const BusinessListPage = lazy(() => import("../../features/businesses/pages/BusinessListPage").then((m) => ({ default: m.BusinessListPage })));
 const BusinessDetailPage = lazy(() => import("../../features/businesses/pages/BusinessDetailPage").then((m) => ({ default: m.BusinessDetailPage })));
 const CategoriesPage = lazy(() => import("../../features/categories/pages/CategoriesPage").then((m) => ({ default: m.CategoriesPage })));
@@ -30,6 +38,14 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <DashboardPage /> },
+      { path: "owner", element: <RequirePermission permission={OWNER_PERMISSIONS.dashboard}><OwnerDashboardPage /></RequirePermission> },
+      { path: "owner/business", element: <RequirePermission permission={OWNER_PERMISSIONS.business}><OwnerBusinessPage /></RequirePermission> },
+      { path: "owner/services", element: <RequirePermission permission={OWNER_PERMISSIONS.services}><OwnerServicesPage /></RequirePermission> },
+      { path: "owner/employees", element: <RequirePermission permission={OWNER_PERMISSIONS.employees}><OwnerEmployeesPage /></RequirePermission> },
+      { path: "owner/appointments", element: <RequirePermission permission={OWNER_PERMISSIONS.appointments}><OwnerAppointmentsPage /></RequirePermission> },
+      { path: "owner/finance", element: <RequirePermission permission={OWNER_PERMISSIONS.finance}><OwnerFinancePage /></RequirePermission> },
+      { path: "owner/stock", element: <RequirePermission permission={OWNER_PERMISSIONS.stock}><OwnerStockPage /></RequirePermission> },
+      { path: "owner/reviews", element: <RequirePermission permission={OWNER_PERMISSIONS.reviews}><OwnerReviewsPage /></RequirePermission> },
       { path: "businesses", element: <RequirePermission permission={PERMISSIONS.businessRead}><BusinessListPage /></RequirePermission> },
       { path: "businesses/:id", element: <RequirePermission permission={PERMISSIONS.businessRead}><BusinessDetailPage /></RequirePermission> },
       { path: "categories", element: <RequirePermission permission={PERMISSIONS.categoryRead}><CategoriesPage /></RequirePermission> },

@@ -35,11 +35,15 @@ namespace AppointMan.Application.Features.Admin.Auth.Commands.AdminLogin
     /// </summary>
     public class AdminLoginCommandHandler : IRequestHandler<AdminLoginCommand, Result<AdminLoginResponse>>
     {
-        /// <summary>Backoffice'e girebilen roller (dokuman 5.2).</summary>
+        /// <summary>
+        /// Backoffice'e girebilen roller (dokuman 5.2). BusinessOwner da girer;
+        /// erisebilecegi uc'lar yalnizca kendi isletmesi kapsamindadir.
+        /// </summary>
         private static readonly string[] BackOfficeRoles =
         {
             "SuperAdmin", "Admin", "PlatformAdmin", "FinanceAdmin",
-            "SupportAgent", "MarketingAdmin", "ContentManager", "Auditor", "ReadOnlyAnalyst"
+            "SupportAgent", "MarketingAdmin", "ContentManager", "Auditor",
+            "ReadOnlyAnalyst", "BusinessOwner"
         };
 
         private readonly IRepository<User> _userRepository;

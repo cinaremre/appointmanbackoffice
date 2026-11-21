@@ -228,7 +228,9 @@ export function BusinessDetailPage() {
                   <TableRow key={`${entry.createdAtUtc}-${entry.action}-${index}`}>
                     <TableCell>{formatDateTime(entry.createdAtUtc)}</TableCell>
                     <TableCell>
-                      {entry.actorUserId}
+                      <Typography variant="body2" noWrap title={entry.actorUserId} sx={{ maxWidth: 220 }}>
+                        {entry.actorUserId}
+                      </Typography>
                       <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
                         {entry.actorRole}
                       </Typography>

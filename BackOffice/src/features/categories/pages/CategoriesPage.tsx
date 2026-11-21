@@ -20,6 +20,8 @@ import {
   Switch,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -104,6 +106,8 @@ function CreateCategoryForm({
   notify: Notify;
 }) {
   const queryClient = useQueryClient();
+  const theme = useTheme();
+  const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const {
     register,
     handleSubmit,
@@ -132,7 +136,13 @@ function CreateCategoryForm({
   });
 
   return (
-    <Dialog open onClose={createMutation.isPending ? undefined : onClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open
+      onClose={createMutation.isPending ? undefined : onClose}
+      maxWidth="sm"
+      fullWidth
+      fullScreen={is_mobile}
+    >
       <DialogTitle>{parent ? `Alt Kategori Ekle: ${parent.name}` : "Yeni Kategori"}</DialogTitle>
       <form onSubmit={submit} noValidate>
         <DialogContent>
@@ -180,6 +190,8 @@ function EditCategoryForm({
   notify: Notify;
 }) {
   const queryClient = useQueryClient();
+  const theme = useTheme();
+  const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const {
     register,
     handleSubmit,
@@ -215,7 +227,13 @@ function EditCategoryForm({
   });
 
   return (
-    <Dialog open onClose={updateMutation.isPending ? undefined : onClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open
+      onClose={updateMutation.isPending ? undefined : onClose}
+      maxWidth="sm"
+      fullWidth
+      fullScreen={is_mobile}
+    >
       <DialogTitle>Kategoriyi Duzenle: {node.name}</DialogTitle>
       <form onSubmit={submit} noValidate>
         <DialogContent>
@@ -273,6 +291,8 @@ function MoveCategoryForm({
 }) {
   const queryClient = useQueryClient();
   const [target, setTarget] = useState("");
+  const theme = useTheme();
+  const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Tasinan dugum ve tum alt agaci hedef olarak secilemez (dongu korumasi).
   const excludedIds = useMemo(() => {
@@ -299,7 +319,13 @@ function MoveCategoryForm({
   });
 
   return (
-    <Dialog open onClose={moveMutation.isPending ? undefined : onClose} maxWidth="xs" fullWidth>
+    <Dialog
+      open
+      onClose={moveMutation.isPending ? undefined : onClose}
+      maxWidth="xs"
+      fullWidth
+      fullScreen={is_mobile}
+    >
       <DialogTitle>Tasi: {node.name}</DialogTitle>
       <DialogContent>
         <FormControl fullWidth margin="dense">
@@ -380,13 +406,15 @@ function ArchiveCategoryDialog({
 
 /** Kullanim dialog'u: kategorideki isletme sayisi (GET /categories/{id}/usage). */
 function UsageDialog({ categoryId, onClose }: { categoryId: string; onClose: () => void }) {
+  const theme = useTheme();
+  const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const usage = useQuery({
     queryKey: ["categories", "usage", categoryId],
     queryFn: (context) => getItem<CategoryUsageDto>(`/categories/${categoryId}/usage`, context.signal),
   });
 
   return (
-    <Dialog open onClose={onClose} maxWidth="xs" fullWidth>
+    <Dialog open onClose={onClose} maxWidth="xs" fullWidth fullScreen={is_mobile}>
       <DialogTitle>Kullanim Bilgisi</DialogTitle>
       <DialogContent>
         {usage.isPending ? (
@@ -471,7 +499,12 @@ export function CategoriesPage() {
               divider
               sx={{ pl: node.depth * 3 + 2 }}
               secondaryAction={
-                <Stack direction="row" spacing={1}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  useFlexGap
+                  sx={{ flexWrap: "wrap", justifyContent: "flex-end", maxWidth: { xs: 200, sm: "100%" } }}
+                >
                   {canCreate ? (
                     <Button size="small" onClick={() => setCreateParent(node)}>
                       Alt Kategori Ekle

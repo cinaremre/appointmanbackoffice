@@ -45,7 +45,16 @@ export function ErrorState({ error, hint }: { error: unknown; hint?: string }) {
 
 export function PageHeader({ title, actions }: { title: string; actions?: ReactNode }) {
   return (
-    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 1,
+        flexWrap: "wrap",
+        mb: 2,
+      }}
+    >
       <Typography variant="h5" component="h1">
         {title}
       </Typography>

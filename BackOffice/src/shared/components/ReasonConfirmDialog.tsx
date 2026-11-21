@@ -1,3 +1,4 @@
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Button,
   Dialog,
@@ -5,7 +6,10 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  IconButton,
   TextField,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useState } from "react";
 
@@ -35,9 +39,31 @@ export function ReasonConfirmDialog({
   const [touched, setTouched] = useState(false);
   const invalid = touched && reason.trim().length < 3;
 
+  // Mobilde diyalog tam ekran acilir; baslik yaninda kapatma ikonu bulunur.
+  const theme = useTheme();
+  const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
-    <Dialog open={open} onClose={busy ? undefined : onCancel} maxWidth="sm" fullWidth>
-      <DialogTitle>{title}</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={busy ? undefined : onCancel}
+      maxWidth="sm"
+      fullWidth
+      fullScreen={is_mobile}
+    >
+      <DialogTitle sx={is_mobile ? { pr: 6 } : undefined}>
+        {title}
+        {is_mobile ? (
+          <IconButton
+            aria-label="kapat"
+            onClick={onCancel}
+            disabled={busy}
+            sx={{ position: "absolute", right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        ) : null}
+      </DialogTitle>
       <DialogContent>
         <DialogContentText style={{ marginTop: 8, marginBottom: 16 }}>{impact}</DialogContentText>
         <TextField

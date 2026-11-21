@@ -11,10 +11,13 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -54,8 +57,19 @@ function errorText(error: unknown): string {
   return "Islem basarisiz. Lutfen tekrar deneyin.";
 }
 
+/** Uzun GUID'leri tablo icinde tek satirda kisaltarak gosterir. */
+function IdText({ value }: { value: string }) {
+  return (
+    <Typography variant="body2" noWrap title={value} sx={{ maxWidth: 180 }}>
+      {value}
+    </Typography>
+  );
+}
+
 /** Detay diyalogu: GET /appointments/{id} — detay + history. */
 function AppointmentDetailDialog({ appointmentId, onClose }: { appointmentId: string | null; onClose: () => void }) {
+  const theme = useTheme();
+  const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const detailQuery = useQuery({
     queryKey: ["appointments", "detail", appointmentId],
     queryFn: (ctx) => getItem<AppointmentDetail>(`/appointments/${appointmentId!}`, ctx.signal),
@@ -65,7 +79,7 @@ function AppointmentDetailDialog({ appointmentId, onClose }: { appointmentId: st
   const detail = detailQuery.data;
 
   return (
-    <Dialog open={appointmentId !== null} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={appointmentId !== null} onClose={onClose} maxWidth="sm" fullWidth fullScreen={is_mobile}>
       <DialogTitle>Randevu Detayi</DialogTitle>
       <DialogContent>
         {detailQuery.isLoading ? (
@@ -200,9 +214,9 @@ export function AppointmentsPage() {
 
   const columns: DataTableColumn<AppointmentListItem>[] = [
     { key: "date", header: "Tarih", render: (row) => formatDate(row.appointmentDate) },
-    { key: "business", header: "Isletme", render: (row) => row.businessId },
-    { key: "employee", header: "Calisan", render: (row) => row.employeeId },
-    { key: "service", header: "Hizmet", render: (row) => row.serviceId },
+    { key: "business", header: "Isletme", render: (row) => <IdText value={row.businessId} /> },
+    { key: "employee", header: "Calisan", render: (row) => <IdText value={row.employeeId} /> },
+    { key: "service", header: "Hizmet", render: (row) => <IdText value={row.serviceId} /> },
     { key: "status", header: "Durum", render: (row) => <StatusBadge status={appointmentStatusLabel(row.status)} /> },
     { key: "notes", header: "Notlar", render: (row) => row.notes ?? "-" },
   ];
@@ -222,7 +236,7 @@ export function AppointmentsPage() {
           label="Durum"
           value={status}
           onChange={(e) => setParam("status", e.target.value)}
-          sx={{ minWidth: 160 }}
+          sx={{ minWidth: { xs: 0, sm: 160 } }}
         >
           <MenuItem value="">Tumu</MenuItem>
           {APPOINTMENT_STATUSES.map((value) => (
@@ -238,7 +252,7 @@ export function AppointmentsPage() {
           value={fromDate}
           onChange={(e) => setParam("fromDate", e.target.value)}
           slotProps={{ inputLabel: { shrink: true } }}
-          sx={{ minWidth: 180 }}
+          sx={{ minWidth: { xs: 0, sm: 180 } }}
         />
         <TextField
           size="small"
@@ -247,14 +261,14 @@ export function AppointmentsPage() {
           value={toDate}
           onChange={(e) => setParam("toDate", e.target.value)}
           slotProps={{ inputLabel: { shrink: true } }}
-          sx={{ minWidth: 180 }}
+          sx={{ minWidth: { xs: 0, sm: 180 } }}
         />
         <TextField
           size="small"
           label="Isletme ID"
           value={businessId}
           onChange={(e) => setParam("businessId", e.target.value)}
-          sx={{ minWidth: 220 }}
+          sx={{ minWidth: { xs: 0, sm: 220 } }}
         />
         <Button variant="outlined" color="inherit" onClick={clearFilters}>
           Temizle
@@ -324,7 +338,7 @@ export function AppointmentsPage() {
             label="Isletme ID"
             value={conflictBusinessId}
             onChange={(e) => setConflictBusinessId(e.target.value)}
-            sx={{ minWidth: 220 }}
+            sx={{ minWidth: { xs: 0, sm: 220 } }}
           />
           <TextField
             size="small"
@@ -333,7 +347,7 @@ export function AppointmentsPage() {
             value={conflictDate}
             onChange={(e) => setConflictDate(e.target.value)}
             slotProps={{ inputLabel: { shrink: true } }}
-            sx={{ minWidth: 180 }}
+            sx={{ minWidth: { xs: 0, sm: 180 } }}
           />
           <Button
             variant="outlined"
@@ -353,26 +367,34 @@ export function AppointmentsPage() {
             ) : conflictsQuery.isError ? (
               <ErrorState error={conflictsQuery.error} />
             ) : conflictsQuery.data && conflictsQuery.data.items.length > 0 ? (
-              <Table size="small" aria-label="cakisan randevular tablosu">
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 600 }}>Randevu</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Calisan</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Tarih</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Isletme</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {conflictsQuery.data.items.map((conflict) => (
-                    <TableRow key={conflict.appointmentId} hover>
-                      <TableCell>{conflict.appointmentId}</TableCell>
-                      <TableCell>{conflict.employeeId}</TableCell>
-                      <TableCell>{formatDate(conflict.appointmentDate)}</TableCell>
-                      <TableCell>{conflict.businessId}</TableCell>
+              <TableContainer sx={{ maxHeight: 360 }}>
+                <Table size="small" aria-label="cakisan randevular tablosu">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 600 }}>Randevu</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Calisan</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Tarih</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Isletme</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHead>
+                  <TableBody>
+                    {conflictsQuery.data.items.map((conflict) => (
+                      <TableRow key={conflict.appointmentId} hover>
+                        <TableCell>
+                          <IdText value={conflict.appointmentId} />
+                        </TableCell>
+                        <TableCell>
+                          <IdText value={conflict.employeeId} />
+                        </TableCell>
+                        <TableCell>{formatDate(conflict.appointmentDate)}</TableCell>
+                        <TableCell>
+                          <IdText value={conflict.businessId} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             ) : (
               <EmptyState label="Cakisan randevu bulunamadi." />
             )}

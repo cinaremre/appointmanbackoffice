@@ -10,6 +10,7 @@ using System.Threading.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Security.Claims;
 using AppointMan.Application;
 using AppointMan.Infrastructure;
 using AppointMan.Infrastructure.Extensions;
@@ -54,7 +55,9 @@ builder.Services
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
             ClockSkew = jwtSettings.ClockSkew,
-            RoleClaimType = "role"
+            // TokenService rolleri ClaimTypes.Role olarak yazar; [Authorize(Roles=...)]
+            // dogrulamasi ayni claim turunu okumalidir.
+            RoleClaimType = ClaimTypes.Role
         };
     });
 

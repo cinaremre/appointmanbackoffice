@@ -14,6 +14,8 @@ import {
   Tabs,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
@@ -121,6 +123,8 @@ const attemptColumns: DataTableColumn<ReengagementAttempt>[] = [
 
 export function MarketingPage() {
   const [tab, setTab] = useState(0);
+  const theme = useTheme();
+  const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Ortak isletme filtresi; bosken platform geneli raporlar.
   const [businessId, setBusinessId] = useState("");
@@ -225,7 +229,7 @@ export function MarketingPage() {
           setCampaignPage(1);
         }}
         size="small"
-        sx={{ minWidth: 280, mb: 2 }}
+        sx={{ minWidth: { xs: "100%", sm: 280 }, mb: 2 }}
       />
 
       <Tabs value={tab} onChange={(_, value: number) => setTab(value)} aria-label="pazarlama sekmeleri">
@@ -247,7 +251,7 @@ export function MarketingPage() {
                   setCampaignPage(1);
                 }}
                 size="small"
-                sx={{ minWidth: 180 }}
+                sx={{ minWidth: { xs: "100%", sm: 180 } }}
               >
                 <MenuItem value="">Tumu</MenuItem>
                 {Object.entries(CAMPAIGN_CHANNEL_LABELS).map(([value, label]) => (
@@ -265,7 +269,7 @@ export function MarketingPage() {
                   setCampaignPage(1);
                 }}
                 size="small"
-                sx={{ minWidth: 160 }}
+                sx={{ minWidth: { xs: "100%", sm: 160 } }}
               >
                 <MenuItem value="">Tumu</MenuItem>
                 <MenuItem value="true">Aktif</MenuItem>
@@ -333,7 +337,7 @@ export function MarketingPage() {
                 onChange={(e) => setSlotFrom(e.target.value)}
                 size="small"
                 slotProps={{ inputLabel: { shrink: true } }}
-                sx={{ minWidth: 170 }}
+                sx={{ minWidth: { xs: "100%", sm: 170 } }}
               />
               <TextField
                 label="Bitis"
@@ -342,7 +346,7 @@ export function MarketingPage() {
                 onChange={(e) => setSlotTo(e.target.value)}
                 size="small"
                 slotProps={{ inputLabel: { shrink: true } }}
-                sx={{ minWidth: 170 }}
+                sx={{ minWidth: { xs: "100%", sm: 170 } }}
               />
               {recovered.data ? (
                 <Typography variant="body2" color="text.secondary" sx={{ alignSelf: "center" }}>
@@ -384,7 +388,7 @@ export function MarketingPage() {
                 value={attemptStatus}
                 onChange={(e) => setAttemptStatus(e.target.value)}
                 size="small"
-                sx={{ minWidth: 200 }}
+                sx={{ minWidth: { xs: "100%", sm: 200 } }}
               >
                 <MenuItem value="">Tumu</MenuItem>
                 {Object.entries(REENGAGEMENT_STATUS_LABELS).map(([value, label]) => (
@@ -419,6 +423,7 @@ export function MarketingPage() {
         onClose={() => setPerformanceCampaignId(null)}
         fullWidth
         maxWidth="sm"
+        fullScreen={is_mobile}
       >
         <DialogTitle>Kampanya Performansi</DialogTitle>
         <DialogContent>

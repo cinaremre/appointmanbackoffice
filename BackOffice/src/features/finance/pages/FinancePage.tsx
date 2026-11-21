@@ -468,7 +468,13 @@ export function FinancePage() {
   return (
     <Box>
       <PageHeader title="Finans" />
-      <Tabs value={tab} onChange={onTabChange} aria-label="finans sekmeleri">
+      <Tabs
+        value={tab}
+        onChange={onTabChange}
+        aria-label="finans sekmeleri"
+        variant="scrollable"
+        allowScrollButtonsMobile
+      >
         {TABS.map((item) => (
           <Tab key={item.key} value={item.key} label={item.label} />
         ))}
@@ -477,14 +483,14 @@ export function FinancePage() {
 
       {/* Ortak filtre cubugu: isletme GUID + sekmeye ozel filtreler */}
       <Stack
-        direction="row"
+        direction={{ xs: "column", md: "row" }}
         spacing={2}
-        sx={{ alignItems: "flex-start", flexWrap: "wrap", my: 2 }}
+        sx={{ alignItems: { xs: "stretch", md: "flex-start" }, my: 2 }}
       >
         <TextField
           label="Isletme Kimligi (GUID)"
           size="small"
-          sx={{ minWidth: 300 }}
+          sx={{ minWidth: { md: 300 } }}
           value={businessInput}
           onChange={(e) => setBusinessInput(e.target.value)}
           onBlur={() => applyGuidFilter("businessId", "isletme")}
@@ -497,7 +503,7 @@ export function FinancePage() {
               label="Baslangic Tarihi"
               type="date"
               size="small"
-              sx={{ minWidth: 180 }}
+              sx={{ minWidth: { md: 180 } }}
               value={fromDate}
               onChange={(e) => updateParams({ fromDate: e.target.value })}
               slotProps={{ inputLabel: { shrink: true } }}
@@ -506,7 +512,7 @@ export function FinancePage() {
               label="Bitis Tarihi"
               type="date"
               size="small"
-              sx={{ minWidth: 180 }}
+              sx={{ minWidth: { md: 180 } }}
               value={toDate}
               onChange={(e) => updateParams({ toDate: e.target.value })}
               slotProps={{ inputLabel: { shrink: true } }}
@@ -518,7 +524,7 @@ export function FinancePage() {
             select
             label="Kasa Durumu"
             size="small"
-            sx={{ minWidth: 160 }}
+            sx={{ minWidth: { md: 160 } }}
             value={statusParam}
             onChange={(e) => updateParams({ status: e.target.value })}
           >
@@ -536,7 +542,7 @@ export function FinancePage() {
               select
               label="Prim Durumu"
               size="small"
-              sx={{ minWidth: 180 }}
+              sx={{ minWidth: { md: 180 } }}
               value={statusParam}
               onChange={(e) => updateParams({ status: e.target.value })}
             >
@@ -550,7 +556,7 @@ export function FinancePage() {
             <TextField
               label="Calisan Kimligi (GUID)"
               size="small"
-              sx={{ minWidth: 300 }}
+              sx={{ minWidth: { md: 300 } }}
               value={employeeInput}
               onChange={(e) => setEmployeeInput(e.target.value)}
               onBlur={() => applyGuidFilter("employeeId", "calisan")}

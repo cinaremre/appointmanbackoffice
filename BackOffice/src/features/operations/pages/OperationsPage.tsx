@@ -20,6 +20,8 @@ import {
   TableRow,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
@@ -85,6 +87,8 @@ function jobColumns(): DataTableColumn<ImportJob>[] {
 
 export function OperationsPage() {
   const [tab, setTab] = useState(0);
+  const theme = useTheme();
+  const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Isler filtreleri ve sayfalama.
   const [businessId, setBusinessId] = useState("");
@@ -199,7 +203,7 @@ export function OperationsPage() {
                   setJobsPage(1);
                 }}
                 size="small"
-                sx={{ minWidth: 280 }}
+                sx={{ minWidth: { xs: "100%", sm: 280 } }}
               />
               <TextField
                 select
@@ -210,7 +214,7 @@ export function OperationsPage() {
                   setJobsPage(1);
                 }}
                 size="small"
-                sx={{ minWidth: 170 }}
+                sx={{ minWidth: { xs: "100%", sm: 170 } }}
               >
                 <MenuItem value="">Tumu</MenuItem>
                 {IMPORT_STATUS_OPTIONS.map((option) => (
@@ -308,6 +312,7 @@ export function OperationsPage() {
         onClose={() => setDetailJobId(null)}
         fullWidth
         maxWidth="md"
+        fullScreen={is_mobile}
       >
         <DialogTitle>Aktarim Isi Detayi</DialogTitle>
         <DialogContent>
