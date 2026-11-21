@@ -46,6 +46,61 @@ namespace AppointMan.Infrastructure.Persistence.Context
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<IdempotencyRecord> IdempotencyRecords { get; set; }
 
+        // ===== Kasa ve satis (Modul 2) =====
+        public DbSet<CashRegister> CashRegisters { get; set; }
+        public DbSet<CashSession> CashSessions { get; set; }
+        public DbSet<Sale> Sales { get; set; }
+        public DbSet<SaleLine> SaleLines { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<CashMovement> CashMovements { get; set; }
+        public DbSet<Expense> Expenses { get; set; }
+
+        // ===== Stok ve prim (Modul 3-4) =====
+        public DbSet<Product> Products { get; set; }
+        public DbSet<StockMovement> StockMovements { get; set; }
+        public DbSet<ServiceMaterial> ServiceMaterials { get; set; }
+        public DbSet<CommissionRule> CommissionRules { get; set; }
+        public DbSet<CommissionAccrual> CommissionAccruals { get; set; }
+        public DbSet<CommissionPayout> CommissionPayouts { get; set; }
+
+        // ===== Seans paketi ve bekleme listesi (Modul 5-10) =====
+        public DbSet<ServicePackage> ServicePackages { get; set; }
+        public DbSet<ServicePackageItem> ServicePackageItems { get; set; }
+        public DbSet<CustomerPackage> CustomerPackages { get; set; }
+        public DbSet<PackageUsage> PackageUsages { get; set; }
+        public DbSet<WaitlistEntry> WaitlistEntries { get; set; }
+        public DbSet<WaitlistOffer> WaitlistOffers { get; set; }
+        public DbSet<RecoveredSlot> RecoveredSlots { get; set; }
+
+        // ===== Rezervasyon sayfasi, takip, kampanya ve import (Modul 1-7-9) =====
+        public DbSet<BusinessPublicPage> BusinessPublicPages { get; set; }
+        public DbSet<TrackingLink> TrackingLinks { get; set; }
+        public DbSet<TrackingEvent> TrackingEvents { get; set; }
+        public DbSet<MarketingCampaign> MarketingCampaigns { get; set; }
+        public DbSet<CampaignSpend> CampaignSpends { get; set; }
+        public DbSet<AppointmentAttribution> AppointmentAttributions { get; set; }
+        public DbSet<ImportJob> ImportJobs { get; set; }
+        public DbSet<ImportRowResult> ImportRowResults { get; set; }
+
+        // ===== Entitlement, izin ve geri cagirma (Modul 13-14-16) =====
+        public DbSet<FeatureDefinition> FeatureDefinitions { get; set; }        public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
+        public DbSet<PlanFeature> PlanFeatures { get; set; }
+        public DbSet<BusinessSubscription> BusinessSubscriptions { get; set; }
+        public DbSet<BusinessFeatureOverride> BusinessFeatureOverrides { get; set; }
+        public DbSet<FeatureUsage> FeatureUsages { get; set; }
+        public DbSet<CustomerCommunicationPreference> CustomerCommunicationPreferences { get; set; }
+        public DbSet<ConsentHistory> ConsentHistories { get; set; }
+        public DbSet<CommunicationSuppression> CommunicationSuppressions { get; set; }
+        public DbSet<BusinessReengagementRule> BusinessReengagementRules { get; set; }
+        public DbSet<CustomerServiceHistory> CustomerServiceHistories { get; set; }
+        public DbSet<ReengagementAttempt> ReengagementAttempts { get; set; }
+
+        // ===== Backoffice denetim kayitlari (Modul 21) =====
+        public DbSet<AdminAuditLog> AdminAuditLogs { get; set; }
+
+        // ===== Backoffice toplu islemleri (Modul 10) =====
+        public DbSet<BulkOperation> BulkOperations { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

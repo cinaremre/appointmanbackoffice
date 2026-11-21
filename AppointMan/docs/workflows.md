@@ -81,6 +81,63 @@ Yorum değişikliği ile puan güncellemesi aynı transaction içinde yapılır.
 JWT'den çözer. Handler'lar `CallerAuthorization.CanActForBusiness` ile işletme sahibi veya
 yönetici (Admin/SuperAdmin) doğrulaması yapar.
 
+## Ticari modüller (AddCommercialModules migration'ı)
+
+Dokümandaki modüllerin ilk sürüm çekirdekleri aynı desenle uygulanır:
+
+- **Kasa/Satış (Modül 2)**: `Sale`/`SaleLine`/`Payment` (ters kayıt iadesi), `CashSession`
+  (Beklenen Nakit = açılış + nakit tahsilat + CashIn − CashOut − nakit iade; kart hariç),
+  açık oturum DB unique index'i ile tek. Satış ile tahsilat ayrı kaydedilir.
+- **Stok (Modül 3)**: bakiye `StockMovement` defterinden hesaplanır; hareket değiştirilemez,
+  aynı (ReferenceType, ReferenceId) iki kez işlenemez, negatif stok reddedilir;
+  `ServiceMaterial` hizmet reçetesi tanımlar.
+- **Prim (Modül 4)**: `CommissionRule` pencere kontrollü; tahakkuk tahsilat tabanlı,
+  Accrued→Paid/Reversed tek yönlü. Ödeme dönemleri `CommissionPayout` ile ayrı.
+- **Seans paketi (Modül 5)**: hak `PackageUsage` hareketlerinden hesaplanır; Reserve→Consume
+  (randevu Completed olunca) / Release (iptal); aynı randevuya çift rezervasyon reddedilir.
+- **Bekleme listesi (Modül 10)**: yarı otomatik mod; teklif 10 dk geçerli (`WaitlistPolicy`),
+  kabulda slot sunucuda yeniden doğrulanır, ilk kabul diğer Pending teklifleri Superseded yapar.
+- **Rezervasyon sayfası/QR (Modül 1/8)**: `BusinessPublicPage` (sistem genelinde benzersiz slug,
+  anonim erişim), `TrackingLink`/`TrackingEvent` anonim olay defteri.
+- **Kampanya (Modül 9)**: `MarketingCampaign`/`CampaignSpend`/`AppointmentAttribution`
+  (randevu başına tek atıf), ROAS raporu satış entegrasyonu sonrasına açıklamalı.
+- **Veri aktarımı (Modül 7)**: CSV (paket bağımlılıksız `CsvParser`), header satırı sayım dışı,
+  telefon anahtarıyla mükerrer atlama, tamamlanan iş tekrar çalıştırılamaz.
+- **Entitlement (Modül 14)**: öncelik aktif override > abonelik planı > temel varsayılan
+  (`FeatureCodes.BasicDefaults`) > yok. Kota `FeatureUsage` upsert'i ile korunur.
+  Platform yönetici uçları Admin/SuperAdmin + `IWorkflowAuditSink` denetim kaydı.
+- **İzin (Modül 16)**: pazarlama Withdrawn kanalı tamamen kapatır (`CommunicationSuppression`),
+  Transactional varsayılan açık, Marketing varsayılan kapalı; `ConsentHistory` append-only.
+- **Geri çağırma (Modül 13)**: adaylık `IntervalDays − LeadDays` eşiği, gelecek randevu ve
+  cooldown elemeleri; medyan ziyaret aralığı `CustomerServiceHistory`'de.
+- **Dashboard (Modül 15.1)**: günün randevu/tamamlanan/iptal/no-show kartları ve basit doluluk.
+
+Sağlayıcı gerektiren entegrasyonlar (WhatsApp Cloud/Meta/Google) bu sürümde soyutlama
++ log sağlayıcı düzeyindedir; canlı API bağlantıları ayrı faz.
+
+## Backoffice Portal API
+
+`AppointMan.BackOffice.Api` ayrı host'tur; mevcut Application/Infrastructure katmanlarını
+yeniden kullanır (domain kuralları tek kaynak — iptal/abonelik/override komutları mevcut
+handler'ları sarar).
+
+- **Kimlik**: ayrı JWT audience (`AppointMan-Backoffice`) — müşteri token'ları geçersiz.
+- **Yetki**: permission bazlı policy'ler; rol→permission matrisi
+  `AdminPermissions.RolePermissions` içinde (SuperAdmin her izne sahip).
+  Roller: SuperAdmin, PlatformAdmin, FinanceAdmin, SupportAgent, MarketingAdmin,
+  ContentManager, Auditor, ReadOnlyAnalyst (EnumUserRole 7–13).
+- **Denetim**: kritik işlemler `AdminAuditLogs` tablosuna (append-only) yazılır;
+  correlation + IP `IAdminAuditContext` üzerinden taşınır.
+- **Standart**: `/api/v1/admin` base; `{data, pagination, meta}` envelope; ProblemDetails
+  hataları; sayfalama max 200 (varsayılan 50); rate limit + CORS allowlist ayrı.
+- **Modüller**: businesses, categories (döngü korumalı taşıma), services + bulk
+  operations (dryRun → onay), users (lock/unlock/revoke-sessions), appointments
+  (domain iptali sarmalar), subscriptions/features (mevcut handler'lar sarılır),
+  finance/stock/packages (salt okunur), notifications (retry kabul kaydı), marketing
+  (kampanya/waitlist/reengagement), operations (import işleri, health), audit logs.
+
+Doğrulama: `dotnet build AppointMan.slnx` — BackOffice.Api solution'a dahildir.
+
 ## Doğrulama
 
 ```bash

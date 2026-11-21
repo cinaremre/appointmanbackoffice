@@ -35,6 +35,10 @@ namespace AppointMan.Infrastructure
             services.AddScoped<IAppointmentBookingGuard, AppointmentBookingGuard>();
             // Domain event yan etkilerinin yapilandirilmis denetim kaydi
             services.AddScoped<IWorkflowAuditSink, LoggingWorkflowAuditSink>();
+            // Ozellik erisimi: override > abonelik plani > varsayilan (Modul 14)
+            services.AddScoped<IFeatureAccessService, FeatureAccessService>();
+            // Backoffice yonetici denetim kayitlari (Modul 21)
+            services.AddScoped<IAdminAuditSink, AdminAuditSink>();
             return services;
         }
     }
