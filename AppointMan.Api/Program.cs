@@ -43,6 +43,15 @@ builder.Services.AddAppointManMetrics(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
+// Tek solution oldugu icin MediatR, Application assembly'sindeki Admin/Owner
+// (backoffice) handler'larini da tarar; DI dogrulamasi bunlarin servislerini de
+// ister. Musteri API'si bu handler'lari HTTP olarak expose ETMEZ; yalnizca
+// taramanin gecerli olmasi icin kayitlar karsilanir.
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<AppointMan.Application.Common.Interfaces.IAdminAuditContext, AppointMan.Api.Services.AdminAuditContextAccessor>();
+builder.Services.AddScoped<AppointMan.Application.Common.Interfaces.IAdminAuditSink, AppointMan.Infrastructure.Services.AdminAuditSink>();
+builder.Services.AddScoped<AppointMan.Application.Common.Interfaces.IFeatureAccessService, AppointMan.Infrastructure.Services.FeatureAccessService>();
+
 // E-posta hatti: SMTP yapilandirilmissa gercek gonderim, aksi halde log modu.
 // Gonderim arka planda yurur; kayit akisi SMTP beklemez ve SMTP hatasi kaydi bozmaz.
 builder.Services.AddEmailInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
