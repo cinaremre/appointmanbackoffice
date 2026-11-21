@@ -380,6 +380,5 @@ appsettings.*.local.json
 *.snk
 
 /.dockerignore
-/docker-compose.yml
 /launchSettings.json
 /AppointMan.Api/Dockerfile.original

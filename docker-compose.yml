@@ -1,0 +1,49 @@
+# Backoffice test ortami: SQL Server + Backoffice API + React/nginx.
+# Gizli degerler .env dosyasindan okunur (bkz. .env.example).
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD:?SA_PASSWORD .env dosyasinda tanimli olmali}
+    volumes:
+      - dbdata:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$${MSSQL_SA_PASSWORD}\" -Q 'SELECT 1' -b"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  api:
+    build:
+      context: .
+      dockerfile: AppointMan.BackOffice.Api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Server=db;Database=AppointManDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=true"
+      JwtSettings__Secret: ${JWT_SECRET:?JWT_SECRET .env dosyasinda tanimli olmali}
+      JwtSettings__Issuer: https://backoffice.rezervise.com
+      JwtSettings__Audience: AppointMan-Backoffice
+      JwtSettings__RequireHttpsMetadata: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+    # Veritabani migrate+seed ilk baslatmada uzun surebilir.
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: BackOffice.Dockerfile
+    ports:
+      # Sunucuda 80 Apache'ye aittir; frontoffice kismi loopback uzerinden
+      # yayinlanir ve Apache vhost (backoffice.rezervise.com) buraya proxy yapar.
+      - "127.0.0.1:8081:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  dbdata:
