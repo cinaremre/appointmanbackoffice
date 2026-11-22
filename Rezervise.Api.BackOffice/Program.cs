@@ -33,9 +33,10 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 // MediatR tum Application assembly'sini tarar: musteri handler'larinin
 // bagimlilikleri (e-posta kuyrugu, OTP, push, lokalizasyon) DI dogrulamasi icin
 // burada da karsilanir; musteri HTTP uclari backoffice'te acik DEGILDIR.
-builder.Services.AddEmailInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
-builder.Services.AddSmsInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
-builder.Services.AddPushInfrastructure(builder.Configuration);
+// Ortak altyapi tek uzanti ile kurulur (unutmaya karsi).
+builder.Services.AddSharedInfrastructure(
+    builder.Configuration,
+    builder.Environment.IsDevelopment());
 builder.Services.AddHostedService<Rezervise.Api.BackOffice.Services.PushBackgroundService>();
 builder.Services.AddSingleton<Rezervise.Application.Common.Interfaces.ILocalizationService, BackOfficeLocalizationService>();
 

@@ -49,17 +49,14 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 // taramanin gecerli olmasi icin kayitlar karsilanir.
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<Rezervise.Application.Common.Interfaces.IAdminAuditContext, Rezervise.Api.Services.AdminAuditContextAccessor>();
-builder.Services.AddScoped<Rezervise.Application.Common.Interfaces.IAdminAuditSink, Rezervise.Infrastructure.Services.AdminAuditSink>();
-builder.Services.AddScoped<Rezervise.Application.Common.Interfaces.IFeatureAccessService, Rezervise.Infrastructure.Services.FeatureAccessService>();
 
-// E-posta hatti: SMTP yapilandirilmissa gercek gonderim, aksi halde log modu.
-// Gonderim arka planda yurur; kayit akisi SMTP beklemez ve SMTP hatasi kaydi bozmaz.
-builder.Services.AddEmailInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
+// Ortak altyapi: e-posta + SMS + push + denetim + ozellik erisimi tek yerden.
+builder.Services.AddSharedInfrastructure(
+    builder.Configuration,
+    builder.Environment.IsDevelopment());
+
+// Gonderim servisleri arka planda yurur; kayit akisi saglayici beklemez.
 builder.Services.AddHostedService<EmailBackgroundService>();
-
-// Push bildirim hatti: FCM yapilandirilmissa gercek gonderim, aksi halde log modu.
-// UNREGISTERED token'lar arka planda pasiflestirilir; gonderim 3 deneme ile yurur.
-builder.Services.AddPushInfrastructure(builder.Configuration);
 builder.Services.AddHostedService<PushBackgroundService>();
 
 // Zaman tabanli randevu akislari: hatirlatici, otomatik tamamlama ve no-show.
@@ -267,7 +264,7 @@ using (var scope = app.Services.CreateScope())
 
     await dbContext.Database.MigrateAsync();
 
-    // Seed sirasinda üretilen domain event'leri e-posta/audit yan etkisi olusturmaz.
+    // Seed sirasinda ï¿½retilen domain event'leri e-posta/audit yan etkisi olusturmaz.
     var sideEffects = scope.ServiceProvider.GetRequiredService<EventSideEffectDeduplicator>();
     var sideEffectsWereEnabled = sideEffects.Enabled;
     sideEffects.Enabled = false;

@@ -44,3 +44,17 @@ permission matrisi), `src/features/<modül>` (sayfalar).
 npm test              # vitest (birim + bileşen)
 npm run build         # tsc + vite üretim derlemesi
 ```
+
+## API tiplerini üretme (DTO senkronizasyonu)
+
+Backend DTO alan adları frontend ile elle tutturulmaz. BackOffice API ayakta iken
+Swagger'dan TypeScript tiplerini üretin:
+
+```bash
+# BackOffice.Api'yi calistirin (Development, ornek: http://localhost:5099)
+npm run generate:types -- http://localhost:5099/swagger/v1/swagger.json
+```
+
+Üretilen `src/shared/api/generated/schema.d.ts` commit edilir; backend DTO
+değişince script yeniden çalıştırılır. (Araç: `openapi-typescript`, geçici `npx` ile.)
+
