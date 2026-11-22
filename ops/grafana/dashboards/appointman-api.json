@@ -22,7 +22,7 @@
       "type": "timeseries",
       "title": "Request rate by route",
       "description": "Requests per second grouped by the matched HTTP route.",
-      "datasource": { "type": "prometheus", "uid": "appointman-prometheus" },
+      "datasource": { "type": "prometheus", "uid": "Rezervise-prometheus" },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "targets": [
         {
@@ -42,7 +42,7 @@
       "type": "timeseries",
       "title": "Request rate by status code",
       "description": "Requests per second grouped by HTTP response status code.",
-      "datasource": { "type": "prometheus", "uid": "appointman-prometheus" },
+      "datasource": { "type": "prometheus", "uid": "Rezervise-prometheus" },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
       "targets": [
         {
@@ -62,7 +62,7 @@
       "type": "timeseries",
       "title": "Latency p95 by route",
       "description": "95th percentile request duration.",
-      "datasource": { "type": "prometheus", "uid": "appointman-prometheus" },
+      "datasource": { "type": "prometheus", "uid": "Rezervise-prometheus" },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
       "targets": [
         {
@@ -82,7 +82,7 @@
       "type": "timeseries",
       "title": "Latency p99 by route",
       "description": "99th percentile request duration.",
-      "datasource": { "type": "prometheus", "uid": "appointman-prometheus" },
+      "datasource": { "type": "prometheus", "uid": "Rezervise-prometheus" },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
       "targets": [
         {
@@ -102,7 +102,7 @@
       "type": "stat",
       "title": "5xx error rate (per second)",
       "description": "Server errors per second. Any sustained value above zero needs investigation.",
-      "datasource": { "type": "prometheus", "uid": "appointman-prometheus" },
+      "datasource": { "type": "prometheus", "uid": "Rezervise-prometheus" },
       "gridPos": { "h": 8, "w": 8, "x": 0, "y": 16 },
       "targets": [
         {
@@ -127,7 +127,7 @@
       "type": "stat",
       "title": "Error ratio (%)",
       "description": "Share of 5xx responses over the last 5 minutes.",
-      "datasource": { "type": "prometheus", "uid": "appointman-prometheus" },
+      "datasource": { "type": "prometheus", "uid": "Rezervise-prometheus" },
       "gridPos": { "h": 8, "w": 8, "x": 8, "y": 16 },
       "targets": [
         {
@@ -155,7 +155,7 @@
       "type": "timeseries",
       "title": "Total throughput",
       "description": "Aggregate requests per second handled by the API.",
-      "datasource": { "type": "prometheus", "uid": "appointman-prometheus" },
+      "datasource": { "type": "prometheus", "uid": "Rezervise-prometheus" },
       "gridPos": { "h": 8, "w": 8, "x": 16, "y": 16 },
       "targets": [
         {
@@ -175,7 +175,7 @@
       "type": "timeseries",
       "title": ".NET GC heap size",
       "description": "Managed heap size reported by the runtime instrumentation.",
-      "datasource": { "type": "prometheus", "uid": "appointman-prometheus" },
+      "datasource": { "type": "prometheus", "uid": "Rezervise-prometheus" },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
       "targets": [
         {
@@ -195,7 +195,7 @@
       "type": "timeseries",
       "title": "Thread pool queue length",
       "description": "Queued work items. Sustained growth indicates thread pool starvation.",
-      "datasource": { "type": "prometheus", "uid": "appointman-prometheus" },
+      "datasource": { "type": "prometheus", "uid": "Rezervise-prometheus" },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
       "targets": [
         {
@@ -215,12 +215,12 @@
       "type": "timeseries",
       "title": "Appointments created",
       "description": "Business metric: newly booked appointments per second.",
-      "datasource": { "type": "prometheus", "uid": "appointman-prometheus" },
+      "datasource": { "type": "prometheus", "uid": "Rezervise-prometheus" },
       "gridPos": { "h": 8, "w": 8, "x": 0, "y": 32 },
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(appointman_appointments_created_total[5m]))",
+          "expr": "sum(rate(Rezervise_appointments_created_total[5m]))",
           "legendFormat": "created/s"
         }
       ],
@@ -235,27 +235,27 @@
       "type": "timeseries",
       "title": "Appointments cancelled / completed",
       "description": "Business metric: appointment lifecycle outcomes.",
-      "datasource": { "type": "prometheus", "uid": "appointman-prometheus" },
+      "datasource": { "type": "prometheus", "uid": "Rezervise-prometheus" },
       "gridPos": { "h": 8, "w": 8, "x": 8, "y": 32 },
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(appointman_appointments_cancelled_total[5m]))",
+          "expr": "sum(rate(Rezervise_appointments_cancelled_total[5m]))",
           "legendFormat": "cancelled/s"
         },
         {
           "refId": "B",
-          "expr": "sum(rate(appointman_appointments_completed_total[5m]))",
+          "expr": "sum(rate(Rezervise_appointments_completed_total[5m]))",
           "legendFormat": "completed/s"
         },
         {
           "refId": "C",
-          "expr": "sum(rate(appointman_appointments_confirmed_total[5m]))",
+          "expr": "sum(rate(Rezervise_appointments_confirmed_total[5m]))",
           "legendFormat": "confirmed/s"
         },
         {
           "refId": "D",
-          "expr": "sum(rate(appointman_appointments_rescheduled_total[5m]))",
+          "expr": "sum(rate(Rezervise_appointments_rescheduled_total[5m]))",
           "legendFormat": "rescheduled/s"
         }
       ],
@@ -270,12 +270,12 @@
       "type": "timeseries",
       "title": "Login attempts by result",
       "description": "Business metric: authentication outcomes. A rise in invalid_credentials or locked may indicate credential stuffing.",
-      "datasource": { "type": "prometheus", "uid": "appointman-prometheus" },
+      "datasource": { "type": "prometheus", "uid": "Rezervise-prometheus" },
       "gridPos": { "h": 8, "w": 8, "x": 16, "y": 32 },
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(appointman_auth_login_attempts_total[5m])) by (result)",
+          "expr": "sum(rate(Rezervise_auth_login_attempts_total[5m])) by (result)",
           "legendFormat": "{{result}}"
         }
       ],
@@ -290,12 +290,12 @@
       "type": "timeseries",
       "title": "Users registered by role",
       "description": "Business metric: self service registrations split by the role that was granted.",
-      "datasource": { "type": "prometheus", "uid": "appointman-prometheus" },
+      "datasource": { "type": "prometheus", "uid": "Rezervise-prometheus" },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 40 },
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(appointman_users_registered_total[5m])) by (role)",
+          "expr": "sum(rate(Rezervise_users_registered_total[5m])) by (role)",
           "legendFormat": "{{role}}"
         }
       ],
@@ -310,12 +310,12 @@
       "type": "timeseries",
       "title": "Refresh token rotations by outcome",
       "description": "Business metric: token rotation outcomes. A reused entry means a rotated token was presented again and every session for that user was revoked.",
-      "datasource": { "type": "prometheus", "uid": "appointman-prometheus" },
+      "datasource": { "type": "prometheus", "uid": "Rezervise-prometheus" },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 40 },
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(appointman_auth_refresh_rotations_total[5m])) by (outcome)",
+          "expr": "sum(rate(Rezervise_auth_refresh_rotations_total[5m])) by (outcome)",
           "legendFormat": "{{outcome}}"
         }
       ],
@@ -328,13 +328,13 @@
   ],
   "refresh": "30s",
   "schemaVersion": 39,
-  "tags": ["appointman", "api", "opentelemetry"],
+  "tags": ["Rezervise", "api", "opentelemetry"],
   "templating": { "list": [] },
   "time": { "from": "now-6h", "to": "now" },
   "timepicker": {},
   "timezone": "browser",
-  "title": "AppointMan API",
-  "uid": "appointman-api",
+  "title": "Rezervise API",
+  "uid": "Rezervise-api",
   "version": 1,
   "weekStart": ""
 }

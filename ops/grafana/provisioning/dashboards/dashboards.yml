@@ -1,9 +1,9 @@
 apiVersion: 1
 
 providers:
-  - name: 'AppointMan'
+  - name: 'Rezervise'
     orgId: 1
-    folder: 'AppointMan'
+    folder: 'Rezervise'
     type: file
     disableDeletion: false
     updateIntervalSeconds: 30

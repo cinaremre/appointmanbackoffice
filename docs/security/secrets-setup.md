@@ -1,46 +1,46 @@
-﻿# Sır Yönetimi ve Konfigürasyon Kurulumu
+# Sir Y�netimi ve Konfig�rasyon Kurulumu
 
-Bu belge, `appsettings.json` içinden çıkarılan sırların geliştirme ve dağıtım ortamlarında
-nasıl sağlanacağını açıklar.
+Bu belge, `appsettings.json` i�inden �ikarilan sirlarin gelistirme ve dagitim ortamlarinda
+nasil saglanacagini a�iklar.
 
 ## 1. Neden
 
-`appsettings.json` artık **hiçbir sır içermez**; yalnızca yapıyı ve boş değerleri tanımlar:
+`appsettings.json` artik **hi�bir sir i�ermez**; yalnizca yapiyi ve bos degerleri tanimlar:
 
 ```json
 "ConnectionStrings": { "DefaultConnection": "" },
 "JwtSettings": { "Secret": "", ... }
 ```
 
-Uygulama, bu değerler eksik veya zayıf olduğunda **başlamaz** (fail-fast):
+Uygulama, bu degerler eksik veya zayif oldugunda **baslamaz** (fail-fast):
 
 | Kontrol | Kural | Hata |
 |---|---|---|
-| `ConnectionStrings:DefaultConnection` | Boş olamaz | `InvalidOperationException` |
+| `ConnectionStrings:DefaultConnection` | Bos olamaz | `InvalidOperationException` |
 | `JwtSettings:Secret` | En az 32 byte UTF-8 | `OptionsValidationException` |
-| `JwtSettings:Issuer` | Mutlak URI olmalı | `OptionsValidationException` |
-| `JwtSettings:Audience` | Boş olamaz | `OptionsValidationException` |
-| `AllowedHosts` (Development dışı) | `*` olamaz | `InvalidOperationException` |
+| `JwtSettings:Issuer` | Mutlak URI olmali | `OptionsValidationException` |
+| `JwtSettings:Audience` | Bos olamaz | `OptionsValidationException` |
+| `AllowedHosts` (Development disi) | `*` olamaz | `InvalidOperationException` |
 
-## 2. Geliştirme (`dotnet run`)
+## 2. Gelistirme (`dotnet run`)
 
-Sırlar **user secrets** deposunda tutulur (`AppointMan.Api.csproj` içinde `UserSecretsId` tanımlı).
+Sirlar **user secrets** deposunda tutulur (`Rezervise.Api.csproj` i�inde `UserSecretsId` tanimli).
 
 ```powershell
-# JWT imza anahtarı uret
+# JWT imza anahtari uret
 $secret = [Convert]::ToBase64String((1..48 | ForEach-Object { Get-Random -Maximum 256 }))
 
 # Anahtari ve baglanti dizesini secret store'a yaz
-dotnet user-secrets set "JwtSettings:Secret" $secret --project .\AppointMan.Api\AppointMan.Api.csproj
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=.;Database=AppointManDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True" --project .\AppointMan.Api\AppointMan.Api.csproj
+dotnet user-secrets set "JwtSettings:Secret" $secret --project .\Rezervise.Api\Rezervise.Api.csproj
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=.;Database=RezerviseDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True" --project .\Rezervise.Api\Rezervise.Api.csproj
 
 # Kontrol
-dotnet user-secrets list --project .\AppointMan.Api\AppointMan.Api.csproj
+dotnet user-secrets list --project .\Rezervise.Api\Rezervise.Api.csproj
 ```
 
 ## 3. Docker Compose
 
-`docker-compose.yml`, sırları `.env` dosyasından okur:
+`docker-compose.yml`, sirlari `.env` dosyasindan okur:
 
 ```powershell
 Copy-Item .env.example .env
@@ -48,12 +48,12 @@ Copy-Item .env.example .env
 docker compose up --build
 ```
 
-`.env` **asla commit edilmez** (`.gitignore` içinde).
+`.env` **asla commit edilmez** (`.gitignore` i�inde).
 
 ## 4. Production
 
-Sırlar environment variable veya bir secret store (Azure Key Vault, AWS Secrets Manager,
-Docker secret) üzerinden sağlanır. Çift alt çizgi (`__`) bölüm ayırıcıdır:
+Sirlar environment variable veya bir secret store (Azure Key Vault, AWS Secrets Manager,
+Docker secret) �zerinden saglanir. �ift alt �izgi (`__`) b�l�m ayiricidir:
 
 ```text
 ConnectionStrings__DefaultConnection=Server=...;User Id=...;Password=...;Encrypt=True
@@ -62,32 +62,32 @@ JwtSettings__RequireHttpsMetadata=true
 AllowedHosts=api.example.com;www.example.com
 ```
 
-`AllowedHosts` production'da somut host listesi olmalıdır; aksi halde uygulama başlamaz.
+`AllowedHosts` production'da somut host listesi olmalidir; aksi halde uygulama baslamaz.
 
-## 5. Acil Yapılması Gerekenler (manuel)
+## 5. Acil Yapilmasi Gerekenler (manuel)
 
-Bu adım otomatikleştirilemeyen, operatör müdahalesi gerektiren işlerdir:
+Bu adim otomatiklestirilemeyen, operat�r m�dahalesi gerektiren islerdir:
 
-1. **Eski JWT anahtarı yanmış sayılır.** Depoya commit edilmiş olan
-   `AppointMan-Super-Secret-Key-Minimum-32-Characters-Long!` değeri git geçmişinde kalıcıdır.
-   Tüm ortamlarda **yeni anahtara** geçilmelidir (rotasyon). Rotasyon sonrası tüm mevcut
-   access/refresh token'lar geçersiz olur; kullanıcılar yeniden giriş yapar.
-2. **`SA_PASSWORD` değeri git geçmişinde bulunmaktadır.** SQL Server parolası değiştirilmeli
-   ve git geçmişi için `gitleaks` / `trufflehog` ile tarama yapılmalıdır.
-3. **`.env` dosyası takipten çıkarılmalı** (git geçmişinde kaldığı için):
+1. **Eski JWT anahtari yanmis sayilir.** Depoya commit edilmis olan
+   `Rezervise-Super-Secret-Key-Minimum-32-Characters-Long!` degeri git ge�misinde kalicidir.
+   T�m ortamlarda **yeni anahtara** ge�ilmelidir (rotasyon). Rotasyon sonrasi t�m mevcut
+   access/refresh token'lar ge�ersiz olur; kullanicilar yeniden giris yapar.
+2. **`SA_PASSWORD` degeri git ge�misinde bulunmaktadir.** SQL Server parolasi degistirilmeli
+   ve git ge�misi i�in `gitleaks` / `trufflehog` ile tarama yapilmalidir.
+3. **`.env` dosyasi takipten �ikarilmali** (git ge�misinde kaldigi i�in):
    ```powershell
    git rm --cached .env
    ```
-4. Production `appsettings.json` içinde `TrustServerCertificate=True` bulunmamalıdır.
+4. Production `appsettings.json` i�inde `TrustServerCertificate=True` bulunmamalidir.
 
-## 6. Doğrulama
+## 6. Dogrulama
 
 ```powershell
 # Sirlar temizlenmis mi?
-Select-String -Path .\AppointMan.Api\appsettings.json -Pattern 'Secret|Password|ConnectionString'
+Select-String -Path .\Rezervise.Api\appsettings.json -Pattern 'Secret|Password|ConnectionString'
 
 # Uygulama eksik sir ile baslamiyor mu?
-dotnet run --project .\AppointMan.Api\AppointMan.Api.csproj
+dotnet run --project .\Rezervise.Api\Rezervise.Api.csproj
 # Beklenen: OptionsValidationException / InvalidOperationException ve cikis
 ```
 
@@ -101,7 +101,7 @@ Graylog erisilemezse istek akisi **etkilenmez**, en fazla bir kez `stderr`'e uya
 | `GRAYLOG_ENABLED` | `false` ise provider hic kaydedilmez (no-op) | `false` |
 | `GRAYLOG_HOST` | Graylog GELF UDP adresi | `localhost` |
 | `GRAYLOG_PORT` | GELF UDP portu | `12201` |
-| `GRAYLOG_SOURCE` | GELF `host`/`source` alani | `AppointMan.Api` |
+| `GRAYLOG_SOURCE` | GELF `host`/`source` alani | `Rezervise.Api` |
 | `GRAYLOG_ENVIRONMENT` | `_environment` alani | bos |
 | `GRAYLOG_MASKED_FIELDS` | Ek maskelenecek alanlar (virgul/noktali virgul ile) | bos |
 
@@ -150,7 +150,7 @@ degerleri **ezer**.
 | `EMAIL_PORT` | SMTP portu (varsayilan `587`) |
 | `EMAIL_USE_SSL` | `true` / `false` (varsayilan `true`) |
 | `EMAIL_USERNAME` | SMTP kullanici adi (bos ise anonim gonderim denenir) |
-| `EMAIL_PASSWORD` | SMTP sifresi — **asla log'a yazilmaz** |
+| `EMAIL_PASSWORD` | SMTP sifresi � **asla log'a yazilmaz** |
 | `EMAIL_FROM_ADDRESS` | Gonderen adresi |
 | `EMAIL_FROM_NAME` | Gonderen gorunen adi |
 | `EMAIL_VERIFICATION_LINK_BASE` | Dogrulama ucunun tam adresi; token `?token=...` olarak eklenir |
@@ -175,7 +175,7 @@ EMAIL_VERIFICATION_LINK_BASE=https://apiapp.rezervise.com/api/Auth/verify-email
 - SMTP hatasi kayit akisini **bozmaz**; kullanici `resend-verification`
   ucuyla yeni bag istemelidir.
 
-> **Uretim notu:** `AppointMan.Api/appsettings.json` git-ignored'dir. Canliya
+> **Uretim notu:** `Rezervise.Api/appsettings.json` git-ignored'dir. Canliya
 > alirken `Email` bolumunun sunucudaki bu dosyaya veya ortam degiskenlerine
 > eklendiginden emin olun; aksi halde dogrulama e-postalari gonderilmez.
 

@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="Rezervise.Infrastructure/Rezervise.Infrastructure.csproj" Id="14b07e59-693f-435a-af18-ec4eeee80541" />
+  <Project Path="Rezervise.Api.Mobil/Rezervise.Api.Mobil.csproj" Id="ba4c0ac0-ffad-4365-8a1e-fcd92a602ca3" />
+  <Project Path="Rezervise.Application/Rezervise.Application.csproj" Id="e61a7e6d-2282-4bef-b09f-79e4be9c61ed" />
+  <Project Path="Rezervise.Domain/Rezervise.Domain.csproj" Id="40c6dc0b-c875-4d7c-ab46-6e2458345ec2" />
+  <Project Path="Rezervise.Tests/Rezervise.Tests.csproj" Id="9f5a4b7e-6d2c-4b1a-9e3f-7c8d0a1b2e34" />
+  <Project Path="Rezervise.Api.BackOffice/Rezervise.Api.BackOffice.csproj" Id="a7c3f1d2-4e5b-4c8a-9d0e-1f2a3b4c5d6e" />
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+</Solution>

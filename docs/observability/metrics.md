@@ -1,65 +1,65 @@
-﻿# Metrik İzleme (OpenTelemetry → Prometheus → Grafana)
+# Metrik Izleme (OpenTelemetry ? Prometheus ? Grafana)
 
-AppointMan.Api, uygulama ve iş metriklerini **OpenTelemetry** ile toplar, **Prometheus** ile kazır
-ve **Grafana** ile görselleştirir. Local geliştirme için tam yığın `docker compose` ile ayağa kalkar.
+Rezervise.Api, uygulama ve is metriklerini **OpenTelemetry** ile toplar, **Prometheus** ile kazir
+ve **Grafana** ile g�rsellestirir. Local gelistirme i�in tam yigin `docker compose` ile ayaga kalkar.
 
 ## 1. Mimari
 
 ```mermaid
 flowchart LR
-    A[AppointMan.Api] -->|OpenTelemetry SDK| B[Metrik hattı<br/>AspNetCore + Http + Runtime + Business]
+    A[Rezervise.Api] -->|OpenTelemetry SDK| B[Metrik hatti<br/>AspNetCore + Http + Runtime + Business]
     B -->|Prometheus exporter| C[/metrics endpoint/]
     C -->|HTTP scrape 15s| D[Prometheus<br/>:9090]
     D -->|PromQL| E[Grafana<br/>:3000]
-    E -->|Provisioned dashboard| F[AppointMan API panosu]
+    E -->|Provisioned dashboard| F[Rezervise API panosu]
 ```
 
-Bileşenler:
+Bilesenler:
 
-| Bileşen | Sorumluluk |
+| Bilesen | Sorumluluk |
 |---|---|
-| `AppointMan.Api\Metrics\MetricsServiceCollectionExtensions.cs` | OpenTelemetry hattını kurar; hata durumunda uygulamayı **durdurmaz** |
-| `AppointMan.Application\Common\Diagnostics\AppointManMetrics.cs` | İş metriklerinin tek kaynağı (`Meter` + sayaçlar) |
-| `ops\prometheus\prometheus.yml` | Scrape hedefi ve aralığı |
-| `ops\grafana\provisioning\` | Datasource + dashboard otomatik yükleme |
-| `ops\grafana\dashboards\appointman-api.json` | 14 panelli hazır pano |
+| `Rezervise.Api\Metrics\MetricsServiceCollectionExtensions.cs` | OpenTelemetry hattini kurar; hata durumunda uygulamayi **durdurmaz** |
+| `Rezervise.Application\Common\Diagnostics\RezerviseMetrics.cs` | Is metriklerinin tek kaynagi (`Meter` + saya�lar) |
+| `ops\prometheus\prometheus.yml` | Scrape hedefi ve araligi |
+| `ops\grafana\provisioning\` | Datasource + dashboard otomatik y�kleme |
+| `ops\grafana\dashboards\Rezervise-api.json` | 14 panelli hazir pano |
 
 ## 2. Toplanan metrikler
 
 ### HTTP ve runtime
 
-| Prometheus adı | Tip | Etiketler | Anlam |
+| Prometheus adi | Tip | Etiketler | Anlam |
 |---|---|---|---|
-| `http_server_request_duration_seconds_count` | counter | `http_route`, `http_method`, `http_response_status_code` | İstek sayısı |
-| `http_server_request_duration_seconds_bucket` | histogram | `le`, `http_route` | Süre dağılımı (p95/p99 için) |
-| `process_runtime_dotnet_gc_heap_size_bytes` | gauge | `gc_heap_size` | Yönetilen heap boyutu |
-| `process_runtime_dotnet_thread_pool_queue_length` | gauge | — | Thread pool kuyruğu (starvation göstergesi) |
+| `http_server_request_duration_seconds_count` | counter | `http_route`, `http_method`, `http_response_status_code` | Istek sayisi |
+| `http_server_request_duration_seconds_bucket` | histogram | `le`, `http_route` | S�re dagilimi (p95/p99 i�in) |
+| `process_runtime_dotnet_gc_heap_size_bytes` | gauge | `gc_heap_size` | Y�netilen heap boyutu |
+| `process_runtime_dotnet_thread_pool_queue_length` | gauge | � | Thread pool kuyrugu (starvation g�stergesi) |
 | `process_runtime_dotnet_exceptions_total` | counter | `exception_type` | Yakalanan istisnalar |
-| `db_client_operation_duration_seconds_*` | histogram | `db_operation_name` | EF Core sorgu süreleri (`Metrics:IncludeEfCoreInstrumentation`) |
+| `db_client_operation_duration_seconds_*` | histogram | `db_operation_name` | EF Core sorgu s�releri (`Metrics:IncludeEfCoreInstrumentation`) |
 
-### İş metrikleri
+### Is metrikleri
 
-| Prometheus adı | Etiketler | Anlam |
+| Prometheus adi | Etiketler | Anlam |
 |---|---|---|
-| `appointman_appointments_created_total` | — | Gerçekten oluşturulan randevu (idempotent tekrar sayılmaz) |
-| `appointman_appointments_confirmed_total` | — | İşletme sahibi tarafından onaylanan |
-| `appointman_appointments_cancelled_total` | — | İptal edilen |
-| `appointman_appointments_completed_total` | — | Tamamlanan |
-| `appointman_appointments_rescheduled_total` | — | Yeniden planlanan |
-| `appointman_users_registered_total` | `role` | Self-servis kayıtlar |
-| `appointman_auth_login_attempts_total` | `result` (`success` / `invalid_credentials` / `locked`) | Giriş denemeleri |
-| `appointman_auth_refresh_rotations_total` | `outcome` (`success` / `reused` / `invalid` / `expired`) | Refresh token rotasyonları |
+| `Rezervise_appointments_created_total` | � | Ger�ekten olusturulan randevu (idempotent tekrar sayilmaz) |
+| `Rezervise_appointments_confirmed_total` | � | Isletme sahibi tarafindan onaylanan |
+| `Rezervise_appointments_cancelled_total` | � | Iptal edilen |
+| `Rezervise_appointments_completed_total` | � | Tamamlanan |
+| `Rezervise_appointments_rescheduled_total` | � | Yeniden planlanan |
+| `Rezervise_users_registered_total` | `role` | Self-servis kayitlar |
+| `Rezervise_auth_login_attempts_total` | `result` (`success` / `invalid_credentials` / `locked`) | Giris denemeleri |
+| `Rezervise_auth_refresh_rotations_total` | `outcome` (`success` / `reused` / `invalid` / `expired`) | Refresh token rotasyonlari |
 
-> **Kardinalite uyarısı:** Etiketler bilinçli olarak düşük kardinalitede tutulur. `userId`,
-> `businessId`, `appointmentId`, `email`, `correlationId` gibi değerler **asla** etiket olarak
-> eklenmemelidir — her yeni değer ayrı bir zaman serisi üretir ve Prometheus'u boğar.
+> **Kardinalite uyarisi:** Etiketler bilin�li olarak d�s�k kardinalitede tutulur. `userId`,
+> `businessId`, `appointmentId`, `email`, `correlationId` gibi degerler **asla** etiket olarak
+> eklenmemelidir � her yeni deger ayri bir zaman serisi �retir ve Prometheus'u bogar.
 
-`reused` sayacı sıfırdan büyükse bir refresh token ikinci kez sunulmuştur; sistem o kullanıcının
-tüm oturumlarını iptal eder. Bu, güvenlik açısından **alarm verilmesi gereken** bir durumdur.
+`reused` sayaci sifirdan b�y�kse bir refresh token ikinci kez sunulmustur; sistem o kullanicinin
+t�m oturumlarini iptal eder. Bu, g�venlik a�isindan **alarm verilmesi gereken** bir durumdur.
 
-## 3. Erişim
+## 3. Erisim
 
-Local yığın:
+Local yigin:
 
 ```powershell
 docker compose up -d --build
@@ -67,57 +67,57 @@ docker compose up -d --build
 
 | Servis | Adres | Not |
 |---|---|---|
-| Grafana | http://localhost:3000 | Kullanıcı `admin`, parola `GRAFANA_ADMIN_PASSWORD` (.env) |
-| Prometheus | http://localhost:9090 | `Status → Targets` bölümünde `appointman-api` **UP** olmalı |
-| Ham metrikler | http://localhost:8080/metrics | Host 8080 → container 8082 |
+| Grafana | http://localhost:3000 | Kullanici `admin`, parola `GRAFANA_ADMIN_PASSWORD` (.env) |
+| Prometheus | http://localhost:9090 | `Status ? Targets` b�l�m�nde `Rezervise-api` **UP** olmali |
+| Ham metrikler | http://localhost:8080/metrics | Host 8080 ? container 8082 |
 
-Dashboard ilk açılışta `AppointMan` klasörü altında otomatik yüklenir.
+Dashboard ilk a�ilista `Rezervise` klas�r� altinda otomatik y�klenir.
 
-## 4. PromQL örnekleri
+## 4. PromQL �rnekleri
 
 ```promql
 # Saniyedeki toplam istek
 sum(rate(http_server_request_duration_seconds_count[5m]))
 
-# Route bazında p95 gecikme
+# Route bazinda p95 gecikme
 histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket[5m])) by (le, http_route))
 
-# 5xx oranı (%)
+# 5xx orani (%)
 100 * sum(rate(http_server_request_duration_seconds_count{http_response_status_code=~"5.."}[5m]))
     / clamp_min(sum(rate(http_server_request_duration_seconds_count[5m])), 0.0001)
 
-# Dakikada oluşturulan randevu
-sum(rate(appointman_appointments_created_total[5m])) * 60
+# Dakikada olusturulan randevu
+sum(rate(Rezervise_appointments_created_total[5m])) * 60
 
-# Son 15 dakikadaki başarısız giriş sayısı
-sum(increase(appointman_auth_login_attempts_total{result="invalid_credentials"}[15m]))
+# Son 15 dakikadaki basarisiz giris sayisi
+sum(increase(Rezervise_auth_login_attempts_total{result="invalid_credentials"}[15m]))
 
-# Refresh token yeniden kullanımı (güvenlik alarmı)
-sum(increase(appointman_auth_refresh_rotations_total{outcome="reused"}[15m]))
+# Refresh token yeniden kullanimi (g�venlik alarmi)
+sum(increase(Rezervise_auth_refresh_rotations_total{outcome="reused"}[15m]))
 
-# Thread pool kuyruğu
+# Thread pool kuyrugu
 process_runtime_dotnet_thread_pool_queue_length
 ```
 
-## 5. Üretim notları
+## 5. �retim notlari
 
-1. **`/metrics` ucunu ağ seviyesinde kısıtlayın.** Endpoint `AllowAnonymous` olarak eşlenir çünkü
-   Prometheus kimlik doğrulaması yapmaz. Canlıda reverse proxy / firewall ile yalnızca Prometheus
-   sunucusunun IP'sine izin verin veya iç ağda tutun. Genel internete açık bırakmayın.
-2. **HTTPS yönlendirmesi.** `UseHttpsRedirection` aktifse ve HTTPS portu tanımlıysa, HTTP üzerinden
-   yapılan scrape isteği `307` döner ve Prometheus metrik toplayamaz. Bu durumda ya scrape'i HTTPS'e
-   taşıyın ya da container'da `ASPNETCORE_HTTPS_PORTS` tanımlamayın (yönlendirme devre dışı kalır).
-3. **Saklama süresi.** Prometheus `--storage.tsdb.retention.time=15d` ile çalışır. Uzun vadeli saklama
-   gerekiyorsa Thanos / Cortex / VictoriaMetrics gibi bir uzun dönem depoya geçin.
-4. **Scrape aralığı.** 15 sn. Daha sık aralık, seri sayısıyla çarpılarak disk ve CPU maliyetini artırır.
-5. **Grafana güvenliği.** Anonim erişim ve kayıt kapalıdır. Admin parolası `.env` üzerinden gelir;
-   canlıda bir secret store kullanın.
-6. **Kardinalite izleme.** Yeni bir metrik eklerken etiket kümesini sınırlı tutun; Prometheus'ta
-   `scrape_samples_scraped` değerindeki ani artış kardinalite patlamasının işaretidir.
+1. **`/metrics` ucunu ag seviyesinde kisitlayin.** Endpoint `AllowAnonymous` olarak eslenir ��nk�
+   Prometheus kimlik dogrulamasi yapmaz. Canlida reverse proxy / firewall ile yalnizca Prometheus
+   sunucusunun IP'sine izin verin veya i� agda tutun. Genel internete a�ik birakmayin.
+2. **HTTPS y�nlendirmesi.** `UseHttpsRedirection` aktifse ve HTTPS portu tanimliysa, HTTP �zerinden
+   yapilan scrape istegi `307` d�ner ve Prometheus metrik toplayamaz. Bu durumda ya scrape'i HTTPS'e
+   tasiyin ya da container'da `ASPNETCORE_HTTPS_PORTS` tanimlamayin (y�nlendirme devre disi kalir).
+3. **Saklama s�resi.** Prometheus `--storage.tsdb.retention.time=15d` ile �alisir. Uzun vadeli saklama
+   gerekiyorsa Thanos / Cortex / VictoriaMetrics gibi bir uzun d�nem depoya ge�in.
+4. **Scrape araligi.** 15 sn. Daha sik aralik, seri sayisiyla �arpilarak disk ve CPU maliyetini artirir.
+5. **Grafana g�venligi.** Anonim erisim ve kayit kapalidir. Admin parolasi `.env` �zerinden gelir;
+   canlida bir secret store kullanin.
+6. **Kardinalite izleme.** Yeni bir metrik eklerken etiket k�mesini sinirli tutun; Prometheus'ta
+   `scrape_samples_scraped` degerindeki ani artis kardinalite patlamasinin isaretidir.
 
-## 6. Devre dışı bırakma
+## 6. Devre disi birakma
 
-`appsettings.json` (veya ortam değişkenleri) üzerinden kapatılabilir:
+`appsettings.json` (veya ortam degiskenleri) �zerinden kapatilabilir:
 
 ```json
 "Metrics": {
@@ -125,34 +125,34 @@ process_runtime_dotnet_thread_pool_queue_length
 }
 ```
 
-`Enabled = false` iken OpenTelemetry hattı **hiç kaydedilmez** ve `/metrics` endpoint'i eşlenmez;
-süreç üzerinde ek yük oluşmaz.
+`Enabled = false` iken OpenTelemetry hatti **hi� kaydedilmez** ve `/metrics` endpoint'i eslenmez;
+s�re� �zerinde ek y�k olusmaz.
 
-EF Core metriklerini ayrıca kapatmak için `IncludeEfCoreInstrumentation: false`.
-Endpoint yolunu değiştirmek için `EndpointPath` (rate limiter muafiyeti de bu değeri okur).
+EF Core metriklerini ayrica kapatmak i�in `IncludeEfCoreInstrumentation: false`.
+Endpoint yolunu degistirmek i�in `EndpointPath` (rate limiter muafiyeti de bu degeri okur).
 
-## 7. Doğrulama
+## 7. Dogrulama
 
 ```powershell
-# 1) Uygulama ayakta mı, metrik üretiyor mu?
-curl.exe -s http://localhost:8080/metrics | Select-String "appointman_"
+# 1) Uygulama ayakta mi, metrik �retiyor mu?
+curl.exe -s http://localhost:8080/metrics | Select-String "Rezervise_"
 
 # 2) Prometheus hedefi UP mu?
-#    http://localhost:9090/targets  -> job "appointman-api" state=UP
+#    http://localhost:9090/targets  -> job "Rezervise-api" state=UP
 
-# 3) Anlık sorgu
+# 3) Anlik sorgu
 #    http://localhost:9090/graph  -> sum(rate(http_server_request_duration_seconds_count[5m]))
 
-# 4) Grafana panosu yüklendi mi?
-#    http://localhost:3000 -> Dashboards -> AppointMan -> "AppointMan API"
+# 4) Grafana panosu y�klendi mi?
+#    http://localhost:3000 -> Dashboards -> Rezervise -> "Rezervise API"
 ```
 
-Beklenen: `/metrics` çıktısında `appointman_appointments_created_total`, `appointman_auth_login_attempts_total`
-gibi seriler görünür. İş metrikleri yalnızca ilgili işlem gerçekleştikten sonra oluşur (ör. bir randevu
-oluşturulmadan sayaç görünmez).
+Beklenen: `/metrics` �iktisinda `Rezervise_appointments_created_total`, `Rezervise_auth_login_attempts_total`
+gibi seriler g�r�n�r. Is metrikleri yalnizca ilgili islem ger�eklestikten sonra olusur (�r. bir randevu
+olusturulmadan saya� g�r�nmez).
 
-## 8. Kapsam dışı
+## 8. Kapsam disi
 
-- **Tracing (OpenTelemetry Traces)** ve OTLP exporter — bu çalışmada yalnızca metrik hedeflendi.
-- **Alertmanager / uyarı kuralları** — istenmedi. Yukarıdaki PromQL örnekleri kural yazımı için başlangıç noktasıdır.
-- **Uzun dönem metrik depolama** (Thanos vb.).
+- **Tracing (OpenTelemetry Traces)** ve OTLP exporter � bu �alismada yalnizca metrik hedeflendi.
+- **Alertmanager / uyari kurallari** � istenmedi. Yukaridaki PromQL �rnekleri kural yazimi i�in baslangi� noktasidir.
+- **Uzun d�nem metrik depolama** (Thanos vb.).

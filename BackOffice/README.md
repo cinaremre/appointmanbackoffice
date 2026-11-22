@@ -1,7 +1,7 @@
 # Rezervise Backoffice (React)
 
 Platform yönetim paneli frontend'i. Ayrı bir npm projesidir; .NET solution'ına
-dahil değildir. Backend: `../AppointMan.BackOffice.Api` (bkz. ana repo `docs/workflows.md`).
+dahil değildir. Backend: `../Rezervise.BackOffice.Api` (bkz. ana repo `docs/workflows.md`).
 
 ## Stack
 
@@ -19,7 +19,7 @@ npm install
 #   ASPNETCORE_ENVIRONMENT=Development \
 #   JwtSettings__Secret=<32+ karakter> \
 #   ConnectionStrings__DefaultConnection=<sql baglantisi> \
-#   dotnet run --project ../AppointMan.BackOffice.Api --urls http://localhost:5099
+#   dotnet run --project ../Rezervise.BackOffice.Api --urls http://localhost:5099
 
 # 2) Frontend:
 npm run dev      # http://localhost:5173 — /api istekleri 5099'a proxy'lenir
