@@ -15,8 +15,8 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "DeviceTokens",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Token = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
                     Platform = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),

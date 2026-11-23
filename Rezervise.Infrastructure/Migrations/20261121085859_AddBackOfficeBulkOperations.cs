@@ -15,13 +15,13 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "BulkOperations",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     OperationType = table.Column<int>(type: "int", nullable: false),
                     RequestedPayload = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
                     DryRun = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    RequestedBy = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    RequestedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TotalRecords = table.Column<int>(type: "int", nullable: false),
                     SuccessCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     FailedCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0),

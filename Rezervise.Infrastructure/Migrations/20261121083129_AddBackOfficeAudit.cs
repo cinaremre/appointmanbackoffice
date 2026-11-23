@@ -15,10 +15,10 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "AdminAuditLogs",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    ActorUserId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ActorUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ActorRole = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    BusinessId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     EntityType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     EntityId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Action = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),

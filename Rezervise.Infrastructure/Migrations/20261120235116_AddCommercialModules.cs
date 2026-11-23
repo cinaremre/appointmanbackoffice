@@ -15,11 +15,11 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "AppointmentAttributions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    AppointmentId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    CampaignId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
-                    TrackingLinkId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    AppointmentId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    CampaignId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
+                    TrackingLinkId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     FirstTouchSource = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     LastTouchSource = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     AttributionModel = table.Column<int>(type: "int", nullable: false),
@@ -39,8 +39,8 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "BusinessPublicPages",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     Slug = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
                     IsPublished = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     ThemeSettings = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
@@ -59,9 +59,9 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "BusinessReengagementRules",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    ServiceId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    ServiceId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     TemplateMessage = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     IntervalDays = table.Column<int>(type: "int", nullable: false),
                     LeadDays = table.Column<int>(type: "int", nullable: false),
@@ -95,9 +95,9 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "CampaignSpends",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    CampaignId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    CampaignId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     SpendDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Currency = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false),
@@ -117,14 +117,14 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "CashMovements",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    CashSessionId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    CashSessionId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     MovementType = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Reason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    ReferenceId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
-                    CreatedBy = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    ReferenceId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
@@ -140,10 +140,10 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "CashRegisters",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
@@ -165,11 +165,11 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "CommissionAccruals",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    EmployeeId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    SaleLineId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
-                    RuleId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    EmployeeId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    SaleLineId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
+                    RuleId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     BaseAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     CommissionAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -189,9 +189,9 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "CommissionPayouts",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    EmployeeId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    EmployeeId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     PeriodStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PeriodEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
@@ -212,11 +212,11 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "CommissionRules",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    EmployeeId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
-                    ServiceId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
-                    ProductId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    EmployeeId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
+                    ServiceId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
+                    ProductId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     CalculationType = table.Column<int>(type: "int", nullable: false),
                     Rate = table.Column<decimal>(type: "decimal(5,4)", precision: 5, scale: 4, nullable: false),
                     FixedAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
@@ -238,9 +238,9 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "CommunicationSuppressions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     Channel = table.Column<int>(type: "int", nullable: false),
                     Reason = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -270,9 +270,9 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "ConsentHistories",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     Channel = table.Column<int>(type: "int", nullable: false),
                     Purpose = table.Column<int>(type: "int", nullable: false),
                     Action = table.Column<int>(type: "int", nullable: false),
@@ -294,9 +294,9 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "CustomerCommunicationPreferences",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     Channel = table.Column<int>(type: "int", nullable: false),
                     Purpose = table.Column<int>(type: "int", nullable: false),
                     LegalBasis = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
@@ -329,10 +329,10 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "CustomerServiceHistories",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    ServiceId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    ServiceId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     LastCompletedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     VisitCount = table.Column<int>(type: "int", nullable: false),
                     MedianIntervalDays = table.Column<int>(type: "int", nullable: true),
@@ -369,9 +369,9 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "Expenses",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Currency = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false, defaultValue: "TRY"),
                     ExpenseDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -393,7 +393,7 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "FeatureDefinitions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
@@ -413,8 +413,8 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "ImportJobs",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     SourceSystem = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     FileName = table.Column<string>(type: "nvarchar(260)", maxLength: 260, nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -425,7 +425,7 @@ namespace Rezervise.Infrastructure.Migrations
                     FailedRows = table.Column<int>(type: "int", nullable: false),
                     StartedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
@@ -441,8 +441,8 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "ImportRowResults",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    ImportJobId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    ImportJobId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     RowNumber = table.Column<int>(type: "int", nullable: false),
                     SourceRecordKey = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -462,8 +462,8 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "MarketingCampaigns",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Channel = table.Column<int>(type: "int", nullable: false),
                     ExternalCampaignId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
@@ -485,10 +485,10 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "PackageUsages",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    CustomerPackageId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    ServiceId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    AppointmentId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    CustomerPackageId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    ServiceId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    AppointmentId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     UsageType = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -506,12 +506,12 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "Products",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     Sku = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Barcode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    CategoryId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    CategoryId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     Unit = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     PurchasePrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     SalePrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
@@ -532,10 +532,10 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "RecoveredSlots",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    CancelledAppointmentId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    ReplacementAppointmentId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    CancelledAppointmentId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    ReplacementAppointmentId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     ReleasedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     RebookedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -554,10 +554,10 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "Sales",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    AppointmentId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
-                    CustomerId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    AppointmentId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
+                    CustomerId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     SoldAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Subtotal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     DiscountTotal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
@@ -580,10 +580,10 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "ServiceMaterials",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    ServiceId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    ServiceId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     QuantityPerService = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Unit = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -601,8 +601,8 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "ServicePackages",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Currency = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false),
@@ -623,14 +623,14 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "StockMovements",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     MovementType = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     UnitCost = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     ReferenceType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    ReferenceId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    ReferenceId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     OccurredAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -647,7 +647,7 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "SubscriptionPlans",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Currency = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false),
@@ -668,12 +668,12 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "TrackingEvents",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    TrackingLinkId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
-                    AnonymousSessionId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    TrackingLinkId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
+                    AnonymousSessionId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     EventType = table.Column<int>(type: "int", nullable: false),
-                    AppointmentId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    AppointmentId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     OccurredAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -690,10 +690,10 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "TrackingLinks",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     TargetType = table.Column<int>(type: "int", nullable: false),
-                    TargetId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    TargetId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     Source = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Medium = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Campaign = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
@@ -715,11 +715,11 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "WaitlistEntries",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    ServiceId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    PreferredEmployeeId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    ServiceId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    PreferredEmployeeId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     EarliestDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LatestDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PreferredTimeRange = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
@@ -739,15 +739,15 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "ReengagementAttempts",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    ServiceId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    RuleId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    NotificationId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    ServiceId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    RuleId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    NotificationId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     TriggeredAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    ConvertedAppointmentId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    ConvertedAppointmentId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
@@ -769,13 +769,13 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "CashSessions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    CashRegisterId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    OpenedBy = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    CashRegisterId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    OpenedBy = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     OpenedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     OpeningCash = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    ClosedBy = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    ClosedBy = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     ClosedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ExpectedCash = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true),
                     CountedCash = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true),
@@ -802,15 +802,15 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "BusinessFeatureOverrides",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    FeatureId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    FeatureId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     IsEnabled = table.Column<bool>(type: "bit", nullable: false),
                     QuotaOverride = table.Column<int>(type: "int", nullable: true),
                     ValidFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ValidUntil = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Reason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    GrantedBy = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    GrantedBy = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
@@ -838,9 +838,9 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "FeatureUsages",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    FeatureId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    FeatureId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     UsagePeriod = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: false),
                     UsedQuantity = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -870,10 +870,10 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "Payments",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    SaleId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    CashSessionId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    SaleId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    CashSessionId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Currency = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false, defaultValue: "TRY"),
                     PaymentMethod = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
@@ -881,7 +881,7 @@ namespace Rezervise.Infrastructure.Migrations
                     Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     ExternalTransactionId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     IsRefund = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    RefersToPaymentId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    RefersToPaymentId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
@@ -903,17 +903,17 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "SaleLines",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    SaleId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    SaleId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     ItemType = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    ServiceId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
-                    ProductId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
+                    ServiceId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
+                    ProductId = table.Column<Guid>(type: "uuniqueidentifier", nullable: true),
                     Quantity = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     UnitPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     TaxAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     LineTotal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    EmployeeId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    EmployeeId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
@@ -935,10 +935,10 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "CustomerPackages",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    ServicePackageId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    ServicePackageId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     PurchasedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -963,9 +963,9 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "ServicePackageItems",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    ServicePackageId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    ServiceId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    ServicePackageId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    ServiceId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     IncludedSessions = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -988,9 +988,9 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "BusinessSubscriptions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    PlanId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    PlanId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     StartAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -1021,9 +1021,9 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "PlanFeatures",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    PlanId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    FeatureId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    PlanId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    FeatureId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     IsEnabled = table.Column<bool>(type: "bit", nullable: false),
                     IncludedQuota = table.Column<int>(type: "int", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -1053,9 +1053,9 @@ namespace Rezervise.Infrastructure.Migrations
                 name: "WaitlistOffers",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    WaitlistEntryId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    WaitlistEntryId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "uuniqueidentifier", nullable: false),
                     SlotStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),

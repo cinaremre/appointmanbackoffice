@@ -28,13 +28,13 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.Appointment", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime>("AppointmentDate")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("BusinessId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<string>("CancellationReason")
                         .HasMaxLength(500)
@@ -53,7 +53,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("EmployeeId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime?>("EndTime")
                         .HasColumnType("datetime2");
@@ -81,7 +81,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("rowversion");
 
                     b.Property<Guid>("ServiceId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
@@ -92,7 +92,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -124,14 +124,14 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.AppointmentHistory", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<string>("AdditionalData")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("AdditionalData");
 
                     b.Property<Guid>("AppointmentId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<string>("ChangeReason")
                         .HasMaxLength(500)
@@ -194,7 +194,7 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.BlacklistEntry", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<int>("AppointmentCount")
                         .HasColumnType("int");
@@ -203,7 +203,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("BusinessId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -240,7 +240,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -260,13 +260,13 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.Business", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<int>("BusinessType")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("CategoryId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -303,7 +303,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid>("OwnerId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<decimal?>("Rating")
                         .HasPrecision(3, 1)
@@ -342,7 +342,7 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.BusinessCategory", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<int?>("CorrespondingBusinessType")
                         .HasColumnType("int");
@@ -386,7 +386,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid?>("ParentCategoryId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -415,10 +415,10 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.BusinessServiceCategory", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<Guid>("BusinessId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -437,7 +437,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("rowversion");
 
                     b.Property<Guid>("ServiceCategoryId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -547,14 +547,14 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.Employee", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<string>("Bio")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<Guid>("BusinessId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -618,7 +618,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("UserId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -638,7 +638,7 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.EmployeeService", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -654,7 +654,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("EmployeeId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -676,7 +676,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("rowversion");
 
                     b.Property<Guid>("ServiceId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -696,7 +696,7 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.EmployeeTimeOff", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<string>("ApprovedBy")
                         .HasMaxLength(100)
@@ -709,7 +709,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("EmployeeId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
@@ -756,7 +756,7 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.EmployeeWorkingHour", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<TimeSpan?>("BreakEndTime")
                         .HasColumnType("time");
@@ -774,7 +774,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("EmployeeId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("time");
@@ -813,13 +813,13 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.Favorite", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime>("AddedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("BusinessId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -845,7 +845,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -868,7 +868,7 @@ namespace Rezervise.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<Guid>("AppointmentId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -879,7 +879,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -988,7 +988,7 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.Notification", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<string>("ActionUrl")
                         .HasMaxLength(500)
@@ -1042,7 +1042,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -1060,13 +1060,13 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.Review", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<Guid?>("AppointmentId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<Guid>("BusinessId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<string>("Comment")
                         .IsRequired()
@@ -1104,7 +1104,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -1127,10 +1127,10 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.Service", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<Guid>("BusinessId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -1166,7 +1166,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("rowversion");
 
                     b.Property<Guid>("ServiceCategoryId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -1185,7 +1185,7 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.ServiceCategory", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<string>("ColorHex")
                         .HasMaxLength(10)
@@ -1217,7 +1217,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<Guid?>("ParentCategoryId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -1241,7 +1241,7 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.ServiceCategoryTranslation", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -1274,7 +1274,7 @@ namespace Rezervise.Infrastructure.Migrations
                         .HasColumnType("rowversion");
 
                     b.Property<Guid>("ServiceCategoryId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -1294,7 +1294,7 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<int>("AccessFailedCount")
                         .ValueGeneratedOnAdd()
@@ -1433,10 +1433,10 @@ namespace Rezervise.Infrastructure.Migrations
             modelBuilder.Entity("Rezervise.Domain.Entities.WorkingHour", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<Guid>("BusinessId")
-                        .HasColumnType("üniqueidentifier");
+                        .HasColumnType("uuniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -1562,7 +1562,7 @@ namespace Rezervise.Infrastructure.Migrations
                     b.OwnsOne("Rezervise.Domain.ValueObjects.Address", "Address", b1 =>
                         {
                             b1.Property<Guid>("BusinessId")
-                                .HasColumnType("üniqueidentifier");
+                                .HasColumnType("uuniqueidentifier");
 
                             b1.Property<string>("ApartmentNumber")
                                 .HasMaxLength(20)
@@ -1648,7 +1648,7 @@ namespace Rezervise.Infrastructure.Migrations
                             b1.OwnsOne("Rezervise.Domain.ValueObjects.Coordinates", "Coordinates", b2 =>
                                 {
                                     b2.Property<Guid>("AddressBusinessId")
-                                        .HasColumnType("üniqueidentifier");
+                                        .HasColumnType("uuniqueidentifier");
 
                                     b2.Property<double?>("Latitude")
                                         .HasPrecision(10, 6)
@@ -1674,7 +1674,7 @@ namespace Rezervise.Infrastructure.Migrations
                     b.OwnsOne("Rezervise.Domain.ValueObjects.Email", "Email", b1 =>
                         {
                             b1.Property<Guid>("BusinessId")
-                                .HasColumnType("üniqueidentifier");
+                                .HasColumnType("uuniqueidentifier");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
@@ -1693,7 +1693,7 @@ namespace Rezervise.Infrastructure.Migrations
                     b.OwnsOne("Rezervise.Domain.ValueObjects.PhoneNumber", "PhoneNumber", b1 =>
                         {
                             b1.Property<Guid>("BusinessId")
-                                .HasColumnType("üniqueidentifier");
+                                .HasColumnType("uuniqueidentifier");
 
                             b1.Property<string>("CountryCode")
                                 .IsRequired()
@@ -1925,7 +1925,7 @@ namespace Rezervise.Infrastructure.Migrations
                     b.OwnsOne("Rezervise.Domain.ValueObjects.Money", "Price", b1 =>
                         {
                             b1.Property<Guid>("ServiceId")
-                                .HasColumnType("üniqueidentifier");
+                                .HasColumnType("uuniqueidentifier");
 
                             b1.Property<decimal>("Amount")
                                 .HasPrecision(18, 2)
