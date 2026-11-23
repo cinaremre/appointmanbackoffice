@@ -4,8 +4,8 @@ using Microsoft.Extensions.Logging;
 namespace Rezervise.Infrastructure.Services.Sms
 {
     /// <summary>
-    /// SMS saglayicisi baglanana kadar kullanilan tasima. Kodu gonder mez,
-    /// log'a yazar; boylece OTP akisi uctan uca test edilebilir.
+    /// SMS sağlayıcısı bağlanana kadar kullanılan taşıma. Kodu gönder mez,
+    /// log'a yazar; böylece OTP akışı uçtan uça test edilebilir.
     /// </summary>
     public sealed class LogSmsCodeSender : ISmsCodeSender
     {
@@ -13,12 +13,12 @@ namespace Rezervise.Infrastructure.Services.Sms
         private readonly bool _logBody;
 
         /// <summary>
-        /// Tasimayi olusturur.
+        /// Taşımayı oluşturur.
         /// </summary>
-        /// <param name="logger">Log yazici.</param>
+        /// <param name="logger">Log yazıcı.</param>
         /// <param name="logBody">
-        /// true ise kod log'a yazilir. Uretimde false verilmelidir; aksi halde
-        /// dogrulama kodu log dosyasindan okunabilir hale gelir.
+        /// true ise kod log'a yazılır. Üretimde false verilmelidir; aksi halde
+        /// doğrulama kodu log dosyasından okunabilir hale gelir.
         /// </param>
         public LogSmsCodeSender(ILogger<LogSmsCodeSender> logger, bool logBody)
         {
@@ -26,15 +26,15 @@ namespace Rezervise.Infrastructure.Services.Sms
             _logBody = logBody;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public Task SendAsync(string phoneNumber, string code, CancellationToken cancellationToken = default)
         {
-            // Numara maskelenir; kod yalnizca gelistirme ortaminda gorunur.
+            // Numara maskelenir; kod yalnızca geliştirme ortamında görünür.
             if (_logBody)
                 _logger.LogInformation(
                     "SMS OTP (log mode) -> {Phone}: {Code}", MaskPhone(phoneNumber), code);
             else
-                _logger.LogInformation("SMS OTP gonderimi atlandi (saglayici yok) -> {Phone}", MaskPhone(phoneNumber));
+                _logger.LogInformation("SMS OTP gönderimi atlandı (sağlayıcı yok) -> {Phone}", MaskPhone(phoneNumber));
 
             return Task.CompletedTask;
         }

@@ -2,7 +2,7 @@ namespace Rezervise.Api.Metrics
 {
     /// <summary>
     /// Emits process-level warnings when the metrics pipeline cannot be configured.
-    /// Warnings are written to standard error at most once so a broken exporter cannot flood the output.
+    /// Warnings are written to standard error at most önce so a broken exporter cannot flood the output.
     /// </summary>
     internal static class MetricsDiagnostics
     {

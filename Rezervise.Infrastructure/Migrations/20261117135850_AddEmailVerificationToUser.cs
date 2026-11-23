@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Rezervise.Infrastructure.Migrations
 {
-    /// <inheritdoc />
+    /// <inheritdoç />
     public partial class AddEmailVerificationToUser : Migration
     {
-        /// <inheritdoc />
+        /// <inheritdoç />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<DateTime>(
@@ -36,13 +36,13 @@ namespace Rezervise.Infrastructure.Migrations
                 column: "EmailVerificationTokenHash",
                 filter: "[EmailVerificationTokenHash] IS NOT NULL");
 
-            // Geriye donuk uyumluluk: bu ozellik devreye girmeden once olusturulmus
-            // tum hesaplar dogrulanmis sayilir. Aksi halde mevcut kullanicilar
-            // (seed kullanicilari dahil) giris yapamaz hale gelir.
+            // Geriye dönük uyumluluk: bu özellik devreye girmeden önce oluşturulmuş
+            // tüm hesaplar doğrulanmış sayılır. Aksi halde mevcut kullanıcılar
+            // (seed kullanıcıları dahil) giriş yapamaz hale gelir.
             migrationBuilder.Sql("UPDATE Users SET IsEmailVerified = 1 WHERE IsEmailVerified = 0;");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(

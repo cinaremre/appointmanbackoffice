@@ -40,7 +40,7 @@ namespace Rezervise.Application.Features.Admin.Services.Commands.UpdateServiceBy
             {
                 if (request.Name is null && request.Price is null && request.DurationMinutes is null)
                     return Result<Guid>.Failure(
-                        Error.Validation("Guncellenecek en az bir alan gereklidir."));
+                        Error.Validation("Güncellenecek en az bir alan gereklidir."));
 
                 var service = await _serviceRepository.GetByIdAsync(
                     request.ServiceId, cancellationToken);
@@ -64,7 +64,7 @@ namespace Rezervise.Application.Features.Admin.Services.Commands.UpdateServiceBy
 
                 var newValues = $"{{\"name\":\"{service.Name}\",\"price\":{service.Price?.Amount},\"durationMinutes\":{service.DurationInMinutes}}}";
 
-                // Kritik islem: isletme sahibi degil platform admin'i degistirdi.
+                // Kritik işlem: işletme sahibi değil platform admin'i değiştirdi.
                 await AdminAuditRecorder.RecordAsync(
                     _auditSink,
                     _auditContext,
@@ -86,7 +86,7 @@ namespace Rezervise.Application.Features.Admin.Services.Commands.UpdateServiceBy
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(
-                    Error.Internal("Hizmet guncellenirken bir hata olustu.", ex.Message));
+                    Error.Internal("Hizmet güncellenirken bir hata oluştu.", ex.Message));
             }
         }
     }

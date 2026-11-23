@@ -3,27 +3,27 @@ using System;
 namespace Rezervise.Domain.Exceptions
 {
     /// <summary>
-    /// Veritabani tekillik kisiti ihlal edildiginde firlatilir.
-    /// SaveChangesAsync tarafindan SQL Server hata 2601/2627 icin uretilir.
-    /// Boylece es zamanli iki istekten ikincisi 500 yerine anlamli bir
-    /// cakisma sonucu alir.
+    /// Veritabanı tekillik kısıtı ihlal edildiğinde fırlatılır.
+    /// SaveChangesAsync tarafından SQL Server hata 2601/2627 için üretilir.
+    /// Böylece es zamanlı iki istekten ikincisi 500 yerine anlamlı bir
+    /// çakışma sonucu alır.
     /// </summary>
     public class DuplicateKeyException : DomainException
     {
-        /// <summary>Ihlal edilen varlik (tablo) adi.</summary>
+        /// <summary>İhlal edilen varlık (tablo) adı.</summary>
         public string EntityName { get; }
 
-        /// <summary>Ihlal edilen index veya kisit adi (bilinmiyorsa null).</summary>
+        /// <summary>İhlal edilen index veya kısıt adı (bilinmiyorsa null).</summary>
         public string? IndexName { get; }
 
         /// <summary>
-        /// Tekillik ihlali olusturur.
+        /// Tekillik ihlali oluşturur.
         /// </summary>
-        /// <param name="entityName">Ihlal edilen varlik adi.</param>
-        /// <param name="key">Lokalizasyon anahtari (orn. "Concurrency.SlotTaken").</param>
-        /// <param name="indexName">Ihlal edilen index adi (opsiyonel).</param>
-        /// <param name="innerException">Asil veritabani istisnasi (opsiyonel).</param>
-        /// <param name="message">Anahtar cozulemezse kullanilacak yedek metin (opsiyonel).</param>
+        /// <param name="entityName">İhlal edilen varlık adı.</param>
+        /// <param name="key">Lokalizasyon anahtarı (orn. "Concurrency.SlotTaken").</param>
+        /// <param name="indexName">İhlal edilen index adı (opsiyonel).</param>
+        /// <param name="innerException">Asıl veritabanı istisnası (opsiyonel).</param>
+        /// <param name="message">Anahtar çözülemezse kullanılacak yedek metin (opsiyonel).</param>
         public DuplicateKeyException(
             string entityName,
             string key,

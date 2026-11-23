@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Randevunun pazarlama atfi. Bir randevu icin tek atif kaydi vardir;
-    /// cift atif DB seviyesinde de engellenir.
+    /// Randevunun pazarlama atfi. Bir randevu için tek atıf kaydı vardır;
+    /// çift atıf DB seviyesinde de engellenir.
     /// </summary>
     public class AppointmentAttributionConfiguration : BaseConfiguration<AppointmentAttribution>
     {

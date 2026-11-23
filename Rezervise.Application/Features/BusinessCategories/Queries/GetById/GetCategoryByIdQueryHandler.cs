@@ -22,11 +22,11 @@ namespace Rezervise.Application.Features.BusinessCategories.Queries.GetById
                 // 1. Kategoriyi getir
                 var category = await _categoryRepository.GetByIdAsync(request.CategoryId, cancellationToken);
 
-                // 2. Kategori bulunamadiysa hata dondur
+                // 2. Kategori bulunamadıysa hata döndür
                 if (category is null)
                     return Result<BusinessCategoryDto>.Failure(Error.NotFound("Kategori", request.CategoryId.ToString()));
 
-                // 3. DTO'ya donustur
+                // 3. DTO'ya dönüştür
                 var dto = new BusinessCategoryDto
                 {
                     Id = category.Id,
@@ -47,7 +47,7 @@ namespace Rezervise.Application.Features.BusinessCategories.Queries.GetById
             }
             catch (Exception ex)
             {
-                return Result<BusinessCategoryDto>.Failure(Error.Internal("Kategori bilgileri getirilirken bir hata olustu.", ex.Message));
+                return Result<BusinessCategoryDto>.Failure(Error.Internal("Kategori bilgileri getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

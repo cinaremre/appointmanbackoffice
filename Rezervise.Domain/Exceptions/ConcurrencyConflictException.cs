@@ -3,19 +3,19 @@ using System;
 namespace Rezervise.Domain.Exceptions
 {
     /// <summary>
-    /// Es zamanli guncelleme cakismasi durumunda firlatilir.
-    /// Kaynaklar: rowversion uyusmazligi (DbUpdateConcurrencyException)
+    /// Es zamanlı güncelleme çakışması durumunda fırlatılır.
+    /// Kaynaklar: rowversion uyuşmazlığı (DbUpdateConcurrencyException)
     /// veya SQL Server deadlock (hata 1205).
-    /// Kullanici islemi tekrar denemelidir.
+    /// Kullanıcı işlemi tekrar denemelidir.
     /// </summary>
     public class ConcurrencyConflictException : DomainException
     {
         /// <summary>
-        /// Guncelleme cakismasi olusturur.
+        /// Güncelleme çakışması oluşturur.
         /// </summary>
-        /// <param name="key">Lokalizasyon anahtari (orn. "Concurrency.RowVersionMismatch").</param>
-        /// <param name="innerException">Asil veritabani istisnasi (opsiyonel).</param>
-        /// <param name="message">Anahtar cozulemezse kullanilacak yedek metin (opsiyonel).</param>
+        /// <param name="key">Lokalizasyon anahtarı (orn. "Concurrency.RowVersionMismatch").</param>
+        /// <param name="innerException">Asıl veritabanı istisnası (opsiyonel).</param>
+        /// <param name="message">Anahtar çözülemezse kullanılacak yedek metin (opsiyonel).</param>
         public ConcurrencyConflictException(
             string key,
             Exception? innerException = null,

@@ -9,9 +9,9 @@ using Microsoft.Extensions.Logging;
 namespace Rezervise.Api.Push
 {
     /// <summary>
-    /// Push kuyrugunu arka planda bosaltir (EmailBackgroundService deseni):
-    /// 3 deneme, dead-letter log kaydi, UNREGISTERED token'lar pasiflestirilir.
-    /// Tek bir mesajin hatasi donguyu durdurmaz.
+    /// Push kuyruğunu arka planda boşaltır (EmailBackgroundService deseni):
+    /// 3 deneme, dead-letter log kaydı, UNREGISTERED token'lar pasifleştirilir.
+    /// Tek bir mesajın hatası döngüyü durdurmaz.
     /// </summary>
     public sealed class PushBackgroundService : BackgroundService
     {
@@ -53,17 +53,17 @@ namespace Rezervise.Api.Push
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
-                // Uygulama kapaniyor; normal akis.
+                // Uygulama kapanıyor; normal akış.
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Push arka plan servisi beklenmedik sekilde durdu.");
+                _logger.LogError(ex, "Push arka plan servisi beklenmedik şekilde durdu.");
             }
         }
 
         /// <summary>
-        /// Gonderimi yurutur; sonuc UNREGISTERED ise token kaydini pasiflestirir,
-        /// gecici hatalarda 3 deneme yapar, sonra dead-letter loglar.
+        /// Gönderimi yürütür; sonuç UNREGISTERED ise token kaydını pasifleştirir,
+        /// geçici hatalarda 3 deneme yapar, sonra dead-letter loglar.
         /// </summary>
         private async Task SendWithSideEffectsAsync(PushMessage message, CancellationToken cancellationToken)
         {
@@ -74,14 +74,14 @@ namespace Rezervise.Api.Push
                 var result = await _sender.SendAsync(message, cancellationToken).ConfigureAwait(false);
                 finalResult = result;
 
-                // Basari ya da kalici token hatasi: yeniden deneme anlamsiz.
+                // Başarı ya da kalıcı token hatası: yeniden deneme anlamsız.
                 if (result.Success || result.InvalidToken)
                     break;
 
                 if (attempt < MaxDeliveryAttempts)
                 {
                     _logger.LogWarning(
-                        "Push gonderimi basarisiz, yeniden denenecek. Attempt={Attempt} UserId={UserId}",
+                        "Push gönderimi başarısız, yeniden denenecek. Attempt={Attempt} UserId={UserId}",
                         attempt,
                         message.UserId);
 
@@ -116,8 +116,8 @@ namespace Rezervise.Api.Push
         }
 
         /// <summary>
-        /// FCM'nin gecersiz bildirdigi token'i veritabaninda pasiflestirir;
-        /// sonraki bildirimler bu cihaza hic denenmez.
+        /// FCM'nin geçersiz bildirdiği token'i veritabanında pasifleştirir;
+        /// sonraki bildirimler bu cihaza hiç denenmez.
         /// </summary>
         private async Task DeactivateTokenAsync(PushMessage message, CancellationToken cancellationToken)
         {
@@ -139,13 +139,13 @@ namespace Rezervise.Api.Push
                 await unitOfWork.SaveChangesAsync(cancellationToken);
 
                 _logger.LogInformation(
-                    "Gecersiz push token pasiflestirildi. UserId={UserId}",
+                    "Geçersiz push token pasifleştirildi. UserId={UserId}",
                     message.UserId);
             }
             catch (Exception ex)
             {
-                // Temizlik hatasi gonderim akisini bozmamali.
-                _logger.LogWarning(ex, "Gecersiz push token pasiflestirilemedi. UserId={UserId}", message.UserId);
+                // Temizlik hatası gönderim akışını bozmamalı.
+                _logger.LogWarning(ex, "Geçersiz push token pasifleştirilemedi. UserId={UserId}", message.UserId);
             }
         }
     }

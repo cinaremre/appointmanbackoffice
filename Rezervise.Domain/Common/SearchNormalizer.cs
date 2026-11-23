@@ -3,8 +3,8 @@ using System.Text;
 namespace Rezervise.Domain.Common
 {
     /// <summary>
-    /// Turkce ve Latin karakterleri normalize ederek arama icin uygun hale getirir.
-    /// "Kadikoy" yazan kullanici "Kadiköy" bulabilir.
+    /// TÃ¼rkÃ§e ve Latin karakterleri normalize ederek arama iÃ§in uygun hale getirir.
+    /// "KadÄ±koy" yazan kullanÄ±cÄ± "KadikÃ¶y" bulabilir.
     /// </summary>
     public static class SearchNormalizer
     {
@@ -18,14 +18,14 @@ namespace Rezervise.Domain.Common
                 .Replace("i", "i")
                 .Replace("S", "S")
                 .Replace("s", "s")
-                .Replace("Ç", "C")
-                .Replace("ç", "c")
+                .Replace("Ã‡", "C")
+                .Replace("Ã§", "c")
                 .Replace("G", "G")
                 .Replace("g", "g")
-                .Replace("Ü", "U")
-                .Replace("ü", "u")
-                .Replace("Ö", "O")
-                .Replace("ö", "o");
+                .Replace("Ãœ", "U")
+                .Replace("Ã¼", "u")
+                .Replace("Ã–", "O")
+                .Replace("Ã¶", "o");
 
             normalized = normalized.ToLowerInvariant();
 

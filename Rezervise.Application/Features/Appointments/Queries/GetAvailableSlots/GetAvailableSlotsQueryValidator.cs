@@ -11,19 +11,19 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAvailableSlots
         {
             _dateTimeService = dateTimeService;
 
-            RuleFor(x => x.BusinessId).NotEmpty().WithMessage("Isletme ID bos olamaz.");
-            RuleFor(x => x.EmployeeId).NotEmpty().WithMessage("Calisan ID bos olamaz.");
-            RuleFor(x => x.ServiceId).NotEmpty().WithMessage("Hizmet ID bos olamaz.");
+            RuleFor(x => x.BusinessId).NotEmpty().WithMessage("İşletme ID boş olamaz.");
+            RuleFor(x => x.EmployeeId).NotEmpty().WithMessage("Çalışan ID boş olamaz.");
+            RuleFor(x => x.ServiceId).NotEmpty().WithMessage("Hizmet ID boş olamaz.");
 
-            // Tarih UTC instant/date olarak gelir; gun karsilastirmasi isletmenin
-            // yerel gununde ve _dateTimeService'in referans saatiyle yapilir.
+            // Tarih UTC instant/date olarak gelir; gün karşılaştırması işletmenin
+            // yerel gününde ve _dateTimeService'in referans saatiyle yapılır.
             RuleFor(x => x.Date)
                 .NotEmpty()
-                .WithMessage("Tarih bos olamaz.")
+                .WithMessage("Tarih boş olamaz.")
                 .Must(d => ToBusinessLocalDate(d) >= BusinessLocalToday)
-                .WithMessage("Gecmis tarih olamaz.")
+                .WithMessage("Geçmiş tarih olamaz.")
                 .Must(d => ToBusinessLocalDate(d) <= BusinessLocalToday.AddDays(90))
-                .WithMessage("En fazla 90 gun ileriye randevu alinabilir.");
+                .WithMessage("En fazla 90 gün ileriye randevu alınabilir.");
         }
 
         private DateTime ToBusinessLocalDate(DateTime utcDateTime)

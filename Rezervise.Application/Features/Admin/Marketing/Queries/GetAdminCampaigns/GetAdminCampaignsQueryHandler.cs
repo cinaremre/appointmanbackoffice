@@ -7,9 +7,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminCampaigns
 {
     /// <summary>
-    /// Kampanyalari filtreler ve sayfalara ayirir. Toplam harcama ve atif sayilari
-    /// yalnizca gecerli sayfadaki kampanyalar icin hesaplanir; boylece buyuk
-    /// kampanya havuzunda gereksiz join maliyeti olusmaz.
+    /// Kampanyaları filtreler ve sayfalara ayırır. Toplam harcama ve atıf sayıları
+    /// yalnızca geçerli sayfadaki kampanyalar için hesaplanır; böylece büyük
+    /// kampanya havuzunda gereksiz join maliyeti oluşmaz.
     /// </summary>
     public class GetAdminCampaignsQueryHandler
         : IRequestHandler<GetAdminCampaignsQuery, Result<AdminCampaignListDto>>
@@ -57,7 +57,7 @@ namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminCampaig
                     .Take(pageSize)
                     .ToList();
 
-                // Sayfadaki kampanyalar icin harcama ve atif toplamlari tek sorguda toplanir.
+                // Sayfadaki kampanyalar için harcama ve atıf toplamları tek sorguda toplanır.
                 var campaignIds = paged.Select(c => c.Id).ToList();
 
                 var spendByCampaign = (await _spendRepository.FindAsync(
@@ -101,7 +101,7 @@ namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminCampaig
             catch (Exception ex)
             {
                 return Result<AdminCampaignListDto>.Failure(
-                    Error.Internal("Kampanya listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kampanya listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

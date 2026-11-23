@@ -4,10 +4,10 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// SatisAggregate kokudur. Satirlar (SaleLine) ve odemeler (Payment)
-    /// bu aggregate'in alt kayitlaridir.
-    /// Toplamlar satir ekleme ve siparis indirimi sirasinda yeniden
-    /// hesaplanir: GrandTotal = Subtotal - DiscountTotal + TaxTotal.
+    /// SatisAggregate kokudur. Satırlar (SaleLine) ve ödemeler (Payment)
+    /// bu aggregate'in alt kayıtlarıdır.
+    /// Toplamlar satır ekleme ve sipariş indirimi sırasında yeniden
+    /// hesaplanır: GrandTotal = Subtotal - DiscountTotal + TaxTotal.
     /// </summary>
     public class Sale : BaseEntity
     {
@@ -27,7 +27,7 @@ namespace Rezervise.Domain.Entities
         private readonly List<SaleLine> _lines = new();
         public IReadOnlyCollection<SaleLine> Lines => _lines.AsReadOnly();
 
-        /// <summary>Siparis seviyesi indirim; satir indirimlerinden ayri tutulur.</summary>
+        /// <summary>Sipariş seviyesi indirim; satır indirimlerinden ayrı tutulur.</summary>
         private decimal _orderDiscount;
 
         private Sale() { }
@@ -43,7 +43,7 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             SetCurrency(currency);
             BusinessId = businessId;
@@ -54,8 +54,8 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Gecerli durum gecilerinin tek kaynagi. Tamamlanmis ve iptal
-        /// edilmis satislar terminaldur; hicbir gecise izin verilmez.
+        /// Geçerli durum geçilerinin tek kaynağı. Tamamlanmış ve iptal
+        /// edilmiş satışlar terminaldur; hiçbir geçişe izin verilmez.
         /// </summary>
         public static bool IsValidStatusTransition(EnumSaleStatus from, EnumSaleStatus to)
         {
@@ -70,18 +70,18 @@ namespace Rezervise.Domain.Entities
         public void SetCurrency(string currency)
         {
             if (string.IsNullOrWhiteSpace(currency))
-                throw new DomainException("Para birimi bos olamaz.");
+                throw new DomainException("Para birimi boş olamaz.");
 
             if (currency.Length != 3)
-                throw new DomainException("Para birimi 3 karakter olmalidir.");
+                throw new DomainException("Para birimi 3 karakter olmalıdır.");
 
             Currency = currency.ToUpperInvariant();
             UpdatedAt = DateTime.UtcNow;
         }
 
         /// <summary>
-        /// Satisa satir ekler ve toplamlari yeniden hesaplar.
-        /// Yalnizca bekleyen satisa satir eklenebilir.
+        /// Satışa satır ekler ve toplamları yeniden hesaplar.
+        /// Yalnızca bekleyen satışa satır eklenebilir.
         /// </summary>
         public void AddLine(SaleLine line)
         {
@@ -89,32 +89,32 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(line));
 
             if (line.SaleId != Id)
-                throw new DomainException("Satis satiri baska bir satisa ait.");
+                throw new DomainException("Satış satırı başka bir satışa ait.");
 
             if (Status != EnumSaleStatus.Pending)
-                throw new DomainException("Tamamlanmis veya iptal edilmis satisa satir eklenemez.");
+                throw new DomainException("Tamamlanmış veya iptal edilmiş satışa satır eklenemez.");
 
             _lines.Add(line);
             RecalculateTotals();
         }
 
         /// <summary>
-        /// Siparis seviyesi indirim uygular ve toplamlari yeniden hesaplar.
+        /// Sipariş seviyesi indirim uygular ve toplamları yeniden hesaplar.
         /// </summary>
         public void ApplyOrderDiscount(decimal discountTotal)
         {
             if (discountTotal < 0)
-                throw new DomainException("Siparis indirimi negatif olamaz.");
+                throw new DomainException("Sipariş indirimi negatif olamaz.");
 
             _orderDiscount = Math.Round(discountTotal, 2);
             RecalculateTotals();
         }
 
-        /// <summary>Satisi tamamlar. Yalnizca bekleyen satis tamamlanabilir.</summary>
+        /// <summary>Satışı tamamlar. Yalnızca bekleyen satış tamamlanabilir.</summary>
         public void Complete(DateTime? now = null)
         {
             if (!IsValidStatusTransition(Status, EnumSaleStatus.Completed))
-                throw new DomainException("Bekleyen olmayan satis tamamlanamaz.");
+                throw new DomainException("Bekleyen olmayan satış tamamlanamaz.");
 
             var currentTime = now ?? DateTime.UtcNow;
             Status = EnumSaleStatus.Completed;
@@ -122,13 +122,13 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Satisi iptal eder; iptal icin yeni kayit uretilmez, yalnizca
-        /// durum degisir. Yalnizca bekleyen satis iptal edilebilir.
+        /// Satışı iptal eder; iptal için yeni kayıt üretilmez, yalnızca
+        /// durum değişir. Yalnızca bekleyen satış iptal edilebilir.
         /// </summary>
         public void Cancel(DateTime? now = null)
         {
             if (!IsValidStatusTransition(Status, EnumSaleStatus.Cancelled))
-                throw new DomainException("Bekleyen olmayan satis iptal edilemez.");
+                throw new DomainException("Bekleyen olmayan satış iptal edilemez.");
 
             var currentTime = now ?? DateTime.UtcNow;
             Status = EnumSaleStatus.Cancelled;
@@ -143,7 +143,7 @@ namespace Rezervise.Domain.Entities
             GrandTotal = Math.Round(Subtotal - DiscountTotal + TaxTotal, 2);
 
             if (GrandTotal < 0)
-                throw new DomainException("Satis toplami negatif olamaz.");
+                throw new DomainException("Satış toplamı negatif olamaz.");
 
             UpdatedAt = DateTime.UtcNow;
         }

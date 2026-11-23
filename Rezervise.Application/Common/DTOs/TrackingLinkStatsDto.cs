@@ -3,7 +3,7 @@ using Rezervise.Domain.Enums;
 namespace Rezervise.Application.Common.DTOs
 {
     /// <summary>
-    /// Tek bir takip linkinin olcum ozeti.
+    /// Tek bir takip linkinin ölçüm özeti.
     /// </summary>
     public class TrackingLinkStatsDto
     {
@@ -12,17 +12,17 @@ namespace Rezervise.Application.Common.DTOs
         public string Source { get; set; } = string.Empty;
         public string DestinationPath { get; set; } = string.Empty;
 
-        /// <summary>LinkOpened olaylarinin toplam sayisi.</summary>
+        /// <summary>LinkOpened olaylarının toplam sayısı.</summary>
         public int TotalOpens { get; set; }
 
-        /// <summary>Ayni linki acan farkli anonim oturum sayisi.</summary>
+        /// <summary>Aynı linki açan farklı anonim oturum sayısı.</summary>
         public int UniqueSessions { get; set; }
 
-        /// <summary>Olay tipi bazinda kirilim.</summary>
+        /// <summary>Olay tipi bazında kırılım.</summary>
         public List<TrackingEventCountDto> EventCounts { get; set; } = new();
     }
 
-    /// <summary>Olay tipi kirilimindeki tek satir.</summary>
+    /// <summary>Olay tipi kırılımındeki tek satır.</summary>
     public class TrackingEventCountDto
     {
         public EnumTrackingEventType EventType { get; set; }

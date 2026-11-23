@@ -31,10 +31,10 @@ namespace Rezervise.Domain.Entities
     : base(id)
         {
             if (userId == Guid.Empty)
-                throw new ArgumentException("Kullanici ID bos olamaz.", nameof(userId));
+                throw new ArgumentException("Kullanıcı ID boş olamaz.", nameof(userId));
 
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             UserId = userId;
             BusinessId = businessId;
@@ -51,7 +51,7 @@ namespace Rezervise.Domain.Entities
         public void SetRating(int rating)
         {
             if (rating < 1 || rating > 5)
-                throw new DomainException("Puan 1-5 arasinda olmalidir.");
+                throw new DomainException("Puan 1-5 arasında olmalıdır.");
 
             var oldRating = Rating;
             Rating = rating;
@@ -70,10 +70,10 @@ namespace Rezervise.Domain.Entities
         public void SetComment(string comment)
         {
             if (string.IsNullOrWhiteSpace(comment))
-                throw new DomainException("Yorum bos olamaz.");
+                throw new DomainException("Yorum boş olamaz.");
 
             if (comment.Length < 10 || comment.Length > 500)
-                throw new DomainException("Yorum 10-500 karakter arasinda olmalidir.");
+                throw new DomainException("Yorum 10-500 karakter arasında olmalıdır.");
 
             var oldComment = Comment;
             Comment = comment;

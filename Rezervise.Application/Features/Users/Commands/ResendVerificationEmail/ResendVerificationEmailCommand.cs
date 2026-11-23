@@ -4,11 +4,11 @@ using MediatR;
 namespace Rezervise.Application.Features.Users.Commands.ResendVerificationEmail
 {
     /// <summary>
-    /// Yeni bir dogrulama token'i uretir ve dogrulama e-postasini tekrar gonderir.
+    /// Yeni bir doğrulama token'i üretir ve doğrulama e-postasını tekrar gönderir.
     /// </summary>
     public class ResendVerificationEmailCommand : IRequest<Result<bool>>
     {
-        /// <summary>Dogrulanacak hesabin e-posta adresi.</summary>
+        /// <summary>Doğrulanacak hesabın e-posta adresi.</summary>
         public string Email { get; set; } = string.Empty;
     }
 }

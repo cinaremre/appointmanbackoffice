@@ -7,8 +7,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Operations.Queries.GetAdminJobs
 {
     /// <summary>
-    /// Aktarim islerini filtreler, olusturma zamanina gore tersten siralar ve
-    /// sayfalara ayirir.
+    /// Aktarım işlerini filtreler, oluşturma zamanına göre tersten sıralar ve
+    /// sayfalara ayırır.
     /// </summary>
     public class GetAdminJobsQueryHandler
         : IRequestHandler<GetAdminJobsQuery, Result<AdminJobListDto>>
@@ -59,11 +59,11 @@ namespace Rezervise.Application.Features.Admin.Operations.Queries.GetAdminJobs
             catch (Exception ex)
             {
                 return Result<AdminJobListDto>.Failure(
-                    Error.Internal("Aktarim isi listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Aktarım isi listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
 
-        /// <summary>ImportJob entity'sinden yonetici gorunumu uretir.</summary>
+        /// <summary>ImportJob entity'sinden yönetici görünümü üretir.</summary>
         internal static AdminJobDto ToDto(ImportJob job) => new()
         {
             Id = job.Id,

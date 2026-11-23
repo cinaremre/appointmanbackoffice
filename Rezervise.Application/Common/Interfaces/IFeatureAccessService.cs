@@ -1,34 +1,34 @@
 namespace Rezervise.Application.Common.Interfaces
 {
     /// <summary>
-    /// Isletme bazinda ozellik erisim karari (dokuman Modul 14).
-    /// Oncelik sirasi (dokuman 14.4):
+    /// İşletme bazında özellik erişim kararı (doküman Modül 14).
+    /// Öncelik sırası (doküman 14.4):
     /// 1) aktif BusinessFeatureOverride,
-    /// 2) aktif abonelik planindaki PlanFeature (IsEnabled + kota),
-    /// 3) abonelik yoksa varsayilan temel ozellikler (FeatureCodes.BasicDefaults),
-    /// 4) erisim yok.
+    /// 2) aktif abonelik planındaki PlanFeature (IsEnabled + kota),
+    /// 3) abonelik yoksa varsayılan temel özellikler (FeatureCodes.BasicDefaults),
+    /// 4) erişim yok.
     /// </summary>
     public interface IFeatureAccessService
     {
         /// <summary>
-        /// Isletme icin ozelligin aktif olup olmadigini belirler.
+        /// İşletme için özelliğin aktif olup olmadığını belirler.
         /// </summary>
-        /// <param name="businessId">Isletme ID'si.</param>
-        /// <param name="featureCode">FeatureCodes sabitindeki ozellik kodu.</param>
-        /// <param name="ct">Iptal belirteci.</param>
-        /// <returns>Ozellik erisime aciksa true.</returns>
+        /// <param name="businessId">İşletme ID'si.</param>
+        /// <param name="featureCode">FeatureCodes sabitindeki özellik kodu.</param>
+        /// <param name="ct">İptal belirteci.</param>
+        /// <returns>Özellik erişime açıksa true.</returns>
         Task<bool> IsEnabledAsync(Guid businessId, string featureCode, CancellationToken ct = default);
 
         /// <summary>
-        /// Donemsel kotadan miktar ayirmaya calisir. Kotaya dahil
-        /// FeatureUsage kaydini upsert eder; asim varsa false doner
-        /// ve sayaci degistirmeden birakir.
+        /// Dönemsel kotadan miktar ayırmaya çalışır. Kotaya dahil
+        /// FeatureUsage kaydını upsert eder; asım varsa false döner
+        /// ve sayacı değiştirmeden bırakır.
         /// </summary>
-        /// <param name="businessId">Isletme ID'si.</param>
-        /// <param name="featureCode">FeatureCodes sabitindeki ozellik kodu.</param>
-        /// <param name="quantity">Ayrilacak miktar.</param>
-        /// <param name="ct">Iptal belirteci.</param>
-        /// <returns>Rezervasyon basariliysa true; kota asildiysa veya ozellik kapaliysa false.</returns>
+        /// <param name="businessId">İşletme ID'si.</param>
+        /// <param name="featureCode">FeatureCodes sabitindeki özellik kodu.</param>
+        /// <param name="quantity">Ayrılacak miktar.</param>
+        /// <param name="ct">İptal belirteci.</param>
+        /// <returns>Rezervasyon başarılıysa true; kota asıldıysa veya özellik kapalıysa false.</returns>
         Task<bool> TryReserveQuotaAsync(Guid businessId, string featureCode, int quantity, CancellationToken ct = default);
     }
 }

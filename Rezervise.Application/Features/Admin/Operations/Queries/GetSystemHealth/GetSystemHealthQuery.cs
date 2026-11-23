@@ -4,8 +4,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Operations.Queries.GetSystemHealth
 {
     /// <summary>
-    /// Sistem saglik raporu (dokuman Modul 20). Ilk surumde sabit bir rapor
-    /// dondurur: uygulamanin ayakta oldugu ve aktarim islerinin durum sayilari.
+    /// Sistem sağlık raporu (doküman Modül 20). İlk sürümde sabit bir rapor
+    /// döndürür: uygulamanın ayakta öldüğü ve aktarım işlerinin durum sayıları.
     /// </summary>
     public class GetSystemHealthQuery : IRequest<Result<SystemHealthDto>>
     {

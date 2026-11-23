@@ -1,15 +1,15 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Iletisim izni degisikliginin yonu (dokuman Modul 16).
-    /// ConsentHistory kayitlarinda kullanilir.
+    /// İletişim izni değişikliğinin yönü (doküman Modül 16).
+    /// ConsentHistory kayıtlarında kullanılır.
     /// </summary>
     public enum EnumConsentAction
     {
-        /// <summary>Izin verildi.</summary>
+        /// <summary>İzin verildi.</summary>
         Granted = 0,
 
-        /// <summary>Izin geri cekildi.</summary>
+        /// <summary>İzin geri çekildi.</summary>
         Withdrawn = 1
     }
 }

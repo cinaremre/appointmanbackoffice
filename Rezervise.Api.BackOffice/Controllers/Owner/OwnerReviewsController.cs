@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers.Owner
 {
     /// <summary>
-    /// Isletme sahibinin yorum listesi. Route seviyesinde BusinessOwner
-    /// rolune sinirlidir; isletme kapsami handler'da dogrulanir. Uc salt
-    /// okunurdur; gizleme domain komutlariyla yapilir.
+    /// İşletme sahibinin yorum listesi. Route seviyesinde BusinessOwner
+    /// rolüne sınırlıdır; işletme kapsamı handler'da doğrulanır. Uç salt
+    /// okunurdur; gizleme domain komutlarıyla yapılır.
     /// </summary>
     [ApiController]
     [Authorize(Roles = "BusinessOwner")]
@@ -24,7 +24,7 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
         }
 
         /// <summary>
-        /// Sahibin isletmesine yapilan yorumlar; en yeni once, gizli
+        /// Sahibin işletmesine yapılan yorumlar; en yeni önce, gizli
         /// yorumlar dahil listelenir.
         /// </summary>
         [HttpGet("businesses/{businessId:guid}/reviews")]

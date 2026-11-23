@@ -48,8 +48,8 @@ namespace Rezervise.Application.Features.Autocomplete.Queries.Search
             {
                 var term = request.Query.Trim();
 
-                // SearchNormalizer, City.SearchName alanini ureten ayni arac; boylece
-                // buyuk/kucuk harf ve Turkce karakter farklari esitlenir.
+                // SearchNormalizer, City.SearchName alanını üreten aynı araç; böylece
+                // büyük/küçük harf ve Türkçe karakter farkları eşitlenir.
                 var normalized = SearchNormalizer.Normalize(term);
                 var lowered = term.ToLowerInvariant();
                 var type = request.Type.Trim().ToLowerInvariant();
@@ -82,7 +82,7 @@ namespace Rezervise.Application.Features.Autocomplete.Queries.Search
             catch (Exception ex)
             {
                 return Result<List<AutocompleteItemDto>>.Failure(
-                    Error.Internal("Otomatik tamamlama sirasinda bir hata olustu.", ex.Message));
+                    Error.Internal("Otomatik tamamlama sırasında bir hata oluştu.", ex.Message));
             }
         }
 
@@ -116,7 +116,7 @@ namespace Rezervise.Application.Features.Autocomplete.Queries.Search
             CancellationToken cancellationToken)
         {
             if (!TryGetIntParent(parentId, out var cityId))
-                return Result<List<AutocompleteItemDto>>.Failure(Error.Validation("Ust birim ID gecersiz."));
+                return Result<List<AutocompleteItemDto>>.Failure(Error.Validation("Üst birim ID geçersiz."));
 
             Expression<Func<District, bool>> predicate = d => d.SearchName.Contains(normalized);
 
@@ -126,7 +126,7 @@ namespace Rezervise.Application.Features.Autocomplete.Queries.Search
                 predicate = predicate.AndAlso(d => d.CityId == filterCityId);
             }
 
-            // Ust birim adi ayni sorguda gelsin diye City navigasyonu include edilir.
+            // Üst birim adı aynı sorguda gelsin diye City navigasyonu include edilir.
             var districts = await _districtRepository.FindWithIncludesAsync(
                 predicate,
                 new[] { nameof(District.City) },
@@ -153,7 +153,7 @@ namespace Rezervise.Application.Features.Autocomplete.Queries.Search
             CancellationToken cancellationToken)
         {
             if (!TryGetIntParent(parentId, out var districtId))
-                return Result<List<AutocompleteItemDto>>.Failure(Error.Validation("Ust birim ID gecersiz."));
+                return Result<List<AutocompleteItemDto>>.Failure(Error.Validation("Üst birim ID geçersiz."));
 
             Expression<Func<Locality, bool>> predicate = l => l.SearchName.Contains(normalized);
 
@@ -189,7 +189,7 @@ namespace Rezervise.Application.Features.Autocomplete.Queries.Search
             CancellationToken cancellationToken)
         {
             if (!TryGetIntParent(parentId, out var localityId))
-                return Result<List<AutocompleteItemDto>>.Failure(Error.Validation("Ust birim ID gecersiz."));
+                return Result<List<AutocompleteItemDto>>.Failure(Error.Validation("Üst birim ID geçersiz."));
 
             Expression<Func<Neighborhood, bool>> predicate = n => n.SearchName.Contains(normalized);
 
@@ -225,9 +225,9 @@ namespace Rezervise.Application.Features.Autocomplete.Queries.Search
             CancellationToken cancellationToken)
         {
             if (!TryGetGuidParent(parentId, out var parentCategoryId))
-                return Result<List<AutocompleteItemDto>>.Failure(Error.Validation("Ust birim ID gecersiz."));
+                return Result<List<AutocompleteItemDto>>.Failure(Error.Validation("Üst birim ID geçersiz."));
 
-            // BusinessCategory'de SearchName yok; buyuk/kucuk harf duyarsizlik ToLower ile saglanir.
+            // BusinessCategory'de SearchName yok; büyük/küçük harf duyarsızlık ToLower ile sağlanır.
             Expression<Func<BusinessCategory, bool>> predicate = b => b.Name.ToLower().Contains(lowered);
 
             if (parentCategoryId.HasValue)
@@ -265,9 +265,9 @@ namespace Rezervise.Application.Features.Autocomplete.Queries.Search
             CancellationToken cancellationToken)
         {
             if (!TryGetGuidParent(parentId, out var parentCategoryId))
-                return Result<List<AutocompleteItemDto>>.Failure(Error.Validation("Ust birim ID gecersiz."));
+                return Result<List<AutocompleteItemDto>>.Failure(Error.Validation("Üst birim ID geçersiz."));
 
-            // ServiceCategory'de Name alani yok; ad yalnizca ceviri koleksiyonunda tutulur.
+            // ServiceCategory'de Name alani yok; ad yalnızca çeviri koleksiyonunda tutulur.
             Expression<Func<ServiceCategory, bool>> predicate =
                 c => c.Translations.Any(t => t.Name.ToLower().Contains(lowered));
 
@@ -300,8 +300,8 @@ namespace Rezervise.Application.Features.Autocomplete.Queries.Search
         }
 
         /// <summary>
-        /// Onek eslesenleri one alir; otomatik tamamlamada en olasi secenek ustte olmali.
-        /// Siralama bellekte yapilir, sonra limit uygulanir.
+        /// Önek eşleşenleri one alır; otomatik tamamlamada en olası seçenek üstte olmalı.
+        /// Sıralama bellekte yapılır, sonra limit uygulanır.
         /// </summary>
         private static List<AutocompleteItemDto> OrderAndTrim(
             List<AutocompleteItemDto> items,

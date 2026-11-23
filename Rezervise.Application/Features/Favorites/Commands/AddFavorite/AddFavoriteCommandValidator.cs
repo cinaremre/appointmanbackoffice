@@ -8,11 +8,11 @@ namespace Rezervise.Application.Features.Favorites.Commands.AddFavorite
         {
             RuleFor(x => x.UserId)
                 .NotEmpty()
-                .WithMessage("Kullanici ID bos olamaz.");
+                .WithMessage("Kullanıcı ID boş olamaz.");
 
             RuleFor(x => x.BusinessId)
                 .NotEmpty()
-                .WithMessage("Isletme ID bos olamaz.");
+                .WithMessage("İşletme ID boş olamaz.");
 
             RuleFor(x => x.Note)
                 .MaximumLength(500)

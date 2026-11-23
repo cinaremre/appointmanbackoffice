@@ -3,9 +3,9 @@ using Rezervise.Domain.Enums;
 namespace Rezervise.Application.Features.Admin.Users.Queries.GetAdminUsers
 {
     /// <summary>
-    /// Kullanici listesi ogesi (dokuman Modul 11). Sifre hash'i, refresh
-    /// token hash'i ve dogrulama token'lari gibi sifre/secret alanlari
-    /// bilincli olarak bulunmaz: gizli veri gorunmez.
+    /// Kullanıcı listesi öğesi (doküman Modül 11). Şifre hash'i, refresh
+    /// token hash'i ve doğrulama token'lari gibi şifre/secret alanları
+    /// bilinçli olarak bulunmaz: gizli veri görünmez.
     /// </summary>
     public class AdminUserListItemDto
     {

@@ -8,12 +8,12 @@ using Microsoft.Extensions.Logging;
 namespace Rezervise.Infrastructure.Services.Push
 {
     /// <summary>
-    /// Firebase Cloud Messaging (HTTP v1) uzerinden gercek push gonderimi.
+    /// Firebase Cloud Messaging (HTTP v1) üzerinden gerçek push gönderimi.
     /// Kimlik: Firebase service account (Console'dan indirilen JSON); token
-    /// yenileme ve imzalama FirebaseAdmin SDK tarafindan yonetilir.
+    /// yenileme ve imzalama FirebaseAdmin SDK tarafından yönetilir.
     ///
-    /// UNREGISTERED donen token'lar <see cref="PushSendResult.InvalidToken"/>
-    /// olarak isaretlenir; arka plan servisi kaydi pasiflestirir.
+    /// UNREGISTERED dönen token'lar <see cref="PushSendResult.InvalidToken"/>
+    /// olarak işaretlenir; arka plan servisi kaydı pasifleştirir.
     /// </summary>
     internal sealed class FcmPushNotificationSender : IPushNotificationSender
     {
@@ -25,7 +25,7 @@ namespace Rezervise.Infrastructure.Services.Push
         {
             _logger = logger;
 
-            // FirebaseApp process genelinde tektir; varsa yeniden kullanilir.
+            // FirebaseApp process genelinde tektir; varsa yeniden kullanılır.
             var app = FirebaseApp.DefaultInstance
                 ?? FirebaseApp.Create(
                     new AppOptions
@@ -36,7 +36,7 @@ namespace Rezervise.Infrastructure.Services.Push
                     name: null);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public async Task<PushSendResult> SendAsync(PushMessage message, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(message);
@@ -61,7 +61,7 @@ namespace Rezervise.Infrastructure.Services.Push
                     .ConfigureAwait(false);
 
                 _logger.LogInformation(
-                    "FCM gonderimi basarili. MessageId={MessageId} UserId={UserId}",
+                    "FCM gönderimi başarılı. MessageId={MessageId} UserId={UserId}",
                     response,
                     message.UserId);
 
@@ -71,9 +71,9 @@ namespace Rezervise.Infrastructure.Services.Push
                 when (ex.MessagingErrorCode == MessagingErrorCode.Unregistered
                       || ex.MessagingErrorCode == MessagingErrorCode.InvalidArgument)
             {
-                // Cihaz uygulamayi kaldirmis ya da token gecersiz: tekrar denenmez.
+                // Cihaz uygulamayı kaldırmış ya da token geçersiz: tekrar denenmez.
                 _logger.LogWarning(
-                    "FCM token gecersiz. UserId={UserId} Code={Code}",
+                    "FCM token geçersiz. UserId={UserId} Code={Code}",
                     message.UserId,
                     ex.MessagingErrorCode);
 
@@ -81,12 +81,12 @@ namespace Rezervise.Infrastructure.Services.Push
             }
             catch (FirebaseMessagingException ex)
             {
-                _logger.LogError(ex, "FCM gonderimi basarisiz. UserId={UserId}", message.UserId);
+                _logger.LogError(ex, "FCM gönderimi başarısız. UserId={UserId}", message.UserId);
                 return PushSendResult.Failed(ex.MessagingErrorCode?.ToString() ?? "FCM_ERROR");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "FCM cagi beklenmedik sekilde basarisiz. UserId={UserId}", message.UserId);
+                _logger.LogError(ex, "FCM çağı beklenmedik şekilde başarısız. UserId={UserId}", message.UserId);
                 return PushSendResult.Failed("FCM_UNEXPECTED");
             }
         }

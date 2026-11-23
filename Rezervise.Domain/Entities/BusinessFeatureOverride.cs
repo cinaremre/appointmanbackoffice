@@ -3,8 +3,8 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Isletme bazinda ozellik erisimini gecici olarak degistiren yonetici karari
-    /// (dokuman Modul 14). Aktif override abonelik planindaki degerleri ezer.
+    /// İşletme bazında özellik erişimini geçici olarak değiştiren yönetici kararı
+    /// (doküman Modül 14). Aktif override abonelik planındaki değerleri ezer.
     /// </summary>
     public class BusinessFeatureOverride : BaseEntity
     {
@@ -12,17 +12,17 @@ namespace Rezervise.Domain.Entities
         public Guid FeatureId { get; private set; }
         public bool IsEnabled { get; private set; }
 
-        /// <summary>Null ise plan kotasi gecerli kalir.</summary>
+        /// <summary>Null ise plan kotası geçerli kalır.</summary>
         public int? QuotaOverride { get; private set; }
 
         public DateTime ValidFrom { get; private set; }
 
-        /// <summary>UTC gecerlilik sonu; null = belirsiz sure.</summary>
+        /// <summary>UTC geçerlilik sonu; null = belirsiz süre.</summary>
         public DateTime? ValidUntil { get; private set; }
 
         public string? Reason { get; private set; }
 
-        /// <summary>Karari veren platform yoneticisi.</summary>
+        /// <summary>Kararı veren platform yöneticisi.</summary>
         public Guid GrantedBy { get; private set; }
 
         // Navigation Properties
@@ -57,13 +57,13 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (featureId == Guid.Empty)
-                throw new ArgumentException("Ozellik ID bos olamaz.", nameof(featureId));
+                throw new ArgumentException("Özellik ID boş olamaz.", nameof(featureId));
 
             if (grantedBy == Guid.Empty)
-                throw new ArgumentException("Yetki veren kullanici ID bos olamaz.", nameof(grantedBy));
+                throw new ArgumentException("Yetki veren kullanıcı ID boş olamaz.", nameof(grantedBy));
 
             if (quotaOverride.HasValue && quotaOverride.Value < 0)
                 throw new DomainException("Kota override negatif olamaz.");
@@ -75,11 +75,11 @@ namespace Rezervise.Domain.Entities
                 validUntil = DateTime.SpecifyKind(validUntil.Value, DateTimeKind.Utc);
 
                 if (validUntil.Value <= validFrom)
-                    throw new DomainException("Gecerlilik sonu baslangictan sonra olmali.");
+                    throw new DomainException("Geçerlilik sonu başlangıçtan sonra olmalı.");
             }
 
             if (reason != null && reason.Length > 500)
-                throw new DomainException("Gerekce 500 karakterden uzun olamaz.");
+                throw new DomainException("Gerekçe 500 karakterden uzun olamaz.");
 
             BusinessId = businessId;
             FeatureId = featureId;
@@ -92,8 +92,8 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Verilen UTC anda override gecerli mi?
-        /// now [ValidFrom, ValidUntil) araligina dusmeli.
+        /// Verilen UTC anda override geçerli mi?
+        /// now [ValidFrom, ValidUntil) aralığına düşmeli.
         /// </summary>
         public bool IsActiveAt(DateTime utc)
         {

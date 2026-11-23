@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Rezervise.Infrastructure.Persistence.Services
 {
     /// <summary>
-    /// Isletme puan ve yorum sayaclarini tek SQL UPDATE ifadesiyle gunceller.
-    /// Read-modify-write deseninin aksine es zamanli islemlerde sayac kaybi olusmaz.
+    /// İşletme puan ve yorum sayaçlarını tek SQL UPDATE ifadesiyle günceller.
+    /// Read-modify-write deseninin aksine es zamanlı işlemlerde sayaç kaybı oluşmaz.
     /// </summary>
     public sealed class BusinessRatingUpdater : IBusinessRatingUpdater
     {
@@ -21,9 +21,9 @@ namespace Rezervise.Infrastructure.Persistence.Services
         }
 
         /// <summary>
-        /// Yeni puan eklendiginde toplam sayaci artirir ve ortalamayi gunceller.
-        /// SET ifadesinin sag tarafi SQL Server semantigi geregi ORIJINAL
-        /// degerleri okur; bu yuzden ortalama eski sayac uzerinden hesaplanir.
+        /// Yeni puan eklendiğinde toplam sayacı artırır ve ortalamayı günceller.
+        /// SET ifadesinin sağ tarafı SQL Server semantiği gereği ORIJINAL
+        /// değerleri okur; bu yüzden ortalama eski sayaç üzerinden hesaplanır.
         /// </summary>
         public Task<int> UpdateOnNewReviewAsync(Guid businessId, int score, CancellationToken cancellationToken = default)
         {
@@ -39,8 +39,8 @@ namespace Rezervise.Infrastructure.Persistence.Services
         }
 
         /// <summary>
-        /// Puan silindiginde toplam sayaci azaltir ve ortalamayi gunceller.
-        /// Sayac 1 veya daha azsa ortalama sifirlanir.
+        /// Puan silindiğinde toplam sayacı azaltır ve ortalamayı günceller.
+        /// Sayaç 1 veya daha azsa ortalama sıfırlanır.
         /// </summary>
         public Task<int> UpdateOnReviewRemovedAsync(Guid businessId, int score, CancellationToken cancellationToken = default)
         {
@@ -58,14 +58,14 @@ namespace Rezervise.Infrastructure.Persistence.Services
         }
 
         /// <summary>
-        /// G�r�n�r yorumlardan puan ve sayaci yeniden hesaplar. Yorum g�ncelleme,
-        /// silme ve g�r�n�rl�k degisikliklerinde artimli aritmetige g�venmek yerine
-        /// tek bir UPDATE ile kesin degerler yazilir; b�ylece TotalReviews kaymaz.
+        /// Görünür yorumlardan puan ve sayacı yeniden hesaplar. Yorum güncelleme,
+        /// silme ve görünürlük değişikliklerinde artımlı aritmetiğe güvenmek yerine
+        /// tek bir UPDATE ile kesin değerler yazılır; böylece TotalReviews kaymaz.
         /// </summary>
         public async Task<int> RecalculateAsync(Guid businessId, CancellationToken cancellationToken = default)
         {
-            // �nce yorum degisikliginin SaveChanges ile veritabanina yazildigindan
-            // emin olunmali; aksi halde silinen/gizlenen yorum h�l� sayilir.
+            // Önce yorum değişikliğinin SaveChanges ile veritabanına yazıldığından
+            // emin olunmalı; aksi halde silinen/gizlenen yorum hâlâ sayılır.
             var stats = await _context.Reviews
                 .Where(r => r.BusinessId == businessId && r.IsVisible && !r.IsDeleted)
                 .GroupBy(r => r.BusinessId)

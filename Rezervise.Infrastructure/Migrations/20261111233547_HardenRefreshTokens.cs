@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Rezervise.Infrastructure.Migrations
 {
-    /// <inheritdoc />
+    /// <inheritdoç />
     public partial class HardenRefreshTokens : Migration
     {
-        /// <inheritdoc />
+        /// <inheritdoç />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
@@ -66,7 +66,7 @@ namespace Rezervise.Infrastructure.Migrations
                 nullable: true);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(

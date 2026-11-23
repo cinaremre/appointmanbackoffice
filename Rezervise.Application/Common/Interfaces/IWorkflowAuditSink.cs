@@ -13,7 +13,7 @@ namespace Rezervise.Application.Common.Interfaces
         /// Tek bir iş akışı olayını kaydeder.
         /// </summary>
         /// <param name="eventType">Olayın CLR tipi.</param>
-        /// <param name="eventId">Olay kimliği (dedupe anahtarı).</param>
+        /// <param name="eventId">Olay kimliği (dedüpe anahtarı).</param>
         /// <param name="aggregateId">İlgili toplulaştırıcı kimliği.</param>
         /// <param name="details">Özet bilgi.</param>
         void Record(string eventType, Guid eventId, Guid? aggregateId, string? details);

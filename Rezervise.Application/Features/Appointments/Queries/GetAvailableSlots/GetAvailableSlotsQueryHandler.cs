@@ -33,8 +33,8 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAvailableSlots
         {
             try
             {
-                // 1. Isletme kontrolu.
-                //    WorkingHours yuklenmezse IsOpenOn() yanlis sonuc verir.
+                // 1. İşletme kontrolü.
+                //    WorkingHours yüklenmezse IsOpenOn() yanlış sonuç verir.
                 var businesses = await _businessRepository.FindWithIncludesAsync(
                     b => b.Id == request.BusinessId && !b.IsDeleted,
                     new[] { nameof(Business.WorkingHours) },
@@ -42,14 +42,14 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAvailableSlots
 
                 var business = businesses.FirstOrDefault();
                 if (business is null)
-                    return Result<List<AvailableSlotDto>>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<List<AvailableSlotDto>>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
                 if (!business.IsActive)
-                    return Result<List<AvailableSlotDto>>.Failure(Error.BusinessRule("Isletme aktif degil."));
+                    return Result<List<AvailableSlotDto>>.Failure(Error.BusinessRule("İşletme aktif değil."));
 
-                // 2. Calisan kontrolu.
-                //    Navigasyonlar yuklenmezse domain kontrolleri sessizce yanlis sonuc verir:
-                //    CanProvideService() her zaman false doner (400) ve calisma saati bulunamaz (bos liste).
+                // 2. Çalışan kontrolü.
+                //    Navigasyonlar yüklenmezse domain kontrolleri sessizce yanlış sonuç verir:
+                //    CanProvideService() her zaman false döner (400) ve çalışma saati bulunamaz (boş liste).
                 var employees = await _employeeRepository.FindWithIncludesAsync(
                     e => e.Id == request.EmployeeId && !e.IsDeleted,
                     new[]
@@ -62,50 +62,50 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAvailableSlots
 
                 var employee = employees.FirstOrDefault();
                 if (employee is null)
-                    return Result<List<AvailableSlotDto>>.Failure(Error.NotFound("Calisan", request.EmployeeId.ToString()));
+                    return Result<List<AvailableSlotDto>>.Failure(Error.NotFound("Çalışan", request.EmployeeId.ToString()));
 
                 if (!employee.IsActive)
-                    return Result<List<AvailableSlotDto>>.Failure(Error.BusinessRule("Calisan aktif degil."));
+                    return Result<List<AvailableSlotDto>>.Failure(Error.BusinessRule("Çalışan aktif değil."));
 
                 if (employee.BusinessId != request.BusinessId)
-                    return Result<List<AvailableSlotDto>>.Failure(Error.BusinessRule("Calisan bu isletmeye ait degil."));
+                    return Result<List<AvailableSlotDto>>.Failure(Error.BusinessRule("Çalışan bu işletmeye ait değil."));
 
-                // 3. Hizmet kontrolu
+                // 3. Hizmet kontrolü
                 var service = await _serviceRepository.GetByIdAsync(request.ServiceId, cancellationToken);
                 if (service is null)
                     return Result<List<AvailableSlotDto>>.Failure(Error.NotFound("Hizmet", request.ServiceId.ToString()));
 
                 if (!service.IsActive)
-                    return Result<List<AvailableSlotDto>>.Failure(Error.BusinessRule("Hizmet aktif degil."));
+                    return Result<List<AvailableSlotDto>>.Failure(Error.BusinessRule("Hizmet aktif değil."));
 
                 if (service.BusinessId != request.BusinessId)
-                    return Result<List<AvailableSlotDto>>.Failure(Error.BusinessRule("Hizmet bu isletmeye ait degil."));
+                    return Result<List<AvailableSlotDto>>.Failure(Error.BusinessRule("Hizmet bu işletmeye ait değil."));
 
-                // 4. Calisan bu hizmeti verebiliyor mu?
+                // 4. Çalışan bu hizmeti verebiliyor mü?
                 if (!employee.CanProvideService(request.ServiceId))
-                    return Result<List<AvailableSlotDto>>.Failure(Error.BusinessRule("Calisan bu hizmeti veremiyor."));
+                    return Result<List<AvailableSlotDto>>.Failure(Error.BusinessRule("Çalışan bu hizmeti veremiyor."));
 
-                // 5. Tarih kontrolu (gecmis tarih olamaz).
-                //    Tek referans saati _dateTimeService.UtcNow'dur. Istek UTC instant/date
-                //    olarak gelir; mesai saatleri isletmenin yerel duvar saatidir.
+                // 5. Tarih kontrolü (geçmiş tarih olamaz).
+                //    Tek referans saati _dateTimeService.UtcNow'dur. İstek UTC instant/date
+                //    olarak gelir; mesai saatleri işletmenin yerel duvar saatidir.
                 var nowUtc = _dateTimeService.UtcNow;
                 var businessNow = _dateTimeService.ToBusinessLocalTime(nowUtc);
                 var date = _dateTimeService.ToBusinessLocalTime(request.Date).Date;
 
                 if (date < businessNow.Date)
-                    return Result<List<AvailableSlotDto>>.Failure(Error.BusinessRule("Gecmis tarih icin randevu alinamaz."));
+                    return Result<List<AvailableSlotDto>>.Failure(Error.BusinessRule("Geçmiş tarih için randevu alınamaz."));
 
-                // 6. Calisanin o gunku mesai saati yerel duvar saatinde slot adaylarini belirler.
-                //    Isletme, calisan ve izin kontrolleri her slotun TUM araligi uzerinden
-                //    asagida yapilir; gece yarisiyla IsOpenOn(date) cagrilmaz.
+                // 6. Çalışanın o günkü mesai saati yerel duvar saatinde slot adaylarını belirler.
+                //    İşletme, çalışan ve izin kontrolleri her slotun TUM aralığı üzerinden
+                //    aşağıda yapılır; gece yarısıyla IsOpenOn(date) çağrılmaz.
                 var workingHour = employee.GetWorkingHourByDay(date.DayOfWeek);
                 if (workingHour is null || workingHour.IsClosed)
                     return Result<List<AvailableSlotDto>>.Success(new List<AvailableSlotDto>());
 
-                // 7. O gunku mevcut randevulari getir.
-                //    Randevular DB'de UTC saklanir; onceki gun baslayip bu gun tasan
-                //    randevularin da kacmasi icin UTC penceresi bir gun genisletilir.
-                //    Service include edilir: cakisma penceresi mevcut randevunun gercek suresini kullanir.
+                // 7. O günkü mevcut randevuları getir.
+                //    Randevular DB'de UTC saklanır; önceki gün başlayıp bu gün taşan
+                //    randevuların da kaçması için UTC penceresi bir gün genişletilir.
+                //    Service include edilir: çakışma penceresi mevcut randevunun gerçek süresini kullanır.
                 var windowStartUtc = _dateTimeService.ToUtc(date.AddDays(-1));
                 var windowEndUtc = _dateTimeService.ToUtc(date.AddDays(1));
                 var existingAppointments = await _appointmentRepository.FindWithIncludesAsync(
@@ -117,10 +117,10 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAvailableSlots
                     new[] { nameof(Appointment.Service) },
                     cancellationToken);
 
-                // 8. Hizmet suresi
+                // 8. Hizmet süresi
                 var duration = service.DurationInMinutes;
 
-                // 9. Yerel duvar saatinde slot adaylari olustur; donus degerleri UTC olacak.
+                // 9. Yerel duvar saatinde slot adayları oluştur; dönüş değerleri UTC olacak.
                 var slots = new List<AvailableSlotDto>();
                 var localSlotStart = date.Add(workingHour.StartTime);
                 var localWorkingEnd = date.Add(workingHour.EndTime);
@@ -129,22 +129,22 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAvailableSlots
                 {
                     var localSlotEnd = localSlotStart.AddMinutes(duration);
 
-                    // Mesai, mola ve onayli izin kontrolleri TUM aralik uzerinden yapilir.
+                    // Mesai, mola ve onaylı izin kontrolleri TUM aralık üzerinden yapılır.
                     var isWithinSchedule = business.IsOpenDuring(localSlotStart, localSlotEnd) &&
                                            employee.IsWorkingDuring(localSlotStart, localSlotEnd);
                     var isOnApprovedTimeOff = employee.IsOnApprovedTimeOff(localSlotStart, localSlotEnd);
 
-                    // Randevular UTC oldugundan cakisma ve gecmislik UTC anlarinda karsilastirilir.
+                    // Randevular UTC öldüğündan çakışma ve geçmişlik UTC anlarında karşılaştırılır.
                     var slotStartUtc = _dateTimeService.ToUtc(localSlotStart);
                     var slotEndUtc = _dateTimeService.ToUtc(localSlotEnd);
                     var isPast = slotStartUtc < nowUtc;
 
-                    // Fallback sure, istenen hizmetin degil mevcut randevunun hizmet suresidir;
-                    // aksi halde farkli sureli hizmetlerde yanlis cakisma hesaplanir.
+                    // Fallback süre, istenen hizmetin değil mevcut randevunun hizmet süresidir;
+                    // aksi halde farklı süreli hizmetlerde yanlış çakışma hesaplanır.
                     var hasConflict = existingAppointments.Any(a =>
                         a.OverlapsWith(slotStartUtc, slotEndUtc, a.Service?.DurationInMinutes ?? duration));
 
-                    // Mesai disi/izinli/gecmis/cakisli slotlar da IsAvailable=false ile dondurulur.
+                    // Mesai dışı/izinli/geçmiş/çakışlı slotlar da IsAvailable=false ile dondurulur.
                     var isAvailable = isWithinSchedule && !isOnApprovedTimeOff && !isPast && !hasConflict;
 
                     slots.Add(new AvailableSlotDto
@@ -154,7 +154,7 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAvailableSlots
                         IsAvailable = isAvailable
                     });
 
-                    // 15 dakika aralikla slotlari ilerlet
+                    // 15 dakika aralıkla slotları ilerlet
                     localSlotStart = localSlotStart.AddMinutes(15);
                 }
 
@@ -162,9 +162,9 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAvailableSlots
             }
             catch (Exception)
             {
-                // Hata detayi (ex.Message) istemciye sizdirilmaz.
+                // Hata detayı (ex.Message) istemciye sızdırılmaz.
                 return Result<List<AvailableSlotDto>>.Failure(
-                    Error.Internal("Musait saatler hesaplanirken bir hata olustu."));
+                    Error.Internal("Müsait saatler hesaplanırken bir hata oluştu."));
             }
         }
     }

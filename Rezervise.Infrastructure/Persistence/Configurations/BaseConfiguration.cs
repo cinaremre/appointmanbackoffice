@@ -16,8 +16,8 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.Property(x => x.DeletedAt).IsRequired(false);
 
             // Optimistic concurrency: SQL Server rowversion kolonu.
-            // Es zamanli iki guncellemeden ikincisi DbUpdateConcurrencyException alir;
-            // sessiz veri kaybi (lost update) onlenir.
+            // Es zamanlı iki güncellemeden ikincisi DbUpdateConcurrencyException alır;
+            // sessiz veri kaybı (lost update) önlenir.
             builder.Property(x => x.RowVersion).IsRowVersion();
 
             // Global query filter for soft delete

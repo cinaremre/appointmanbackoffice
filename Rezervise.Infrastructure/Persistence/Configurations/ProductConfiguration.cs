@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Isletme stok urunu. Stok bakiyesi Product uzerinde tutulmaz;
-    /// StockMovement toplamlarindan hesaplanir (defter mantigi).
+    /// İşletme stok ürünü. Stok bakiyesi Product üzerinde tutulmaz;
+    /// StockMovement toplamlarından hesaplanır (defter mantığı).
     /// </summary>
     public class ProductConfiguration : BaseConfiguration<Product>
     {
@@ -54,7 +54,7 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasDefaultValue(true);
 
-            // SKU benzersizligi isletme bazindadir.
+            // SKU benzersizliği işletme bazındadır.
             builder.HasIndex(x => new { x.BusinessId, x.Sku })
                 .IsUnique()
                 .HasDatabaseName("UX_Products_BusinessId_Sku");

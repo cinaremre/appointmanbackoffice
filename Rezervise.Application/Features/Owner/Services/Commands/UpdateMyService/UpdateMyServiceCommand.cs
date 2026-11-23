@@ -4,9 +4,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Services.Commands.UpdateMyService
 {
     /// <summary>
-    /// Isletme sahibinin kendi hizmetini guncellemesi. Sahiplik handler'da
-    /// dogrulanir; degisiklik Service entity'nin Set/Update metotlariyla
-    /// yapilir ve denetim kaydina yazilir.
+    /// İşletme sahibinin kendi hizmetini güncellemesi. Sahiplik handler'da
+    /// doğrulanır; değişiklik Service entity'nin Set/Update metotlarıyla
+    /// yapılır ve denetim kaydına yazılır.
     /// </summary>
     public class UpdateMyServiceCommand : IRequest<Result<Guid>>
     {
@@ -14,19 +14,19 @@ namespace Rezervise.Application.Features.Owner.Services.Commands.UpdateMyService
 
         public Guid ServiceId { get; set; }
 
-        /// <summary>Yeni hizmet adi; gonderildiyse guncellenir.</summary>
+        /// <summary>Yeni hizmet adı; gönderildiyse güncellenir.</summary>
         public string? Name { get; set; }
 
-        /// <summary>Yeni fiyat; gonderildiyse guncellenir.</summary>
+        /// <summary>Yeni fiyat; gönderildiyse güncellenir.</summary>
         public decimal? Price { get; set; }
 
-        /// <summary>Fiyat para birimi; bos ise mevcut birim korunur.</summary>
+        /// <summary>Fiyat para birimi; boş ise mevcut birim korunur.</summary>
         public string? Currency { get; set; }
 
-        /// <summary>Yeni sure (dakika); gonderildiyse guncellenir.</summary>
+        /// <summary>Yeni süre (dakika); gönderildiyse güncellenir.</summary>
         public int? DurationMinutes { get; set; }
 
-        /// <summary>Opsiyonel islem gerekcesi; denetim kaydina yazilir.</summary>
+        /// <summary>Opsiyonel işlem gerekçesi; denetim kaydına yazılır.</summary>
         public string? Reason { get; set; }
     }
 }

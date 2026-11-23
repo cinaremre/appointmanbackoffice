@@ -8,11 +8,11 @@ namespace Rezervise.Application.Features.Employees.Commands.RejectTimeOff
         {
             RuleFor(x => x.TimeOffId)
                 .NotEmpty()
-                .WithMessage("Izin ID bos olamaz.");
+                .WithMessage("İzin ID boş olamaz.");
 
             RuleFor(x => x.RequesterId)
                 .NotEmpty()
-                .WithMessage("Istek sahibi ID bos olamaz.");
+                .WithMessage("İstek sahibi ID boş olamaz.");
         }
     }
 }

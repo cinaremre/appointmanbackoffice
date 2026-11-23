@@ -24,14 +24,14 @@ namespace Rezervise.Application.Features.Districts.Queries.GetByCity
             try
             {
                 if (request.CityId <= 0)
-                    return Result<List<DistrictDto>>.Failure(Error.BusinessRule("Il ID gecersiz."));
+                    return Result<List<DistrictDto>>.Failure(Error.BusinessRule("İl ID geçersiz."));
 
-                // 1. Ili kontrol et
+                // 1. İli kontrol et
                 var cities = await _cityRepository.FindAsync(c => c.Id == request.CityId, cancellationToken);
                 if (cities.Count == 0)
-                    return Result<List<DistrictDto>>.Failure(Error.NotFound("Il", request.CityId.ToString()));
+                    return Result<List<DistrictDto>>.Failure(Error.NotFound("İl", request.CityId.ToString()));
 
-                // 2. Ilceleri getir
+                // 2. İlçeleri getir
                 var districts = await _districtRepository.FindAsync(
                     d => d.CityId == request.CityId,
                     cancellationToken);
@@ -43,7 +43,7 @@ namespace Rezervise.Application.Features.Districts.Queries.GetByCity
                     filtered = filtered.Where(d => d.IsActive);
                 }
 
-                // 4. DTO'ya donustur
+                // 4. DTO'ya dönüştür
                 var dtos = filtered
                     .OrderBy(d => d.Name)
                     .Select(d => new DistrictDto
@@ -60,7 +60,7 @@ namespace Rezervise.Application.Features.Districts.Queries.GetByCity
             catch (Exception ex)
             {
                 return Result<List<DistrictDto>>.Failure(
-                    Error.Internal("Ilceler getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("İlçeler getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -15,7 +15,7 @@ namespace Rezervise.Application.Features.Reviews.Commands.AddReview
                 .NotEmpty()
                 .WithMessage(localizer.Get("Validation.BusinessIdRequired"));
 
-            // Yorum yalnizca tamamlanmis bir randevuya baglanabilir.
+            // Yorum yalnızca tamamlanmış bir randevuya bağlanabilir.
             RuleFor(x => x.AppointmentId)
                 .NotEmpty()
                 .WithMessage("Randevu ID zorunludur.");

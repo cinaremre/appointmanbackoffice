@@ -4,11 +4,11 @@ using MediatR;
 namespace Rezervise.Application.Common.Services
 {
     /// <summary>
-    /// Domain event'lerini MediatR hattina tasiyan adaptor.
-    /// Domain katmani MediatR'a bagimli olmadigi icin (IDomainEvent : INotification degildir)
-    /// event'ler bu sarmalayici uzerinden yayinlanir. Handler'lar
+    /// Domain event'lerini MediatR hattına taşıyan adaptor.
+    /// Domain katmanı MediatR'a bağımlı olmadığı için (IDomainEvent : INotification değildir)
+    /// event'ler bu sarmalayıcı üzerinden yayınlanır. Handler'lar
     /// <see cref="INotificationHandler{TNotification}"/> ile bu tipi dinler ve
-    /// <see cref="DomainEvent"/> uzerinden gercek event'e ulasir.
+    /// <see cref="DomainEvent"/> üzerinden gerçek event'e ulaşır.
     /// </summary>
     public sealed class DomainEventNotification : INotification
     {
@@ -18,10 +18,10 @@ namespace Rezervise.Application.Common.Services
         public IDomainEvent DomainEvent { get; }
 
         /// <summary>
-        /// Adaptoru olusturur.
+        /// Adaptoru oluşturur.
         /// </summary>
-        /// <param name="domainEvent">Yayinlanacak domain event'i.</param>
-        /// <exception cref="ArgumentNullException">Event null oldugunda firlatilir.</exception>
+        /// <param name="domainEvent">Yayınlanacak domain event'i.</param>
+        /// <exception cref="ArgumentNullException">Event null öldüğünda fırlatılır.</exception>
         public DomainEventNotification(IDomainEvent domainEvent)
         {
             DomainEvent = domainEvent ?? throw new ArgumentNullException(nameof(domainEvent));

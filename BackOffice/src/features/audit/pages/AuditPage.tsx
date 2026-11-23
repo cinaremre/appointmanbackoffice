@@ -24,28 +24,28 @@ import { PageHeader } from "../../../shared/components/states";
 import type { AuditLog } from "../types";
 
 /**
- * Denetim kayitlari sayfasi (dokuman Modul 21): filtreler URL query ile
- * senkron calisir; sayfa yenilense veya baglanti paylasilsa ayni gorunum
- * kurulur. Detay dialog'unda degerler JSON bloklari olarak gosterilir.
+ * Denetim kayıtları sayfası (doküman Modül 21): filtreler URL query ile
+ * senkron çalışır; sayfa yenilense veya bağlantı paylasilsa aynı görünüm
+ * kurulur. Detay dialog'unda değerler JSON blokları olarak gösterilir.
  */
 
 const DEFAULT_PAGE_SIZE = 50;
 
-/** ISO tarih -> "dd.MM.yyyy HH:mm"; gecersizse ham deger korunur. */
+/** ISO tarih -> "dd.MM.yyyy HH:mm"; geçersizse ham değer korunur. */
 function formatDateTime(value?: string | null): string {
   if (!value) return "-";
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? value : format(date, "dd.MM.yyyy HH:mm");
 }
 
-/** GUID kisaltmasi; tablolarda uzun kimlikleri okunur tutar. */
+/** GUID kısaltması; tablolarda uzun kimlikleri okunur tutar. */
 function shortId(value?: string | null): string {
   return value ? value.slice(0, 8) : "-";
 }
 
 /**
- * Sunucudan gelen JSON betimlemesini okunur blokta gosterir. Metin gecerli
- * JSON degilse ham haliyle gosterilir; maskeleme sunucu tarafinda yapilir.
+ * Sunucudan gelen JSON betimlemesini okunur blokta gösterir. Metin geçerli
+ * JSON değilse ham haliyle gösterilir; maskeleme sunucu tarafında yapılır.
  */
 function JsonBlock({ title, value }: { title: string; value?: string | null }) {
   if (!value) return null;
@@ -53,7 +53,7 @@ function JsonBlock({ title, value }: { title: string; value?: string | null }) {
   try {
     text = JSON.stringify(JSON.parse(value), null, 2);
   } catch {
-    // JSON parse edilemedi; ham metin gosterilir.
+    // JSON parse edilemedi; ham metin gösterilir.
   }
   return (
     <Box sx={{ mt: 2 }}>
@@ -72,11 +72,11 @@ function JsonBlock({ title, value }: { title: string; value?: string | null }) {
 
 const auditColumns: DataTableColumn<AuditLog>[] = [
   { key: "createdAt", header: "Tarih", render: (row) => formatDateTime(row.createdAtUtc) },
-  { key: "actor", header: "Aktor", render: (row) => shortId(row.actorUserId) },
+  { key: "actor", header: "Aktör", render: (row) => shortId(row.actorUserId) },
   { key: "role", header: "Rol", render: (row) => row.actorRole },
-  { key: "entity", header: "Varlik", render: (row) => row.entityType },
-  { key: "action", header: "Islem", render: (row) => row.action },
-  { key: "business", header: "Isletme", render: (row) => shortId(row.businessId) },
+  { key: "entity", header: "Varlık", render: (row) => row.entityType },
+  { key: "action", header: "İşlem", render: (row) => row.action },
+  { key: "business", header: "İşletme", render: (row) => shortId(row.businessId) },
 ];
 
 export function AuditPage() {
@@ -84,7 +84,7 @@ export function AuditPage() {
   const theme = useTheme();
   const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // URL'den okunan aktif filtre degerleri.
+  // URL'den okunan aktif filtre değerleri.
   const actorUserIdParam = searchParams.get("actorUserId") ?? "";
   const businessIdParam = searchParams.get("businessId") ?? "";
   const entityTypeParam = searchParams.get("entityType") ?? "";
@@ -93,14 +93,14 @@ export function AuditPage() {
   const page = Math.max(1, Number(searchParams.get("page")) || 1);
   const pageSize = Math.max(1, Number(searchParams.get("pageSize")) || DEFAULT_PAGE_SIZE);
 
-  // Form alanalri yerel state'te tutulur; "Filtrele" ile URL'e yazilir.
+  // Form alanalri yerel state'te tutulur; "Filtrele" ile URL'e yazılır.
   const [actorUserId, setActorUserId] = useState(actorUserIdParam);
   const [businessId, setBusinessId] = useState(businessIdParam);
   const [entityType, setEntityType] = useState(entityTypeParam);
   const [fromDate, setFromDate] = useState(fromDateParam);
   const [toDate, setToDate] = useState(toDateParam);
 
-  // Detay dialog'u secili kayitla acilir; veri liste ogesinde tamdir.
+  // Detay dialog'u seçili kayıtla açılır; veri liste öğesinde tamdir.
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
 
   const logs = useQuery({
@@ -132,7 +132,7 @@ export function AuditPage() {
       ),
   });
 
-  /** Filtreleri URL query'ye yazar; sayfa bastan baslar. */
+  /** Filtreleri URL query'ye yazar; sayfa bastan başlar. */
   const applyFilters = (event: FormEvent) => {
     event.preventDefault();
     const params = new URLSearchParams();
@@ -174,7 +174,7 @@ export function AuditPage() {
 
   return (
     <Box>
-      <PageHeader title="Denetim Kayitlari" />
+      <PageHeader title="Denetim Kayıtları" />
 
       <Box component="form" onSubmit={applyFilters} sx={{ mb: 2 }} aria-label="denetim filtreleri">
         <Stack
@@ -184,28 +184,28 @@ export function AuditPage() {
           sx={{ flexWrap: "wrap", alignItems: { xs: "stretch", md: "center" } }}
         >
           <TextField
-            label="Aktor ID (UUID)"
+            label="Aktör ID (UUID)"
             value={actorUserId}
             onChange={(e) => setActorUserId(e.target.value)}
             size="small"
             sx={{ minWidth: { xs: 0, md: 240 } }}
           />
           <TextField
-            label="Isletme ID (UUID)"
+            label="İşletme ID (UUID)"
             value={businessId}
             onChange={(e) => setBusinessId(e.target.value)}
             size="small"
             sx={{ minWidth: { xs: 0, md: 240 } }}
           />
           <TextField
-            label="Varlik Tipi"
+            label="Varlık Tipi"
             value={entityType}
             onChange={(e) => setEntityType(e.target.value)}
             size="small"
             sx={{ minWidth: { xs: 0, md: 180 } }}
           />
           <TextField
-            label="Baslangic"
+            label="Başlangıç"
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
@@ -214,7 +214,7 @@ export function AuditPage() {
             sx={{ minWidth: { xs: 0, md: 170 } }}
           />
           <TextField
-            label="Bitis"
+            label="Bitiş"
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
@@ -241,8 +241,8 @@ export function AuditPage() {
         totalCount={logs.data?.pagination.totalCount ?? 0}
         onPageChange={handlePageChange}
         onPageSizeChange={handlePageSizeChange}
-        emptyLabel="Denetim kaydi bulunamadi."
-        ariaLabel="denetim kayitlari"
+        emptyLabel="Denetim kaydı bulunamadı."
+        ariaLabel="denetim kayıtları"
         onRefresh={() => logs.refetch()}
         rowActions={(row) => (
           <Button size="small" onClick={() => setSelectedLog(row)}>
@@ -251,7 +251,7 @@ export function AuditPage() {
         )}
       />
 
-      {/* Kayit detayi: degerler JSON bloklarinda, destek alanlari acikca etiketli. */}
+      {/* Kayıt detayı: değerler JSON bloklarında, destek alanları açıkça etiketli. */}
       <Dialog
         open={selectedLog !== null}
         onClose={() => setSelectedLog(null)}
@@ -259,7 +259,7 @@ export function AuditPage() {
         maxWidth="md"
         fullScreen={is_mobile}
       >
-        <DialogTitle>Denetim Kaydi Detayi</DialogTitle>
+        <DialogTitle>Denetim Kaydı Detayı</DialogTitle>
         <DialogContent>
           {selectedLog ? (
             <Box sx={{ pt: 1 }}>
@@ -268,32 +268,32 @@ export function AuditPage() {
                   <strong>{selectedLog.action}</strong> — {selectedLog.entityType}
                 </Typography>
                 <Typography variant="body2">
-                  Aktor: {shortId(selectedLog.actorUserId)} ({selectedLog.actorRole})
+                  Aktör: {shortId(selectedLog.actorUserId)} ({selectedLog.actorRole})
                 </Typography>
                 <Typography variant="body2">
-                  Isletme: {selectedLog.businessId ?? "-"}
+                  İşletme: {selectedLog.businessId ?? "-"}
                 </Typography>
                 <Typography variant="body2">
-                  Varlik: {selectedLog.entityType} / {selectedLog.entityId}
+                  Varlık: {selectedLog.entityType} / {selectedLog.entityId}
                 </Typography>
                 <Typography variant="body2">
                   Tarih: {formatDateTime(selectedLog.createdAtUtc)}
                 </Typography>
-                <Typography variant="body2">Gerekce: {selectedLog.reason ?? "-"}</Typography>
+                <Typography variant="body2">Gerekçe: {selectedLog.reason ?? "-"}</Typography>
                 <Typography variant="body2">
-                  Korelasyon Kimligi: {selectedLog.correlationId ?? "-"}
+                  Korelasyon Kimliği: {selectedLog.correlationId ?? "-"}
                 </Typography>
                 <Typography variant="body2">
                   IP Adresi: {selectedLog.ipAddress ?? "-"}
                 </Typography>
               </Stack>
 
-              <JsonBlock title="Onceki Degerler" value={selectedLog.oldValues} />
-              <JsonBlock title="Yeni Degerler" value={selectedLog.newValues} />
+              <JsonBlock title="Önceki Değerler" value={selectedLog.oldValues} />
+              <JsonBlock title="Yeni Değerler" value={selectedLog.newValues} />
 
               <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 2 }}>
-                IP adresi ve korelasyon kimligi destek talepleri icin gosterilir. Gerekce ve
-                deger betimlemeleri sunucuda sinirlandigindan burada oldugu gibi sunulur.
+                IP adresi ve korelasyon kimliği destek talepleri için gösterilir. Gerekçe ve
+                değer betimlemeleri sunucuda sınırlandığından burada olduğu gibi sunulur.
               </Typography>
             </Box>
           ) : null}

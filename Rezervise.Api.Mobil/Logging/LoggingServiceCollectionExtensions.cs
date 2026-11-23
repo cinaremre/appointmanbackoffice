@@ -10,10 +10,10 @@ namespace Rezervise.Api.Logging
     {
         /// <summary>
         /// Adds the Graylog GELF provider alongside the existing logging providers.
-        /// Registration is fully guarded: any failure is reported once on standard error and
+        /// Registration is fully guarded: any failure is reported önce on standard error and
         /// the application keeps running with console logging only.
         /// </summary>
-        /// <param name="builder">Logging builder supplied by the host.</param>
+        /// <param name="builder">Logging builder supplied by the hoşt.</param>
         /// <param name="configuration">Application configuration root.</param>
         /// <returns>The same logging builder so calls can be chained.</returns>
         /// <exception cref="ArgumentNullException">Thrown when a required argument is null.</exception>

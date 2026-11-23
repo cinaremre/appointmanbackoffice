@@ -6,30 +6,30 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMyPayments
 {
     /// <summary>
-    /// Isletme sahibinin odeme listesi. Sahiplik handler'da dogrulanir;
-    /// iadeler IsRefund bayragiyla ayri listelenebilir.
+    /// İşletme sahibinin ödeme listesi. Sahiplik handler'da doğrulanır;
+    /// iadeler IsRefund bayrağıyla ayrı listelenebilir.
     /// </summary>
     public class GetMyPaymentsQuery : IRequest<Result<AdminPagedResult<OwnerPaymentDto>>>
     {
         public Guid BusinessId { get; set; }
 
-        /// <summary>Yalnizca iade (ters) kayitlari listele.</summary>
+        /// <summary>Yalnızca iade (ters) kayıtları listele.</summary>
         public bool? IsRefund { get; set; }
 
-        /// <summary>Odeme tarihi alt siniri (UTC, dahil).</summary>
+        /// <summary>Ödeme tarihi alt sınırı (UTC, dahil).</summary>
         public DateTime? FromDate { get; set; }
 
-        /// <summary>Odeme tarihi ust siniri (UTC, dahil).</summary>
+        /// <summary>Ödeme tarihi üst sınırı (UTC, dahil).</summary>
         public DateTime? ToDate { get; set; }
 
-        /// <summary>1 tabanli sayfa numarasi.</summary>
+        /// <summary>1 tabanlı sayfa numarası.</summary>
         public int Page { get; set; } = 1;
 
-        /// <summary>Sayfa boyutu; handler en fazla 200'e sinirlar.</summary>
+        /// <summary>Sayfa boyutu; handler en fazla 200'e sınırlar.</summary>
         public int PageSize { get; set; } = 50;
     }
 
-    /// <summary>Owner odeme satiri; iade bilgileri dahil.</summary>
+    /// <summary>Owner ödeme satırı; iade bilgileri dahil.</summary>
     public class OwnerPaymentDto
     {
         public Guid Id { get; init; }
@@ -44,13 +44,13 @@ namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMyPayments
 
         public DateTime PaidAt { get; init; }
 
-        /// <summary>Durum sayisal deger olarak doner (EnumSaleStatus paylasilir).</summary>
+        /// <summary>Durum sayısal değer olarak döner (EnumSaleStatus paylaşılır).</summary>
         public EnumSaleStatus Status { get; init; }
 
-        /// <summary>Bu kayit bir iade (ters) kaydi mi?</summary>
+        /// <summary>Bu kayıt bir iade (ters) kaydı mi?</summary>
         public bool IsRefund { get; init; }
 
-        /// <summary>Ters kayit ise bagli oldugu orijinal odeme ID.</summary>
+        /// <summary>Ters kayıt ise bağlı öldüğü orijinal ödeme ID.</summary>
         public Guid? RefersToPaymentId { get; init; }
     }
 }

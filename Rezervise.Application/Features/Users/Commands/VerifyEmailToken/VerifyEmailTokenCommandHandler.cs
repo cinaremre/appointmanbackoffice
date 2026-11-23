@@ -8,8 +8,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Users.Commands.VerifyEmailToken
 {
     /// <summary>
-    /// Gelen token'i hash'leyip kayitli hash ile eslestirir, suresini dogrular
-    /// ve adresi dogrulanmis olarak isaretler. Token tek kullanimliktir.
+    /// Gelen token'i hash'leyip kayıtlı hash ile eşleştirir, süresini doğrular
+    /// ve adresi doğrulanmış olarak işaretler. Token tek kullanımlıktır.
     /// </summary>
     public class VerifyEmailTokenCommandHandler
         : IRequestHandler<VerifyEmailTokenCommand, Result<bool>>
@@ -17,28 +17,28 @@ namespace Rezervise.Application.Features.Users.Commands.VerifyEmailToken
         private readonly IRepository<User> _userRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        /// <param name="userRepository">Kullanici deposu.</param>
-        /// <param name="unitOfWork">Kalicilik birimi.</param>
+        /// <param name="userRepository">Kullanıcı deposu.</param>
+        /// <param name="unitOfWork">Kalıcılık birimi.</param>
         public VerifyEmailTokenCommandHandler(IRepository<User> userRepository, IUnitOfWork unitOfWork)
         {
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
         }
 
-        /// <param name="request">Ham token'i tasiyan komut.</param>
-        /// <param name="cancellationToken">Iptal belirteci.</param>
-        /// <returns>Basarida <c>true</c>.</returns>
+        /// <param name="request">Ham token'i taşıyan komut.</param>
+        /// <param name="cancellationToken">İptal belirteci.</param>
+        /// <returns>Başarıda <c>true</c>.</returns>
         public async Task<Result<bool>> Handle(
             VerifyEmailTokenCommand request,
             CancellationToken cancellationToken)
         {
             try
             {
-                // 1. Bos token ile sorgu yapilmaz.
+                // 1. Boş token ile sorgu yapılmaz.
                 if (string.IsNullOrWhiteSpace(request.Token))
                     return Result<bool>.Failure(Error.BusinessRule("Auth.InvalidVerificationToken"));
 
-                // 2. DB'de yalnizca hash saklanir; ham token hash'lenerek eslestirilir.
+                // 2. DB'de yalnızca hash saklanır; ham token hash'lenerek eşleştirilir.
                 var tokenHash = RefreshTokenHasher.Hash(request.Token.Trim());
 
                 var users = await _userRepository.FindAsync(
@@ -50,14 +50,14 @@ namespace Rezervise.Application.Features.Users.Commands.VerifyEmailToken
                 if (user is null)
                     return Result<bool>.Failure(Error.BusinessRule("Auth.InvalidVerificationToken"));
 
-                // 3. Suresi gecmis token reddedilir; yeni bag istenmelidir.
+                // 3. Süresi geçmiş token reddedilir; yeni bağ istenmelidir.
                 if (!user.EmailVerificationTokenExpiresAt.HasValue ||
                     user.EmailVerificationTokenExpiresAt.Value <= DateTime.UtcNow)
                 {
                     return Result<bool>.Failure(Error.BusinessRule("Auth.VerificationTokenExpired"));
                 }
 
-                // 4. Dogrula: token alanlari temizlenir (tek kullanimlik).
+                // 4. Doğrula: token alanları temizlenir (tek kullanımlık).
                 user.VerifyEmail();
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -70,7 +70,7 @@ namespace Rezervise.Application.Features.Users.Commands.VerifyEmailToken
             catch (Exception ex)
             {
                 return Result<bool>.Failure(
-                    Error.Internal("E-posta dogrulanirken bir hata olustu.", ex.Message));
+                    Error.Internal("E-posta doğrulanırken bir hata oluştu.", ex.Message));
             }
         }
     }

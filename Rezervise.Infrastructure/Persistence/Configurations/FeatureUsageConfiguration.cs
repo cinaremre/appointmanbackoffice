@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Donemsel ozellik kullanim sayaci. (BusinessId, FeatureId, UsagePeriod)
-    /// benzersizdir; upsert FeatureAccessService tarafindan yapilir.
+    /// Dönemsel özellik kullanım sayacı. (BusinessId, FeatureId, UsagePeriod)
+    /// benzersizdir; upsert FeatureAccessService tarafından yapılır.
     /// </summary>
     public class FeatureUsageConfiguration : BaseConfiguration<FeatureUsage>
     {
@@ -29,8 +29,8 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.Property(x => x.UsedQuantity)
                 .IsRequired();
 
-            // Iliskiler acikca Restrict: convention cascade SQL Server'da
-            // multiple cascade path hatasi uretir.
+            // İlişkiler açıkça Restrict: convention cascade SQL Server'da
+            // multiple cascade path hatası üretir.
             builder.HasOne(x => x.Business)
                 .WithMany()
                 .HasForeignKey(x => x.BusinessId)

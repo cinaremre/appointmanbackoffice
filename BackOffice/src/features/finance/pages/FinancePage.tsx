@@ -41,24 +41,24 @@ import {
 } from "../types";
 
 /**
- * Finans sayfasi (dokuman Modul 16-17). Tamami salt okunur: tutar
- * duzeltmeleri (iade, ters kayit, prim ters cevirme) domain komutlariyla
- * yapilir, arayuzden veri degistirilmez.
+ * Finans sayfası (doküman Modül 16-17). Tamami salt okunur: tutar
+ * düzeltmeleri (iade, ters kayıt, prim ters çevirme) domain komutlarıyla
+ * yapılır, arayüzden veri değiştirilmez.
  *
- * Sekmeler: Satislar / Tahsilatlar / Iadeler / Kasa / Giderler / Komisyonlar.
- * - Satis ucu OkEnvelope ile "liste + toplam" dondugunden getItem ile
- *   cozumlenir; digerleri OkList (getList) seklindedir.
- * - Iadeler, odeme ucunun isRefund=true filtresiyle ayri sekmede listelenir.
- * - Filtreler (sekme, isletme, tarih, durum) URL query ile senkronize; boylece
- *   link kopyalanabilir ve geri donuste kosul korunur.
- * - Kasa farklari isaretli metinle gosterilir: pozitif yesil "+", negatif
- *   kirmizi "-"; renk tek basina gosterge degildir (dokuman 5.2).
+ * Sekmeler: Satışlar / Tahsilatlar / İadeler / Kasa / Giderler / Komisyonlar.
+ * - Satış ucu OkEnvelope ile "liste + toplam" döndüğünden getItem ile
+ *   çözümlenir; diğerleri OkList (getList) seklindedir.
+ * - İadeler, ödeme ucunun isRefund=true filtresiyle ayrı sekmede listelenir.
+ * - Filtreler (sekme, işletme, tarih, durum) URL query ile senkronize; böylece
+ *   link kopyalanabilir ve geri dönüşte koşul korunur.
+ * - Kasa farkları işaretli metinle gösterilir: pozitif yeşil "+", negatif
+ *   kırmızı "-"; renk tek başına gösterge değildir (doküman 5.2).
  */
 
 const TABS = [
-  { key: "sales", label: "Satislar" },
+  { key: "sales", label: "Satışlar" },
   { key: "payments", label: "Tahsilatlar" },
-  { key: "refunds", label: "Iadeler" },
+  { key: "refunds", label: "İadeler" },
   { key: "cash", label: "Kasa" },
   { key: "expenses", label: "Giderler" },
   { key: "commissions", label: "Komisyonlar" },
@@ -66,21 +66,21 @@ const TABS = [
 
 type FinanceTab = (typeof TABS)[number]["key"];
 
-/** Tarih araligi filtresi sunan sekmeler. */
+/** Tarih aralığı filtresi sunan sekmeler. */
 const DATE_FILTER_TABS: readonly FinanceTab[] = ["sales", "payments", "refunds", "expenses"];
 
 const CASH_STATUS_OPTIONS = [
-  { value: "0", label: "Acik" },
-  { value: "1", label: "Kapali" },
+  { value: "0", label: "Açık" },
+  { value: "1", label: "Kapalı" },
 ];
 
 const COMMISSION_STATUS_OPTIONS = [
   { value: "0", label: "Tahakkuk" },
-  { value: "1", label: "Odenmis" },
+  { value: "1", label: "Ödenmiş" },
   { value: "2", label: "Ters Cevrildi" },
 ];
 
-/** GUID'leri kisa gosterimle listeler; tam deger title icinde tasir. */
+/** GUID'leri kısa gösterimle listeler; tam değer title içinde taşır. */
 function GuidText({ value }: { value: string }) {
   return (
     <Typography variant="body2" component="span" title={value}>
@@ -110,7 +110,7 @@ export function FinancePage() {
     null,
   );
 
-  /** URL query guncellemesi; filtre degisiklikleri sayfayi 1'e cevirir. */
+  /** URL query güncellemesi; filtre değişiklikleri sayfayı 1'e çevirir. */
   const updateParams = (patch: Record<string, string | null>, resetPage = true) => {
     const next = new URLSearchParams(searchParams);
     for (const [key, value] of Object.entries(patch)) {
@@ -121,7 +121,7 @@ export function FinancePage() {
     setSearchParams(next);
   };
 
-  /** GUID filtre uygulamasi: gecersiz giriste filtre uygulanmaz. */
+  /** GUID filtre uygulaması: geçersiz girişte filtre uygulanmaz. */
   const applyGuidFilter = (key: "businessId" | "employeeId", label: string) => {
     const raw = key === "businessId" ? businessInput : employeeInput;
     const value = raw.trim();
@@ -132,15 +132,15 @@ export function FinancePage() {
       return;
     }
     if (!isGuid(value)) {
-      clearError(`Gecerli bir ${label} kimligi (GUID) girin.`);
-      setSnack({ severity: "warning", message: `Gecersiz ${label} kimligi; filtre uygulanmadi.` });
+      clearError(`Geçerli bir ${label} kimliği (GUID) girin.`);
+      setSnack({ severity: "warning", message: `Geçersiz ${label} kimliği; filtre uygulanmadı.` });
       return;
     }
     clearError(null);
     updateParams({ [key]: value });
   };
 
-  // === Sorgular (anahtarlar modul onekiyle: ["finance", ...]) ===
+  // === Sorgular (anahtarlar modül önekiyle: ["finance", ...]) ===
   const dateFiltersActive = DATE_FILTER_TABS.includes(tab);
   const isRefundTab = tab === "refunds";
   const commonFilters = {
@@ -149,7 +149,7 @@ export function FinancePage() {
     toDate: dateFiltersActive ? toDate || undefined : undefined,
   };
 
-  // Satis ucu liste + toplam tek nesne doner; getList degil getItem kullanilir.
+  // Satış ucu liste + toplam tek nesne döner; getList değil getItem kullanılır.
   const salesQuery = useQuery({
     queryKey: ["finance", "sales", { ...commonFilters, page, pageSize }],
     queryFn: ({ signal }) =>
@@ -207,9 +207,9 @@ export function FinancePage() {
     enabled: tab === "commissions",
   });
 
-  // Aktif sekmenin hatasi Snackbar ile duyurulur; tablo icinde ErrorState
-  // ayrica gosterilir. Bildirim render'dan turetilir (effect'siz): ayni hata
-  // mesaji kapatildiginda kayit altina alinir, yeni hata tekrar acar.
+  // Aktif sekmenin hatası Snackbar ile duyurulur; tablo içinde ErrorState
+  // ayrıca gösterilir. Bildirim render'dan türetilir (effect'siz): aynı hata
+  // mesajı kapatıldığında kayıt altına alınır, yeni hata tekrar acar.
   const activeQueryError =
     tab === "sales"
       ? salesQuery.error
@@ -227,7 +227,7 @@ export function FinancePage() {
       ? null
       : activeQueryError instanceof ApiError
         ? activeQueryError.userMessage
-        : "Veri alinamadi. Lutfen tekrar deneyin.";
+        : "Veri alınamadı. Lütfen tekrar deneyin.";
   const errorSnack =
     activeQueryErrorMessage !== null && dismissedQueryError !== activeQueryErrorMessage
       ? { severity: "error" as const, message: activeQueryErrorMessage }
@@ -246,12 +246,12 @@ export function FinancePage() {
   const onPageChange = (nextPage: number) => updateParams({ page: String(nextPage) }, false);
   const onPageSizeChange = (nextPageSize: number) => updateParams({ pageSize: String(nextPageSize) });
 
-  // === Sutun tanimlari ===
+  // === Sütun tanımları ===
   const salesColumns: DataTableColumn<SaleRow>[] = [
     { key: "soldAt", header: "Tarih", render: (row) => formatDateTime(row.soldAt) },
-    { key: "businessId", header: "Isletme", render: (row) => <GuidText value={row.businessId} /> },
+    { key: "businessId", header: "İşletme", render: (row) => <GuidText value={row.businessId} /> },
     { key: "subtotal", header: "Ara Toplam", render: (row) => formatMoney(row.subtotal, row.currency) },
-    { key: "discountTotal", header: "Indirim", render: (row) => formatMoney(row.discountTotal, row.currency) },
+    { key: "discountTotal", header: "İndirim", render: (row) => formatMoney(row.discountTotal, row.currency) },
     { key: "taxTotal", header: "Vergi", render: (row) => formatMoney(row.taxTotal, row.currency) },
     {
       key: "grandTotal",
@@ -267,10 +267,10 @@ export function FinancePage() {
 
   const paymentColumns: DataTableColumn<PaymentRow>[] = [
     { key: "paidAt", header: "Tarih", render: (row) => formatDateTime(row.paidAt) },
-    { key: "businessId", header: "Isletme", render: (row) => <GuidText value={row.businessId} /> },
+    { key: "businessId", header: "İşletme", render: (row) => <GuidText value={row.businessId} /> },
     {
       key: "paymentMethod",
-      header: "Odeme Yontemi",
+      header: "Ödeme Yöntemi",
       render: (row) => labelFor(row.paymentMethod, PAYMENT_METHOD_LABELS),
     },
     { key: "amount", header: "Tutar", render: (row) => formatMoney(row.amount, row.currency) },
@@ -278,7 +278,7 @@ export function FinancePage() {
       ? [
           {
             key: "refersToPaymentId",
-            header: "Iade Edilen Odeme",
+            header: "İade Edilen Ödeme",
             render: (row: PaymentRow) =>
               row.refersToPaymentId ? <GuidText value={row.refersToPaymentId} /> : "-",
           },
@@ -292,11 +292,11 @@ export function FinancePage() {
   ];
 
   const cashColumns: DataTableColumn<CashSessionRow>[] = [
-    { key: "openedAt", header: "Acilis", render: (row) => formatDateTime(row.openedAt) },
-    { key: "closedAt", header: "Kapanis", render: (row) => (row.closedAt ? formatDateTime(row.closedAt) : "-") },
+    { key: "openedAt", header: "Açılış", render: (row) => formatDateTime(row.openedAt) },
+    { key: "closedAt", header: "Kapanış", render: (row) => (row.closedAt ? formatDateTime(row.closedAt) : "-") },
     {
       key: "openingCash",
-      header: "Acilis Nakit",
+      header: "Açılış Nakit",
       render: (row) => formatMoney(row.openingCash),
     },
     {
@@ -306,7 +306,7 @@ export function FinancePage() {
     },
     {
       key: "countedCash",
-      header: "Sayilan",
+      header: "Sayılan",
       render: (row) => (row.countedCash === null || row.countedCash === undefined ? "-" : formatMoney(row.countedCash)),
     },
     {
@@ -316,7 +316,7 @@ export function FinancePage() {
         if (row.difference === null || row.difference === undefined) {
           return <Typography color="text.secondary">Kapanmadi</Typography>;
         }
-        // Fark isaretle birlikte verilir; pozitif yesil, negatif kirmizi.
+        // Fark işaretle birlikte verilir; pozitif yeşil, negatif kırmızı.
         const color =
           row.difference > 0 ? "success.main" : row.difference < 0 ? "error.main" : "text.primary";
         return (
@@ -335,15 +335,15 @@ export function FinancePage() {
 
   const expenseColumns: DataTableColumn<ExpenseRow>[] = [
     { key: "expenseDate", header: "Tarih", render: (row) => formatDateTime(row.expenseDate) },
-    { key: "businessId", header: "Isletme", render: (row) => <GuidText value={row.businessId} /> },
+    { key: "businessId", header: "İşletme", render: (row) => <GuidText value={row.businessId} /> },
     {
       key: "description",
-      header: "Aciklama",
+      header: "Açıklama",
       render: (row) => row.description ?? "-",
     },
     {
       key: "paymentMethod",
-      header: "Odeme Yontemi",
+      header: "Ödeme Yöntemi",
       render: (row) => labelFor(row.paymentMethod, PAYMENT_METHOD_LABELS),
     },
     { key: "amount", header: "Tutar", render: (row) => formatMoney(row.amount, row.currency) },
@@ -356,12 +356,12 @@ export function FinancePage() {
 
   const commissionColumns: DataTableColumn<CommissionRow>[] = [
     { key: "calculatedAt", header: "Tarih", render: (row) => formatDateTime(row.calculatedAt) },
-    { key: "businessId", header: "Isletme", render: (row) => <GuidText value={row.businessId} /> },
-    { key: "employeeId", header: "Calisan", render: (row) => <GuidText value={row.employeeId} /> },
+    { key: "businessId", header: "İşletme", render: (row) => <GuidText value={row.businessId} /> },
+    { key: "employeeId", header: "Çalışan", render: (row) => <GuidText value={row.employeeId} /> },
     { key: "baseAmount", header: "Taban Tutar", render: (row) => formatMoney(row.baseAmount) },
     {
       key: "commissionAmount",
-      header: "Prim Tutari",
+      header: "Prim Tutarı",
       render: (row) => <strong>{formatMoney(row.commissionAmount)}</strong>,
     },
     {
@@ -377,7 +377,7 @@ export function FinancePage() {
     const sales = salesQuery.data;
     tableContent = (
       <DataTable<SaleRow>
-        ariaLabel="satis listesi"
+        ariaLabel="satış listesi"
         columns={salesColumns}
         rows={sales?.items}
         loading={salesQuery.isPending}
@@ -387,7 +387,7 @@ export function FinancePage() {
         totalCount={sales?.totalCount ?? 0}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
-        emptyLabel="Bu filtrelerle satis kaydi bulunamadi."
+        emptyLabel="Bu filtrelerle satış kaydı bulunamadı."
         onRefresh={() => salesQuery.refetch()}
       />
     );
@@ -405,7 +405,7 @@ export function FinancePage() {
         totalCount={payments?.pagination.totalCount ?? 0}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
-        emptyLabel={isRefundTab ? "Bu filtrelerle iade kaydi bulunamadi." : "Bu filtrelerle tahsilat kaydi bulunamadi."}
+        emptyLabel={isRefundTab ? "Bu filtrelerle iade kaydı bulunamadı." : "Bu filtrelerle tahsilat kaydı bulunamadı."}
         onRefresh={() => paymentsQuery.refetch()}
       />
     );
@@ -423,7 +423,7 @@ export function FinancePage() {
         totalCount={sessions?.pagination.totalCount ?? 0}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
-        emptyLabel="Bu filtrelerle kasa oturumu bulunamadi."
+        emptyLabel="Bu filtrelerle kasa oturumu bulunamadı."
         onRefresh={() => cashQuery.refetch()}
       />
     );
@@ -441,7 +441,7 @@ export function FinancePage() {
         totalCount={expenses?.pagination.totalCount ?? 0}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
-        emptyLabel="Bu filtrelerle gider kaydi bulunamadi."
+        emptyLabel="Bu filtrelerle gider kaydı bulunamadı."
         onRefresh={() => expensesQuery.refetch()}
       />
     );
@@ -459,7 +459,7 @@ export function FinancePage() {
         totalCount={commissions?.pagination.totalCount ?? 0}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
-        emptyLabel="Bu filtrelerle prim tahakkuku bulunamadi."
+        emptyLabel="Bu filtrelerle prim tahakkuku bulunamadı."
         onRefresh={() => commissionsQuery.refetch()}
       />
     );
@@ -481,26 +481,26 @@ export function FinancePage() {
       </Tabs>
       <Divider />
 
-      {/* Ortak filtre cubugu: isletme GUID + sekmeye ozel filtreler */}
+      {/* Ortak filtre çubuğu: işletme GUID + sekmeye özel filtreler */}
       <Stack
         direction={{ xs: "column", md: "row" }}
         spacing={2}
         sx={{ alignItems: { xs: "stretch", md: "flex-start" }, my: 2 }}
       >
         <TextField
-          label="Isletme Kimligi (GUID)"
+          label="İşletme Kimliği (GUID)"
           size="small"
           sx={{ minWidth: { md: 300 } }}
           value={businessInput}
           onChange={(e) => setBusinessInput(e.target.value)}
-          onBlur={() => applyGuidFilter("businessId", "isletme")}
+          onBlur={() => applyGuidFilter("businessId", "işletme")}
           error={businessError !== null}
-          helperText={businessError ?? "Bos birakilirsa tum isletmeler."}
+          helperText={businessError ?? "Boş bırakılırsa tüm işletmeler."}
         />
         {dateFiltersActive ? (
           <>
             <TextField
-              label="Baslangic Tarihi"
+              label="Başlangıç Tarihi"
               type="date"
               size="small"
               sx={{ minWidth: { md: 180 } }}
@@ -509,7 +509,7 @@ export function FinancePage() {
               slotProps={{ inputLabel: { shrink: true } }}
             />
             <TextField
-              label="Bitis Tarihi"
+              label="Bitiş Tarihi"
               type="date"
               size="small"
               sx={{ minWidth: { md: 180 } }}
@@ -528,7 +528,7 @@ export function FinancePage() {
             value={statusParam}
             onChange={(e) => updateParams({ status: e.target.value })}
           >
-            <MenuItem value="">Tumu</MenuItem>
+            <MenuItem value="">Tümü</MenuItem>
             {CASH_STATUS_OPTIONS.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
@@ -546,7 +546,7 @@ export function FinancePage() {
               value={statusParam}
               onChange={(e) => updateParams({ status: e.target.value })}
             >
-              <MenuItem value="">Tumu</MenuItem>
+              <MenuItem value="">Tümü</MenuItem>
               {COMMISSION_STATUS_OPTIONS.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
@@ -554,24 +554,24 @@ export function FinancePage() {
               ))}
             </TextField>
             <TextField
-              label="Calisan Kimligi (GUID)"
+              label="Çalışan Kimliği (GUID)"
               size="small"
               sx={{ minWidth: { md: 300 } }}
               value={employeeInput}
               onChange={(e) => setEmployeeInput(e.target.value)}
-              onBlur={() => applyGuidFilter("employeeId", "calisan")}
+              onBlur={() => applyGuidFilter("employeeId", "çalışan")}
               error={employeeError !== null}
-              helperText={employeeError ?? "Bos birakilirsa tum calisanlar."}
+              helperText={employeeError ?? "Boş bırakılırsa tüm çalışanlar."}
             />
           </>
         ) : null}
       </Stack>
 
-      {/* Satis sekmesinde filtre kapsaminin toplam cirosu yanitta tek nesne olarak gelir */}
+      {/* Satış sekmesinde filtre kapsamının toplam cirosu yanıtta tek nesne olarak gelir */}
       {tab === "sales" && salesQuery.data ? (
         <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          Filtre kapsamindaki toplam ciro:{" "}
-          <strong>{formatMoney(salesQuery.data.totalGrandTotal ?? 0)}</strong> ({salesQuery.data.totalCount} kayit)
+          Filtre kapsamındaki toplam ciro:{" "}
+          <strong>{formatMoney(salesQuery.data.totalGrandTotal ?? 0)}</strong> ({salesQuery.data.totalCount} kayıt)
         </Typography>
       ) : null}
 

@@ -7,75 +7,75 @@ using Microsoft.Extensions.Logging;
 namespace Rezervise.Infrastructure.Persistence.SeedData
 {
     /// <summary>
-    /// Il (City) referans verilerini ekler.
-    /// Id olarak Turk plaka kodlari (1-81) kullanilir; boylece Address.CityId ile
-    /// il/ilce/mahalle zinciri ayni anahtar uzerinden birlesir.
+    /// İl (City) referans verilerini ekler.
+    /// Id olarak Türk plaka kodları (1-81) kullanılır; böylece Address.CityId ile
+    /// il/ilçe/mahalle zinciri aynı anahtar üzerinden birleşir.
     /// Kaynak: il.sql
     /// </summary>
     public static class CitySeed
     {
-        /// <summary>Seed edilen tum iller icin sabit ulke kodu (ISO 3166-1 alpha-2).</summary>
+        /// <summary>Seed edilen tüm iller için sabit ülke kodu (ISO 3166-1 alpha-2).</summary>
         private const string CountryCode = "TR";
 
-        /// <summary>Seed edilmesi beklenen il sayisi; dongu baslangic kapasitesi icin kullanilir.</summary>
+        /// <summary>Seed edilmesi beklenen il sayısı; döngü başlangıç kapasitesi için kullanılır.</summary>
         private const int ExpectedCityCount = 81;
 
         /// <summary>
-        /// Plaka kodu ile il adini "|" ayirici ile tutan ham veri listesi.
+        /// Plaka kodu ile il adını "|" ayırıcı ile tutan ham veri listesi.
         /// </summary>
         private static readonly string[] RawCities =
         {
             "1|Adana",
-            "2|Adiyaman",
+            "2|Adıyaman",
             "3|Afyonkarahisar",
-            "4|Agri",
+            "4|Ağrı",
             "5|Amasya",
             "6|Ankara",
             "7|Antalya",
             "8|Artvin",
-            "9|Aydin",
-            "10|Balikesir",
+            "9|Aydın",
+            "10|Balıkesir",
             "11|Bilecik",
-            "12|Bing�l",
+            "12|Bingöl",
             "13|Bitlis",
-            "14|Bolu",
+            "14|Bölü",
             "15|Burdur",
             "16|Bursa",
-            "17|�anakkale",
-            "18|�ankiri",
-            "19|�orum",
+            "17|Çanakkale",
+            "18|Çankiri",
+            "19|Çorum",
             "20|Denizli",
-            "21|Diyarbakir",
+            "21|Diyarbakır",
             "22|Edirne",
-            "23|Elazig",
+            "23|Elazığ",
             "24|Erzincan",
             "25|Erzurum",
-            "26|Eskisehir",
+            "26|Eskişehir",
             "27|Gaziantep",
             "28|Giresun",
-            "29|G�m�shane",
+            "29|Gümüshane",
             "30|Hakkari",
             "31|Hatay",
             "32|Isparta",
-            "33|Mersin(I�el)",
+            "33|Mersin(Içel)",
             "34|Istanbul",
-            "35|Izmir",
+            "35|İzmir",
             "36|Kars",
             "37|Kastamonu",
             "38|Kayseri",
-            "39|Kirklareli",
-            "40|Kirsehir",
+            "39|Kırklareli",
+            "40|Kırşehir",
             "41|Kocaeli",
             "42|Konya",
-            "43|K�tahya",
+            "43|Kütahya",
             "44|Malatya",
             "45|Manisa",
             "46|Kahramanmaras",
-            "47|Mardin",
-            "48|Mugla",
-            "49|Mus",
-            "50|Nevsehir",
-            "51|Nigde",
+            "47|Mardın",
+            "48|Muğla",
+            "49|Müs",
+            "50|Nevşehir",
+            "51|Niğde",
             "52|Ordu",
             "53|Rize",
             "54|Sakarya",
@@ -83,41 +83,41 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
             "56|Siirt",
             "57|Sinop",
             "58|Sivas",
-            "59|Tekirdag",
+            "59|Tekirdağ",
             "60|Tokat",
             "61|Trabzon",
             "62|Tunceli",
-            "63|Sanliurfa",
-            "64|Usak",
+            "63|Şanlıurfa",
+            "64|Uşak",
             "65|Van",
             "66|Yozgat",
             "67|Zonguldak",
             "68|Aksaray",
             "69|Bayburt",
             "70|Karaman",
-            "71|Kirikkale",
+            "71|Kırıkkale",
             "72|Batman",
-            "73|Sirnak",
-            "74|Bartin",
+            "73|Şırnak",
+            "74|Bartın",
             "75|Ardahan",
-            "76|Igdir",
+            "76|Iğdır",
             "77|Yalova",
-            "78|Karab�k",
+            "78|Karabük",
             "79|Kilis",
             "80|Osmaniye",
-            "81|D�zce"
+            "81|Düzce"
         };
 
         /// <summary>
-        /// Illeri veritabanina ekler. Tablo dolu ise hicbir sey yapmaz.
+        /// İlleri veritabanına ekler. Tablo dolu ise hiçbir şey yapmaz.
         /// </summary>
-        /// <param name="context">Kullanilacak veritabani baglami.</param>
-        /// <param name="logger">Seed ilerlemesini raporlamak icin loglayici.</param>
+        /// <param name="context">Kullanılacak veritabanı bağlamı.</param>
+        /// <param name="logger">Seed ilerlemesini raporlamak için loglayıcı.</param>
         public static async Task SeedAsync(AppDbContext context, ILogger logger)
         {
             if (await context.Cities.AnyAsync())
             {
-                logger.LogInformation("Cities zaten mevcut, atlaniyor.");
+                logger.LogInformation("Cities zaten mevcut, atlanıyor.");
                 return;
             }
 
@@ -125,7 +125,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
 
             foreach (var line in RawCities)
             {
-                // Ham satir formati: <plakaKodu>|<ilAdi>
+                // Ham satır formatı: <plakaKodu>|<ilAdi>
                 var separatorIndex = line.IndexOf('|');
                 var id = int.Parse(line[..separatorIndex], CultureInfo.InvariantCulture);
                 var name = line[(separatorIndex + 1)..];

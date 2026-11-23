@@ -9,16 +9,16 @@ using System.Linq.Expressions;
 namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppointments
 {
     /// <summary>
-    /// Randevulari isletme, calisan, durum ve tarih araligina gore filtreleyip
-    /// sayfalayarak listeler (dokuman Modul 12). Tarih karsilastirmalari
-    /// UTC AppointmentDate uzerinde yapilir.
+    /// Randevuları işletme, çalışan, durum ve tarih aralığına göre filtreleyip
+    /// sayfalayarak listeler (doküman Modül 12). Tarih karşılaştırmaları
+    /// UTC AppointmentDate üzerinde yapılır.
     /// </summary>
     public class GetAdminAppointmentsQueryHandler : IRequestHandler<GetAdminAppointmentsQuery, Result<AdminPagedResult<AdminAppointmentListItemDto>>>
     {
-        /// <summary>Izin verilen en buyuk sayfa boyutu (dokuman 7.4).</summary>
+        /// <summary>İzin verilen en büyük sayfa boyutu (doküman 7.4).</summary>
         public const int MaxPageSize = 200;
 
-        /// <summary>pageSize verilmediginde kullanilan varsayilan.</summary>
+        /// <summary>pageSize verilmediğinde kullanılan varsayılan.</summary>
         public const int DefaultPageSize = 50;
 
         private readonly IRepository<Appointment> _appointmentRepository;
@@ -34,19 +34,19 @@ namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppo
         {
             try
             {
-                // 1. Sayfa degerleri tek yerden sinirlanir.
+                // 1. Sayfa değerleri tek yerden sınırlanır.
                 var page = Math.Max(request.Page, 1);
                 var pageSize = Math.Clamp(
                     request.PageSize <= 0 ? DefaultPageSize : request.PageSize,
                     1,
                     MaxPageSize);
 
-                // 2. Filtreler ifade uzerinde kurulur.
+                // 2. Filtreler ifade üzerinde kurulur.
                 var appointments = await _appointmentRepository.FindAsync(
                     BuildPredicate(request.BusinessId, request.EmployeeId, request.Status, request.FromDate, request.ToDate),
                     cancellationToken);
 
-                // 3. En yeni randevu once olacak sekilde sirala ve sayfala.
+                // 3. En yeni randevu önce olacak şekilde sırala ve sayfala.
                 var ordered = appointments
                     .OrderByDescending(a => a.AppointmentDate)
                     .ThenBy(a => a.Id)
@@ -69,13 +69,13 @@ namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppo
             catch (Exception ex)
             {
                 return Result.Failure<AdminPagedResult<AdminAppointmentListItemDto>>(
-                    Error.Internal("Randevular listelenirken bir hata olustu.", ex.Message));
+                    Error.Internal("Randevular listelenirken bir hata oluştu.", ex.Message));
             }
         }
 
         /// <summary>
-        /// Isletme, calisan, durum ve tarih araligi filtrelerini tek ifadeye toplar.
-        /// Null filtreler kisayol degerlendirmesiyle atlanir.
+        /// İşletme, çalışan, durum ve tarih aralığı filtrelerini tek ifadeye toplar.
+        /// Null filtreler kısayol değerlendirmesiyle atlanır.
         /// </summary>
         private static Expression<Func<Appointment, bool>> BuildPredicate(
             Guid? businessId,
@@ -90,7 +90,7 @@ namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppo
                 && (fromDate == null || a.AppointmentDate >= fromDate)
                 && (toDate == null || a.AppointmentDate <= toDate);
 
-        /// <summary>Entity'yi liste ogesine cevirir.</summary>
+        /// <summary>Entity'yi liste öğesine çevirir.</summary>
         private static AdminAppointmentListItemDto ToListItem(Appointment appointment) => new()
         {
             Id = appointment.Id,

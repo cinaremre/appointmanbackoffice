@@ -7,9 +7,9 @@ using MediatR;
 namespace Rezervise.Application.Features.PublicPages.Queries.GetPublicPageBySlug
 {
     /// <summary>
-    /// Anonim public sayfa sorgusu. Yetki kontrolu YOKTUR; handler
-    /// ICurrentUserService'e hic baglanmaz. Slug normalize edilerek
-    /// eslenir; yayindaki sayfa ve aktif hizmetler doner.
+    /// Anonim public sayfa sorgusu. Yetki kontrolü YOKTUR; handler
+    /// ICurrentUserService'e hiç bağlanmaz. Slug normalize edilerek
+    /// eşlenir; yayındaki sayfa ve aktif hizmetler döner.
     /// </summary>
     public class GetPublicPageBySlugQueryHandler : IRequestHandler<GetPublicPageBySlugQuery, Result<PublicPageDto>>
     {
@@ -31,13 +31,13 @@ namespace Rezervise.Application.Features.PublicPages.Queries.GetPublicPageBySlug
         {
             try
             {
-                // 1. Slug normalize (entity ile ayni kural: kucuk harf).
+                // 1. Slug normalize (entity ile aynı kural: küçük harf).
                 var slug = (request.Slug ?? string.Empty).Trim().ToLowerInvariant();
 
                 if (string.IsNullOrWhiteSpace(slug))
-                    return Result<PublicPageDto>.Failure(Error.Validation("Slug bos olamaz."));
+                    return Result<PublicPageDto>.Failure(Error.Validation("Slug boş olamaz."));
 
-                // 2. Yayindaki sayfa. Yayinda degilse NotFound doner.
+                // 2. Yayındaki sayfa. Yayında değilse NotFound döner.
                 var page = (await _pageRepository.FindAsync(
                     p => p.Slug == slug && p.IsPublished && !p.IsDeleted,
                     cancellationToken)).FirstOrDefault();
@@ -45,17 +45,17 @@ namespace Rezervise.Application.Features.PublicPages.Queries.GetPublicPageBySlug
                 if (page is null)
                     return Result<PublicPageDto>.Failure(Error.NotFound("Public sayfa", slug));
 
-                // 3. Isletme kontrolu
+                // 3. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(page.BusinessId, cancellationToken);
                 if (business is null || !business.IsActive)
-                    return Result<PublicPageDto>.Failure(Error.NotFound("Isletme", page.BusinessId.ToString()));
+                    return Result<PublicPageDto>.Failure(Error.NotFound("İşletme", page.BusinessId.ToString()));
 
                 // 4. Aktif hizmetler
                 var services = await _serviceRepository.FindAsync(
                     s => s.BusinessId == page.BusinessId && s.IsActive && !s.IsDeleted,
                     cancellationToken);
 
-                // 5. DTO olustur (kisisel veri yok)
+                // 5. DTO oluştur (kişisel veri yok)
                 var dto = new PublicPageDto
                 {
                     BusinessId = business.Id,
@@ -75,7 +75,7 @@ namespace Rezervise.Application.Features.PublicPages.Queries.GetPublicPageBySlug
             catch (Exception ex)
             {
                 return Result<PublicPageDto>.Failure(
-                    Error.Internal("Public sayfa getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Public sayfa getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

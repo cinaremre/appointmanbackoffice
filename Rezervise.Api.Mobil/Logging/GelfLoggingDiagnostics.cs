@@ -2,7 +2,7 @@ namespace Rezervise.Api.Logging
 {
     /// <summary>
     /// Emits process-level warnings when the logging infrastructure itself fails.
-    /// Warnings are written to standard error at most once so a broken sink cannot flood the output.
+    /// Warnings are written to standard error at most önce so a broken sink cannot flood the output.
     /// </summary>
     internal static class GelfLoggingDiagnostics
     {

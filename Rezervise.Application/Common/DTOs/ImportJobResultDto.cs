@@ -3,7 +3,7 @@ using Rezervise.Domain.Enums;
 namespace Rezervise.Application.Common.DTOs
 {
     /// <summary>
-    /// Veri aktarim isinin ozeti ve satir bazli sonuclari.
+    /// Veri aktarım işinin özeti ve satır bazlı sonuçları.
     /// </summary>
     public class ImportJobResultDto
     {
@@ -16,7 +16,7 @@ namespace Rezervise.Application.Common.DTOs
         public int ImportedRows { get; set; }
         public int FailedRows { get; set; }
 
-        /// <summary>Mukerrer nedeniyle atlanan satir sayisi (job uzerinde sayac tutulmaz).</summary>
+        /// <summary>Mükerrer nedeniyle atlanan satır sayısı (job üzerinde sayaç tutulmaz).</summary>
         public int SkippedRows { get; set; }
 
         public DateTime? StartedAt { get; set; }
@@ -25,7 +25,7 @@ namespace Rezervise.Application.Common.DTOs
         public List<ImportRowResultDto> Rows { get; set; } = new();
     }
 
-    /// <summary>Tek bir aktarim satirinin sonucu.</summary>
+    /// <summary>Tek bir aktarım satırının sonucu.</summary>
     public class ImportRowResultDto
     {
         public int RowNumber { get; set; }

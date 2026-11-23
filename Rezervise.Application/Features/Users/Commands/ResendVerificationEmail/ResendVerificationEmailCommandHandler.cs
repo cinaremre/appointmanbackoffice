@@ -11,8 +11,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Users.Commands.ResendVerificationEmail
 {
     /// <summary>
-    /// Dogrulama e-postasini yeniden gonderir. Yanit, adresin sistemde kayitli
-    /// olup olmadigini sizdirmamak icin her durumda basarili doner.
+    /// Doğrulama e-postasını yeniden gönderir. Yanıt, adresin sistemde kayıtlı
+    /// olup olmadığını sızdırmamak için her durumda başarılı döner.
     /// </summary>
     public class ResendVerificationEmailCommandHandler
         : IRequestHandler<ResendVerificationEmailCommand, Result<bool>>
@@ -23,11 +23,11 @@ namespace Rezervise.Application.Features.Users.Commands.ResendVerificationEmail
         private readonly EmailOptions _emailOptions;
         private readonly ILocalizationService _localizationService;
 
-        /// <param name="userRepository">Kullanici deposu.</param>
-        /// <param name="unitOfWork">Kalicilik birimi.</param>
-        /// <param name="emailQueue">Arka plan e-posta kuyrugu.</param>
-        /// <param name="emailOptions">Bag adresi ve bekleme suresi ayarlari.</param>
-        /// <param name="localizationService">Konu/govde metinlerini cozer.</param>
+        /// <param name="userRepository">Kullanıcı deposu.</param>
+        /// <param name="unitOfWork">Kalıcılık birimi.</param>
+        /// <param name="emailQueue">Arka plan e-posta kuyruğu.</param>
+        /// <param name="emailOptions">Bağ adresi ve bekleme süresi ayarları.</param>
+        /// <param name="localizationService">Konu/gövde metinlerini çözer.</param>
         public ResendVerificationEmailCommandHandler(
             IRepository<User> userRepository,
             IUnitOfWork unitOfWork,
@@ -42,8 +42,8 @@ namespace Rezervise.Application.Features.Users.Commands.ResendVerificationEmail
             _localizationService = localizationService;
         }
 
-        /// <param name="request">E-posta adresini tasiyan komut.</param>
-        /// <param name="cancellationToken">Iptal belirteci.</param>
+        /// <param name="request">E-posta adresini taşıyan komut.</param>
+        /// <param name="cancellationToken">İptal belirteci.</param>
         /// <returns>Her durumda <c>true</c>.</returns>
         public async Task<Result<bool>> Handle(
             ResendVerificationEmailCommand request,
@@ -62,11 +62,11 @@ namespace Rezervise.Application.Features.Users.Commands.ResendVerificationEmail
 
                 var user = users.FirstOrDefault();
 
-                // Hesap yok veya zaten dogrulanmis: bilgi sizdirmadan basarili donulur.
+                // Hesap yok veya zaten doğrulanmış: bilgi sızdırmadan başarılı dönülür.
                 if (user is null || user.IsEmailVerified)
                     return Result<bool>.Success(true);
 
-                // 5. Sik gonderimi engelle: bekleme suresi dolmadiysa yeni token uretilmez.
+                // 5. Sık gönderimi engelle: bekleme süresi dolmadıysa yeni token üretilmez.
                 if (user.EmailVerificationRequestedAt.HasValue &&
                     DateTime.UtcNow - user.EmailVerificationRequestedAt.Value
                         < TimeSpan.FromMinutes(_emailOptions.ResendCooldownMinutes))
@@ -94,15 +94,15 @@ namespace Rezervise.Application.Features.Users.Commands.ResendVerificationEmail
             catch (Exception ex)
             {
                 return Result<bool>.Failure(
-                    Error.Internal("Dogrulama e-postasi gonderilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Doğrulama e-postası gönderilirken bir hata oluştu.", ex.Message));
             }
         }
 
         /// <summary>
-        /// Dogrulama e-postasini kuyruga birakir; gonderim hatasi yaniti bozmaz.
+        /// Doğrulama e-postasını kuyruğa bırakır; gönderim hatası yanıtı bozmaz.
         /// </summary>
-        /// <param name="user">Dogrulanacak kullanici.</param>
-        /// <param name="rawToken">E-postaya yazilacak ham token.</param>
+        /// <param name="user">Doğrulanacak kullanıcı.</param>
+        /// <param name="rawToken">E-postaya yazılacak ham token.</param>
         private void TryQueueVerificationEmail(User user, string rawToken)
         {
             if (string.IsNullOrWhiteSpace(_emailOptions.VerificationLinkBaseUrl))
@@ -121,7 +121,7 @@ namespace Rezervise.Application.Features.Users.Commands.ResendVerificationEmail
             }
             catch (Exception)
             {
-                // Kuyruk hatasi yeniden gonderim akisini bozmaz.
+                // Kuyruk hatası yeniden gönderim akışını bozmaz.
             }
         }
     }

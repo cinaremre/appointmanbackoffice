@@ -21,7 +21,7 @@ namespace Rezervise.Application.Common.Services
         private readonly IConfiguration _configuration;
 
         /// <summary>
-        /// Initialises the service with the application configuration.
+        /// İnitialıses the service with the application configuration.
         /// </summary>
         /// <param name="configuration">Configuration root containing the JwtSettings section.</param>
         public TokenService(IConfiguration configuration)
@@ -29,7 +29,7 @@ namespace Rezervise.Application.Common.Services
             _configuration = configuration;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public string GenerateAccessToken(User user)
         {
             var settings = ReadSettings();
@@ -44,8 +44,8 @@ namespace Rezervise.Application.Common.Services
                 new Claim("userId", user.Id.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Role, user.Role.ToString()),
-                // Dil tercihi claim'i, kullanici bazli kultur saglayicisi tarafindan
-                // DB sorgusu yapmadan okunur. Token uretildigi anda donar.
+                // Dil tercihi claim'i, kullanıcı bazlı kültür sağlayıcısı tarafından
+                // DB sorgusu yapmadan okunur. Token üretildiği anda donar.
                 new Claim("language", string.IsNullOrWhiteSpace(user.LanguageCode)
                     ? User.DefaultLanguageCode
                     : user.LanguageCode)
@@ -62,7 +62,7 @@ namespace Rezervise.Application.Common.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public string GenerateRefreshToken()
         {
             var randomNumber = new byte[64];
@@ -71,7 +71,7 @@ namespace Rezervise.Application.Common.Services
             return Convert.ToBase64String(randomNumber);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
@@ -118,11 +118,11 @@ namespace Rezervise.Application.Common.Services
             }
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public DateTime GetAccessTokenExpiryUtc()
             => DateTime.UtcNow.AddMinutes(GetAccessTokenLifetimeMinutes());
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public DateTime GetRefreshTokenExpiryUtc()
             => DateTime.UtcNow.AddDays(GetRefreshTokenLifetimeDays());
 
@@ -157,7 +157,7 @@ namespace Rezervise.Application.Common.Services
         }
 
         /// <summary>
-        /// Resolves the signing material once per call and fails loudly when it is missing.
+        /// Resolves the signing material önce per call and fails loudly when it is missing.
         /// </summary>
         /// <returns>The resolved token settings.</returns>
         /// <exception cref="InvalidOperationException">Thrown when the signing secret, issuer or audience is missing.</exception>

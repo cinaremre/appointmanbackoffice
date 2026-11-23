@@ -10,10 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers.Owner
 {
     /// <summary>
-    /// Isletme sahibinin calisan ve izin yonetimi. Route seviyesinde
-    /// BusinessOwner rolune sinirlidir; isletme kapsami handler'larda
-    /// dogrulanir. Onay/ret domain kurallarini mobil taraftaki mevcut
-    /// handler'lardan alir.
+    /// İşletme sahibinin çalışan ve izin yönetimi. Route seviyesinde
+    /// BusinessOwner rolüne sınırlıdır; işletme kapsamı handler'larda
+    /// doğrulanır. Onay/ret domain kurallarını mobil taraftaki mevcut
+    /// handler'lardan alır.
     /// </summary>
     [ApiController]
     [Authorize(Roles = "BusinessOwner")]
@@ -27,7 +27,7 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
             _mediator = mediator;
         }
 
-        /// <summary>Sahibin calisan listesi.</summary>
+        /// <summary>Sahibin çalışan listesi.</summary>
         [HttpGet("businesses/{businessId:guid}/employees")]
         public async Task<IActionResult> GetMyEmployees(
             Guid businessId,
@@ -50,7 +50,7 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
         }
 
         /// <summary>
-        /// Sahibin calisanlarinin izinleri; durum filtresiyle
+        /// Sahibin çalışanlarının izinleri; durum filtresiyle
         /// (0=Pending, 1=Approved, 2=Rejected).
         /// </summary>
         [HttpGet("businesses/{businessId:guid}/time-offs")]
@@ -76,7 +76,7 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
             return OkList(result.Value!.Items, result.Value.Page, result.Value.PageSize, result.Value.TotalCount);
         }
 
-        /// <summary>Izni onaylar; randevu cakisma kurallari domain'de yurur.</summary>
+        /// <summary>İzni onaylar; randevu çakışma kuralları domain'de yürür.</summary>
         [HttpPost("businesses/{businessId:guid}/time-offs/{timeOffId:guid}/approve")]
         public async Task<IActionResult> ApproveMyTimeOff(
             Guid businessId,
@@ -98,7 +98,7 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
             return OkEnvelope(result.Value!);
         }
 
-        /// <summary>Izni reddeder (soft delete); domain akisi tek kaynaktan yurur.</summary>
+        /// <summary>İzni reddeder (soft delete); domain akışı tek kaynaktan yürür.</summary>
         [HttpPost("businesses/{businessId:guid}/time-offs/{timeOffId:guid}/reject")]
         public async Task<IActionResult> RejectMyTimeOff(
             Guid businessId,
@@ -120,10 +120,10 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
             return OkEnvelope(result.Value!);
         }
 
-        /// <summary>Onay/ret istek govdesi. Reason opsiyoneldir.</summary>
+        /// <summary>Onay/ret istek gövdesi. Reason opsiyoneldir.</summary>
         public sealed class OwnerTimeOffDecisionRequest
         {
-            /// <summary>Opsiyonel islem gerekcesi; denetim kaydina yazilir.</summary>
+            /// <summary>Opsiyonel işlem gerekçesi; denetim kaydına yazılır.</summary>
             public string? Reason { get; init; }
         }
     }

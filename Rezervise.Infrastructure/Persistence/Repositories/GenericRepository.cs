@@ -45,7 +45,7 @@ namespace Rezervise.Infrastructure.Persistence.Repositories
             return await _dbSet.Where(predicate).ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public virtual async Task<IReadOnlyList<T>> FindWithIncludesAsync(
             Expression<Func<T, bool>> predicate,
             string[] includes,

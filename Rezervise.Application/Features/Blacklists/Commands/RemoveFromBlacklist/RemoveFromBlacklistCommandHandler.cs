@@ -32,40 +32,40 @@ namespace Rezervise.Application.Features.Blacklists.Commands.RemoveFromBlacklist
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu
+                // 2. Yetki kontrolü
                 if (business.OwnerId != request.RequesterId)
                     return Result<Guid>.Failure(
-                        Error.Unauthorized("Bu islemi sadece isletme sahibi yapabilir."));
+                        Error.Unauthorized("Bu işlemi sadece işletme sahibi yapabilir."));
 
-                // 3. Kara liste kaydi kontrolu
+                // 3. Kara liste kaydı kontrolü
                 var entry = await _blacklistRepository.GetByIdAsync(request.BlacklistEntryId, cancellationToken);
                 if (entry is null)
                     return Result<Guid>.Failure(
-                        Error.NotFound("Kara liste kaydi", request.BlacklistEntryId.ToString()));
+                        Error.NotFound("Kara liste kaydı", request.BlacklistEntryId.ToString()));
 
-                // 4. Kayit bu isletmeye mi ait?
+                // 4. Kayıt bu işletmeye mi ait?
                 if (entry.BusinessId != request.BusinessId)
                     return Result<Guid>.Failure(
-                        Error.BusinessRule("Bu kara liste kaydi isletmeye ait degil."));
+                        Error.BusinessRule("Bu kara liste kaydı işletmeye ait değil."));
 
-                // 5. Zaten cikarilmis mi?
+                // 5. Zaten çıkarılmış mi?
                 if (entry.IsDeleted)
                     return Result<Guid>.Failure(
-                        Error.Conflict("Bu kayit zaten kara listeden cikarilmis."));
+                        Error.Conflict("Bu kayıt zaten kara listeden çıkarılmış."));
 
                 // 6. Soft delete + bilgileri kaydet
                 entry.Remove(request.RequesterId.ToString(), request.Reason);
 
-                // 7. Kullanici Locked ise Active'e cevir (opsiyonel)
+                // 7. Kullanıcı Locked ise Active'e çevir (opsiyonel)
                 var user = await _userRepository.GetByIdAsync(entry.UserId, cancellationToken);
                 if (user is not null && user.AccountStatus == Domain.Enums.EnumAccountStatus.Locked)
                 {
-                    // Kullanicinin hala baska isletmelerde kara listede olup olmadigini kontrol et
+                    // Kullanıcının hala başka işletmelerde kara listede olup olmadığını kontrol et
                     var remainingEntries = await _blacklistRepository.FindAsync(
                         b => b.UserId == user.Id && !b.IsDeleted,
                         cancellationToken);
@@ -87,7 +87,7 @@ namespace Rezervise.Application.Features.Blacklists.Commands.RemoveFromBlacklist
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Kara listeden cikarilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Kara listeden çıkarılırken bir hata oluştu.", ex.Message));
             }
         }
     }

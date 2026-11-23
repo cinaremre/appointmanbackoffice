@@ -23,9 +23,9 @@ namespace Rezervise.Application.Features.ServiceCategories.Queries.GetFlat
             try
             {
                 // 1. Kategorileri getir.
-                //    Translations yuklenmezse GetName() her kategori icin "Unknown" doner;
-                //    SubCategories/Services yuklenmezse IsLeaf(), GetDepth() ve sayaclar yanlis olur.
-                //    ParentCategory.Translations ic ice yol oldugu icin tek seviye Include yetmez.
+                //    Translations yüklenmezse GetName() her kategori için "Unknown" döner;
+                //    SubCategories/Services yüklenmezse IsLeaf(), GetDepth() ve sayaçlar yanlış olur.
+                //    ParentCategory.Translations iç ice yol öldüğü için tek seviye Include yetmez.
                 var categories = await _categoryRepository.FindWithIncludesAsync(
                     c => !c.IsDeleted && (!request.OnlyActive || c.IsActive),
                     new[]
@@ -55,13 +55,13 @@ namespace Rezervise.Application.Features.ServiceCategories.Queries.GetFlat
                         .ToList();
                 }
 
-                // 4. Sirala
+                // 4. Sırala
                 var sortedList = categoryList
                     .OrderBy(c => c.DisplayOrder)
                     .ThenBy(c => c.GetName(request.LanguageCode))
                     .ToList();
 
-                // 5. DTO'ya donustur
+                // 5. DTO'ya dönüştür
                 var dtos = sortedList.Select(c => new ServiceCategoryDto
                 {
                     Id = c.Id,
@@ -84,7 +84,7 @@ namespace Rezervise.Application.Features.ServiceCategories.Queries.GetFlat
             catch (Exception ex)
             {
                 return Result<List<ServiceCategoryDto>>.Failure(
-                    Error.Internal("Kategoriler getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kategoriler getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

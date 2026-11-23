@@ -64,7 +64,7 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasDefaultValue(false);
 
-            // Guvenlik: e-posta dogrulama token'i yalnizca SHA-256 hash'i olarak saklanir.
+            // Güvenlik: e-posta doğrulama token'i yalnızca SHA-256 hash'i olarak saklanır.
             builder.Property(x => x.EmailVerificationTokenHash)
                 .IsRequired(false)
                 .HasMaxLength(64);
@@ -79,7 +79,7 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
                 .HasDatabaseName("IX_Users_EmailVerificationTokenHash")
                 .HasFilter("[EmailVerificationTokenHash] IS NOT NULL");
 
-            // Guvenlik: telefon dogrulama kodu da yalnizca SHA-256 hash'i olarak saklanir.
+            // Güvenlik: telefon doğrulama kodu da yalnızca SHA-256 hash'i olarak saklanır.
             builder.Property(x => x.PhoneVerificationCodeHash)
                 .IsRequired(false)
                 .HasMaxLength(64);
@@ -101,7 +101,7 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.Property(x => x.LastLoginDate)
                 .IsRequired(false);
 
-            // Guvenlik: refresh token yalnizca SHA-256 hash'i olarak saklanir.
+            // Güvenlik: refresh token yalnızca SHA-256 hash'i olarak saklanır.
             builder.Property(x => x.RefreshTokenHash)
                 .IsRequired(false)
                 .HasMaxLength(64);
@@ -119,7 +119,7 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.Property(x => x.RefreshTokenRevokedAtUtc)
                 .IsRequired(false);
 
-            // Guvenlik: brute force korumasi.
+            // Güvenlik: brute force koruması.
             builder.Property(x => x.AccessFailedCount)
                 .IsRequired()
                 .HasDefaultValue(0);
@@ -130,15 +130,15 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.Property(x => x.LastFailedLoginUtc)
                 .IsRequired(false);
 
-            // Konum: kullanicinin kayitli oldugu il / ilce.
+            // Konum: kullanıcının kayıtlı öldüğü il / ilçe.
             builder.Property(x => x.CityId)
                 .IsRequired(false);
 
             builder.Property(x => x.DistrictId)
                 .IsRequired(false);
 
-            // Dil tercihi: "tr" / "en". NOT NULL + varsayilan "tr" oldugu icin
-            // mevcut satirlar icin backfill gerekmez.
+            // Dil tercihi: "tr" / "en". NOT NULL + varsayılan "tr" öldüğü için
+            // mevcut satırlar için backfill gerekmez.
             builder.Property(x => x.LanguageCode)
                 .IsRequired()
                 .HasMaxLength(2)

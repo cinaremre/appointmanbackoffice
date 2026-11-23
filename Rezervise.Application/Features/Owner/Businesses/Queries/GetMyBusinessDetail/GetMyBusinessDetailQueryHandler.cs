@@ -8,9 +8,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Businesses.Queries.GetMyBusinessDetail
 {
     /// <summary>
-    /// Isletme sahibinin kendi isletme detayi. Sahiplik OwnerScope ile
-    /// dogrulanir; sayilar ayri repository sorgulariyla hesaplanir
-    /// (GetBusinessDetail deseniyle ayni).
+    /// İşletme sahibinin kendi işletme detayı. Sahiplik OwnerScope ile
+    /// doğrulanır; sayılar ayrı repository sorgularıyla hesaplanır
+    /// (GetBusinessDetail deseniyle aynı).
     /// </summary>
     public class GetMyBusinessDetailQueryHandler
         : IRequestHandler<GetMyBusinessDetailQuery, Result<OwnerBusinessDetailDto>>
@@ -41,7 +41,7 @@ namespace Rezervise.Application.Features.Owner.Businesses.Queries.GetMyBusinessD
         {
             try
             {
-                // 1. Sahiplik: isletme JWT sahibine ait olmali.
+                // 1. Sahiplik: işletme JWT sahibine ait olmalı.
                 var owned = await OwnerScope.FindOwnedBusinessAsync(
                     _businessRepository, _currentUser, request.BusinessId, cancellationToken);
 
@@ -51,7 +51,7 @@ namespace Rezervise.Application.Features.Owner.Businesses.Queries.GetMyBusinessD
                 var business = owned.Value!;
                 var businessId = business.Id;
 
-                // 2. Operasyonel sayilar: calisan, aktif hizmet, bugunun randevulari.
+                // 2. Operasyonel sayılar: çalışan, aktif hizmet, bugünün randevuları.
                 var employees = await _employeeRepository.FindAsync(
                     e => e.BusinessId == businessId && !e.IsDeleted,
                     cancellationToken);
@@ -95,7 +95,7 @@ namespace Rezervise.Application.Features.Owner.Businesses.Queries.GetMyBusinessD
             catch (Exception ex)
             {
                 return Result<OwnerBusinessDetailDto>.Failure(
-                    Error.Internal("Isletme detayi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("İşletme detayı getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -37,10 +37,10 @@ namespace Rezervise.Application.Features.Admin.Categories.Commands.ArchiveBusine
         {
             try
             {
-                // Kritik islem: gerekce zorunlu (dokuman Modul 9).
+                // Kritik işlem: gerekçe zorunlu (doküman Modül 9).
                 if (string.IsNullOrWhiteSpace(request.Reason))
                     return Result<Guid>.Failure(
-                        Error.Validation("Arsivleme gerekcesi (reason) zorunludur."));
+                        Error.Validation("Arşivleme gerekçesi (reason) zorunludur."));
 
                 var category = await _categoryRepository.GetByIdAsync(
                     request.CategoryId, cancellationToken);
@@ -49,16 +49,16 @@ namespace Rezervise.Application.Features.Admin.Categories.Commands.ArchiveBusine
                     return Result<Guid>.Failure(
                         Error.NotFound("Kategori", request.CategoryId.ToString()));
 
-                // Aktif cocuk varsa arsivleme engellenir; once cocuklar arsivlenir.
+                // Aktif çocuk varsa arşivleme engellenir; önce çocuklar arşivlenir.
                 var activeChildren = await _categoryRepository.FindAsync(
                     c => c.ParentCategoryId == request.CategoryId && c.IsActive && !c.IsDeleted,
                     cancellationToken);
 
                 if (activeChildren.Any())
                     return Result<Guid>.Failure(
-                        Error.Conflict("Kategorinin aktif alt kategorileri var; once onlari arsivleyin."));
+                        Error.Conflict("Kategorinin aktif alt kategorileri var; önce onları arşivleyin."));
 
-                // Arsiv = pasif mekanizma; entity'de yeni metot eklenmez.
+                // Arşiv = pasif mekanizma; entity'de yeni metot eklenmez.
                 var wasActive = category.IsActive;
                 category.Deactivate();
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -85,7 +85,7 @@ namespace Rezervise.Application.Features.Admin.Categories.Commands.ArchiveBusine
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(
-                    Error.Internal("Kategori arsivlenirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kategori arşivlenirken bir hata oluştu.", ex.Message));
             }
         }
     }

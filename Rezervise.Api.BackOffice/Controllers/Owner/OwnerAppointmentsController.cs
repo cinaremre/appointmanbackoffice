@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers.Owner
 {
     /// <summary>
-    /// Isletme sahibinin randevu yonetimi. Route seviyesinde BusinessOwner
-    /// rolune sinirlidir; isletme kapsami handler'larda dogrulanir.
-    /// Iptal domain kurallarini mevcut musteri/isletme akisindan alir.
+    /// İşletme sahibinin randevu yönetimi. Route seviyesinde BusinessOwner
+    /// rolüne sınırlıdır; işletme kapsamı handler'larda doğrulanır.
+    /// İptal domain kurallarını mevcut müşteri/işletme akışından alır.
     /// </summary>
     [ApiController]
     [Authorize(Roles = "BusinessOwner")]
@@ -25,7 +25,7 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
             _mediator = mediator;
         }
 
-        /// <summary>Sahibin isletmesinin randevulari; durum ve tarih filtreleriyle.</summary>
+        /// <summary>Sahibin işletmesinin randevuları; durum ve tarih filtreleriyle.</summary>
         [HttpGet("businesses/{businessId:guid}/appointments")]
         public async Task<IActionResult> GetMyAppointments(
             Guid businessId,
@@ -54,8 +54,8 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
         }
 
         /// <summary>
-        /// Randevuyu isletme sahibi olarak iptal eder. Domain kurallari
-        /// mevcut musteri/isletme iptal akisiyla ayni kaynaktan uygulanir.
+        /// Randevuyu işletme sahibi olarak iptal eder. Domain kuralları
+        /// mevcut müşteri/işletme iptal akışıyla aynı kaynaktan uygulanır.
         /// </summary>
         [HttpPost("businesses/{businessId:guid}/appointments/{appointmentId:guid}/cancel")]
         public async Task<IActionResult> CancelMyAppointment(
@@ -64,8 +64,8 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
             [FromBody] OwnerCancelAppointmentRequest? body,
             CancellationToken cancellationToken)
         {
-            // Gerekce bos gonderilirse handler dogrulama hatasi doner ve
-            // buradan 400 BadRequest ile yansitilir.
+            // Gerekçe boş gönderilirse handler doğrulama hatası döner ve
+            // buradan 400 BadRequest ile yansıtılır.
             var result = await _mediator.Send(new CancelMyAppointmentCommand
             {
                 BusinessId = businessId,
@@ -81,13 +81,13 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
             return OkEnvelope(result.Value!);
         }
 
-        /// <summary>Owner iptali istek govdesi. Reason zorunludur.</summary>
+        /// <summary>Owner iptali istek gövdesi. Reason zorunludur.</summary>
         public sealed class OwnerCancelAppointmentRequest
         {
-            /// <summary>Sahibin iptal gerekcesi; zorunludur, denetim kaydina yazilir.</summary>
+            /// <summary>Sahibin iptal gerekçesi; zorunludur, denetim kaydına yazılır.</summary>
             public string? Reason { get; init; }
 
-            /// <summary>Randevuya islenecek gerekce; bos ise Reason kullanilir.</summary>
+            /// <summary>Randevuya işlenecek gerekçe; boş ise Reason kullanılır.</summary>
             public string? CancellationReason { get; init; }
         }
     }

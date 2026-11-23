@@ -34,29 +34,29 @@ namespace Rezervise.Application.Features.Packages.Commands.CreateServicePackage
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Forbidden("Bu isletmeye paket tanimlama yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu işletmeye paket tanımlama yetkiniz yok."));
 
-                // 3. Kalemler dolu olmali
+                // 3. Kalemler dolu olmalı
                 if (request.Items is null || request.Items.Count == 0)
-                    return Result<Guid>.Failure(Error.Validation("Paket en az bir hizmet kalemi icermelidir."));
+                    return Result<Guid>.Failure(Error.Validation("Paket en az bir hizmet kalemi içermelidir."));
 
-                // 4. Ayni hizmet iki kez eklenemez
+                // 4. Aynı hizmet iki kez eklenemez
                 var duplicateServiceId = request.Items
                     .GroupBy(i => i.ServiceId)
                     .FirstOrDefault(g => g.Count() > 1)?
                     .Key;
 
                 if (duplicateServiceId.HasValue)
-                    return Result<Guid>.Failure(Error.Validation("Ayni hizmet pakete iki kez eklenemez.", $"ServiceId: {duplicateServiceId}"));
+                    return Result<Guid>.Failure(Error.Validation("Aynı hizmet pakete iki kez eklenemez.", $"ServiceId: {duplicateServiceId}"));
 
-                // 5. Hizmetler ayni isletmeye ait olmali
+                // 5. Hizmetler aynı işletmeye ait olmalı
                 foreach (var item in request.Items)
                 {
                     var service = await _serviceRepository.GetByIdAsync(item.ServiceId, cancellationToken);
@@ -64,10 +64,10 @@ namespace Rezervise.Application.Features.Packages.Commands.CreateServicePackage
                         return Result<Guid>.Failure(Error.NotFound("Hizmet", item.ServiceId.ToString()));
 
                     if (service.BusinessId != request.BusinessId)
-                        return Result<Guid>.Failure(Error.Validation("Paket hizmetleri yalnizca ayni isletmenin hizmetleri olabilir.", $"ServiceId: {item.ServiceId}"));
+                        return Result<Guid>.Failure(Error.Validation("Paket hizmetleri yalnızca aynı işletmenin hizmetleri olabilir.", $"ServiceId: {item.ServiceId}"));
                 }
 
-                // 6. Paketi kalemleriyle olustur
+                // 6. Paketi kalemleriyle oluştur
                 var servicePackage = new ServicePackage(
                     request.Name,
                     request.Price,
@@ -94,7 +94,7 @@ namespace Rezervise.Application.Features.Packages.Commands.CreateServicePackage
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Paket olusturulurken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Paket oluşturulurken bir hata oluştu.", ex.Message));
             }
         }
     }

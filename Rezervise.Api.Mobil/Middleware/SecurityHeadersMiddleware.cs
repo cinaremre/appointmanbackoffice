@@ -15,7 +15,7 @@ namespace Rezervise.Api.Middleware
         private readonly SecurityHeadersOptions _options;
 
         /// <summary>
-        /// Initialises the middleware.
+        /// İnitialıses the middleware.
         /// </summary>
         /// <param name="next">Next delegate in the pipeline.</param>
         /// <param name="options">Header configuration.</param>

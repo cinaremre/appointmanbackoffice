@@ -4,14 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Common
 {
     /// <summary>
-    /// Handler Result hatalarini HTTP cevaplarina cevirir. Api katmani
-    /// hata kodunu bilir; mesaj icerigi Application katmanindan gelir.
+    /// Handler Result hatalarını HTTP cevaplarına çevirir. Api katmanı
+    /// hata kodunu bilir; mesaj içeriği Application katmanından gelir.
     /// </summary>
     public static class AdminFailureResult
     {
         /// <summary>
-        /// Error.Code'a gore status kodu secip standart hata govdesi uretir.
-        /// Bilinmeyen kodlar 400 BadRequest olarak doner.
+        /// Error.Code'a göre status kodu seçip standart hata gövdesi üretir.
+        /// Bilinmeyen kodlar 400 BadRequest olarak döner.
         /// </summary>
         public static IActionResult FromError(Error error)
         {
@@ -39,11 +39,11 @@ namespace Rezervise.BackOffice.Api.Common
             return new ObjectResult(body) { StatusCode = status };
         }
 
-        /// <summary>Handler sonucu basarisizsa hata cevabi, degilse null.</summary>
+        /// <summary>Handler sonucu başarısızsa hata cevabı, değilse null.</summary>
         public static IActionResult? FailureOrNull<T>(Result<T> result)
             => result.IsFailure ? FromError(result.Error!) : null;
 
-        /// <summary>Hata govdesi: tekil "error" nesnesi + meta.</summary>
+        /// <summary>Hata gövdesi: tekil "error" nesnesi + meta.</summary>
         private sealed class AdminErrorResponse
         {
             public AdminErrorBody? Error { get; init; }

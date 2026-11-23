@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers.Owner
 {
     /// <summary>
-    /// Isletme sahibinin stok ve musteri paketi okuma uclari. Stok bakiyesi
-    /// hareket defterinden toplanir; paket kalan haklari PackageUsage
-    /// hareketlerinden hesaplanir. Tum uclar salt okunurdur.
+    /// İşletme sahibinin stok ve müşteri paketi okuma uçları. Stok bakiyesi
+    /// hareket defterinden toplanır; paket kalan hakları PackageUsage
+    /// hareketlerinden hesaplanır. Tüm uçlar salt okunurdur.
     /// </summary>
     [ApiController]
     [Authorize(Roles = "BusinessOwner")]
@@ -25,7 +25,7 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
             _mediator = mediator;
         }
 
-        /// <summary>Urun listesi + hareket defterinden hesaplanan stok bakiyesi.</summary>
+        /// <summary>Ürün listesi + hareket defterinden hesaplanan stok bakiyesi.</summary>
         [HttpGet("businesses/{businessId:guid}/stock/products")]
         public async Task<IActionResult> GetMyProducts(
             Guid businessId,
@@ -51,7 +51,7 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
             return OkList(result.Value!.Items, result.Value.Page, result.Value.PageSize, result.Value.TotalCount);
         }
 
-        /// <summary>Stok hareket listesi; defter kayitlari oldugu gibi listelenir.</summary>
+        /// <summary>Stok hareket listesi; defter kayıtları öldüğü gibi listelenir.</summary>
         [HttpGet("businesses/{businessId:guid}/stock/movements")]
         public async Task<IActionResult> GetMyStockMovements(
             Guid businessId,
@@ -80,8 +80,8 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
         }
 
         /// <summary>
-        /// Musteri paketi listesi + kalan hak ozeti; paket hareketlerinden
-        /// (Rezervasyon/Tuketim) hesaplanir.
+        /// Müşteri paketi listesi + kalan hak özeti; paket hareketlerinden
+        /// (Rezervasyon/Tüketim) hesaplanır.
         /// </summary>
         [HttpGet("businesses/{businessId:guid}/packages")]
         public async Task<IActionResult> GetMyPackages(

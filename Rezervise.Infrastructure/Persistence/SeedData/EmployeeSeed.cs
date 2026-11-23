@@ -25,7 +25,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
         {
             if (await context.Employees.AnyAsync())
             {
-                logger.LogInformation("Employees zaten mevcut, atlaniyor.");
+                logger.LogInformation("Employees zaten mevcut, atlanıyor.");
                 return;
             }
 
@@ -34,37 +34,37 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
                 CreateEmployee(Emp1Id, "Hasan", "Usta", "Usta Berber", "+905551110001",
                     BusinessSeed.Biz1Id, 1),
 
-                CreateEmployee(Emp2Id, "Emre", "Genc", "Berber", "+905551110002",
+                CreateEmployee(Emp2Id, "Emre", "Genç", "Berber", "+905551110002",
                     BusinessSeed.Biz1Id, 2),
 
-                CreateEmployee(Emp3Id, "Murat", "Kidemli", "Kidemli Berber", "+905551110003",
+                CreateEmployee(Emp3Id, "Murat", "Kıdemli", "Kıdemli Berber", "+905551110003",
                     BusinessSeed.Biz1Id, 3),
 
-                CreateEmployee(Emp4Id, "Selin", "Sac", "Bas Kuafor", "+905551110004",
+                CreateEmployee(Emp4Id, "Selin", "Saç", "Baş Kuaför", "+905551110004",
                     BusinessSeed.Biz2Id, 1),
 
-                CreateEmployee(Emp5Id, "Deniz", "Stil", "Kuafor", "+905551110005",
+                CreateEmployee(Emp5Id, "Deniz", "Stil", "Kuaför", "+905551110005",
                     BusinessSeed.Biz2Id, 2),
 
-                CreateEmployee(Emp6Id, "Kaan", "Dovmeci", "Dovme Sanatcisi", "+905551110006",
+                CreateEmployee(Emp6Id, "Kaan", "Dövmeci", "Dövme Sanatçısı", "+905551110006",
                     BusinessSeed.Biz3Id, 1),
 
-                CreateEmployee(Emp7Id, "Buse", "Sanat", "Dovme Sanatcisi", "+905551110007",
+                CreateEmployee(Emp7Id, "Buse", "Sanat", "Dövme Sanatçısı", "+905551110007",
                     BusinessSeed.Biz3Id, 2),
 
-                CreateEmployee(Emp8Id, "Onur", "Cizim", "Piercing Uzmani", "+905551110008",
+                CreateEmployee(Emp8Id, "Onur", "Çizim", "Piercing Uzmanı", "+905551110008",
                     BusinessSeed.Biz3Id, 3),
 
-                CreateEmployee(Emp9Id, "Ibrahim", "Usta", "Usta Berber", "+905551110009",
+                CreateEmployee(Emp9Id, "İbrahim", "Usta", "Usta Berber", "+905551110009",
                     BusinessSeed.Biz4Id, 1),
 
-                CreateEmployee(Emp10Id, "Aylin", "Dis", "Dis Hekimi", "+905551110010",
+                CreateEmployee(Emp10Id, "Aylin", "Diş", "Diş Hekimi", "+905551110010",
                     BusinessSeed.Biz5Id, 1),
 
-                CreateEmployee(Emp11Id, "Cem", "Saglik", "Dis Hekimi", "+905551110011",
+                CreateEmployee(Emp11Id, "Cem", "Sağlık", "Diş Hekimi", "+905551110011",
                     BusinessSeed.Biz5Id, 2),
 
-                CreateEmployee(Emp12Id, "Fatma", "Uzman", "Agda Uzmani", "+905551110012",
+                CreateEmployee(Emp12Id, "Fatma", "Uzman", "Ağda Uzmanı", "+905551110012",
                     BusinessSeed.Biz6Id, 1)
             };
 
@@ -75,7 +75,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
             await context.Employees.AddRangeAsync(employees);
             await context.SaveChangesAsync();
 
-            // Calisanlari kullanicilara bagla
+            // Çalışanları kullanıcılara bağla
             var hasan = employees.First(e => e.Id == Emp1Id);
             var selin = employees.First(e => e.Id == Emp4Id);
             var kaan = employees.First(e => e.Id == Emp6Id);
@@ -90,7 +90,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
 
             await context.SaveChangesAsync();
 
-            logger.LogInformation("Employees seed edildi: {Count} calisan (3 tanesi kullaniciya bagli)", employees.Count);
+            logger.LogInformation("Employees seed edildi: {Count} çalışan (3 tanesi kullanıcıya bağlı)", employees.Count);
         }
 
         private static Employee CreateEmployee(Guid id, string firstName, string lastName,

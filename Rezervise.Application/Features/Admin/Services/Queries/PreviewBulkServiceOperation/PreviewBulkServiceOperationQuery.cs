@@ -5,10 +5,10 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Services.Queries.PreviewBulkServiceOperation
 {
     /// <summary>
-    /// Toplu hizmet islemi icin BulkOperation kaydi olusturur (dokuman Modul 10).
-    /// DryRun=true (onizleme) kaydi etkilenecek kayit sayisini ve gecersiz
-    /// ID'leri raporlar ve yurutulemez. DryRun=false kaydi gercek islem icin
-    /// Validating durumunda birakilir ve execute endpoint'i ile yurutulur.
+    /// Toplu hizmet işlemi için BulkOperation kaydı oluşturur (doküman Modül 10).
+    /// DryRun=true (onizleme) kaydı etkilenecek kayıt sayısını ve geçersiz
+    /// ID'leri raporlar ve yürütülemez. DryRun=false kaydı gerçek işlem için
+    /// Validating durumunda bırakılır ve execute endpoint'i ile yürütülür.
     /// </summary>
     public class PreviewBulkServiceOperationQuery : IRequest<Result<BulkOperationDto>>
     {
@@ -17,20 +17,20 @@ namespace Rezervise.Application.Features.Admin.Services.Queries.PreviewBulkServi
         /// <summary>Etkilenmek istenen hizmet ID'leri.</summary>
         public List<Guid> ServiceIds { get; set; } = new();
 
-        /// <summary>ChangeServiceCategory icin hedef kategori; diger tiplerde bos.</summary>
+        /// <summary>ChangeServiceCategory için hedef kategori; diğer tiplerde boş.</summary>
         public Guid? TargetCategoryId { get; set; }
 
-        /// <summary>Isletme filtresi; platform genelinde null birakilir.</summary>
+        /// <summary>İşletme filtresi; platform genelinde null bırakılır.</summary>
         public Guid? BusinessId { get; set; }
 
         /// <summary>
-        /// True (varsayilan) = onizleme kaydi, yurutulemez.
-        /// False = gercek islem kaydi, execute ile yurutulur.
+        /// True (varsayılan) = onizleme kaydı, yürütülemez.
+        /// False = gerçek işlem kaydı, execute ile yürütülür.
         /// </summary>
         public bool DryRun { get; set; } = true;
     }
 
-    /// <summary>Onizleme/olusturma cevabi; InvalidIds istemciye duzeltilmesi icin doner.</summary>
+    /// <summary>Onizleme/oluşturma cevabı; InvalidIds istemciye düzeltilmesi için döner.</summary>
     public class BulkOperationDto
     {
         public Guid Id { get; set; }
@@ -42,8 +42,8 @@ namespace Rezervise.Application.Features.Admin.Services.Queries.PreviewBulkServi
     }
 
     /// <summary>
-    /// BulkOperation.RequestedPayload icin JSON model. Append-only: kayit
-    /// olusturulduktan sonra payload degismez, yurutme bu modelden okur.
+    /// BulkOperation.RequestedPayload için JSON model. Append-only: kayıt
+    /// oluşturulduktan sonra payload değişmez, yürütme bu modelden okur.
     /// </summary>
     public class BulkServiceOperationPayload
     {

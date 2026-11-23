@@ -4,9 +4,9 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Backoffice kaynakli toplu islem kaydi (dokuman Modul 10).
-    /// Append-only ilke: istek payload'i olusturma sonrasi degistirilemez;
-    /// yalnizca durum, sayac ve hata raporu guncellenir.
+    /// Backoffice kaynaklı toplu işlem kaydı (doküman Modül 10).
+    /// Append-only ilke: istek payload'i oluşturma sonrası değiştirilemez;
+    /// yalnızca durum, sayaç ve hata raporu güncellenir.
     /// </summary>
     public class BulkOperation : BaseEntity
     {
@@ -20,7 +20,7 @@ namespace Rezervise.Domain.Entities
         public int SuccessCount { get; private set; }
         public int FailedCount { get; private set; }
 
-        /// <summary>Islenen kayitlarin hata ozeti; 4000 karakterle sinirli.</summary>
+        /// <summary>İşlenen kayıtların hata özeti; 4000 karakterle sınırlı.</summary>
         public string? ErrorReport { get; private set; }
 
         public DateTime CreatedAtUtc { get; private set; }
@@ -40,13 +40,13 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (string.IsNullOrWhiteSpace(requestedPayload))
-                throw new DomainException("Toplu islem payload'i bos olamaz.");
+                throw new DomainException("Toplu işlem payload'i boş olamaz.");
 
             if (requestedBy == Guid.Empty)
-                throw new DomainException("Toplu islem istekcisi bos olamaz.");
+                throw new DomainException("Toplu işlem istekçisi boş olamaz.");
 
             if (totalRecords < 0)
-                throw new DomainException("Toplu islem kayit sayisi negatif olamaz.");
+                throw new DomainException("Toplu işlem kayıt sayısı negatif olamaz.");
 
             OperationType = operationType;
             RequestedPayload = requestedPayload;
@@ -60,32 +60,32 @@ namespace Rezervise.Domain.Entities
             CreatedAtUtc = DateTime.UtcNow;
         }
 
-        /// <summary>Pending -> Validating: kayitlarin dogrulamasi basladi.</summary>
+        /// <summary>Pending -> Validating: kayıtların doğrulaması başladı.</summary>
         public void MarkValidating()
         {
-            EnsureStatus(EnumBulkOperationStatus.Pending, "Dogrulama yalnizca Pending durumundan baslatilabilir.");
+            EnsureStatus(EnumBulkOperationStatus.Pending, "Doğrulama yalnızca Pending durumundan başlatılabilir.");
             Status = EnumBulkOperationStatus.Validating;
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Validating -> AwaitingApproval: dogrulama tamam, onay bekleniyor.</summary>
+        /// <summary>Validating -> AwaitingApproval: doğrulama tamam, onay bekleniyor.</summary>
         public void MarkAwaitingApproval()
         {
-            EnsureStatus(EnumBulkOperationStatus.Validating, "Onay bekleme yalnizca Validating durumundan baslatilabilir.");
+            EnsureStatus(EnumBulkOperationStatus.Validating, "Onay bekleme yalnızca Validating durumundan başlatılabilir.");
             Status = EnumBulkOperationStatus.AwaitingApproval;
             UpdatedAt = DateTime.UtcNow;
         }
 
         /// <summary>
-        /// Validating/AwaitingApproval -> Running: islem yurutulmeye basladi.
-        /// Pending kayit dogrulanmadan yurutulemez; Completed kayit tekrar calismaz.
+        /// Validating/AwaitingApproval -> Running: işlem yürütülmeye başladı.
+        /// Pending kayıt doğrulanmadan yürütülemez; Completed kayıt tekrar çalışmaz.
         /// </summary>
         public void Start()
         {
             if (Status != EnumBulkOperationStatus.Validating
                 && Status != EnumBulkOperationStatus.AwaitingApproval)
                 throw new DomainException(
-                    "Toplu islem yalnizca Validating veya AwaitingApproval durumundan baslatilabilir.",
+                    "Toplu işlem yalnızca Validating veya AwaitingApproval durumundan başlatılabilir.",
                     $"Mevcut durum: {Status}");
 
             Status = EnumBulkOperationStatus.Running;
@@ -94,15 +94,15 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Running -> Completed/PartiallyCompleted: islem sonlandi.
-        /// Basarisiz kayit yoksa Completed, varsa PartiallyCompleted olur.
+        /// Running -> Completed/PartiallyCompleted: işlem sonlandı.
+        /// Başarısız kayıt yoksa Completed, varsa PartiallyCompleted olur.
         /// </summary>
         public void Complete(int successCount, int failedCount)
         {
-            EnsureStatus(EnumBulkOperationStatus.Running, "Tamamlama yalnizca Running durumundan yapilabilir.");
+            EnsureStatus(EnumBulkOperationStatus.Running, "Tamamlama yalnızca Running durumundan yapılabilir.");
 
             if (successCount < 0 || failedCount < 0)
-                throw new DomainException("Basari/basarisiz sayilari negatif olamaz.");
+                throw new DomainException("Başarı/başarısız sayıları negatif olamaz.");
 
             SuccessCount = successCount;
             FailedCount = failedCount;
@@ -113,10 +113,10 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Running -> Failed: islem islenemeyen bir hatayla sonlandi.</summary>
+        /// <summary>Running -> Failed: işlem işlenemeyen bir hatayla sonlandı.</summary>
         public void Fail(string report)
         {
-            EnsureStatus(EnumBulkOperationStatus.Running, "Hata sonucu yalnizca Running durumundan yazilabilir.");
+            EnsureStatus(EnumBulkOperationStatus.Running, "Hata sonucu yalnızca Running durumundan yazılabilir.");
 
             Status = EnumBulkOperationStatus.Failed;
             ErrorReport = TruncateReport(report);
@@ -125,7 +125,7 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Pending/Validating/AwaitingApproval -> Cancelled: islem baslamadan iptal edildi.
+        /// Pending/Validating/AwaitingApproval -> Cancelled: işlem başlamadan iptal edildi.
         /// Running ve sonraki durumlarda iptale izin verilmez.
         /// </summary>
         public void Cancel()
@@ -134,7 +134,7 @@ namespace Rezervise.Domain.Entities
                 && Status != EnumBulkOperationStatus.Validating
                 && Status != EnumBulkOperationStatus.AwaitingApproval)
                 throw new DomainException(
-                    "Toplu islem yalnizca Pending, Validating veya AwaitingApproval durumunda iptal edilebilir.",
+                    "Toplu işlem yalnızca Pending, Validating veya AwaitingApproval durumunda iptal edilebilir.",
                     $"Mevcut durum: {Status}");
 
             Status = EnumBulkOperationStatus.Cancelled;
@@ -142,7 +142,7 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Hata raporunu alan sinirina kirpar (kalan kisim sayaci ile takip edilir).</summary>
+        /// <summary>Hata raporunu alan sınırına kırpar (kalan kısım sayacı ile takip edilir).</summary>
         private static string? TruncateReport(string? report)
         {
             if (string.IsNullOrEmpty(report))

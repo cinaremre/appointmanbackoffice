@@ -4,8 +4,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinessAuditTrail
 {
     /// <summary>
-    /// Isletme uzerinde yapilan yonetici islemlerinin denetim kaydi
-    /// (dokuman Modul 21). Kayitlar CreatedAtUtc'ye gore tersten siralanir.
+    /// İşletme üzerinde yapılan yönetici işlemlerinin denetim kaydı
+    /// (doküman Modül 21). Kayıtlar CreatedAtUtc'ye göre tersten sıralanır.
     /// </summary>
     public class GetBusinessAuditTrailQuery : IRequest<Result<AdminAuditTrailResult>>
     {
@@ -16,7 +16,7 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinessAud
         public int PageSize { get; set; } = 50;
     }
 
-    /// <summary>Sayfalanmis denetim kaydi sonucu.</summary>
+    /// <summary>Sayfalanmış denetim kaydı sonucu.</summary>
     public class AdminAuditTrailResult
     {
         public IReadOnlyList<AdminAuditTrailItemDto> Items { get; init; } = Array.Empty<AdminAuditTrailItemDto>();
@@ -28,7 +28,7 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinessAud
         public long TotalCount { get; init; }
     }
 
-    /// <summary>Tek bir denetim kaydi satiri.</summary>
+    /// <summary>Tek bir denetim kaydı satırı.</summary>
     public class AdminAuditTrailItemDto
     {
         public Guid ActorUserId { get; init; }

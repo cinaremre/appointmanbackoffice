@@ -7,24 +7,24 @@ using Microsoft.Extensions.Logging;
 namespace Rezervise.Infrastructure.Services.Email
 {
     /// <summary>
-    /// BCL <see cref="SmtpClient"/> tabanli gonderim. Ek NuGet paketi gerektirmez.
-    /// Gecici tasima hatalari firlatilir; yeniden deneme ve dead-letter kaydi
-    /// <see cref="Api.Email.EmailBackgroundService"/> tarafindan yapilir.
+    /// BCL <see cref="SmtpClient"/> tabanlı gönderim. Ek NuGet paketi gerektirmez.
+    /// Geçici taşıma hataları fırlatılır; yeniden deneme ve dead-letter kaydı
+    /// <see cref="Api.Email.EmailBackgroundService"/> tarafından yapılır.
     /// </summary>
     internal sealed class SmtpEmailService : IEmailService
     {
         private readonly EmailOptions _options;
         private readonly ILogger<SmtpEmailService> _logger;
 
-        /// <param name="options">SMTP ayarlari.</param>
-        /// <param name="logger">Tanilama kaydedicisi.</param>
+        /// <param name="options">SMTP ayarları.</param>
+        /// <param name="logger">Tanılama kaydedicisi.</param>
         public SmtpEmailService(EmailOptions options, ILogger<SmtpEmailService> logger)
         {
             _options = options;
             _logger = logger;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public async Task SendAsync(EmailMessage message, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -36,7 +36,7 @@ namespace Rezervise.Infrastructure.Services.Email
                 DeliveryMethod = SmtpDeliveryMethod.Network
             };
 
-            // Kimlik bilgisi bos ise anonim gonderim denenir (ic SMTP relay senaryosu).
+            // Kimlik bilgisi boş ise anonim gönderim denenir (iç SMTP relay senaryosu).
             if (!string.IsNullOrWhiteSpace(_options.UserName))
                 client.Credentials = new NetworkCredential(_options.UserName, _options.Password);
 
@@ -56,7 +56,7 @@ namespace Rezervise.Infrastructure.Services.Email
 
             await client.SendMailAsync(mail, cancellationToken).ConfigureAwait(false);
 
-            _logger.LogInformation("E-posta gonderildi. To={To}", message.To);
+            _logger.LogInformation("E-posta gönderildi. To={To}", message.To);
         }
     }
 }

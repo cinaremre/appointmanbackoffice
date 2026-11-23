@@ -3,23 +3,23 @@ using Rezervise.Domain.Enums;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Anonim takip olayi. Append-only'dir: guncelleme/silme metodu tasinmaz.
-    /// Kisisel veri (isim, telefon, IP) icermez; oturum korelasyonu
-    /// istemciden opsiyonel olarak gelen AnonymousSessionId ile yapilir.
+    /// Anonim takip olayı. Append-only'dir: güncelleme/silme metodu taşınmaz.
+    /// Kişisel veri (isim, telefon, IP) içermez; oturum korelasyonu
+    /// istemciden opsiyonel olarak gelen AnonymousSessionId ile yapılır.
     /// </summary>
     public class TrackingEvent : BaseEntity
     {
         public Guid BusinessId { get; private set; }
 
-        /// <summary>Olayi tetikleyen takip linki; slug erisimlerinde bos olabilir.</summary>
+        /// <summary>Olayı tetikleyen takip linki; slug erişimlerinde boş olabilir.</summary>
         public Guid? TrackingLinkId { get; private set; }
 
-        /// <summary>Istemciden opsiyonel oturum kimligi; kisisel veri icermez.</summary>
+        /// <summary>İstemciden opsiyonel oturum kimliği; kişisel veri içermez.</summary>
         public Guid? AnonymousSessionId { get; private set; }
 
         public EnumTrackingEventType EventType { get; private set; }
 
-        /// <summary>Randevu iliskili olaylarda randevu ID'si.</summary>
+        /// <summary>Randevu ilişkili olaylarda randevu ID'si.</summary>
         public Guid? AppointmentId { get; private set; }
 
         public DateTime OccurredAt { get; private set; }
@@ -34,10 +34,10 @@ namespace Rezervise.Domain.Entities
             Guid? appointmentId = null)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (appointmentId == Guid.Empty)
-                throw new ArgumentException("Randevu ID bos olamaz.", nameof(appointmentId));
+                throw new ArgumentException("Randevu ID boş olamaz.", nameof(appointmentId));
 
             BusinessId = businessId;
             EventType = eventType;

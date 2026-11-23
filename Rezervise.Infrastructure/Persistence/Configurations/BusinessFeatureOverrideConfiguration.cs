@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Isletme bazinda ozellik override'i. Aktif override abonelik
-    /// planindaki degerleri ezer; sureli verilebilir.
+    /// İşletme bazında özellik override'i. Aktif override abonelik
+    /// planındaki değerleri ezer; süreli verilebilir.
     /// </summary>
     public class BusinessFeatureOverrideConfiguration : BaseConfiguration<BusinessFeatureOverride>
     {

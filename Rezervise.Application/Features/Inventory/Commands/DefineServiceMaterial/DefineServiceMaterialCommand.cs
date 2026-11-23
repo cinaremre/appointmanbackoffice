@@ -4,10 +4,10 @@ using MediatR;
 namespace Rezervise.Application.Features.Inventory.Commands.DefineServiceMaterial
 {
     /// <summary>
-    /// Hizmet recetesi tanimlar: bir hizmet gerceklestirildiginde
-    /// tuketilecek malzemeyi ve miktari belirtir. Ayni (ServiceId, ProductId)
-    /// cifti isletme bazinda bir kez tanimlanabilir.
-    /// OwnerId govdeden degil JWT'den cozulur (Api katmani set eder).
+    /// Hizmet reçetesi tanımlar: bir hizmet gerçekleştirildiğinde
+    /// tüketilecek malzemeyi ve miktarı belirtir. Aynı (ServiceId, ProductId)
+    /// çifti işletme bazında bir kez tanımlanabilir.
+    /// OwnerId gövdeden değil JWT'den çözülür (Api katmanı set eder).
     /// </summary>
     public class DefineServiceMaterialCommand : IRequest<Result<Guid>>
     {
@@ -18,10 +18,10 @@ namespace Rezervise.Application.Features.Inventory.Commands.DefineServiceMateria
 
         public Guid ProductId { get; set; }
 
-        /// <summary>Bir hizmet gerceklestirildiginde tuketilen miktar (pozitif).</summary>
+        /// <summary>Bir hizmet gerçekleştirildiğinde tüketilen miktar (pozitif).</summary>
         public decimal QuantityPerService { get; set; }
 
-        /// <summary>Olcu birimi (varsayilan "adet").</summary>
+        /// <summary>Ölçü birimi (varsayılan "adet").</summary>
         public string Unit { get; set; } = "adet";
     }
 }

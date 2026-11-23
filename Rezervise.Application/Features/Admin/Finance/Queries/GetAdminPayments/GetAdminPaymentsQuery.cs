@@ -6,8 +6,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminPayments
 {
     /// <summary>
-    /// Odeme listesi (dokuman Modul 16). Iadeler ayri bir ters kayit olarak
-    /// tutulur; IsRefund bayragi ile normal odemeler ve iadeler ayri ayri
+    /// Ödeme listesi (doküman Modül 16). İadeler ayrı bir ters kayıt olarak
+    /// tutulur; IsRefund bayrağı ile normal ödemeler ve iadeler ayrı ayrı
     /// listelenebilir. Salt okunur endpoint.
     /// </summary>
     public class GetAdminPaymentsQuery : IRequest<Result<AdminPagedResult<AdminPaymentDto>>>
@@ -19,14 +19,14 @@ namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminPayments
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
 
-        /// <summary>True = yalnizca iade kayitlari; false = yalnizca normal odemeler.</summary>
+        /// <summary>True = yalnızca iade kayıtları; false = yalnızca normal ödemeler.</summary>
         public bool? IsRefund { get; set; }
 
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 50;
     }
 
-    /// <summary>Tek odeme kaydinin admin gorunumu. Iade kayitlari RefersToPaymentId ile orijinale baglanir.</summary>
+    /// <summary>Tek ödeme kaydının admin görünümü. İade kayıtları RefersToPaymentId ile orijinale bağlanır.</summary>
     public class AdminPaymentDto
     {
         public Guid Id { get; set; }
@@ -39,10 +39,10 @@ namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminPayments
         public DateTime PaidAt { get; set; }
         public EnumSaleStatus Status { get; set; }
 
-        /// <summary>Bu kayit bir iade (ters) kaydi mi?</summary>
+        /// <summary>Bu kayıt bir iade (ters) kaydı mi?</summary>
         public bool IsRefund { get; set; }
 
-        /// <summary>Ters kayit ise bagli oldugu orijinal odeme ID.</summary>
+        /// <summary>Ters kayıt ise bağlı öldüğü orijinal ödeme ID.</summary>
         public Guid? RefersToPaymentId { get; set; }
     }
 }

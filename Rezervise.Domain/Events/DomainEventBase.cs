@@ -6,7 +6,7 @@ namespace Rezervise.Domain.Events
 {
     public abstract class DomainEventBase : IDomainEvent
     {
-        /// <summary>Olay kimligi; ayni olayin birden fazla yan etki uretmesini engeller.</summary>
+        /// <summary>Olay kimliği; aynı olayın birden fazla yan etki üretmesini engeller.</summary>
         public Guid Id { get; } = Guid.NewGuid();
 
         public DateTime OccurredOn { get; private set; }

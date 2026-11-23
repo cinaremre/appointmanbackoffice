@@ -8,35 +8,35 @@ namespace Rezervise.Application.Features.WorkingHours.Commands.AddWorkingHour
         {
             RuleFor(x => x.BusinessId)
                 .NotEmpty()
-                .WithMessage("Isletme ID bos olamaz.");
+                .WithMessage("İşletme ID boş olamaz.");
 
             RuleFor(x => x.OwnerId)
                 .NotEmpty()
-                .WithMessage("Sahip ID bos olamaz.");
+                .WithMessage("Sahip ID boş olamaz.");
 
             RuleFor(x => x.DayOfWeek)
                 .IsInEnum()
-                .WithMessage("Gecersiz gun.");
+                .WithMessage("Geçersiz gün.");
 
             RuleFor(x => x.StartTime)
                 .Must(t => t >= TimeSpan.Zero && t < TimeSpan.FromHours(24))
-                .WithMessage("Baslangic saati 00:00-24:00 arasinda olmalidir.");
+                .WithMessage("Başlangıç saati 00:00-24:00 arasında olmalıdır.");
 
             RuleFor(x => x.EndTime)
                 .Must(t => t >= TimeSpan.Zero && t < TimeSpan.FromHours(24))
-                .WithMessage("Bitis saati 00:00-24:00 arasinda olmalidir.");
+                .WithMessage("Bitiş saati 00:00-24:00 arasında olmalıdır.");
 
             RuleFor(x => x)
                 .Must(x => x.StartTime < x.EndTime)
-                .WithMessage("Baslangic saati bitis saatinden once olmalidir.");
+                .WithMessage("Başlangıç saati bitiş saatinden önce olmalıdır.");
 
             RuleFor(x => x.StartTime)
                 .Must(t => t.Minutes % 5 == 0)
-                .WithMessage("Baslangic saati 5 dakikanin kati olmalidir.");
+                .WithMessage("Başlangıç saati 5 dakikanın katı olmalıdır.");
 
             RuleFor(x => x.EndTime)
                 .Must(t => t.Minutes % 5 == 0)
-                .WithMessage("Bitis saati 5 dakikanin kati olmalidir.");
+                .WithMessage("Bitiş saati 5 dakikanın katı olmalıdır.");
         }
     }
 }

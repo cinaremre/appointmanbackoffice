@@ -1,20 +1,20 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Veri aktarim isindeki tek bir satirin islem sonucu.
+    /// Veri aktarım işindeki tek bir satırın işlem sonucu.
     /// </summary>
     public enum EnumImportRowStatus
     {
-        /// <summary>Henuz islenmedi.</summary>
+        /// <summary>Henüz işlenmedi.</summary>
         Pending = 0,
 
-        /// <summary>Satir basariyla aktarildi.</summary>
+        /// <summary>Satır başarıyla aktarıldı.</summary>
         Imported = 1,
 
-        /// <summary>Ayni SourceRecordKey zaten aktarilmis; atlandi.</summary>
+        /// <summary>Aynı SourceRecordKey zaten aktarılmış; atlandı.</summary>
         SkippedDuplicate = 2,
 
-        /// <summary>Satir islenirken hata olustu.</summary>
+        /// <summary>Satır işlenirken hata oluştu.</summary>
         Failed = 3
     }
 }

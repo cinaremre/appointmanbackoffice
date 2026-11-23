@@ -29,31 +29,31 @@ namespace Rezervise.Application.Features.Blacklists.Queries.GetBlacklistedUsers
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
                     return Result<List<BlacklistEntryDto>>.Failure(
-                        Error.NotFound("Isletme", request.BusinessId.ToString()));
+                        Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu
+                // 2. Yetki kontrolü
                 if (business.OwnerId != request.RequesterId)
                     return Result<List<BlacklistEntryDto>>.Failure(
-                        Error.Unauthorized("Bu islemi sadece isletme sahibi yapabilir."));
+                        Error.Unauthorized("Bu işlemi sadece işletme sahibi yapabilir."));
 
-                // 3. Kara liste kayitlarini getir
+                // 3. Kara liste kayıtlarını getir
                 var entries = await _blacklistRepository.FindAsync(
                     b => b.BusinessId == request.BusinessId &&
                          (request.IncludeRemoved || !b.IsDeleted),
                     cancellationToken);
 
-                // 4. Sayfalama + siralama
+                // 4. Sayfalama + sıralama
                 var pagedEntries = entries
                     .OrderByDescending(b => b.BlacklistedAt)
                     .Skip((request.PageNumber - 1) * request.PageSize)
                     .Take(request.PageSize)
                     .ToList();
 
-                // 5. User bilgilerini ayri cek
+                // 5. User bilgilerini ayrı çek
                 var userIds = pagedEntries.Select(b => b.UserId).Distinct().ToList();
                 var users = await _userRepository.FindAsync(
                     u => userIds.Contains(u.Id),
@@ -61,7 +61,7 @@ namespace Rezervise.Application.Features.Blacklists.Queries.GetBlacklistedUsers
 
                 var userDict = users.ToDictionary(u => u.Id);
 
-                // 6. DTO'ya donustur
+                // 6. DTO'ya dönüştür
                 var dtos = pagedEntries.Select(b =>
                 {
                     userDict.TryGetValue(b.UserId, out var user);
@@ -89,7 +89,7 @@ namespace Rezervise.Application.Features.Blacklists.Queries.GetBlacklistedUsers
             catch (Exception ex)
             {
                 return Result<List<BlacklistEntryDto>>.Failure(
-                    Error.Internal("Kara liste getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kara liste getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

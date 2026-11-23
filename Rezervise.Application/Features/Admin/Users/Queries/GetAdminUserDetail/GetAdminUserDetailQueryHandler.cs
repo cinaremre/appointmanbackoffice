@@ -7,8 +7,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Users.Queries.GetAdminUserDetail
 {
     /// <summary>
-    /// Kullaniciyi; sahiplenilen isletmeler, bagli calisan kayitlari ve son
-    /// giris zamaniyla birlikte getirir. Kullanici yoksa NotFound doner.
+    /// Kullanıcıyı; sahiplenilen işletmeler, bağlı çalışan kayıtları ve son
+    /// giriş zamanıyla birlikte getirir. Kullanıcı yoksa NotFound döner.
     /// </summary>
     public class GetAdminUserDetailQueryHandler : IRequestHandler<GetAdminUserDetailQuery, Result<AdminUserDetailDto>>
     {
@@ -32,18 +32,18 @@ namespace Rezervise.Application.Features.Admin.Users.Queries.GetAdminUserDetail
         {
             try
             {
-                // 1. Kullaniciyi yukle; yoksa NotFound doner.
+                // 1. Kullanıcıyı yükle; yoksa NotFound döner.
                 var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
                 if (user is null)
-                    return Result<AdminUserDetailDto>.Failure(Error.NotFoundById("Kullanici", request.UserId));
+                    return Result<AdminUserDetailDto>.Failure(Error.NotFoundById("Kullanıcı", request.UserId));
 
-                // 2. Isletme uyelikleri: sahiplenilen isletmeler.
+                // 2. İşletme üyelikleri: sahiplenilen işletmeler.
                 var ownedBusinesses = await _businessRepository.FindAsync(
                     b => b.OwnerId == request.UserId,
                     cancellationToken);
 
-                // 3. Calisan uyelikleri: Employee entity'si opsiononel UserId
-                //    baglantisi tasir; bagli kayitlar buradan bulunur.
+                // 3. Çalışan üyelikleri: Employee entity'si opsionönel UserId
+                //    bağlantısı taşır; bağlı kayıtlar buradan bulunur.
                 var employeePositions = await _employeeRepository.FindAsync(
                     e => e.UserId == request.UserId,
                     cancellationToken);
@@ -88,7 +88,7 @@ namespace Rezervise.Application.Features.Admin.Users.Queries.GetAdminUserDetail
             catch (Exception ex)
             {
                 return Result<AdminUserDetailDto>.Failure(
-                    Error.Internal("Kullanici detayi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kullanıcı detayı getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

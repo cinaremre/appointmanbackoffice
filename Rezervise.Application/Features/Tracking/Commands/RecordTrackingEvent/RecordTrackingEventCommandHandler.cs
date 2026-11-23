@@ -7,11 +7,11 @@ using MediatR;
 namespace Rezervise.Application.Features.Tracking.Commands.RecordTrackingEvent
 {
     /// <summary>
-    /// Anonim takip olayi kaydeder. ANONIM uctur: handler
-    /// ICurrentUserService'e hic baglanmaz.
-    /// Kod/slug bulunamazsa sessiz basari doner (Result.Success(true));
-    /// linkin ya da sayfanin var olup olmadigi hakkinda bilgi sizdirilmaz.
-    /// NOT: link suresi dolmus / randevu iptal kontrolu bu surumde yok.
+    /// Anonim takip olayı kaydeder. ANONIM üçtür: handler
+    /// ICurrentUserService'e hiç bağlanmaz.
+    /// Kod/slug bulunamazsa sessiz başarı döner (Result.Success(true));
+    /// linkin ya da sayfanın var olup olmadığı hakkında bilgi sızdırılmaz.
+    /// NOT: link süresi dolmuş / randevu iptal kontrolü bu sürümde yok.
     /// </summary>
     public class RecordTrackingEventCommandHandler : IRequestHandler<RecordTrackingEventCommand, Result<bool>>
     {
@@ -36,7 +36,7 @@ namespace Rezervise.Application.Features.Tracking.Commands.RecordTrackingEvent
         {
             try
             {
-                // 1. Takip kodu verildiyse link uzerinden kayit yap.
+                // 1. Takip kodu verildiyse link üzerinden kayıt yap.
                 if (!string.IsNullOrWhiteSpace(request.TrackingCode))
                 {
                     var code = request.TrackingCode.Trim().ToLowerInvariant();
@@ -45,7 +45,7 @@ namespace Rezervise.Application.Features.Tracking.Commands.RecordTrackingEvent
                         l => l.TrackingCode == code && l.IsActive && !l.IsDeleted,
                         cancellationToken)).FirstOrDefault();
 
-                    // Kod bulunamadiysa sessiz basari: hedefin varligi hakkinda bilgi vermez.
+                    // Kod bulunamadıysa sessiz başarı: hedefin varlığı hakkında bilgi vermez.
                     if (link is null)
                         return Result<bool>.Success(true);
 
@@ -62,7 +62,7 @@ namespace Rezervise.Application.Features.Tracking.Commands.RecordTrackingEvent
                     return Result<bool>.Success(true);
                 }
 
-                // 2. Slug verildiyse public sayfa uzerinden kayit yap.
+                // 2. Slug verildiyse public sayfa üzerinden kayıt yap.
                 if (!string.IsNullOrWhiteSpace(request.Slug))
                 {
                     var slug = request.Slug.Trim().ToLowerInvariant();
@@ -71,7 +71,7 @@ namespace Rezervise.Application.Features.Tracking.Commands.RecordTrackingEvent
                         p => p.Slug == slug && p.IsPublished && !p.IsDeleted,
                         cancellationToken)).FirstOrDefault();
 
-                    // Sayfa bulunamadiysa sessiz basari.
+                    // Sayfa bulunamadıysa sessiz başarı.
                     if (page is null)
                         return Result<bool>.Success(true);
 
@@ -88,12 +88,12 @@ namespace Rezervise.Application.Features.Tracking.Commands.RecordTrackingEvent
                     return Result<bool>.Success(true);
                 }
 
-                // 3. Ne kod ne slug verildi: istek hatali bicimlendirilmis.
+                // 3. Ne kod ne slug verildi: istek hatalı biçimlendirilmiş.
                 return Result<bool>.Failure(Error.Validation("Takip kodu veya slug gereklidir."));
             }
             catch (Exception ex)
             {
-                return Result<bool>.Failure(Error.Internal("Takip olayi kaydedilirken bir hata olustu.", ex.Message));
+                return Result<bool>.Failure(Error.Internal("Takip olayı kaydedilirken bir hata oluştu.", ex.Message));
             }
         }
     }

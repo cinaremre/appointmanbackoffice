@@ -11,18 +11,18 @@ using MediatR;
 namespace Rezervise.Application.Features.Users.Commands.ResendPhoneOtp
 {
     /// <summary>
-    /// Telefon dogrulama kodunu yeniden gonderir. Yanit, numaranin sistemde
-    /// kayitli olup olmadigini sizdirmamak icin her durumda basarili doner.
+    /// Telefon doğrulama kodunu yeniden gönderir. Yanıt, numaranın sistemde
+    /// kayıtlı olup olmadığını sızdırmamak için her durumda başarılı döner.
     /// </summary>
     public class ResendPhoneOtpCommand : IRequest<Result<bool>>
     {
-        /// <summary>Kodun gonderilecegi telefon numarasi.</summary>
+        /// <summary>Kodun gönderileceği telefon numarası.</summary>
         public string PhoneNumber { get; set; }
     }
 
     /// <summary>
-    /// Yeniden gonderim akisi: kullanici bulunamaz veya zaten dogrulanmissa
-    /// sessizce basarili doner.
+    /// Yeniden gönderim akışı: kullanıcı bulunamaz veya zaten doğrulanmışsa
+    /// sessizce başarılı döner.
     /// </summary>
     public class ResendPhoneOtpCommandHandler : IRequestHandler<ResendPhoneOtpCommand, Result<bool>>
     {
@@ -66,13 +66,13 @@ namespace Rezervise.Application.Features.Users.Commands.ResendPhoneOtp
 
                 var user = users.FirstOrDefault();
 
-                // Numara kayitli degil veya zaten dogrulanmis: bilgi sizdirilmaz.
+                // Numara kayıtlı değil veya zaten doğrulanmış: bilgi sızdırılmaz.
                 if (user is null || user.IsPhoneVerified)
                     return Result<bool>.Success(true);
 
                 var utcNow = _dateTimeService.UtcNow;
 
-                // Bekleme suresi dolmadiysa yeni kod uretilmez; yine basarili donulur.
+                // Bekleme süresi dolmadıysa yeni kod üretilmez; yine başarılı dönülür.
                 if (user.PhoneVerificationRequestedAt.HasValue &&
                     utcNow - user.PhoneVerificationRequestedAt.Value <
                     TimeSpan.FromSeconds(_otpOptions.ResendCooldownSeconds))
@@ -82,7 +82,7 @@ namespace Rezervise.Application.Features.Users.Commands.ResendPhoneOtp
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // SMS hatasi akisi bozmaz; kullanici tekrar isteyebilir.
+                // SMS hatası akışı bozmaz; kullanıcı tekrar isteyebilir.
                 await _smsCodeSender.SendAsync(user.PhoneNumber.Value, code, cancellationToken);
 
                 return Result<bool>.Success(true);
@@ -94,7 +94,7 @@ namespace Rezervise.Application.Features.Users.Commands.ResendPhoneOtp
             catch (Exception)
             {
                 return Result<bool>.Failure(
-                    Error.Internal("Dogrulama kodu yeniden gonderilirken bir hata olustu."));
+                    Error.Internal("Doğrulama kodu yeniden gönderilirken bir hata oluştu."));
             }
         }
     }

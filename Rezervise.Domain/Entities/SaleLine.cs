@@ -4,9 +4,9 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Satis satiri. Satir toplami: LineTotal = Quantity * UnitPrice
-    /// - DiscountAmount + TaxAmount. Olusan tutar Sale aggregate'i
-    /// uzerindeki genel toplamlara yansitilir.
+    /// Satış satırı. Satır toplamı: LineTotal = Quantity * UnitPrice
+    /// - DiscountAmount + TaxAmount. Oluşan tutar Sale aggregate'i
+    /// üzerindeki genel toplamlara yansıtılır.
     /// </summary>
     public class SaleLine : BaseEntity
     {
@@ -31,30 +31,30 @@ namespace Rezervise.Domain.Entities
             Guid employeeId)
         {
             if (saleId == Guid.Empty)
-                throw new ArgumentException("Satis ID bos olamaz.", nameof(saleId));
+                throw new ArgumentException("Satış ID boş olamaz.", nameof(saleId));
 
             if (employeeId == Guid.Empty)
-                throw new ArgumentException("Calisan ID bos olamaz.", nameof(employeeId));
+                throw new ArgumentException("Çalışan ID boş olamaz.", nameof(employeeId));
 
             if (quantity <= 0)
-                throw new DomainException("Satis satiri miktari sifirdan buyuk olmalidir.");
+                throw new DomainException("Satış satırı miktarı sıfırdan büyük olmalıdır.");
 
             if (unitPrice < 0)
-                throw new DomainException("Satis satiri birim fiyati negatif olamaz.");
+                throw new DomainException("Satış satırı birim fiyatı negatif olamaz.");
 
             var gross = Math.Round(quantity * unitPrice, 2);
 
             if (discountAmount < 0 || discountAmount > gross)
-                throw new DomainException("Satis satiri indirimi satir brut tutarindan buyuk olamaz.");
+                throw new DomainException("Satış satırı indirimi satır brüt tutarından büyük olamaz.");
 
             if (taxAmount < 0)
-                throw new DomainException("Satis satiri vergisi negatif olamaz.");
+                throw new DomainException("Satış satırı vergisi negatif olamaz.");
 
             if (itemType == EnumSaleItemType.Service && serviceId is null)
-                throw new DomainException("Hizmet satirinda ServiceId zorunludur.");
+                throw new DomainException("Hizmet satırında ServiceId zorunludur.");
 
             if (itemType == EnumSaleItemType.Product && productId is null)
-                throw new DomainException("Urun satirinda ProductId zorunludur.");
+                throw new DomainException("Ürün satırında ProductId zorunludur.");
 
             SaleId = saleId;
             ItemType = itemType;

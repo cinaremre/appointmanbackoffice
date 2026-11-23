@@ -1,9 +1,9 @@
 /**
- * Randevu tipleri (dokuman 13). Durum kurallari SUNUCUDA uygulanir
- * (dokuman 13.3); frontend durum mantigi uretmez.
+ * Randevu tipleri (doküman 13). Durum kuralları SUNUCUDA uygulanır
+ * (doküman 13.3); frontend durum mantigi üretmez.
  */
 
-/** API'nin kabul ettigi randevu durumlari. */
+/** API'nin kabul ettigi randevu durumları. */
 export const APPOINTMENT_STATUSES = [
   "Pending",
   "Confirmed",
@@ -15,8 +15,8 @@ export const APPOINTMENT_STATUSES = [
 export type AppointmentStatus = (typeof APPOINTMENT_STATUSES)[number];
 
 /**
- * API enum'lari sayisal serilestirir; durum etiketi burada cozulur.
- * Islemlerin gecerliligi yine SUNUCUDA belirlenir (dokuman 13.3).
+ * API enum'ları sayısal serileştirir; durum etiketi burada çözülür.
+ * Islemlerin geçerliliği yine SUNUCUDA belirlenir (doküman 13.3).
  */
 export function appointmentStatusLabel(raw: number | string | null | undefined): string {
   if (raw === null || raw === undefined || raw === "") return "-";
@@ -27,7 +27,7 @@ export function appointmentStatusLabel(raw: number | string | null | undefined):
   return (APPOINTMENT_STATUSES as readonly string[]).includes(String(raw)) ? String(raw) : "-";
 }
 
-/** GET /appointments liste ogesi. */
+/** GET /appointments liste öğesi. */
 export interface AppointmentListItem {
   id: string;
   businessId: string;
@@ -39,7 +39,7 @@ export interface AppointmentListItem {
   notes?: string | null;
 }
 
-/** GET /appointments/{id} icindeki gecmis kaydi. */
+/** GET /appointments/{id} içindeki geçmiş kaydı. */
 export interface AppointmentHistoryEntry {
   action: string;
   changedAt: string;
@@ -47,12 +47,12 @@ export interface AppointmentHistoryEntry {
   actorId?: string | null;
 }
 
-/** GET /appointments/{id} detay: liste alanlari + history. */
+/** GET /appointments/{id} detay: liste alanları + history. */
 export interface AppointmentDetail extends AppointmentListItem {
   history: AppointmentHistoryEntry[];
 }
 
-/** GET /appointments/conflicts ogesi. */
+/** GET /appointments/conflicts öğesi. */
 export interface AppointmentConflict {
   appointmentId: string;
   employeeId: string;

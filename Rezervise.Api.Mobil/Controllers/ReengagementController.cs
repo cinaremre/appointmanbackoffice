@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Kural bazli musteri geri cagirma (dokuman Modul 13, ilk surum).
+    /// Kural bazlı müşteri geri çağırma (doküman Modül 13, ilk sürüm).
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -24,10 +24,10 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Isletme icin yeni geri cagirma kurali olusturur.
+        /// İşletme için yeni geri çağırma kuralı oluşturur.
         /// </summary>
         /// <param name="command">Kural bilgileri</param>
-        /// <returns>Olusturulan kuralin ID'si</returns>
+        /// <returns>Oluşturulan kuralın ID'si</returns>
         [HttpPost("rule")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
@@ -42,9 +42,9 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Isletmenin aktif geri cagirma adaylarini listeler.
+        /// İşletmenin aktif geri çağırma adaylarını listeler.
         /// </summary>
-        /// <param name="businessId">Isletme ID'si</param>
+        /// <param name="businessId">İşletme ID'si</param>
         /// <returns>Aday listesi</returns>
         [HttpGet("candidates/{businessId}")]
         [ProducesResponseType(typeof(Result<List<ReengagementCandidateDto>>), StatusCodes.Status200OK)]
@@ -62,10 +62,10 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Aday listesinden secilen musteri icin bildirim gonderildi isareti ekler.
+        /// Aday listesinden seçilen müşteri için bildirim gönderildi işareti ekler.
         /// </summary>
-        /// <param name="command">Isaretleme bilgileri</param>
-        /// <returns>Olusturulan deneme kaydinin ID'si</returns>
+        /// <param name="command">İşaretleme bilgileri</param>
+        /// <returns>Oluşturulan deneme kaydının ID'si</returns>
         [HttpPost("mark-notified")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]

@@ -4,11 +4,11 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Prim tahakkuku. Tahsilat tabanli varsayimla calisir: BaseAmount
-    /// cagri tarafindan tahsil edilen tutar olarak verilir ve prim o tutar
-    /// uzerinden hesaplanir. Tahakkuk defteri kaydi gibidir; durumlar
-    /// Accrued -> Paid veya Accrued -> Reversed yonunde degisebilir,
-    /// Paid durumundan geri alinamaz.
+    /// Prim tahakkuku. Tahsilat tabanlı varsayımla çalışır: BaseAmount
+    /// çağrı tarafından tahsil edilen tutar olarak verilir ve prim o tutar
+    /// üzerinden hesaplanır. Tahakkuk defteri kaydı gibidir; durumlar
+    /// Accrued -> Paid veya Accrued -> Reversed yönünde değişebilir,
+    /// Paid durumundan geri alınamaz.
     /// </summary>
     public class CommissionAccrual : BaseEntity
     {
@@ -16,13 +16,13 @@ namespace Rezervise.Domain.Entities
 
         public Guid EmployeeId { get; private set; }
 
-        /// <summary>Varsa bu tahakkugu doguran satis satiri.</summary>
+        /// <summary>Varsa bu tahakkuğu doğuran satış satırı.</summary>
         public Guid? SaleLineId { get; private set; }
 
-        /// <summary>Hesaplamada kullanilan kural.</summary>
+        /// <summary>Hesaplamada kullanılan kural.</summary>
         public Guid RuleId { get; private set; }
 
-        /// <summary>Primin hesaplandigi tahsil edilen tutar.</summary>
+        /// <summary>Primin hesaplandığı tahsil edilen tutar.</summary>
         public decimal BaseAmount { get; private set; }
 
         public decimal CommissionAmount { get; private set; }
@@ -31,7 +31,7 @@ namespace Rezervise.Domain.Entities
 
         public DateTime CalculatedAt { get; private set; }
 
-        private CommissionAccrual() { } // EF Core icin
+        private CommissionAccrual() { } // EF Core için
 
         public CommissionAccrual(
             Guid businessId,
@@ -58,28 +58,28 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (employeeId == Guid.Empty)
-                throw new ArgumentException("Calisan ID bos olamaz.", nameof(employeeId));
+                throw new ArgumentException("Çalışan ID boş olamaz.", nameof(employeeId));
 
             if (ruleId == Guid.Empty)
-                throw new ArgumentException("Kural ID bos olamaz.", nameof(ruleId));
+                throw new ArgumentException("Kural ID boş olamaz.", nameof(ruleId));
 
             if (baseAmount < 0)
-                throw new DomainException("Prim baz tutari negatif olamaz.");
+                throw new DomainException("Prim baz tutarı negatif olamaz.");
 
             if (baseAmount > 99999999.99m)
-                throw new DomainException("Prim baz tutari cok yuksek.");
+                throw new DomainException("Prim baz tutarı çok yüksek.");
 
             if (commissionAmount < 0)
-                throw new DomainException("Prim tutari negatif olamaz.");
+                throw new DomainException("Prim tutarı negatif olamaz.");
 
             if (commissionAmount > 99999999.99m)
-                throw new DomainException("Prim tutari cok yuksek.");
+                throw new DomainException("Prim tutarı çok yüksek.");
 
             if (calculatedAt == default)
-                throw new DomainException("Hesaplama tarihi bos olamaz.");
+                throw new DomainException("Hesaplama tarihi boş olamaz.");
 
             BusinessId = businessId;
             EmployeeId = employeeId;
@@ -92,33 +92,33 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Tahakkuku ters cevirir. Yalnizca Accrued durumdaki tahakkuklar
-        /// ters cevrilebilir; odenmis (Paid) veya zaten ters cevrilmis
-        /// kayitlar reddedilir.
+        /// Tahakkuku ters çevirir. Yalnızca Accrued durumdaki tahakkuklar
+        /// ters çevrilebilir; ödenmiş (Paid) veya zaten ters çevrilmiş
+        /// kayıtlar reddedilir.
         /// </summary>
         public void Reverse()
         {
             if (Status == EnumCommissionAccrualStatus.Paid)
-                throw new DomainException("Odenmis prim tahakkuku ters cevrilemez.");
+                throw new DomainException("Ödenmiş prim tahakkuku ters çevrilemez.");
 
             if (Status == EnumCommissionAccrualStatus.Reversed)
-                throw new DomainException("Prim tahakkuku zaten ters cevrilmis.");
+                throw new DomainException("Prim tahakkuku zaten ters çevrilmiş.");
 
             Status = EnumCommissionAccrualStatus.Reversed;
             UpdatedAt = DateTime.UtcNow;
         }
 
         /// <summary>
-        /// Tahakkuku odenmis olarak isaretler (odeme donemi kapatilirken).
-        /// Yalnizca Accrued durumdaki tahakkuklar odenebilir.
+        /// Tahakkuku ödenmiş olarak işaretler (ödeme dönemi kapatılırken).
+        /// Yalnızca Accrued durumdaki tahakkuklar ödenebilir.
         /// </summary>
         public void MarkAsPaid()
         {
             if (Status == EnumCommissionAccrualStatus.Paid)
-                throw new DomainException("Prim tahakkuku zaten odenmis.");
+                throw new DomainException("Prim tahakkuku zaten ödenmiş.");
 
             if (Status == EnumCommissionAccrualStatus.Reversed)
-                throw new DomainException("Ters cevrilmis tahakkuk odenmez.");
+                throw new DomainException("Ters çevrilmiş tahakkuk ödenmez.");
 
             Status = EnumCommissionAccrualStatus.Paid;
             UpdatedAt = DateTime.UtcNow;

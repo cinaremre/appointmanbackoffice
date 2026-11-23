@@ -7,13 +7,13 @@ namespace Rezervise.Application.Features.Blacklists.Commands.RemoveFromBlacklist
         public RemoveFromBlacklistCommandValidator()
         {
             RuleFor(x => x.BlacklistEntryId)
-                .NotEmpty().WithMessage("Kara liste kaydi ID bos olamaz.");
+                .NotEmpty().WithMessage("Kara liste kaydı ID boş olamaz.");
 
             RuleFor(x => x.BusinessId)
-                .NotEmpty().WithMessage("Isletme ID bos olamaz.");
+                .NotEmpty().WithMessage("İşletme ID boş olamaz.");
 
             RuleFor(x => x.RequesterId)
-                .NotEmpty().WithMessage("Istek yapan kullanici ID bos olamaz.");
+                .NotEmpty().WithMessage("İstek yapan kullanıcı ID boş olamaz.");
 
             RuleFor(x => x.Reason)
                 .MaximumLength(500).WithMessage("Sebep 500 karakterden uzun olamaz.");

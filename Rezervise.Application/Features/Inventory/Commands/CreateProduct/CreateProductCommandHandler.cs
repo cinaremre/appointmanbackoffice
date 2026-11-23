@@ -31,28 +31,28 @@ namespace Rezervise.Application.Features.Inventory.Commands.CreateProduct
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde OwnerId'si değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Forbidden("Bu isletmeye urun tanimlama yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu işletmeye ürün tanımlama yetkiniz yok."));
 
-                // 3. SKU isletme bazinda benzersiz olmali (elle kontrol;
-                //    es zamanli iki istegi unique index yakalar).
+                // 3. SKU işletme bazında benzersiz olmalı (elle kontrol;
+                //    es zamanlı iki isteği unique index yakalar).
                 if (string.IsNullOrWhiteSpace(request.Sku))
-                    return Result<Guid>.Failure(Error.BusinessRule("Urun SKU'su bos olamaz."));
+                    return Result<Guid>.Failure(Error.BusinessRule("Ürün SKU'su boş olamaz."));
 
                 var existing = await _productRepository.FindAsync(
                     p => p.BusinessId == request.BusinessId && p.Sku == request.Sku.Trim().ToUpperInvariant() && !p.IsDeleted,
                     cancellationToken);
 
                 if (existing.Any())
-                    return Result<Guid>.Failure(Error.Conflict($"'{request.Sku}' SKU'su ile bir urun zaten tanimli."));
+                    return Result<Guid>.Failure(Error.Conflict($"'{request.Sku}' SKU'su ile bir ürün zaten tanımlı."));
 
-                // 4. Urunu olustur (entity is kurallarini uygular)
+                // 4. Ürünü oluştur (entity is kurallarını uygular)
                 var product = new Product(
                     request.Sku,
                     request.Name,
@@ -72,9 +72,9 @@ namespace Rezervise.Application.Features.Inventory.Commands.CreateProduct
             }
             catch (DuplicateKeyException)
             {
-                // Es zamanli iki ekleme denemesi: unique index ikincisini reddeder.
+                // Es zamanlı iki ekleme denemesi: unique index ikincisini reddeder.
                 return Result<Guid>.Failure(
-                    Error.Conflict($"'{request.Sku}' SKU'su ile bir urun zaten tanimli."));
+                    Error.Conflict($"'{request.Sku}' SKU'su ile bir ürün zaten tanımlı."));
             }
             catch (DomainException ex)
             {
@@ -82,7 +82,7 @@ namespace Rezervise.Application.Features.Inventory.Commands.CreateProduct
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Urun olusturulurken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Ürün oluşturulurken bir hata oluştu.", ex.Message));
             }
         }
     }

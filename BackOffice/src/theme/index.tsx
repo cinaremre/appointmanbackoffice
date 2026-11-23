@@ -3,9 +3,9 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import type { ReactNode } from "react";
 
 /**
- * Acik tema varsayilan (dokuman 5.2). Semantik renkler MUI
- * palette'ina eslenir; durum gosterimi yalniz renge dayali degil
- * (etiket metinleriyle birlikte kullanilir).
+ * Açık tema varsayılan (doküman 5.2). Semantik renkler MUI
+ * palette'ina eşlenir; durum gösterimi yalnız renge dayali değil
+ * (etiket metinleriyle birlikte kullanılır).
  */
 const theme = createTheme({
   palette: {

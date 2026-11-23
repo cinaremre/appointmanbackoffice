@@ -6,8 +6,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Stock.Queries.GetAdminStockMovements
 {
     /// <summary>
-    /// Stok hareket listesi (dokuman Modul 17). Hareket defteri kayitlari
-    /// salt okunur listelenir; duzeltme ters yonlu yeni hareketle yapilir.
+    /// Stok hareket listesi (doküman Modül 17). Hareket defteri kayıtları
+    /// salt okunur listelenir; düzeltme ters yönlü yeni hareketle yapılır.
     /// </summary>
     public class GetAdminStockMovementsQuery : IRequest<Result<AdminPagedResult<AdminStockMovementDto>>>
     {
@@ -21,7 +21,7 @@ namespace Rezervise.Application.Features.Admin.Stock.Queries.GetAdminStockMoveme
         public int PageSize { get; set; } = 50;
     }
 
-    /// <summary>Tek stok hareketinin admin gorunumu.</summary>
+    /// <summary>Tek stok hareketinin admin görünümü.</summary>
     public class AdminStockMovementDto
     {
         public Guid Id { get; set; }
@@ -29,7 +29,7 @@ namespace Rezervise.Application.Features.Admin.Stock.Queries.GetAdminStockMoveme
         public Guid ProductId { get; set; }
         public EnumStockMovementType MovementType { get; set; }
 
-        /// <summary>Isaretli miktar: giriste pozitif, cikista negatif.</summary>
+        /// <summary>İşaretli miktar: girişte pozitif, çıkışta negatif.</summary>
         public decimal Quantity { get; set; }
         public decimal UnitCost { get; set; }
 

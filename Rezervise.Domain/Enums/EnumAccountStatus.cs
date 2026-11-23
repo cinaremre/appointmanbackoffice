@@ -1,32 +1,32 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Kullanici hesap durumu
+    /// Kullanıcı hesap durumu
     /// </summary>
     public enum EnumAccountStatus
     {
         /// <summary>
-        /// Aktif - Hesap normal sekilde kullaniliyor
+        /// Aktif - Hesap normal şekilde kullanılıyor
         /// </summary>
         Active = 0,
 
         /// <summary>
-        /// Pasif - Hesap ge�ici olarak devre disi
+        /// Pasif - Hesap geçici olarak devre dışı
         /// </summary>
         Inactive = 1,
 
         /// <summary>
-        /// Kilitli - Hesap g�venlik nedeniyle kilitlendi
+        /// Kilitli - Hesap güvenlik nedeniyle kilitlendi
         /// </summary>
         Locked = 2,
 
         /// <summary>
-        /// Dogrulama Bekliyor - Hesap onay bekliyor
+        /// Doğrulama Bekliyor - Hesap onay bekliyor
         /// </summary>
         PendingVerification = 3,
 
         /// <summary>
-        /// Silinmis - Hesap kalici olarak silindi
+        /// Silinmiş - Hesap kalıcı olarak silindi
         /// </summary>
         Deleted = 4
     }

@@ -3,8 +3,8 @@ using Rezervise.Domain.Enums;
 namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminCampaigns
 {
     /// <summary>
-    /// Kampanya ozeti: temel alanlarin yaninda toplam harcama (CampaignSpend
-    /// toplami) ve atfedilen randevu sayisi (AppointmentAttribution adedi).
+    /// Kampanya özeti: temel alanların yanında toplam harcama (CampaignSpend
+    /// toplamı) ve atfedilen randevu sayısı (AppointmentAttribution adedi).
     /// </summary>
     public class AdminCampaignDto
     {
@@ -17,25 +17,25 @@ namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminCampaig
         public DateTime? EndAt { get; set; }
         public bool IsActive { get; set; }
 
-        /// <summary>Kampanyaya yapilan toplam harcama tutari.</summary>
+        /// <summary>Kampanyaya yapılan toplam harcama tutarı.</summary>
         public decimal TotalSpend { get; set; }
 
-        /// <summary>Kampanyaya atfedilen randevu sayisi.</summary>
+        /// <summary>Kampanyaya atfedilen randevu sayısı.</summary>
         public int AttributedAppointments { get; set; }
     }
 
-    /// <summary>Sayfali kampanya listesi sonucu.</summary>
+    /// <summary>Sayfalı kampanya listesi sonucu.</summary>
     public class AdminCampaignListDto
     {
         public IReadOnlyList<AdminCampaignDto> Items { get; set; } = Array.Empty<AdminCampaignDto>();
 
-        /// <summary>Kirpanma sonrasi uygulanan sayfa numarasi.</summary>
+        /// <summary>Kırpanma sonrası uygulanan sayfa numarası.</summary>
         public int Page { get; set; }
 
-        /// <summary>Kirpanma sonrasi uygulanan sayfa boyutu.</summary>
+        /// <summary>Kırpanma sonrası uygulanan sayfa boyutu.</summary>
         public int PageSize { get; set; }
 
-        /// <summary>Filtreye uyan toplam kampanya sayisi.</summary>
+        /// <summary>Filtreye uyan toplam kampanya sayısı.</summary>
         public long TotalCount { get; set; }
     }
 }

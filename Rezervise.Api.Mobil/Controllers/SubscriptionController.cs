@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Abonelik ve ozellik entitlement yonetimi (dokuman Modul 14).
-    /// Uclarin tamami platform yoneticisine aciktir; handler'larin icinde
-    /// de rol kontrolu yapilir, buradaki attribute savunma ikinci katmanidir.
+    /// Abonelik ve özellik entitlement yönetimi (doküman Modül 14).
+    /// Uçların tamamı platform yöneticisine açıktır; handler'larin içinde
+    /// de rol kontrolü yapılır, buradaki attribute savunma ikinci katmanıdır.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -26,10 +26,10 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Yeni abonelik plani olusturur ve ozellik setini baglar.
+        /// Yeni abonelik planı oluşturur ve özellik setini bağlar.
         /// </summary>
-        /// <param name="command">Plan bilgileri ve ozellik listesi</param>
-        /// <returns>Olusturulan planin ID'si</returns>
+        /// <param name="command">Plan bilgileri ve özellik listesi</param>
+        /// <returns>Oluşturulan planın ID'si</returns>
         [HttpPost("plan")]
         [Authorize(Roles = "Admin,SuperAdmin")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
@@ -49,10 +49,10 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Isletmeye abonelik plani atar; eski aktif abonelik dusurulur.
+        /// İşletmeye abonelik planı atar; eski aktif abonelik düşürülür.
         /// </summary>
         /// <param name="command">Atama bilgileri</param>
-        /// <returns>Olusturulan aboneligin ID'si</returns>
+        /// <returns>Oluşturulan aboneliğin ID'si</returns>
         [HttpPost("assign")]
         [Authorize(Roles = "Admin,SuperAdmin")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
@@ -72,10 +72,10 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Isletmeye ozellik bazli gecici erisim karari (override) verir.
+        /// İşletmeye özellik bazlı geçici erişim kararı (override) verir.
         /// </summary>
         /// <param name="command">Override bilgileri</param>
-        /// <returns>Olusturulan override kaydinin ID'si</returns>
+        /// <returns>Oluşturulan override kaydının ID'si</returns>
         [HttpPost("override")]
         [Authorize(Roles = "Admin,SuperAdmin")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]

@@ -19,17 +19,17 @@ namespace Rezervise.Application.Features.AppointmentHistories.Queries.GetByAppoi
         {
             try
             {
-                // 1. Randevunun tum gecmisini getir
+                // 1. Randevunun tüm geçmişini getir
                 var histories = await _historyRepository.FindAsync(
                     h => h.AppointmentId == request.AppointmentId && !h.IsDeleted,
                     cancellationToken);
 
-                // 2. Zamana gore sirala (en yeni en basta)
+                // 2. Zamana göre sırala (en yeni en başta)
                 var sortedHistories = histories
                     .OrderByDescending(h => h.ChangedAt)
                     .ToList();
 
-                // 3. DTO'ya donustur
+                // 3. DTO'ya dönüştür
                 var dtos = sortedHistories.Select(h => new AppointmentHistoryDto
                 {
                     Id = h.Id,
@@ -51,7 +51,7 @@ namespace Rezervise.Application.Features.AppointmentHistories.Queries.GetByAppoi
             catch (Exception ex)
             {
                 return Result<List<AppointmentHistoryDto>>.Failure(
-                    Error.Internal("Randevu gecmisi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Randevu geçmişi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

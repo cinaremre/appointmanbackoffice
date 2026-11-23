@@ -5,23 +5,23 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Rezervise.Infrastructure.Migrations
 {
-    /// <inheritdoc />
+    /// <inheritdoç />
     public partial class AddBackOfficeBulkOperations : Migration
     {
-        /// <inheritdoc />
+        /// <inheritdoç />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
                 name: "BulkOperations",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    BusinessId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
                     OperationType = table.Column<int>(type: "int", nullable: false),
                     RequestedPayload = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
                     DryRun = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    RequestedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RequestedBy = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
                     TotalRecords = table.Column<int>(type: "int", nullable: false),
                     SuccessCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     FailedCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
@@ -56,7 +56,7 @@ namespace Rezervise.Infrastructure.Migrations
                 column: "Status");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

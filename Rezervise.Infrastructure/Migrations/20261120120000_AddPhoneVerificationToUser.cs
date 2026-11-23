@@ -8,14 +8,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Rezervise.Infrastructure.Migrations
 {
     /// <summary>
-    /// Telefon (OTP) dogrulama alanlarini Users tablosuna ekler.
-    /// Ham kod saklanmaz; yalnizca SHA-256 hash'i tutulur.
+    /// Telefon (OTP) doğrulama alanlarını Users tablosuna ekler.
+    /// Ham kod saklanmaz; yalnızca SHA-256 hash'i tutulur.
     /// </summary>
     [DbContext(typeof(AppDbContext))]
     [Migration("20261120120000_AddPhoneVerificationToUser")]
     public partial class AddPhoneVerificationToUser : Migration
     {
-        /// <inheritdoc />
+        /// <inheritdoç />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
@@ -51,7 +51,7 @@ namespace Rezervise.Infrastructure.Migrations
                 filter: "[PhoneVerificationCodeHash] IS NOT NULL");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(

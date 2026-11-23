@@ -53,19 +53,19 @@ namespace Rezervise.Application.Features.Admin.Services.Queries.PreviewBulkServi
 
                 if (serviceIds.Count == 0)
                     return Result<BulkOperationDto>.Failure(
-                        Error.Validation("Hizmet ID listesi bos olamaz."));
+                        Error.Validation("Hizmet ID listesi boş olamaz."));
 
-                // Ilk surum siniri: buyuk olcekte kuyruk tabanli islemciye tasinacak.
+                // İlk sürüm sınırı: büyük ölçekte kuyruk tabanlı işlemciye taşınacak.
                 if (serviceIds.Count > AdminPaging.MaxBulkRecords)
                     return Result<BulkOperationDto>.Failure(
-                        Error.Conflict($"Ilk surumde en fazla {AdminPaging.MaxBulkRecords} kayit islenebilir."));
+                        Error.Conflict($"İlk sürümde en fazla {AdminPaging.MaxBulkRecords} kayıt işlenebilir."));
 
-                // Kategori degisimi icin hedef kategori bastan dogrulanir.
+                // Kategori değişimi için hedef kategori baştan doğrulanır.
                 if (request.OperationType == EnumBulkOperationType.ChangeServiceCategory)
                 {
                     if (!request.TargetCategoryId.HasValue)
                         return Result<BulkOperationDto>.Failure(
-                            Error.Validation("Kategori degisimi icin hedef kategori zorunludur."));
+                            Error.Validation("Kategori değişimi için hedef kategori zorunludur."));
 
                     var targetCategory = await _serviceCategoryRepository.GetByIdAsync(
                         request.TargetCategoryId.Value, cancellationToken);
@@ -75,7 +75,7 @@ namespace Rezervise.Application.Features.Admin.Services.Queries.PreviewBulkServi
                             Error.NotFound("Hizmet kategorisi", request.TargetCategoryId.Value.ToString()));
                 }
 
-                // Gecerli/gecersiz ID ayristirmasi: var olan ve silinmemis hizmetler.
+                // Geçerli/geçersiz ID ayrıştırması: var olan ve silinmemiş hizmetler.
                 var validIds = new List<Guid>();
                 var invalidIds = new List<Guid>();
 
@@ -88,7 +88,7 @@ namespace Rezervise.Application.Features.Admin.Services.Queries.PreviewBulkServi
                         invalidIds.Add(serviceId);
                 }
 
-                // Payload append-only yazilir; sonrasinda kimse degistiremez.
+                // Payload append-only yazılır; sonrasında kimse değiştiremez.
                 var payload = JsonSerializer.Serialize(
                     new BulkServiceOperationPayload
                     {
@@ -106,7 +106,7 @@ namespace Rezervise.Application.Features.Admin.Services.Queries.PreviewBulkServi
                     validIds.Count,
                     request.BusinessId);
 
-                // Onizleme dogrulama asamasinda birakilir; execute Pending'i reddeder.
+                // Onizleme doğrulama aşamasında bırakılır; execute Pending'i reddeder.
                 operation.MarkValidating();
 
                 await _bulkOperationRepository.AddAsync(operation, cancellationToken);
@@ -138,7 +138,7 @@ namespace Rezervise.Application.Features.Admin.Services.Queries.PreviewBulkServi
             catch (Exception ex)
             {
                 return Result<BulkOperationDto>.Failure(
-                    Error.Internal("Toplu islem onizlemesi olusturulurken bir hata olustu.", ex.Message));
+                    Error.Internal("Toplu işlem onizlemesi oluşturulurken bir hata oluştu.", ex.Message));
             }
         }
     }

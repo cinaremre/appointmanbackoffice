@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Kullanici bildirimleri ile ilgili islemleri yonetir.
+    /// Kullanıcı bildirimleri ile ilgili işlemleri yönetir.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -33,11 +33,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Route'taki kullanici ID'si ile token'daki kimligin ayni olmasini dogrular.
-        /// Uyusmazsa baska bir kullanicinin bildirimlerine erisim engellenir (IDOR korumasi).
+        /// Route'taki kullanıcı ID'si ile token'daki kimliğin aynı olmasını doğrular.
+        /// Uyuşmazsa başka bir kullanıcının bildirimlerine erişim engellenir (IDOR koruması).
         /// </summary>
-        /// <param name="routeUserId">Route'tan gelen kullanici ID'si.</param>
-        /// <returns>Dogrulama basarisizsa donulecek sonuc; basariliysa null.</returns>
+        /// <param name="routeUserId">Route'tan gelen kullanıcı ID'si.</param>
+        /// <returns>Doğrulama başarısızsa dönülecek sonuç; başarılıysa null.</returns>
         private IActionResult? EnsureOwnership(Guid routeUserId)
         {
             var currentUserId = _currentUser.UserId;
@@ -52,11 +52,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Hata kodunu dogru HTTP durum koduna esler. Yetki hatasi 404 olarak donulurse
-        /// istemci kaynagin var olmadigini sanar; bu yuzden kod bazli esleme yapilir.
+        /// Hata kodunu doğru HTTP durum koduna eşler. Yetki hatası 404 olarak dönülürse
+        /// istemci kaynağın var olmadığını sanar; bu yüzden kod bazlı eşleme yapılır.
         /// </summary>
-        /// <param name="result">Basarisiz sonuc.</param>
-        /// <returns>Uygun HTTP durum kodu ile sarilmis sonuc.</returns>
+        /// <param name="result">Başarısız sonuç.</param>
+        /// <returns>Uygun HTTP durum kodu ile sarılmış sonuç.</returns>
         private IActionResult FromError<T>(Result<T> result)
         {
             return result.Error?.Code switch
@@ -69,11 +69,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kullanicinin tum bildirimlerini getirir.
+        /// Kullanıcının tüm bildirimlerini getirir.
         /// </summary>
-        /// <param name="userId">Kullanici ID'si</param>
-        /// <param name="pageNumber">Sayfa numarasi (varsayilan: 1)</param>
-        /// <param name="pageSize">Sayfa boyutu (varsayilan: 10)</param>
+        /// <param name="userId">Kullanıcı ID'si</param>
+        /// <param name="pageNumber">Sayfa numarası (varsayılan: 1)</param>
+        /// <param name="pageSize">Sayfa boyutu (varsayılan: 10)</param>
         /// <returns>Bildirim listesi</returns>
         [HttpGet("user/{userId}")]
         [ProducesResponseType(typeof(Result<List<NotificationDto>>), StatusCodes.Status200OK)]
@@ -83,22 +83,22 @@ namespace Rezervise.Api.Controllers
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10)
         {
-            // Kimlik token'dan cozulur; route'taki ID yalnizca sahiplik dogrulamasi icin kullanilir.
+            // Kimlik token'dan çözülür; route'taki ID yalnızca sahiplik doğrulaması için kullanılır.
             var ownership = EnsureOwnership(userId);
             if (ownership is not null)
                 return ownership;
 
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetNotificationsByUserQuery
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -106,27 +106,27 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kullanicinin okunmamis bildirimlerini getirir.
+        /// Kullanıcının okunmamış bildirimlerini getirir.
         /// </summary>
-        /// <param name="userId">Kullanici ID'si</param>
-        /// <returns>Okunmamis bildirim listesi</returns>
+        /// <param name="userId">Kullanıcı ID'si</param>
+        /// <returns>Okunmamış bildirim listesi</returns>
         [HttpGet("user/{userId}/unread")]
         [ProducesResponseType(typeof(Result<List<NotificationDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<List<NotificationDto>>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUnread(Guid userId)
         {
-            // Kimlik token'dan cozulur; route'taki ID yalnizca sahiplik dogrulamasi icin kullanilir.
+            // Kimlik token'dan çözülür; route'taki ID yalnızca sahiplik doğrulaması için kullanılır.
             var ownership = EnsureOwnership(userId);
             if (ownership is not null)
                 return ownership;
 
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetUnreadNotificationsQuery();
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -134,23 +134,23 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Bildirim detayini getirir.
+        /// Bildirim detayını getirir.
         /// </summary>
         /// <param name="id">Bildirim ID'si</param>
-        /// <returns>Bildirim detayi</returns>
+        /// <returns>Bildirim detayı</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Result<NotificationDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<NotificationDto>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(Guid id)
         {
-            // 1. Query'yi olustur.
-            //    Kullanici kimligi handler icinde token'dan cozulur; istekten alinmaz.
+            // 1. Query'yi oluştur.
+            //    Kullanıcı kimliği handler içinde token'dan çözülür; istekten alınmaz.
             var query = new GetNotificationByIdQuery { NotificationId = id };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -158,23 +158,23 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Bildirimi okundu olarak isaretler.
+        /// Bildirimi okundu olarak işaretler.
         /// </summary>
         /// <param name="id">Bildirim ID'si</param>
-        /// <param name="command">Isaretleme bilgileri</param>
-        /// <returns>Isaretlenen bildirimin ID'si</returns>
+        /// <param name="command">İşaretleme bilgileri</param>
+        /// <returns>İşaretlenen bildirimin ID'si</returns>
         [HttpPost("{id}/mark-as-read")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> MarkAsRead(Guid id, [FromBody] MarkAsReadCommand command)
         {
-            // 1. Route'taki ID'yi command'e ata. Kullanici kimligi handler icinde token'dan cozulur.
+            // 1. Route'taki ID'yi command'e ata. Kullanıcı kimliği handler içinde token'dan çözülür.
             command.NotificationId = id;
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -182,25 +182,25 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kullanicinin tum bildirimlerini okundu olarak isaretler.
+        /// Kullanıcının tüm bildirimlerini okundu olarak işaretler.
         /// </summary>
-        /// <param name="userId">Kullanici ID'si</param>
-        /// <param name="command">Isaretleme bilgileri</param>
-        /// <returns>Isaretlenen bildirim sayisi</returns>
+        /// <param name="userId">Kullanıcı ID'si</param>
+        /// <param name="command">İşaretleme bilgileri</param>
+        /// <returns>İşaretlenen bildirim sayısı</returns>
         [HttpPost("user/{userId}/mark-all-as-read")]
         [ProducesResponseType(typeof(Result<int>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<int>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> MarkAllAsRead(Guid userId, [FromBody] MarkAllAsReadCommand command)
         {
-            // Kimlik token'dan cozulur; route'taki ID yalnizca sahiplik dogrulamasi icin kullanilir.
+            // Kimlik token'dan çözülür; route'taki ID yalnızca sahiplik doğrulaması için kullanılır.
             var ownership = EnsureOwnership(userId);
             if (ownership is not null)
                 return ownership;
 
-            // 1. Mediator ile gonder
+            // 1. Mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -218,35 +218,35 @@ namespace Rezervise.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(Guid id, [FromBody] DeleteNotificationCommand command)
         {
-            // 1. Route'taki ID'yi command'e ata. Kullanici kimligi handler icinde token'dan cozulur.
+            // 1. Route'taki ID'yi command'e ata. Kullanıcı kimliği handler içinde token'dan çözülür.
             command.NotificationId = id;
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
             return FromError(result);
         }
 
-        // ===== Push bildirim cihaz kaydi =====
+        // ===== Push bildirim cihaz kaydı =====
 
         /// <summary>
-        /// Mobil cihazin FCM token'ini kaydeder. Kullanici yalnizca KENDI
-        /// cihazini kaydedebilir (route'taki userId token kimligiyle eslesmelidir).
+        /// Mobil cihazın FCM token'ini kaydeder. Kullanıcı yalnızca KENDI
+        /// cihazını kaydedebilir (route'taki userId token kimliğiyle eşleşmelidir).
         /// </summary>
-        /// <param name="userId">Kullanici ID'si</param>
+        /// <param name="userId">Kullanıcı ID'si</param>
         /// <param name="command">Token ve platform bilgileri</param>
-        /// <returns>Kayit ID'si</returns>
+        /// <returns>Kayıt ID'si</returns>
         [HttpPost("user/{userId}/device-token")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> RegisterDeviceToken(Guid userId, [FromBody] RegisterDeviceTokenCommand command)
         {
-            // Kimlik token'dan cozulur; route'taki ID yalnizca sahiplik dogrulamasi icin kullanilir.
+            // Kimlik token'dan çözülür; route'taki ID yalnızca sahiplik doğrulaması için kullanılır.
             var ownership = EnsureOwnership(userId);
             if (ownership is not null)
                 return ownership;
@@ -262,11 +262,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Cihaz token'ini gonderime kapatir (cikis / uygulama kaldirma).
+        /// Cihaz token'ini gönderime kapatır (çıkış / uygulama kaldırma).
         /// </summary>
-        /// <param name="userId">Kullanici ID'si</param>
-        /// <param name="command">Kapatilacak token</param>
-        /// <returns>Islem kabul bilgisi</returns>
+        /// <param name="userId">Kullanıcı ID'si</param>
+        /// <param name="command">Kapatılacak token</param>
+        /// <returns>İşlem kabul bilgisi</returns>
         [HttpDelete("user/{userId}/device-token")]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status403Forbidden)]

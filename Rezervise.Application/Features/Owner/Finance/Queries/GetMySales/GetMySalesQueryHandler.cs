@@ -9,9 +9,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMySales
 {
     /// <summary>
-    /// Isletme sahibinin satis listesi. Sahiplik OwnerScope ile
-    /// dogrulanir; toplam tutar filtre geneli uzerinden hesaplanir
-    /// (GetAdminSales deseniyle ayni).
+    /// İşletme sahibinin satış listesi. Sahiplik OwnerScope ile
+    /// doğrulanır; toplam tutar filtre geneli üzerinden hesaplanır
+    /// (GetAdminSales deseniyle aynı).
     /// </summary>
     public class GetMySalesQueryHandler : IRequestHandler<GetMySalesQuery, Result<OwnerSalesListDto>>
     {
@@ -35,14 +35,14 @@ namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMySales
         {
             try
             {
-                // 1. Sahiplik: isletme JWT sahibine ait olmali.
+                // 1. Sahiplik: işletme JWT sahibine ait olmalı.
                 var owned = await OwnerScope.FindOwnedBusinessAsync(
                     _businessRepository, _currentUser, request.BusinessId, cancellationToken);
 
                 if (owned.IsFailure)
                     return Result<OwnerSalesListDto>.Failure(owned.Error!);
 
-                // 2. Sayfalama kurallari.
+                // 2. Sayfalama kuralları.
                 var page = AdminPaging.NormalizePage(request.Page);
                 var pageSize = AdminPaging.ClampPageSize(request.PageSize);
 
@@ -50,7 +50,7 @@ namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMySales
                 var fromDate = request.FromDate;
                 var toDate = request.ToDate;
 
-                // 3. Filtre: isletme ve tarih araligi (her ikisi de dahil).
+                // 3. Filtre: işletme ve tarih aralığı (her ikisi de dahil).
                 var sales = await _saleRepository.FindAsync(
                     s => s.BusinessId == businessId
                         && !s.IsDeleted
@@ -58,7 +58,7 @@ namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMySales
                         && (toDate == null || s.SoldAt <= toDate),
                     cancellationToken);
 
-                // 4. Sirala, sayfala ve toplam tutari filtre geneli uzerinden
+                // 4. Sırala, sayfala ve toplam tutarı filtre geneli üzerinden
                 //    hesapla.
                 var ordered = sales.OrderByDescending(s => s.SoldAt).ToList();
 
@@ -87,7 +87,7 @@ namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMySales
             catch (Exception ex)
             {
                 return Result<OwnerSalesListDto>.Failure(
-                    Error.Internal("Satis listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Satış listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

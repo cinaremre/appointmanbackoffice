@@ -46,39 +46,39 @@ import type {
 } from "../types";
 
 /**
- * Servis yonetimi (dokuman 11): DataTable + URL senkron filtreler,
- * kucuk duzenleme dialog'u ve 4 adimli toplu islem wizard'i (dokuman 25).
+ * Servis yönetimi (doküman 11): DataTable + URL senkron filtreler,
+ * küçük düzenleme dialog'u ve 4 adimli toplu işlem wizard'ı (doküman 25).
  */
 
 type NotifySeverity = "success" | "warning" | "error";
 type Notify = (message: string, severity?: NotifySeverity) => void;
 
 function errorMessage(error: unknown): string {
-  return error instanceof ApiError ? error.userMessage : "Beklenmedik bir hata olustu. Lutfen tekrar deneyin.";
+  return error instanceof ApiError ? error.userMessage : "Beklenmedik bir hata oluştu. Lütfen tekrar deneyin.";
 }
 
-/** Duzenleme formu semasi: alanlar string gelir, gonderirken sayiya cevrilir. */
+/** Düzenleme formu şeması: alanlar string gelir, gönderirken sayıya çevrilir. */
 const serviceEditSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(2, "Hizmet adi en az 2 karakter olmali.")
-    .max(100, "Hizmet adi en fazla 100 karakter olabilir."),
+    .min(2, "Hizmet adı en az 2 karakter olmalı.")
+    .max(100, "Hizmet adı en fazla 100 karakter olabilir."),
   price: z
     .string()
     .trim()
-    .refine((value) => /^[0-9]+(\.[0-9]{1,2})?$/.test(value), "Gecerli bir fiyat girin (orn. 250.50)."),
+    .refine((value) => /^[0-9]+(\.[0-9]{1,2})?$/.test(value), "Geçerli bir fiyat girin (orn. 250.50)."),
   durationMinutes: z
     .string()
     .trim()
     .refine(
       (value) => /^[0-9]+$/.test(value) && Number(value) >= 5 && Number(value) <= 1440,
-      "Sure 5-1440 dk arasinda tam sayi olmali.",
+      "Süre 5-1440 dk arasında tam sayı olmalı.",
     ),
 });
 type ServiceEditValues = z.infer<typeof serviceEditSchema>;
 
-/** Servis duzenleme formu (PATCH). Mount aninda satirin degerleriyle baslar. */
+/** Servis düzenleme formu (PATCH). Mount anında satırın değerleriyle başlar. */
 function ServiceEditForm({
   row,
   onClose,
@@ -109,7 +109,7 @@ function ServiceEditForm({
       patchItem<ServiceDto>(`/services/${row.id}`, payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["services"] });
-      notify("Hizmet guncellendi.");
+      notify("Hizmet güncellendi.");
       onClose();
     },
     onError: (error: unknown) => notify(errorMessage(error), "error"),
@@ -131,11 +131,11 @@ function ServiceEditForm({
       fullWidth
       fullScreen={is_mobile}
     >
-      <DialogTitle>Servisi Duzenle</DialogTitle>
+      <DialogTitle>Servisi Düzenle</DialogTitle>
       <form onSubmit={submit} noValidate>
         <DialogContent>
           <TextField
-            label="Hizmet Adi"
+            label="Hizmet Adı"
             fullWidth
             margin="dense"
             error={!!errors.name}
@@ -151,7 +151,7 @@ function ServiceEditForm({
             {...register("price")}
           />
           <TextField
-            label="Sure (dakika)"
+            label="Süre (dakika)"
             fullWidth
             margin="dense"
             error={!!errors.durationMinutes}
@@ -161,7 +161,7 @@ function ServiceEditForm({
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} disabled={updateMutation.isPending}>
-            Vazgec
+            Vazgeç
           </Button>
           <Button type="submit" variant="contained" disabled={updateMutation.isPending}>
             {updateMutation.isPending ? "Kaydediliyor..." : "Kaydet"}
@@ -172,36 +172,36 @@ function ServiceEditForm({
   );
 }
 
-const BULK_STEP_LABELS = ["Islem Turu", "Servis ID'leri", "Onizleme", "Sonuc"];
+const BULK_STEP_LABELS = ["İşlem Türü", "Servis ID'leri", "Önizleme", "Sonuç"];
 
 const BULK_OPERATION_OPTIONS: Array<{ value: BulkOperationType; label: string; description: string }> = [
   {
     value: "DeactivateServices",
-    label: "Servisleri Pasiflestir",
-    description: "Secilen servisler isletme sayfasinda satin alinamaz hale gelir.",
+    label: "Servisleri Pasifleştir",
+    description: "Seçilen servisler işletme sayfasında satın alınamaz hale gelir.",
   },
   {
     value: "ActivateServices",
-    label: "Servisleri Aktiflestir",
-    description: "Secilen servisler yeniden satin alinabilir hale gelir.",
+    label: "Servisleri Aktifleştir",
+    description: "Seçilen servisler yeniden satın alınabilir hale gelir.",
   },
   {
     value: "ChangeServiceCategory",
-    label: "Servis Kategorisini Degistir",
-    description: "Secilen servisler belirttiginiz hedef kategoriye tasinir.",
+    label: "Servis Kategorisini Değiştir",
+    description: "Seçilen servisler belirttiğiniz hedef kategoriye taşınır.",
   },
 ];
 
 /**
- * Toplu islem wizard'i (dokuman 25): tur secimi -> ID listesi ->
- * dryRun onizleme -> onay ve execute. Mount aninda temiz baslar.
- * Sunucu 2000 ustu istekleri 409 ile reddeder; hata mesaji dialog
- * icinde gosterilir.
+ * Toplu işlem wizard'ı (doküman 25): tür seçimi -> ID listesi ->
+ * dryRun önizleme -> onay ve execute. Mount anında temiz başlar.
+ * Sunucu 2000 üstü istekleri 409 ile reddeder; hata mesajı dialog
+ * içinde gösterilir.
  */
 function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: Notify }) {
   const queryClient = useQueryClient();
   const theme = useTheme();
-  // Mobilde sihirbaz tam ekran acilir; Stepper normal (dikey esikli) akar.
+  // Mobilde sihirbaz tam ekran açılır; Stepper normal (dikey esikli) akar.
   const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [activeStep, setActiveStep] = useState(0);
   const [operation, setOperation] = useState<BulkOperationType>("DeactivateServices");
@@ -211,7 +211,7 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
   const [result, setResult] = useState<BulkOperationResultDto | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Satir satir girilen GUID'leri ayikla: bosluk/virgul toleransli, tekrarsiz.
+  // Satır satır girilen GUID'leri ayikla: boşluk/virgul toleranslı, tekrarsiz.
   const serviceIds = useMemo(() => {
     const seen = new Set<string>();
     for (const token of idsText.split(/[\s,;]+/)) {
@@ -231,7 +231,7 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
       }),
     onSuccess: (data) => {
       if (!data) {
-        setError("Sunucu beklenmeyen bir yanit dondu.");
+        setError("Sunucu beklenmeyen bir yanıt döndü.");
         return;
       }
       setError(null);
@@ -245,7 +245,7 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
       postItem<BulkOperationResultDto>(`/services/bulk-operations/${operationId}/execute`),
     onSuccess: async (data) => {
       if (!data) {
-        setError("Sunucu beklenmeyen bir yanit dondu.");
+        setError("Sunucu beklenmeyen bir yanıt döndü.");
         return;
       }
       setResult(data);
@@ -253,8 +253,8 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
       await queryClient.invalidateQueries({ queryKey: ["services"] });
       notify(
         data.failedCount > 0
-          ? `Toplu islem kismen basarili: ${data.successCount} basarili, ${data.failedCount} basarisiz.`
-          : `Toplu islem tamamlandi: ${data.successCount} kayit islendi.`,
+          ? `Toplu işlem kismen başarılı: ${data.successCount} başarılı, ${data.failedCount} başarısız.`
+          : `Toplu işlem tamamlandı: ${data.successCount} kayıt işlendi.`,
         data.failedCount > 0 ? "warning" : "success",
       );
     },
@@ -264,7 +264,7 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
   const cancelMutation = useMutation({
     mutationFn: (operationId: string) => postItem(`/services/bulk-operations/${operationId}/cancel`),
     onSuccess: () => {
-      notify("Toplu islem iptal edildi.", "warning");
+      notify("Toplu işlem iptal edildi.", "warning");
       onClose();
     },
     onError: (mutationError: unknown) => notify(errorMessage(mutationError), "error"),
@@ -280,7 +280,7 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
     }
     if (activeStep === 1) {
       if (serviceIds.length === 0) {
-        setError("En az bir gecerli servis ID girin.");
+        setError("En az bir geçerli servis ID girin.");
         return;
       }
       setError(null);
@@ -292,7 +292,7 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
 
   const runDryRun = () => {
     if (operation === "ChangeServiceCategory" && !targetCategoryId.trim()) {
-      setError("ChangeServiceCategory icin hedef kategori ID zorunludur.");
+      setError("ChangeServiceCategory için hedef kategori ID zorunludur.");
       return;
     }
     setError(null);
@@ -301,7 +301,7 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
 
   return (
     <Dialog open onClose={busy ? undefined : onClose} maxWidth="md" fullWidth fullScreen={is_mobile}>
-      <DialogTitle>Toplu Servis Islemi</DialogTitle>
+      <DialogTitle>Toplu Servis İşlemi</DialogTitle>
       <DialogContent>
         <Stepper
           activeStep={activeStep}
@@ -328,7 +328,7 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
         {activeStep === 0 ? (
           <Stack spacing={2}>
             <FormControl>
-              <FormLabel id="bulk-operation-label">Islem Turu</FormLabel>
+              <FormLabel id="bulk-operation-label">İşlem Türü</FormLabel>
               <RadioGroup
                 aria-labelledby="bulk-operation-label"
                 value={operation}
@@ -353,7 +353,7 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
                 fullWidth
                 value={targetCategoryId}
                 onChange={(event) => setTargetCategoryId(event.target.value)}
-                helperText="ChangeServiceCategory islemi icin hedef kategori ID'si zorunludur."
+                helperText="ChangeServiceCategory işlemi için hedef kategori ID'si zorunludur."
               />
             ) : null}
           </Stack>
@@ -368,7 +368,7 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
             value={idsText}
             onChange={(event) => setIdsText(event.target.value)}
             placeholder={"00000000-0000-0000-0000-000000000001\n00000000-0000-0000-0000-000000000002"}
-            helperText={`${serviceIds.length} benzersiz ID algilandi. Her satira bir GUID yazin. Sunucu 2000 ustu istekleri reddeder (409).`}
+            helperText={`${serviceIds.length} benzersiz ID algılandı. Her satıra bir GUID yazın. Sunucu 2000 üstü istekleri reddeder (409).`}
           />
         ) : null}
 
@@ -376,9 +376,9 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
           preview ? (
             <Stack spacing={2}>
               <Alert severity={preview.invalidIds.length > 0 ? "warning" : "success"}>
-                Onizleme (dryRun): {preview.totalRecords} kayit isleme alinacak.
+                Önizleme (dryRun): {preview.totalRecords} kayıt işleme alınacak.
                 {preview.invalidIds.length > 0
-                  ? ` ${preview.invalidIds.length} gecersiz ID reddedildi.`
+                  ? ` ${preview.invalidIds.length} geçersiz ID reddedildi.`
                   : ""}
               </Alert>
               {preview.invalidIds.length > 0 ? (
@@ -393,7 +393,7 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
                   }}
                 >
                   <Typography variant="caption" color="text.secondary">
-                    Gecersiz ID'ler:
+                    Geçersiz ID'ler:
                   </Typography>
                   {preview.invalidIds.map((invalidId) => (
                     <Typography key={invalidId} variant="caption" sx={{ display: "block", fontFamily: "monospace" }}>
@@ -405,7 +405,7 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
             </Stack>
           ) : (
             <Button variant="outlined" onClick={runDryRun} disabled={dryRunMutation.isPending}>
-              {dryRunMutation.isPending ? "Dogrulaniyor..." : "Onizlemeyi Calistir (dryRun)"}
+              {dryRunMutation.isPending ? "Doğrulanıyor..." : "Önizlemeyi Çalıştır (dryRun)"}
             </Button>
           )
         ) : null}
@@ -413,8 +413,8 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
         {activeStep === 3 && result ? (
           <Stack spacing={2}>
             <Alert severity={result.failedCount > 0 ? "warning" : "success"}>
-              Islem durumu: {result.status}. {result.successCount} kayit basariyla islendi, {result.failedCount}{" "}
-              kayit basarisiz.
+              İşlem durumu: {result.status}. {result.successCount} kayıt başarıyla işlendi, {result.failedCount}{" "}
+              kayıt başarısız.
             </Alert>
             {result.errorReport ? (
               <Box
@@ -443,17 +443,17 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
         ) : null}
         {activeStep < 2 ? (
           <Button variant="contained" onClick={handleNext} disabled={activeStep === 1 && serviceIds.length === 0}>
-            Ileri
+            İleri
           </Button>
         ) : null}
         {activeStep < 2 ? (
           <Button onClick={onClose} disabled={busy}>
-            Vazgec
+            Vazgeç
           </Button>
         ) : null}
         {activeStep === 2 && !preview ? (
           <Button variant="contained" onClick={runDryRun} disabled={dryRunMutation.isPending}>
-            {dryRunMutation.isPending ? "Dogrulaniyor..." : "Onizlemeyi Calistir"}
+            {dryRunMutation.isPending ? "Doğrulanıyor..." : "Önizlemeyi Çalıştır"}
           </Button>
         ) : null}
         {activeStep === 2 && preview ? (
@@ -463,14 +463,14 @@ function BulkOperationForm({ onClose, notify }: { onClose: () => void; notify: N
               onClick={() => cancelMutation.mutate(preview.id)}
               disabled={executeMutation.isPending || cancelMutation.isPending}
             >
-              Islemi Iptal Et
+              İşlemi İptal Et
             </Button>
             <Button
               variant="contained"
               onClick={() => executeMutation.mutate(preview.id)}
               disabled={executeMutation.isPending}
             >
-              {executeMutation.isPending ? "Uygulaniyor..." : "Onayla ve Uygula"}
+              {executeMutation.isPending ? "Uygulanıyor..." : "Onayla ve Uygula"}
             </Button>
           </>
         ) : null}
@@ -500,14 +500,14 @@ export function ServicesPage() {
   const [editRow, setEditRow] = useState<ServiceDto | null>(null);
   const [wizardOpen, setWizardOpen] = useState(false);
 
-  // Filtreler URL query'de yasar (dokuman 22): geri/yenile uyumlu.
+  // Filtreler URL query'de yasar (doküman 22): geri/yenile uyumlu.
   const search = searchParams.get("search") ?? "";
   const isActive = searchParams.get("isActive") ?? "";
   const page = Math.max(1, Number(searchParams.get("page")) || 1);
   const pageSize = Math.min(200, Math.max(10, Number(searchParams.get("pageSize")) || 50));
 
   const [searchInput, setSearchInput] = useState(search);
-  // URL disaridan degisirse (geri gitme) input'u render sirasinda senkronla.
+  // URL dışarıdan değişirse (geri gitme) input'u render sırasında senkronla.
   const [lastSearch, setLastSearch] = useState(search);
   if (search !== lastSearch) {
     setLastSearch(search);
@@ -524,7 +524,7 @@ export function ServicesPage() {
     setSearchParams(next, { replace: true });
   };
 
-  // Arama kutusu debounced URL'e yazilir; her tus vurusunda istek atilmaz.
+  // Arama kutusu debounced URL'e yazılır; her tuş vuruşunda istek atilmaz.
   useEffect(() => {
     if (searchInput === search) return;
     const timer = setTimeout(() => applyParams({ search: searchInput }), 400);
@@ -542,10 +542,10 @@ export function ServicesPage() {
   const canBulk = has_permission(PERMISSIONS.serviceBulkUpdate);
 
   const columns: DataTableColumn<ServiceDto>[] = [
-    { key: "name", header: "Hizmet Adi", render: (row) => row.name },
+    { key: "name", header: "Hizmet Adı", render: (row) => row.name },
     {
       key: "businessId",
-      header: "Isletme",
+      header: "İşletme",
       render: (row) => (
         <Typography variant="body2" noWrap title={row.businessId} sx={{ fontFamily: "monospace", maxWidth: 220 }}>
           {row.businessId}
@@ -557,7 +557,7 @@ export function ServicesPage() {
       header: "Fiyat",
       render: (row) => `${Number(row.price).toFixed(2)} ${row.currency}`,
     },
-    { key: "duration", header: "Sure", render: (row) => `${row.durationMinutes} dk` },
+    { key: "duration", header: "Süre", render: (row) => `${row.durationMinutes} dk` },
     {
       key: "status",
       header: "Durum",
@@ -577,7 +577,7 @@ export function ServicesPage() {
         actions={
           canBulk ? (
             <Button variant="contained" onClick={() => setWizardOpen(true)}>
-              Toplu Islem
+              Toplu İşlem
             </Button>
           ) : null
         }
@@ -599,7 +599,7 @@ export function ServicesPage() {
             value={isActive}
             onChange={(event) => applyParams({ isActive: event.target.value, search: searchInput })}
           >
-            <MenuItem value="">Tumu</MenuItem>
+            <MenuItem value="">Tümü</MenuItem>
             <MenuItem value="true">Aktif</MenuItem>
             <MenuItem value="false">Pasif</MenuItem>
           </Select>
@@ -617,12 +617,12 @@ export function ServicesPage() {
         totalCount={servicesQuery.data?.pagination.totalCount ?? 0}
         onPageChange={(value) => applyParams({ page: String(value) }, false)}
         onPageSizeChange={(value) => applyParams({ pageSize: String(value), page: "1" }, false)}
-        emptyLabel="Hizmet bulunamadi."
+        emptyLabel="Hizmet bulunamadı."
         rowActions={
           canUpdate
             ? (row) => (
                 <Button size="small" onClick={() => setEditRow(row)}>
-                  Duzenle
+                  Düzenle
                 </Button>
               )
             : undefined

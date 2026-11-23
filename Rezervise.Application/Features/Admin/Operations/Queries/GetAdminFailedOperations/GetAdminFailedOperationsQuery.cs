@@ -4,8 +4,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Operations.Queries.GetAdminFailedOperations
 {
     /// <summary>
-    /// Basarisiz operasyonlar ozeti (dokuman Modul 20): Failed durumundaki
-    /// aktarim isleri ve ornek niteliginde basarisiz satir kayitlari.
+    /// Başarısız operasyonlar özeti (doküman Modül 20): Failed durumundaki
+    /// aktarım işleri ve örnek niteliğinde başarısız satır kayıtları.
     /// </summary>
     public class GetAdminFailedOperationsQuery : IRequest<Result<AdminFailedOperationsDto>>
     {

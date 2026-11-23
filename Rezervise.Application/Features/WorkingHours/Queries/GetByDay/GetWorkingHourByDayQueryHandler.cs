@@ -20,7 +20,7 @@ namespace Rezervise.Application.Features.WorkingHours.Queries.GetByDay
         {
             try
             {
-                // 1. Belirli bir gunun calisma saatini getir
+                // 1. Belirli bir günün çalışma saatini getir
                 var workingHours = await _workingHourRepository.FindAsync(
                     w => w.BusinessId == request.BusinessId && w.DayOfWeek == request.Day && !w.IsDeleted,
                     cancellationToken);
@@ -28,9 +28,9 @@ namespace Rezervise.Application.Features.WorkingHours.Queries.GetByDay
                 var workingHour = workingHours.FirstOrDefault();
 
                 if (workingHour is null)
-                    return Result<WorkingHourDto>.Failure(Error.NotFound("Calisma saati", $"{request.BusinessId}-{request.Day}"));
+                    return Result<WorkingHourDto>.Failure(Error.NotFound("Çalışma saati", $"{request.BusinessId}-{request.Day}"));
 
-                // 2. DTO'ya donustur
+                // 2. DTO'ya dönüştür
                 var dto = new WorkingHourDto
                 {
                     Id = workingHour.Id,
@@ -39,7 +39,7 @@ namespace Rezervise.Application.Features.WorkingHours.Queries.GetByDay
                     StartTime = workingHour.StartTime,
                     EndTime = workingHour.EndTime,
                     IsClosed = workingHour.IsClosed,
-                    // DayOfWeek.ToString() framework'un Ingilizce adini doner; Turkce ad helper'dan alinir.
+                    // DayOfWeek.ToString() framework'un İngilizce adını döner; Türkçe ad helper'dan alınır.
                     DayName = DayNameHelper.ToTurkishName(workingHour.DayOfWeek)
                 };
 
@@ -47,7 +47,7 @@ namespace Rezervise.Application.Features.WorkingHours.Queries.GetByDay
             }
             catch (Exception ex)
             {
-                return Result<WorkingHourDto>.Failure(Error.Internal("Calisma saati getirilirken bir hata olustu.", ex.Message));
+                return Result<WorkingHourDto>.Failure(Error.Internal("Çalışma saati getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

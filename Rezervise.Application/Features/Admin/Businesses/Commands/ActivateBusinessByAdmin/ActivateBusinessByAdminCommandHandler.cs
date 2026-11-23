@@ -9,9 +9,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Businesses.Commands.ActivateBusinessByAdmin
 {
     /// <summary>
-    /// Isletme aktif etme handler'i (dokuman Modul 8). Durum degisikligi
-    /// Business.Activate metoduyla yapilir; "Activate" aksiyonu denetim
-    /// kaydina onceki durum bilgisiyle yazilir.
+    /// İşletme aktif etme handler'i (doküman Modül 8). Durum değişikliği
+    /// Business.Activate metoduyla yapılır; "Activate" aksiyonu denetim
+    /// kaydına önceki durum bilgisiyle yazılır.
     /// </summary>
     public class ActivateBusinessByAdminCommandHandler : IRequestHandler<ActivateBusinessByAdminCommand, Result<Guid>>
     {
@@ -39,29 +39,29 @@ namespace Rezervise.Application.Features.Admin.Businesses.Commands.ActivateBusin
         {
             try
             {
-                // 1. Yonetici kimligi denetim kaydi icin zorunludur.
+                // 1. Yönetici kimliği denetim kaydı için zorunludur.
                 if (_currentUser.UserId is null)
                     return Result<Guid>.Failure(Error.Unauthorized());
 
-                // 2. Isletme kontrolu.
+                // 2. İşletme kontrolü.
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
 
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 3. Zaten aktif olan isletme tekrar aktif edilmez.
+                // 3. Zaten aktif olan işletme tekrar aktif edilmez.
                 if (business.IsActive)
-                    return Result<Guid>.Failure(Error.Conflict("Isletme zaten aktif."));
+                    return Result<Guid>.Failure(Error.Conflict("İşletme zaten aktif."));
 
-                // 4. Onceki durum denetim kaydi icin yakalanir.
+                // 4. Önceki durum denetim kaydı için yakalanır.
                 var oldValues = JsonSerializer.Serialize(new { Status = "Suspended" });
 
-                // 5. Entity'nin kendi durum degisim akisi kullanilir.
+                // 5. Entity'nin kendi durum değişim akışı kullanılır.
                 business.Activate(_currentUser.UserId.Value.ToString());
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // 6. Denetim kaydi: Action=Activate, onceki durum bilgisiyle.
+                // 6. Denetim kaydı: Action=Activate, önceki durum bilgisiyle.
                 await _auditSink.RecordAsync(
                     _currentUser.UserId.Value,
                     ResolveActorRole(),
@@ -85,13 +85,13 @@ namespace Rezervise.Application.Features.Admin.Businesses.Commands.ActivateBusin
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(
-                    Error.Internal("Isletme aktif edilirken bir hata olustu.", ex.Message));
+                    Error.Internal("İşletme aktif edilirken bir hata oluştu.", ex.Message));
             }
         }
 
         /// <summary>
-        /// Denetim kaydina yazilacak rol: bilinen ilk rol; roller cozulemiyorsa
-        /// geriye donuk uyumluluk icin "Admin" sabiti.
+        /// Denetim kaydına yazılacak rol: bilinen ilk rol; roller çözülemiyorsa
+        /// geriye dönük uyumluluk için "Admin" sabiti.
         /// </summary>
         private string ResolveActorRole()
             => _currentUser.Roles.FirstOrDefault() ?? "Admin";

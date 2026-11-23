@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers.Owner
 {
     /// <summary>
-    /// Isletme sahibinin hizmet yonetimi. Route seviyesinde BusinessOwner
-    /// rolune sinirlidir; isletme kapsami handler'larda dogrulanir.
+    /// İşletme sahibinin hizmet yönetimi. Route seviyesinde BusinessOwner
+    /// rolüne sınırlıdır; işletme kapsamı handler'larda doğrulanır.
     /// </summary>
     [ApiController]
     [Authorize(Roles = "BusinessOwner")]
@@ -23,7 +23,7 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
             _mediator = mediator;
         }
 
-        /// <summary>Sahibin hizmet listesi; ad aramasi ve durum filtresiyle.</summary>
+        /// <summary>Sahibin hizmet listesi; ad araması ve durum filtresiyle.</summary>
         [HttpGet("businesses/{businessId:guid}/services")]
         public async Task<IActionResult> GetMyServices(
             Guid businessId,
@@ -50,8 +50,8 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
         }
 
         /// <summary>
-        /// Hizmet bilgilerini guncellestirir. Gonderilen alanlar
-        /// guncellenir; denetim kaydi yazilir.
+        /// Hizmet bilgilerini güncelleştirir. Gönderilen alanlar
+        /// güncellenir; denetim kaydı yazılır.
         /// </summary>
         [HttpPatch("businesses/{businessId:guid}/services/{serviceId:guid}")]
         public async Task<IActionResult> UpdateMyService(
@@ -80,21 +80,21 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
             return OkEnvelope(result.Value!);
         }
 
-        /// <summary>PATCH govdesi: yalnizca gonderilen alanlar guncellenir.</summary>
+        /// <summary>PATCH gövdesi: yalnızca gönderilen alanlar güncellenir.</summary>
         public sealed class UpdateMyServiceRequest
         {
             public string? Name { get; init; }
 
-            /// <summary>Yeni fiyat; gonderildiyse guncellenir.</summary>
+            /// <summary>Yeni fiyat; gönderildiyse güncellenir.</summary>
             public decimal? Price { get; init; }
 
-            /// <summary>Fiyat para birimi; bos ise mevcut birim korunur.</summary>
+            /// <summary>Fiyat para birimi; boş ise mevcut birim korunur.</summary>
             public string? Currency { get; init; }
 
-            /// <summary>Yeni sure (dakika).</summary>
+            /// <summary>Yeni süre (dakika).</summary>
             public int? DurationMinutes { get; init; }
 
-            /// <summary>Opsiyonel islem gerekcesi; denetim kaydina yazilir.</summary>
+            /// <summary>Opsiyonel işlem gerekçesi; denetim kaydına yazılır.</summary>
             public string? Reason { get; init; }
         }
     }

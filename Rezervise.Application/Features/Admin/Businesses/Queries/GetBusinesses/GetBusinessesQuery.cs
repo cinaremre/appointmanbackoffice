@@ -4,19 +4,19 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinesses
 {
     /// <summary>
-    /// Backoffice isletme listesi (dokuman Modul 8). Status ad, arama terimi
-    /// ve sehir ile filtrelenebilir; sayfalama AdminPagination kurallarina gore
-    /// duzenlenir.
+    /// Backoffice işletme listesi (doküman Modül 8). Status ad, arama terimi
+    /// ve şehir ile filtrelenebilir; sayfalama AdminPagination kurallarına göre
+    /// düzenlenir.
     /// </summary>
     public class GetBusinessesQuery : IRequest<Result<AdminBusinessListResult>>
     {
-        /// <summary>"Active" veya "Suspended"; bos ise tum isletmeler.</summary>
+        /// <summary>"Active" veya "Suspended"; boş ise tüm işletmeler.</summary>
         public string? Status { get; set; }
 
-        /// <summary>Isletme adi icerik aramasi (normalize edilir).</summary>
+        /// <summary>İşletme adı içerik araması (normalize edilir).</summary>
         public string? Search { get; set; }
 
-        /// <summary>Adres uzerinden sehir filtresi.</summary>
+        /// <summary>Adres üzerinden şehir filtresi.</summary>
         public int? CityId { get; set; }
 
         public int Page { get; set; } = 1;
@@ -24,7 +24,7 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinesses
         public int PageSize { get; set; } = 50;
     }
 
-    /// <summary>Sayfalanmis isletme listesi sonucu.</summary>
+    /// <summary>Sayfalanmış işletme listesi sonucu.</summary>
     public class AdminBusinessListResult
     {
         public IReadOnlyList<AdminBusinessListItemDto> Items { get; init; } = Array.Empty<AdminBusinessListItemDto>();
@@ -36,7 +36,7 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinesses
         public long TotalCount { get; init; }
     }
 
-    /// <summary>Isletme liste satiri (dokuman Modul 8.2 alanlari).</summary>
+    /// <summary>İşletme liste satırı (doküman Modül 8.2 alanları).</summary>
     public class AdminBusinessListItemDto
     {
         public Guid Id { get; init; }

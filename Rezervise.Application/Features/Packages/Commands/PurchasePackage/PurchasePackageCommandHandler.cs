@@ -40,7 +40,7 @@ namespace Rezervise.Application.Features.Packages.Commands.PurchasePackage
         {
             try
             {
-                // 1. Paket tanimi kontrolu
+                // 1. Paket tanımı kontrolü
                 var servicePackage = await _servicePackageRepository.GetByIdWithIncludesAsync(
                     request.ServicePackageId, cancellationToken, p => p.Items);
 
@@ -48,25 +48,25 @@ namespace Rezervise.Application.Features.Packages.Commands.PurchasePackage
                     return Result<Guid>.Failure(Error.NotFound("Paket", request.ServicePackageId.ToString()));
 
                 if (!servicePackage.IsActive)
-                    return Result<Guid>.Failure(Error.Conflict("Paket su anda satisa kapali."));
+                    return Result<Guid>.Failure(Error.Conflict("Paket su anda satışa kapalı."));
 
-                // 2. Isletme ve yetki kontrolu: satisi isletme sahibi kaydeder.
+                // 2. İşletme ve yetki kontrolü: satışı işletme sahibi kaydeder.
                 var business = await _businessRepository.GetByIdAsync(servicePackage.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", servicePackage.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", servicePackage.BusinessId.ToString()));
 
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Forbidden("Paket satisini yalnizca isletme sahibi kaydedebilir."));
+                    return Result<Guid>.Failure(Error.Forbidden("Paket satışını yalnızca işletme sahibi kaydedebilir."));
 
-                // 3. Musteri kontrolu
+                // 3. Müşteri kontrolü
                 if (request.CustomerId == Guid.Empty)
-                    return Result<Guid>.Failure(Error.Validation("Musteri ID bos olamaz."));
+                    return Result<Guid>.Failure(Error.Validation("Müşteri ID boş olamaz."));
 
                 var customer = await _userRepository.GetByIdAsync(request.CustomerId, cancellationToken);
                 if (customer is null)
-                    return Result<Guid>.Failure(Error.NotFound("Musteri", request.CustomerId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Müşteri", request.CustomerId.ToString()));
 
-                // 4. Musteri paketini olustur (ExpiresAt = now + ValidityDays)
+                // 4. Müşteri paketini oluştur (ExpiresAt = now + ValidityDays)
                 var now = _dateTime.UtcNow;
                 var customerPackage = new CustomerPackage(
                     servicePackage.BusinessId,
@@ -87,7 +87,7 @@ namespace Rezervise.Application.Features.Packages.Commands.PurchasePackage
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Paket satisi kaydedilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Paket satışı kaydedilirken bir hata oluştu.", ex.Message));
             }
         }
     }

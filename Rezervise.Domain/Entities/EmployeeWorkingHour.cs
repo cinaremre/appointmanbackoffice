@@ -26,7 +26,7 @@ namespace Rezervise.Domain.Entities
     : base(id)
         {
             if (employeeId == Guid.Empty)
-                throw new ArgumentException("Calisan ID bos olamaz.", nameof(employeeId));
+                throw new ArgumentException("Çalışan ID boş olamaz.", nameof(employeeId));
 
             EmployeeId = employeeId;
             DayOfWeek = dayOfWeek;
@@ -38,13 +38,13 @@ namespace Rezervise.Domain.Entities
         public void SetWorkingHours(TimeSpan startTime, TimeSpan endTime)
         {
             if (startTime >= endTime)
-                throw new DomainException("Baslangic saati bitis saatinden once olmalidir.");
+                throw new DomainException("Başlangıç saati bitiş saatinden önce olmalıdır.");
 
             if (startTime.TotalHours < 0 || endTime.TotalHours > 24)
-                throw new DomainException("Saatler 00:00-24:00 arasinda olmalidir.");
+                throw new DomainException("Saatler 00:00-24:00 arasında olmalıdır.");
 
             if (startTime.Minutes % 5 != 0 || endTime.Minutes % 5 != 0)
-                throw new DomainException("Saatler 5 dakikanin kati olmalidir.");
+                throw new DomainException("Saatler 5 dakikanın katı olmalıdır.");
 
             StartTime = startTime;
             EndTime = endTime;
@@ -56,13 +56,13 @@ namespace Rezervise.Domain.Entities
             if (breakStart.HasValue && breakEnd.HasValue)
             {
                 if (breakStart.Value >= breakEnd.Value)
-                    throw new DomainException("Mola baslangici mola bitisinden once olmalidir.");
+                    throw new DomainException("Mola başlangıcı mola bitişinden önce olmalıdır.");
 
                 if (breakStart.Value < StartTime || breakEnd.Value > EndTime)
-                    throw new DomainException("Mola, calisma saatleri icinde olmalidir.");
+                    throw new DomainException("Mola, çalışma saatleri içinde olmalıdır.");
 
                 if (breakStart.Value.Minutes % 5 != 0 || breakEnd.Value.Minutes % 5 != 0)
-                    throw new DomainException("Mola saatleri 5 dakikanin kati olmalidir.");
+                    throw new DomainException("Mola saatleri 5 dakikanın katı olmalıdır.");
             }
 
             BreakStartTime = breakStart;
@@ -101,8 +101,8 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Araligin tamaminin calisma saatleri icinde kaldigini kontrol eder.
-        /// Saatler isletmenin yerel duvar saatidir; aralik ayni takvim gununde olmalidir.
+        /// Aralığın tamamının çalışma saatleri içinde kaldığını kontrol eder.
+        /// Saatler işletmenin yerel duvar saatidir; aralık aynı takvim gününde olmalıdır.
         /// </summary>
         public bool IsWithinWorkingHours(DateTime start, DateTime end)
         {
@@ -112,7 +112,7 @@ namespace Rezervise.Domain.Entities
             if (start.TimeOfDay < StartTime)
                 return false;
 
-            // 24:00 bitis saati gun sonunu ifade eder; gece yarisi sinirina izin verilir.
+            // 24:00 bitiş saati gün sonunu ifade eder; gece yarısı sınırına izin verilir.
             if (EndTime >= TimeSpan.FromHours(24))
             {
                 if (start.Date == end.Date)
@@ -125,15 +125,15 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Araligin mola ile yarim-acik (start dahil, end haric) olarak
-        /// kesisip kesmedigini kontrol eder.
+        /// Aralığın mola ile yarım-açık (start dahil, end hariç) olarak
+        /// kesişip kesmediğini kontrol eder.
         /// </summary>
         public bool OverlapsBreak(DateTime start, DateTime end)
         {
             if (!BreakStartTime.HasValue || !BreakEndTime.HasValue || start >= end)
                 return false;
 
-            // 24:00 bitisinde end bir sonraki gunun 00:00'idir; ayni is gunu sayilir.
+            // 24:00 bitişinde end bir sonraki günün 00:00'idir; aynı is günü sayılır.
             var isMidnightEnd = end == start.Date.AddDays(1) && end.TimeOfDay == TimeSpan.Zero;
             if (start.Date != end.Date && !isMidnightEnd)
                 return false;

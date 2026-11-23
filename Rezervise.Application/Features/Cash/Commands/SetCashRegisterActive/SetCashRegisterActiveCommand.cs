@@ -4,8 +4,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Cash.Commands.SetCashRegisterActive
 {
     /// <summary>
-    /// Kasayi aktif/pasif yapar (toggle). Deaktif kasa uzerinde yeni
-    /// oturum acilamaz; mevcut acik oturum kapatilmadan degistirilmez.
+    /// Kasayı aktif/pasif yapar (toggle). Deaktif kasa üzerinde yeni
+    /// oturum açılamaz; mevcut açık oturum kapatılmadan değiştirilmez.
     /// </summary>
     public class SetCashRegisterActiveCommand : IRequest<Result<Guid>>
     {

@@ -1,23 +1,23 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Odeme yontemleri
+    /// Ödeme yöntemleri
     /// </summary>
     public enum EnumPaymentMethod
     {
         /// <summary>Nakit</summary>
         Cash = 0,
 
-        /// <summary>Banka karti (POS)</summary>
+        /// <summary>Banka kartı (POS)</summary>
         BankCard = 1,
 
         /// <summary>Havale / EFT</summary>
         Transfer = 2,
 
-        /// <summary>Online odeme (sanal POS, cuzdan)</summary>
+        /// <summary>Online ödeme (sanal POS, cüzdan)</summary>
         Online = 3,
 
-        /// <summary>Hediye ceki</summary>
+        /// <summary>Hediye çeki</summary>
         GiftCard = 4,
 
         /// <summary>Paket kredisi / abonman</summary>

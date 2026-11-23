@@ -1,7 +1,7 @@
 namespace Rezervise.Domain.Events.Appointment
 {
     /// <summary>
-    /// Randevunun calisaninin degistigini bildirir.
+    /// Randevunun çalışanının değiştiğini bildirir.
     /// </summary>
     public class AppointmentEmployeeReassignedEvent : AppointmentEventBase
     {

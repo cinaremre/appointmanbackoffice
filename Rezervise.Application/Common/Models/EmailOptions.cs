@@ -4,60 +4,60 @@ using Microsoft.Extensions.Configuration;
 namespace Rezervise.Application.Common.Models
 {
     /// <summary>
-    /// "Email" yapilandirma bolumunden okunan SMTP ve dogrulama bagi ayarlari.
-    /// Ortam degiskenleri (Email__Host gibi) appsettings degerlerini ezer.
+    /// "Email" yapılandırma bölümünden okunan SMTP ve doğrulama bağı ayarları.
+    /// Ortam değişkenleri (Email__Hoşt gibi) appsettings değerlerini ezer.
     /// </summary>
     public sealed class EmailOptions
     {
-        /// <summary>Yapilandirma bolum adi.</summary>
+        /// <summary>Yapılandırma bölüm adı.</summary>
         public const string SectionName = "Email";
 
-        /// <summary>SMTP sunucu adresi. Bos ise log moduna dusulur.</summary>
+        /// <summary>SMTP sunucu adresi. Boş ise log moduna düşülür.</summary>
         public string? Host { get; set; }
 
         /// <summary>SMTP portu.</summary>
         public int Port { get; set; } = 587;
 
-        /// <summary>SSL kullanilacak mi.</summary>
+        /// <summary>SSL kullanılacak mi.</summary>
         public bool UseSsl { get; set; } = true;
 
-        /// <summary>SMTP kullanici adi. Bos ise kimlik dogrulama yapilmaz.</summary>
+        /// <summary>SMTP kullanıcı adı. Boş ise kimlik doğrulama yapılmaz.</summary>
         public string? UserName { get; set; }
 
-        /// <summary>SMTP sifresi. Hicbir zaman log'a yazilmaz.</summary>
+        /// <summary>SMTP şifresi. Hiçbir zaman log'a yazılmaz.</summary>
         public string? Password { get; set; }
 
-        /// <summary>Gonderen adresi.</summary>
+        /// <summary>Gönderen adresi.</summary>
         public string FromAddress { get; set; } = "no-reply@rezervise.com";
 
-        /// <summary>Gonderen gorunen adi.</summary>
+        /// <summary>Gönderen görünen adı.</summary>
         public string FromName { get; set; } = "Rezervise";
 
         /// <summary>
-        /// Dogrulama endpoint'inin tam adresi (orn. https://host/api/Auth/verify-email).
-        /// Bag olusturulurken token bu adrese eklenir.
+        /// Doğrulama endpoint'inin tam adresi (orn. https://hoşt/api/Auth/verify-email).
+        /// Bağ oluşturulurken token bu adrese eklenir.
         /// </summary>
         public string VerificationLinkBaseUrl { get; set; } = string.Empty;
 
-        /// <summary>Dogrulama token'inin gecerlilik suresi (saat).</summary>
+        /// <summary>Doğrulama token'inin geçerlilik süresi (saat).</summary>
         public int TokenLifetimeHours { get; set; } = 24;
 
-        /// <summary>Yeniden dogrulama e-postasi istemek icin beklenecek sure (dakika).</summary>
+        /// <summary>Yeniden doğrulama e-postası istemek için beklenecek süre (dakika).</summary>
         public int ResendCooldownMinutes { get; set; } = 2;
 
-        /// <summary>Kuyruk kapasitesi. Dolu oldugunda mesaj reddedilir ve loglanir.</summary>
+        /// <summary>Kuyruk kapasitesi. Dolu öldüğünda mesaj reddedilir ve loğlanır.</summary>
         public int QueueCapacity { get; set; } = 500;
 
-        /// <summary>SMTP gonderim zaman asimi (milisaniye).</summary>
+        /// <summary>SMTP gönderim zaman asımı (milisaniye).</summary>
         public int SmtpTimeoutMilliseconds { get; set; } = 15000;
 
         /// <summary>
-        /// Yapilandirmadan ayarlari okur. Eksik veya hatali degerler varsayilana duser;
-        /// yapilandirma hatasi uygulamayi durdurmaz.
+        /// Yapılandırmadan ayarları okur. Eksik veya hatalı değerler varsayılana düşer;
+        /// yapılandırma hatası uygulamayı durdurmaz.
         /// </summary>
-        /// <param name="configuration">Uygulama yapilandirmasi.</param>
-        /// <returns>Doldurulmus ayar nesnesi.</returns>
-        /// <exception cref="ArgumentNullException">Yapilandirma null oldugunda firlatilir.</exception>
+        /// <param name="configuration">Uygulama yapılandırması.</param>
+        /// <returns>Doldurulmuş ayar nesnesi.</returns>
+        /// <exception cref="ArgumentNullException">Yapılandırma null öldüğünda fırlatılır.</exception>
         public static EmailOptions FromConfiguration(IConfiguration configuration)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -66,7 +66,7 @@ namespace Rezervise.Application.Common.Models
 
             return new EmailOptions
             {
-                Host = ReadString(configuration, "Host"),
+                Host = ReadString(configuration, "Hoşt"),
                 Port = ReadInt(configuration, "Port", defaults.Port),
                 UseSsl = ReadBool(configuration, "UseSsl", defaults.UseSsl),
                 UserName = ReadString(configuration, "UserName"),
@@ -81,7 +81,7 @@ namespace Rezervise.Application.Common.Models
             };
         }
 
-        /// <summary>SMTP ile gercek gonderim yapilabilir mi.</summary>
+        /// <summary>SMTP ile gerçek gönderim yapılabilir mi.</summary>
         public bool HasSmtpConfiguration => !string.IsNullOrWhiteSpace(Host);
 
         private static string? ReadString(IConfiguration configuration, string key)

@@ -7,8 +7,8 @@ import { AuthProvider } from "../app/providers/AuthContext";
 import { FinancePage } from "../features/finance/pages/FinancePage";
 
 /**
- * FinancePage testleri (dokuman Modul 16-17). Controller'dan cikan sekil
- * birebir burada mock'lanir:
+ * FinancePage testleri (doküman Modül 16-17). Controller'dan çıkan şekil
+ * birebir burada mock'lanır:
  * - GET /finance/sales  -> OkEnvelope: { data: { items, ..., totalGrandTotal } }
  * - GET /finance/payments -> OkList: { data: [...], pagination: {...} }
  */
@@ -22,7 +22,7 @@ function fakeResponse(body: unknown, status = 200) {
   } as unknown as Response;
 }
 
-/** Test sarmalayicisi: query client + fake auth + router (URL query senkronu icin). */
+/** Test sarmalayıcısı: query client + fake auth + router (URL query senkronu için). */
 function renderWithProviders(ui: ReactElement, initialEntry = "/") {
   sessionStorage.setItem(
     "backoffice.auth",
@@ -47,7 +47,7 @@ const PAYMENT_ID = "3f2504e0-4f89-11d3-9a0c-0305e82c3301";
 const BUSINESS_ID = "1f0e8a7c-2b3d-4e5f-9a8b-7c6d5e4f3a21";
 const SALE_ID = "9b7a6c5d-4e3f-4a2b-8c1d-0e9f8a7b6c5d";
 
-/** Controller sekliyle odeme kaydi (AdminPaymentDto, camelCase). */
+/** Controller sekliyle ödeme kaydı (AdminPaymentDto, camelCase). */
 function paymentDto(amount: number) {
   return {
     id: PAYMENT_ID,
@@ -74,7 +74,7 @@ describe("FinancePage", () => {
       vi.fn(async (input: RequestInfo | URL) => {
         const url = String(input);
 
-        // Satis ucu: OkEnvelope icinde liste + toplam tek nesne doner.
+        // Satış ucu: OkEnvelope içinde liste + toplam tek nesne döner.
         if (url.includes("/finance/sales")) {
           return fakeResponse({
             data: {
@@ -89,7 +89,7 @@ describe("FinancePage", () => {
           });
         }
 
-        // Odeme ucu: OkList sekli (data + pagination).
+        // Ödeme ucu: OkList sekli (data + pagination).
         if (url.includes("/finance/payments")) {
           return fakeResponse({
             data: [paymentDto(1250.5)],
@@ -97,7 +97,7 @@ describe("FinancePage", () => {
           });
         }
 
-        // Beklenmeyen cagrilar icin bos zarf.
+        // Beklenmeyen çağrılar için boş zarf.
         return fakeResponse({ data: [] });
       }),
     );
@@ -108,22 +108,22 @@ describe("FinancePage", () => {
     sessionStorage.clear();
   });
 
-  it("bos satis listesi EmptyState gosterir", async () => {
+  it("boş satış listesi EmptyState gösterir", async () => {
     renderWithProviders(<FinancePage />);
 
-    // Aktif "Satislar" sekmesi.
-    expect(screen.getByRole("tab", { name: "Satislar", selected: true })).toBeInTheDocument();
+    // Aktif "Satışlar" sekmesi.
+    expect(screen.getByRole("tab", { name: "Satışlar", selected: true })).toBeInTheDocument();
 
-    // Bos liste: EmptyState etiketi tablo govdesinde gorunur.
-    expect(await screen.findByText("Bu filtrelerle satis kaydi bulunamadi.")).toBeVisible();
+    // Boş liste: EmptyState etiketi tablo gövdesinde görünür.
+    expect(await screen.findByText("Bu filtrelerle satış kaydı bulunamadı.")).toBeVisible();
   });
 
-  it("dolu tahsilat listesinde tutar tr-TR biciminde gosterilir", async () => {
+  it("dolu tahsilat listesinde tutar tr-TR biçiminde gösterilir", async () => {
     renderWithProviders(<FinancePage />, "/?tab=payments");
 
     expect(screen.getByRole("tab", { name: "Tahsilatlar", selected: true })).toBeInTheDocument();
 
-    // Tutar hucreleri toLocaleString("tr-TR") + " TL" ile bicimlenir.
+    // Tutar hucreleri toLocaleString("tr-TR") + " TL" ile biçimlenir.
     const expectedAmount = `${(1250.5).toLocaleString("tr-TR")} TL`;
     expect(await screen.findByText(expectedAmount)).toBeVisible();
   });

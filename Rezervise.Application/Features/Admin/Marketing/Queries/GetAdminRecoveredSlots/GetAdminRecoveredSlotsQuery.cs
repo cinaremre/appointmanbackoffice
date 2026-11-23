@@ -4,18 +4,18 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminRecoveredSlots
 {
     /// <summary>
-    /// Kurtarilan kapasite raporu (dokuman Modul 15): iptallerden aciga cikan
-    /// slotlar ve son durumlari. Filtreler ReleaseAt uzerinden calisir.
+    /// Kurtarılan kapasite raporu (doküman Modül 15): iptallerden açığa çıkan
+    /// slotlar ve son durumları. Filtreler ReleaseAt üzerinden çalışır.
     /// </summary>
     public class GetAdminRecoveredSlotsQuery : IRequest<Result<AdminRecoveredSlotReportDto>>
     {
-        /// <summary>Yalnizca bu isletmenin slotlari.</summary>
+        /// <summary>Yalnızca bu işletmenin slotları.</summary>
         public Guid? BusinessId { get; set; }
 
-        /// <summary>Slot acilis zamani alt siniri (ReleasedAt >= FromDate).</summary>
+        /// <summary>Slot açılış zamanı alt sınırı (ReleasedAt >= FromDate).</summary>
         public DateTime? FromDate { get; set; }
 
-        /// <summary>Slot acilis zamani ust siniri (ReleasedAt &lt;= ToDate).</summary>
+        /// <summary>Slot açılış zamanı üst sınırı (ReleasedAt &lt;= ToDate).</summary>
         public DateTime? ToDate { get; set; }
     }
 }

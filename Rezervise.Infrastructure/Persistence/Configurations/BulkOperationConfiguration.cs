@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Toplu islem kaydinin EF Core eslemesi (dokuman Modul 10).
-    /// Append-only alanlar (payload, istekci) yalnizca insert'te yazilir;
-    /// durum gecisleri entity metotlari uzerinden yurutulur.
+    /// Toplu işlem kaydının EF Core eşlemesi (doküman Modül 10).
+    /// Append-only alanlar (payload, istekçi) yalnızca insert'te yazılır;
+    /// durum geçişleri entity metotları üzerinden yürütülür.
     /// </summary>
     public class BulkOperationConfiguration : BaseConfiguration<BulkOperation>
     {
@@ -63,7 +63,7 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.Property(x => x.CompletedAtUtc)
                 .IsRequired(false);
 
-            // Islemci taramalari: bekleyen isler ve isletme bazli filtre.
+            // İşlemci taramaları: bekleyen işler ve işletme bazlı filtre.
             builder.HasIndex(x => x.Status);
             builder.HasIndex(x => x.BusinessId);
             builder.HasIndex(x => x.OperationType);

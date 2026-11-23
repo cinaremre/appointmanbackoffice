@@ -38,8 +38,8 @@ namespace Rezervise.Application.Features.Users.Commands.RegisterUser
                 .MaximumLength(15)
                 .WithMessage(localizer.Get("Validation.PhoneNumberMaxLength"));
 
-            // Parola politikasi tek kaynaktan (PasswordPolicy) gelir; API yuzeyi ile
-            // uygulama katmani arasinda sapma olamaz.
+            // Parola politikası tek kaynaktan (PasswordPolicy) gelir; API yüzeyi ile
+            // uygulama katmanı arasında sapma olamaz.
             RuleFor(x => x.Password)
                 .NotEmpty()
                 .WithMessage(localizer.Get("Validation.PasswordRequired"))
@@ -50,7 +50,7 @@ namespace Rezervise.Application.Features.Users.Commands.RegisterUser
                 .Must(PasswordPolicy.IsStrong)
                 .WithMessage(localizer.Get("Validation.PasswordComplexity"));
 
-            // Yalnizca self-assignable roller kabul edilir: Admin/SuperAdmin istemciden atanamaz.
+            // Yalnızca self-assignable roller kabul edilir: Admin/SuperAdmin istemciden atanamaz.
             RuleFor(x => x.Role)
                 .IsInEnum()
                 .WithMessage(localizer.Get("Validation.RoleInvalid"))
@@ -71,7 +71,7 @@ namespace Rezervise.Application.Features.Users.Commands.RegisterUser
                 .When(x => x.DistrictId.HasValue)
                 .WithMessage(localizer.Get("Address.DistrictIdInvalid"));
 
-            // Dil kodu istege baglidir; bos ise domain varsayilani ("tr") uygulanir.
+            // Dil kodu isteğe bağlıdır; boş ise domain varsayılanı ("tr") uygulanır.
             RuleFor(x => x.LanguageCode)
                 .Must(code => string.IsNullOrWhiteSpace(code)
                               || code.Trim().ToLowerInvariant() is "tr" or "en")

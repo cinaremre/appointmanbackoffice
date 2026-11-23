@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Paylasilabilir takip linki (QR / WhatsApp / Instagram).
-    /// TrackingCode benzersiz kisa koddur; anonim olay kayitlari bu kod ile eslesir.
+    /// Paylaşılabilir takip linki (QR / WhatsApp / Instagram).
+    /// TrackingCode benzersiz kısa koddur; anonim olay kayıtları bu kod ile eşleşir.
     /// </summary>
     public class TrackingLinkConfiguration : BaseConfiguration<TrackingLink>
     {

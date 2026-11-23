@@ -4,10 +4,10 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Kasa oturumu. Gun basinda acilir, gun sonunda sayilan nakit ile
-    /// beklenen nakit karsilastirilir ve fark rapolanir.
-    /// Beklenen nakit acilis + nakit tahsilat + manuel giris - manuel cikis
-    /// - nakit iade formuluyle hesaplanir; kart tahsilatlar dahil DEGILDIR.
+    /// Kasa oturumu. Gün başında açılır, gün sonunda sayılan nakit ile
+    /// beklenen nakit karşılaştırılır ve fark rapolanır.
+    /// Beklenen nakit açılış + nakit tahsilat + manuel giriş - manuel çıkış
+    /// - nakit iade formülüyle hesaplanır; kart tahsilatlar dahil DEGILDIR.
     /// </summary>
     public class CashSession : BaseEntity
     {
@@ -40,16 +40,16 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (cashRegisterId == Guid.Empty)
-                throw new ArgumentException("Kasa ID bos olamaz.", nameof(cashRegisterId));
+                throw new ArgumentException("Kasa ID boş olamaz.", nameof(cashRegisterId));
 
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (openedBy == Guid.Empty)
-                throw new ArgumentException("Oturumu acan kullanici ID bos olamaz.", nameof(openedBy));
+                throw new ArgumentException("Oturumu açan kullanıcı ID boş olamaz.", nameof(openedBy));
 
             if (openingCash < 0)
-                throw new DomainException("Acilis nakdi negatif olamaz.");
+                throw new DomainException("Açılış nakdi negatif olamaz.");
 
             CashRegisterId = cashRegisterId;
             BusinessId = businessId;
@@ -60,32 +60,32 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Oturumu kapatir ve farki rapolar. Nakit tahsilat, nakit iade ve
-        /// manuel giris/cikis tutarlari movement kayitlarindan handler
-        /// tarafindan hesaplanip parametre olarak verilir.
+        /// Oturumu kapatır ve farkı rapolar. Nakit tahsilat, nakit iade ve
+        /// manuel giriş/çıkış tutarları movement kayıtlarından handler
+        /// tarafından hesaplanıp parametre olarak verilir.
         /// </summary>
-        /// <param name="countedCash">Fiziksel olarak sayilan nakit.</param>
-        /// <param name="totalCashCollected">Oturumdaki nakit tahsilat toplami.</param>
-        /// <param name="totalCashIn">Oturumdaki manuel nakit giris toplami.</param>
-        /// <param name="totalCashOut">Oturumdaki manuel nakit cikis toplami.</param>
-        /// <param name="totalCashRefunded">Oturumdaki nakit iade toplami.</param>
-        /// <param name="closedBy">Oturumu kapatan kullanici ID.</param>
-        /// <param name="now">Islem zamani (UTC).</param>
+        /// <param name="countedCash">Fiziksel olarak sayılan nakit.</param>
+        /// <param name="totalCashCollected">Oturumdaki nakit tahsilat toplamı.</param>
+        /// <param name="totalCashIn">Oturumdaki manuel nakit giriş toplamı.</param>
+        /// <param name="totalCashOut">Oturumdaki manuel nakit çıkış toplamı.</param>
+        /// <param name="totalCashRefunded">Oturumdaki nakit iade toplamı.</param>
+        /// <param name="closedBy">Oturumu kapatan kullanıcı ID.</param>
+        /// <param name="now">İşlem zamanı (UTC).</param>
         public void Close(decimal countedCash, decimal totalCashCollected,
             decimal totalCashIn, decimal totalCashOut, decimal totalCashRefunded,
             Guid closedBy, DateTime? now = null)
         {
             if (Status == EnumCashSessionStatus.Closed)
-                throw new DomainException("Kasa oturumu zaten kapali.");
+                throw new DomainException("Kasa oturumu zaten kapalı.");
 
             if (closedBy == Guid.Empty)
-                throw new ArgumentException("Oturumu kapatan kullanici ID bos olamaz.", nameof(closedBy));
+                throw new ArgumentException("Oturumu kapatan kullanıcı ID boş olamaz.", nameof(closedBy));
 
             if (countedCash < 0)
-                throw new DomainException("Sayilan nakit negatif olamaz.");
+                throw new DomainException("Sayılan nakit negatif olamaz.");
 
             if (totalCashCollected < 0 || totalCashIn < 0 || totalCashOut < 0 || totalCashRefunded < 0)
-                throw new DomainException("Kasa bilesenleri negatif olamaz.");
+                throw new DomainException("Kasa bileşenleri negatif olamaz.");
 
             var currentTime = now ?? DateTime.UtcNow;
 

@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Veri aktarim isi. CsvContent entity uzerinde tutulur ki Execute
-    /// adimi satirlari yeniden isleyebilsin (ilk surum basitlestirmesi).
+    /// Veri aktarım isi. CsvContent entity üzerinde tutulur ki Execute
+    /// adımı satırları yeniden işleyebilsin (ilk sürüm basitleştirmesi).
     /// </summary>
     public class ImportJobConfiguration : BaseConfiguration<ImportJob>
     {

@@ -4,10 +4,10 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Employees.Commands.ApproveMyTimeOff
 {
     /// <summary>
-    /// Isletme sahibinin izin onayi. Domain kurallari tek kaynaktan
-    /// yurutulur: islem mevcut
+    /// İşletme sahibinin izin onayı. Domain kuralları tek kaynaktan
+    /// yürütülür: işlem mevcut
     /// <see cref="Rezervise.Application.Features.Employees.Commands.ApproveTimeOff.ApproveTimeOffCommand"/>
-    /// uzerinden IMediator ile gercek handler'a delege edilir.
+    /// üzerinden IMediator ile gerçek handler'a delege edilir.
     /// </summary>
     public class ApproveMyTimeOffCommand : IRequest<Result<Guid>>
     {
@@ -15,7 +15,7 @@ namespace Rezervise.Application.Features.Owner.Employees.Commands.ApproveMyTimeO
 
         public Guid TimeOffId { get; set; }
 
-        /// <summary>Opsiyonel islem gerekcesi; denetim kaydina yazilir.</summary>
+        /// <summary>Opsiyonel işlem gerekçesi; denetim kaydına yazılır.</summary>
         public string? Reason { get; set; }
     }
 }

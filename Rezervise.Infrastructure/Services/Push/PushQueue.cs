@@ -7,8 +7,8 @@ using Microsoft.Extensions.Logging;
 namespace Rezervise.Infrastructure.Services.Push
 {
     /// <summary>
-    /// Sinirli kapasiteli bellek ici push kuyrugu (EmailQueue ile ayni desen).
-    /// Istek thread'i asla beklemez; kuyruk doluysa mesaj reddedilir ve loglanir.
+    /// Sınırlı kapasiteli bellek içi push kuyruğu (EmailQueue ile aynı desen).
+    /// İstek thread'i asla beklemez; kuyruk doluysa mesaj reddedilir ve loğlanır.
     /// </summary>
     internal sealed class PushQueue : IPushQueue, IPushQueueReader
     {
@@ -30,19 +30,19 @@ namespace Rezervise.Infrastructure.Services.Push
             });
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public bool TryEnqueue(PushMessage message)
         {
             if (message is null)
                 return false;
 
-            // Wait modunda TryWrite dolu kuyrukta bloklamaz, false doner.
+            // Wait modunda TryWrite dolu kuyrukta bloklamaz, false döner.
             var accepted = _channel.Writer.TryWrite(message);
 
             if (!accepted)
             {
                 _logger.LogWarning(
-                    "Push kuyrugu dolu (kapasite {Capacity}); bildirim kuyruga alinamadi. To={UserId}",
+                    "Push kuyruğu dolu (kapasite {Capacity}); bildirim kuyruğa alınamadı. To={UserId}",
                     _capacity,
                     message.UserId);
             }
@@ -50,7 +50,7 @@ namespace Rezervise.Infrastructure.Services.Push
             return accepted;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public async IAsyncEnumerable<PushMessage> ReadAllAsync(
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {

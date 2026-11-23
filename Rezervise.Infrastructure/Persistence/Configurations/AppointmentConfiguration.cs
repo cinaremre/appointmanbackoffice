@@ -90,17 +90,17 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.HasIndex(x => x.Status);
             builder.HasIndex(x => new { x.BusinessId, x.AppointmentDate });
 
-            // Ayni calisanin ayni baslangic saatine iki aktif randevusu DB'de imkansiz.
-            // Yalnizca iptal edilmemis (3 = Cancelled) ve silinmemis satirlar filtreye girer.
-            // NOT: slot baslangiclari 5 dakikaya hizali oldugu icin (Minute % 5 == 0)
-            // bu index pratikte etkilidir; farkli baslangicli aralik cakismasini
-            // yakalamaz -> asil koruma uygulama tarafindaki aralik kilididir.
+            // Aynı çalışanın aynı başlangıç saatine iki aktif randevusu DB'de imkansız.
+            // Yalnızca iptal edilmemiş (3 = Cancelled) ve silinmemiş satırlar filtreye girer.
+            // NOT: slot başlangıçları 5 dakikaya hizalı öldüğü için (Minute % 5 == 0)
+            // bu index pratikte etkilidir; farklı başlangıçlı aralık çakışmasını
+            // yakalamaz -> asıl koruma uygulama tarafındaki aralık kilididir.
             builder.HasIndex(x => new { x.EmployeeId, x.AppointmentDate })
                 .IsUnique()
                 .HasFilter("[Status] <> 3 AND [IsDeleted] = 0")
                 .HasDatabaseName("UX_Appointments_EmployeeId_AppointmentDate_Active");
 
-            // Cakisma sorgusu (EmployeeId + aralik) icin yardimci index.
+            // Çakışma sorgusu (EmployeeId + aralık) için yardımcı index.
             builder.HasIndex(x => new { x.EmployeeId, x.AppointmentDate, x.EndTime })
                 .HasDatabaseName("IX_Appointments_EmployeeId_Date_End");
         }

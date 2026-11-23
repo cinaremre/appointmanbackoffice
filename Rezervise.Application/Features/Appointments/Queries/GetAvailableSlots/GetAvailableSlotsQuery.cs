@@ -9,6 +9,6 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAvailableSlots
         public Guid BusinessId { get; set; }
         public Guid EmployeeId { get; set; }
         public Guid ServiceId { get; set; }
-        public DateTime Date { get; set; }   // Hangi gun icin
+        public DateTime Date { get; set; }   // Hangi gün için
     }
 }

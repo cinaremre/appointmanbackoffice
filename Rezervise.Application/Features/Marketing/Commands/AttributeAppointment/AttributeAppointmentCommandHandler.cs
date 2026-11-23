@@ -40,16 +40,16 @@ namespace Rezervise.Application.Features.Marketing.Commands.AttributeAppointment
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde OwnerId'si değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Unauthorized("Bu isletmenin randevusuna atif girme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Unauthorized("Bu işletmenin randevusuna atıf girme yetkiniz yok."));
 
-                // 3. Randevu bu isletmeye ait olmali.
+                // 3. Randevu bu işletmeye ait olmalı.
                 var appointmentBelongsToBusiness = await _appointmentRepository.ExistsAsync(
                     a => a.Id == request.AppointmentId && a.BusinessId == request.BusinessId && !a.IsDeleted,
                     cancellationToken);
@@ -57,15 +57,15 @@ namespace Rezervise.Application.Features.Marketing.Commands.AttributeAppointment
                 if (!appointmentBelongsToBusiness)
                     return Result<Guid>.Failure(Error.NotFound("Randevu", request.AppointmentId.ToString()));
 
-                // 4. DuplicateKey korumasi: ayni randevuya ikinci atif Conflict.
+                // 4. DuplicateKey koruması: aynı randevuya ikinci atıf Conflict.
                 var alreadyAttributed = await _attributionRepository.ExistsAsync(
                     x => x.AppointmentId == request.AppointmentId && !x.IsDeleted,
                     cancellationToken);
 
                 if (alreadyAttributed)
-                    return Result<Guid>.Failure(Error.Conflict("Bu randevu icin zaten bir atif kaydi mevcut."));
+                    return Result<Guid>.Failure(Error.Conflict("Bu randevu için zaten bir atıf kaydı mevcut."));
 
-                // 5. Verilen kampanya / takip linki ayni isletmeye ait olmali.
+                // 5. Verilen kampanya / takip linki aynı işletmeye ait olmalı.
                 if (request.CampaignId.HasValue)
                 {
                     var campaign = await _campaignRepository.GetByIdAsync(request.CampaignId.Value, cancellationToken);
@@ -80,7 +80,7 @@ namespace Rezervise.Application.Features.Marketing.Commands.AttributeAppointment
                         return Result<Guid>.Failure(Error.NotFound("Takip linki", request.TrackingLinkId.Value.ToString()));
                 }
 
-                // 6. Atif kaydini olustur
+                // 6. Atıf kaydını oluştur
                 var attribution = new AppointmentAttribution(
                     request.AppointmentId,
                     request.BusinessId,
@@ -102,7 +102,7 @@ namespace Rezervise.Application.Features.Marketing.Commands.AttributeAppointment
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Randevu atifi kaydedilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Randevu atıfı kaydedilirken bir hata oluştu.", ex.Message));
             }
         }
     }

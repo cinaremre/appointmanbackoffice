@@ -37,11 +37,11 @@ namespace Rezervise.Application.Features.Subscriptions.Commands.CreatePlan
         {
             try
             {
-                // 1. Yetki: plan tanimlamak platform yoneticisi isidir.
+                // 1. Yetki: plan tanımlamak platform yöneticisi işidir.
                 if (!CallerAuthorization.IsAdministrator(_currentUser))
-                    return Result<Guid>.Failure(Error.Forbidden("Plan olusturma yalniz platform yoneticileri icindir."));
+                    return Result<Guid>.Failure(Error.Forbidden("Plan oluşturma yalnız platform yöneticileri içindir."));
 
-                // 2. Ozellik tanimlari dogrulanir; olmayan ozellik plana eklenemez.
+                // 2. Özellik tanımları doğrulanır; olmayan özellik plana eklenemez.
                 var featureIds = request.Features.Select(f => f.FeatureId).Distinct().ToList();
                 var definitions = await _featureDefinitionRepository.FindAsync(
                     d => featureIds.Contains(d.Id) && !d.IsDeleted,
@@ -51,11 +51,11 @@ namespace Rezervise.Application.Features.Subscriptions.Commands.CreatePlan
                 if (missing.Count > 0)
                 {
                     return Result<Guid>.Failure(Error.Validation(
-                        "Bazi ozellik tanimlari bulunamadi.",
-                        $"Eksik ozellikler: {string.Join(", ", missing)}"));
+                        "Bazı özellik tanımları bulunamadı.",
+                        $"Eksik özellikler: {string.Join(", ", missing)}"));
                 }
 
-                // 3. Plan olustur.
+                // 3. Plan oluştur.
                 var plan = new SubscriptionPlan(
                     request.Name,
                     request.Price,
@@ -64,7 +64,7 @@ namespace Rezervise.Application.Features.Subscriptions.Commands.CreatePlan
 
                 await _planRepository.AddAsync(plan, cancellationToken);
 
-                // 4. Plan ozellikleri olustur.
+                // 4. Plan özellikleri oluştur.
                 foreach (var feature in request.Features)
                 {
                     var planFeature = new PlanFeature(
@@ -78,7 +78,7 @@ namespace Rezervise.Application.Features.Subscriptions.Commands.CreatePlan
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // 5. Denetim kaydi.
+                // 5. Denetim kaydı.
                 _auditSink.Record(
                     "Subscription.PlanCreated",
                     Guid.NewGuid(),
@@ -93,7 +93,7 @@ namespace Rezervise.Application.Features.Subscriptions.Commands.CreatePlan
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Plan olusturulurken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Plan oluşturulurken bir hata oluştu.", ex.Message));
             }
         }
     }

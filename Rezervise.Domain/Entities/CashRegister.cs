@@ -3,9 +3,9 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Fiziksel kasa (POS cekmecesi). Her kasanin ayni anda yalnizca tek
-    /// acik oturumu olabilir; bu kisit CashSession uzerindeki unique
-    /// filtreli index ile veritabani seviyesinde korunur.
+    /// Fiziksel kasa (POS çekmecesi). Her kasanın aynı anda yalnızca tek
+    /// açık oturumu olabilir; bu kısıt CashSession üzerindeki unique
+    /// filtreli index ile veritabanı seviyesinde korunur.
     /// </summary>
     public class CashRegister : BaseEntity
     {
@@ -27,7 +27,7 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             SetName(name);
             BusinessId = businessId;
@@ -37,16 +37,16 @@ namespace Rezervise.Domain.Entities
         public void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new DomainException("Kasa adi bos olamaz.");
+                throw new DomainException("Kasa adı boş olamaz.");
 
             if (name.Length < 2 || name.Length > 100)
-                throw new DomainException("Kasa adi 2-100 karakter arasinda olmalidir.");
+                throw new DomainException("Kasa adı 2-100 karakter arasında olmalıdır.");
 
             Name = name;
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Deaktif kasayi tekrar aktif eder.</summary>
+        /// <summary>Deaktif kasayı tekrar aktif eder.</summary>
         public void Reactivate()
         {
             if (IsActive)
@@ -56,7 +56,7 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Kasayi devre disi birakir; acik oturumu kapatmaz.</summary>
+        /// <summary>Kasayı devre dışı bırakır; açık oturumu kapatmaz.</summary>
         public void Deactivate()
         {
             if (!IsActive)

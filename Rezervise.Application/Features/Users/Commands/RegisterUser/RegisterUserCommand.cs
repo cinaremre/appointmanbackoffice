@@ -14,13 +14,13 @@ namespace Rezervise.Application.Features.Users.Commands.RegisterUser
         public EnumUserRole Role { get; set; } = EnumUserRole.Customer;
         public DateTime? DateOfBirth { get; set; }
 
-        // Kullanicinin kayitli oldugu il / ilce.
-        // Aramalarda kriter bos geldiginde varsayilan konum olarak kullanilir.
+        // Kullanıcının kayıtlı öldüğü il / ilçe.
+        // Aramalarda kriter boş geldiğinde varsayılan konum olarak kullanılır.
         public int? CityId { get; set; }
         public int? DistrictId { get; set; }
 
-        // Kullanicinin tercih ettigi dil kodu ("tr" / "en").
-        // Bos gelirse varsayilan "tr" kullanilir.
+        // Kullanıcının tercih ettiği dil kodu ("tr" / "en").
+        // Boş gelirse varsayılan "tr" kullanılır.
         public string? LanguageCode { get; set; }
     }
 }

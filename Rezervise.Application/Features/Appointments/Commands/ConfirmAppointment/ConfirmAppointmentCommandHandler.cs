@@ -42,22 +42,22 @@ namespace Rezervise.Application.Features.Appointments.Commands.ConfirmAppointmen
                 if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
                     return Result<Guid>.Failure(Error.Unauthorized("Auth.Unauthorized"));
 
-                // 1. Randevu kontrolu
+                // 1. Randevu kontrolü
                 var appointment = await _appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken);
                 if (appointment is null)
                     return Result<Guid>.Failure(Error.NotFound("Randevu", request.AppointmentId.ToString()));
 
-                // 2. Isletme, govdedeki BusinessId'ye degil randevunun kendisinden yuklenir.
+                // 2. İşletme, gövdedeki BusinessId'ye değil randevunun kendisinden yüklenir.
                 var business = await _businessRepository.GetByIdAsync(appointment.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", appointment.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", appointment.BusinessId.ToString()));
 
-                // 3. Yetki kontrolu - isletme sahibi veya yonetici.
+                // 3. Yetki kontrolü - işletme sahibi veya yönetici.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
                     return Result<Guid>.Failure(Error.Forbidden("Bu randevuyu onaylama yetkiniz yok."));
 
-                // 4. Domain kurallari ile onayla.
-                //    Es zamanli iki onay isteginden ikincisi rowversion cakismasi ile reddedilir.
+                // 4. Domain kuralları ile onayla.
+                //    Es zamanlı iki onay isteğinden ikincisi rowversion çakışması ile reddedilir.
                 appointment.Confirm(request.ConfirmedBy ?? "Business", _dateTimeService.UtcNow);
 
                 // 5. Kaydet
@@ -77,7 +77,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.ConfirmAppointmen
             }
             catch (Exception)
             {
-                return Result<Guid>.Failure(Error.Internal("Randevu onaylanirken bir hata olustu."));
+                return Result<Guid>.Failure(Error.Internal("Randevu onaylanırken bir hata oluştu."));
             }
         }
     }

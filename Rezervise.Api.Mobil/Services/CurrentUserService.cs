@@ -14,7 +14,7 @@ namespace Rezervise.Api.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         /// <summary>
-        /// Initialises the service with an HTTP context accessor.
+        /// İnitialıses the service with an HTTP context accessor.
         /// </summary>
         /// <param name="httpContextAccessor">Accessor used to read the current principal.</param>
         /// <exception cref="ArgumentNullException">Thrown when the accessor is null.</exception>
@@ -24,7 +24,7 @@ namespace Rezervise.Api.Services
                 ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public Guid? UserId
         {
             get
@@ -41,11 +41,11 @@ namespace Rezervise.Api.Services
             }
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public bool IsAuthenticated
             => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated == true;
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public IReadOnlyCollection<string> Roles
         {
             get
@@ -61,7 +61,7 @@ namespace Rezervise.Api.Services
             }
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public bool IsInRole(string role)
             => !string.IsNullOrWhiteSpace(role)
                && Roles.Contains(role, StringComparer.OrdinalIgnoreCase);

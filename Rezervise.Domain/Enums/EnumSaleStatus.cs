@@ -1,29 +1,29 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Satis durumlari. Payment ve Expense kayitlarinin durumu da
-    /// ayni deger kumesini paylasir; aykiri bir odeme/gider durumu
-    /// gerekmedigi surece yeni enum uretilmez.
+    /// Satış durumları. Payment ve Expense kayıtlarının durumu da
+    /// aynı değer kümesini paylaşır; aykırı bir ödeme/gider durumu
+    /// gerekmediği sürece yeni enüm üretilmez.
     /// </summary>
     public enum EnumSaleStatus
     {
         /// <summary>
-        /// Beklemede - Satis olusturuldu, henuz tamamlanmadi
+        /// Beklemede - Satış oluşturuldu, henüz tamamlanmadı
         /// </summary>
         Pending = 0,
 
         /// <summary>
-        /// Tamamlandi - Satis kapanmiss, odemeleri alindi
+        /// Tamamlandı - Satış kapanmışs, ödemeleri alındı
         /// </summary>
         Completed = 1,
 
         /// <summary>
-        /// Iptal edildi - Satis iptal edildi
+        /// İptal edildi - Satış iptal edildi
         /// </summary>
         Cancelled = 2,
 
         /// <summary>
-        /// Iade edildi - Satisin tamami iade edildi
+        /// İade edildi - Satışın tamamı iade edildi
         /// </summary>
         Refunded = 3
     }

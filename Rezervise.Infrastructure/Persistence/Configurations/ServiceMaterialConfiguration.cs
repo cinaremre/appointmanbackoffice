@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Hizmet recetesi: hizmet basina tuketilen malzeme tanimi.
-    /// Ayni (BusinessId, ServiceId, ProductId) cifti bir kez tanimlanabilir.
+    /// Hizmet reçetesi: hizmet basına tüketilen malzeme tanımı.
+    /// Aynı (BusinessId, ServiceId, ProductId) çifti bir kez tanımlanabilir.
     /// </summary>
     public class ServiceMaterialConfiguration : BaseConfiguration<ServiceMaterial>
     {

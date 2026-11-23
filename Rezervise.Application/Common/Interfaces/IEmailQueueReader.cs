@@ -3,16 +3,16 @@ using Rezervise.Application.Common.Models;
 namespace Rezervise.Application.Common.Interfaces
 {
     /// <summary>
-    /// Kuyrugun tuketici tarafi. Yalnizca arka plan gonderim servisi kullanir;
-    /// uretici handler'lar <see cref="IEmailQueue"/> uzerinden yazar.
+    /// Kuyruğun tüketici tarafı. Yalnızca arka plan gönderim servisi kullanır;
+    /// üretici handler'lar <see cref="IEmailQueue"/> üzerinden yazar.
     /// </summary>
     public interface IEmailQueueReader
     {
         /// <summary>
-        /// Kuyruktaki mesajlari geldikce akitir; iptal edilene kadar bekler.
+        /// Kuyruktaki mesajları geldikçe akıtır; iptal edilene kadar bekler.
         /// </summary>
-        /// <param name="cancellationToken">Iptal belirteci.</param>
-        /// <returns>Mesaj akisi.</returns>
+        /// <param name="cancellationToken">İptal belirteci.</param>
+        /// <returns>Mesaj akışı.</returns>
         IAsyncEnumerable<EmailMessage> ReadAllAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -7,8 +7,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminRecoveredSlots
 {
     /// <summary>
-    /// Kurtarilan kapasite raporunu uretir: slotlar acilis zamanina gore tersten
-    /// siralanir; toplam Rebooked sayisi ozet alanda raporlanir.
+    /// Kurtarılan kapasite raporunu üretir: slotlar açılış zamanına göre tersten
+    /// sıralanır; toplam Rebooked sayısı özet alanda raporlanır.
     /// </summary>
     public class GetAdminRecoveredSlotsQueryHandler
         : IRequestHandler<GetAdminRecoveredSlotsQuery, Result<AdminRecoveredSlotReportDto>>
@@ -61,7 +61,7 @@ namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminRecover
             catch (Exception ex)
             {
                 return Result<AdminRecoveredSlotReportDto>.Failure(
-                    Error.Internal("Kurtarilan slot raporu getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kurtarılan slot raporu getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

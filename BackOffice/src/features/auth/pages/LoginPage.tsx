@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../app/providers/AuthContext";
 
-/** Giris ekrani (dokuman 7.1): hata mesajlari acik, oturum sessionStorage'da. */
+/** Giriş ekranı (doküman 7.1): hata mesajları açık, oturum sessionStorage'da. */
 export function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -22,12 +22,12 @@ export function LoginPage() {
     setError(null);
     try {
       await login(email, password);
-      // Isletme sahibi kendi portalina, yonetim rolu dashboard'a yonlenir.
+      // İşletme sahibi kendi portalina, yönetim rolu dashboard'a yönlenir.
       const role = JSON.parse(sessionStorage.getItem("backoffice.auth") ?? "{}").role;
       const target = from !== "/" ? from : role === "BusinessOwner" ? "/owner" : "/";
       navigate(target, { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Giris basarisiz.");
+      setError(err instanceof Error ? err.message : "Giriş başarısız.");
     } finally {
       setBusy(false);
     }
@@ -41,9 +41,9 @@ export function LoginPage() {
             Rezervise Backoffice
           </Typography>
           <Typography color="text.secondary" sx={{ mb: 3 }}>
-            Platform yonetim paneli girisi.
+            Platform yönetim paneli girişi.
           </Typography>
-          <form onSubmit={submit} aria-label="giris formu">
+          <form onSubmit={submit} aria-label="giriş formu">
             <Stack spacing={2}>
               <TextField
                 label="E-posta"
@@ -54,7 +54,7 @@ export function LoginPage() {
                 autoComplete="username"
               />
               <TextField
-                label="Sifre"
+                label="Şifre"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -63,7 +63,7 @@ export function LoginPage() {
               />
               {error ? <Alert severity="error">{error}</Alert> : null}
               <Button type="submit" variant="contained" disabled={busy} size="large">
-                {busy ? "Giriliyor..." : "Giris Yap"}
+                {busy ? "Giriliyor..." : "Giriş Yap"}
               </Button>
             </Stack>
           </form>

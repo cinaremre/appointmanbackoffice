@@ -5,16 +5,16 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetBusinessSubscription
 {
     /// <summary>
-    /// Isletmenin gecerli aboneligini plan adi ve plan ozellik listesiyle
-    /// getirir (dokuman Modul 13). Aktif abonelik yoksa basariyla bos
-    /// (Data null) doner; bu bir hata degil.
+    /// İşletmenin geçerli aboneliğini plan adı ve plan özellik listesiyle
+    /// getirir (doküman Modül 13). Aktif abonelik yoksa başarıyla boş
+    /// (Data null) döner; bu bir hata değil.
     /// </summary>
     public class GetBusinessSubscriptionQuery : IRequest<Result<AdminBusinessSubscriptionDto?>>
     {
         public Guid BusinessId { get; set; }
     }
 
-    /// <summary>Isletme aboneligi ve plan ozelliklerinin admin gorunumu.</summary>
+    /// <summary>İşletme aboneliği ve plan özelliklerinin admin görünümü.</summary>
     public class AdminBusinessSubscriptionDto
     {
         public Guid SubscriptionId { get; set; }
@@ -22,23 +22,23 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetBusiness
         public string PlanName { get; set; } = string.Empty;
         public DateTime StartAt { get; set; }
 
-        /// <summary>UTC bitis ani; null = belirsiz sure.</summary>
+        /// <summary>UTC bitiş anı; null = belirsiz süre.</summary>
         public DateTime? EndAt { get; set; }
 
         public EnumSubscriptionStatus Status { get; set; }
 
-        /// <summary>Plana dahil ozellikler.</summary>
+        /// <summary>Plana dahil özellikler.</summary>
         public IReadOnlyList<AdminSubscriptionPlanFeatureDto> PlanFeatures { get; set; }
             = Array.Empty<AdminSubscriptionPlanFeatureDto>();
     }
 
-    /// <summary>Plan ozellik satirinin admin gorunumu.</summary>
+    /// <summary>Plan özellik satırının admin görünümü.</summary>
     public class AdminSubscriptionPlanFeatureDto
     {
         public string FeatureCode { get; set; } = string.Empty;
         public bool IsEnabled { get; set; }
 
-        /// <summary>Donemsel kota; null = sinirsiz.</summary>
+        /// <summary>Dönemsel kota; null = sınırsız.</summary>
         public int? IncludedQuota { get; set; }
     }
 }

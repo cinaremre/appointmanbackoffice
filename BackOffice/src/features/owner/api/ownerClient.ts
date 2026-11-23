@@ -5,16 +5,16 @@ import type { OwnedBusinessListItem } from "../types";
 
 /**
  * Owner portal API istemcisi. Backoffice client'inin BASE_URL sabiti
- * "/api/v1/admin" oldugundan owner uc'lari (tam yol "/api/v1/owner/...")
- * client.ts uzerinden CAGRILMAZ; burada ayni envelope/ApiError/problem
- * desenini kullanan ayri, kucuk bir fetch sarmalayici tanimlanir
- * (dokuman 23.1/23.3). Token yine sessionStorage'dan authHeaders()
- * ile okunur; hatalarda ayni ApiError firlatilir.
+ * "/api/v1/admin" olduğundan owner uçları (tam yol "/api/v1/owner/...")
+ * client.ts üzerinden CAGRILMAZ; burada aynı envelope/ApiError/problem
+ * desenini kullanan ayrı, küçük bir fetch sarmalayıcı tanımlanır
+ * (doküman 23.1/23.3). Token yine sessionStorage'dan authHeaders()
+ * ile okunur; hatalarda aynı ApiError firlatilir.
  */
 
 const OWNER_BASE_URL = "/api/v1/owner";
 
-/** Liste sonucunda dondurulen sayfalama bilgisi (client PaginationLike esdegeri). */
+/** Liste sonucunda döndürülen sayfalama bilgisi (client PaginationLike eşdeğeri). */
 export interface OwnerPagination {
   page: number;
   pageSize: number;
@@ -38,7 +38,7 @@ async function parseBody(response: Response): Promise<unknown> {
   }
 }
 
-/** Tam yol owner istegi: envelope cozumlenir, hatalarda ApiError atilir. */
+/** Tam yol owner isteği: envelope çözümlenir, hatalarda ApiError atilir. */
 export async function ownerRequest<T>(
   path: string,
   options: { method?: string; body?: unknown; signal?: AbortSignal } = {},
@@ -64,13 +64,13 @@ export async function ownerRequest<T>(
   return (parsed ?? { data: null }) as AdminEnvelope<T>;
 }
 
-/** Tekil owner kaynagi: data alanini dondurur. */
+/** Tekil owner kaynağı: data alanını döndürür. */
 export async function ownerGetItem<T>(path: string, signal?: AbortSignal): Promise<T> {
   const envelope = await ownerRequest<T>(path, { signal });
   return envelope.data as T;
 }
 
-/** Liste owner kaynagi: pagination yoksa toleransli varsayilan uretir. */
+/** Liste owner kaynağı: pagination yoksa toleranslı varsayılan üretir. */
 export async function ownerGetList<T>(
   path: string,
   signal?: AbortSignal,
@@ -102,8 +102,8 @@ export async function ownerPatchItem<T>(path: string, body?: unknown): Promise<T
 }
 
 /**
- * Owner'in isletmeleri: tum owner sayfalarindaki isletme seciminin tek
- * kaynagi. Tek isletme varsa sayfalar otomatik olarak onu secer.
+ * Owner'in işletmeleri: tüm owner sayfalarındaki işletme seçiminin tek
+ * kaynağı. Tek işletme varsa sayfalar otomatik olarak onu secer.
  */
 export function useOwnedBusinesses() {
   return useQuery({

@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Tek bir geri cagirma denemesi. Eligible -> Notified -> Converted
-    /// biciminde ilerler; izin engelleri Suppressed, cooldown Cooldown olur.
+    /// Tek bir geri çağırma denemesi. Eligible -> Notified -> Converted
+    /// biçiminde ilerler; izin engelleri Suppressed, cooldown Cooldown olur.
     /// </summary>
     public class ReengagementAttemptConfiguration : BaseConfiguration<ReengagementAttempt>
     {

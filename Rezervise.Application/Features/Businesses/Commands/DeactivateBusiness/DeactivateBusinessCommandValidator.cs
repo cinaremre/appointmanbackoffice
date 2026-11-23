@@ -8,15 +8,15 @@ namespace Rezervise.Application.Features.Businesses.Commands.DeactivateBusiness
         {
             RuleFor(x => x.BusinessId)
                 .NotEmpty()
-                .WithMessage("Isletme ID bos olamaz.");
+                .WithMessage("İşletme ID boş olamaz.");
 
             RuleFor(x => x.OwnerId)
                 .NotEmpty()
-                .WithMessage("Sahip ID bos olamaz.");
+                .WithMessage("Sahip ID boş olamaz.");
 
             RuleFor(x => x.Reason)
                 .MaximumLength(500)
-                .WithMessage("Gerekce en fazla 500 karakter olmalidir.");
+                .WithMessage("Gerekçe en fazla 500 karakter olmalıdır.");
         }
     }
 }

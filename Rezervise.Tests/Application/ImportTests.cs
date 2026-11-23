@@ -124,7 +124,7 @@ public class ImportTests
 
         var failed = Assert.Single(rowResults.Items.Where(r => r.Status == EnumImportRowStatus.Failed));
         Assert.NotNull(failed.ErrorDetails);
-        Assert.Contains("Gecersiz telefon", failed.ErrorDetails);
+        Assert.Contains("Geçersiz telefon", failed.ErrorDetails);
     }
 
     [Fact]

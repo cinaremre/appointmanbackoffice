@@ -13,9 +13,9 @@ namespace Rezervise.Domain.Entities
 
         /// <summary>
         /// EF Core optimistic concurrency token.
-        /// SQL Server tarafindan her UPDATE'te otomatik uretilir; es zamanli
-        /// iki guncellemeden ikincisi DbUpdateConcurrencyException alir ve
-        /// sessiz veri kaybi (lost update) onlenir.
+        /// SQL Server tarafından her UPDATE'te otomatik üretilir; es zamanlı
+        /// iki güncellemeden ikincisi DbUpdateConcurrencyException alır ve
+        /// sessiz veri kaybı (lost update) önlenir.
         /// </summary>
         public byte[]? RowVersion { get; protected set; }
 

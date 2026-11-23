@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers
 {
     /// <summary>
-    /// Backoffice giris ucu. Token uretimi mevcut ITokenService uzerinden yapilir;
-    /// audience "Rezervise-Backoffice" olarak yapilandirmadan gelir.
+    /// Backoffice giriş ucu. Token üretimi mevcut ITokenService üzerinden yapılır;
+    /// audience "Rezervise-Backoffice" olarak yapılandırmadan gelir.
     /// </summary>
     [ApiController]
     [Route("api/v1/admin/auth")]
@@ -21,8 +21,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Yonetici girisi. Basarili yanit access token doner; hatalar
-        /// ProblemDetails olarak eslenir.
+        /// Yönetici girişi. Başarılı yanıt access token döner; hatalar
+        /// ProblemDetails olarak eşlenir.
         /// </summary>
         [AllowAnonymous]
         [HttpPost("login")]
@@ -41,14 +41,14 @@ namespace Rezervise.BackOffice.Api.Controllers
                 "UNAUTHORIZED" => Unauthorized(new ProblemDetails
                 {
                     Type = "https://api.rezervise.com/problems/invalid-credentials",
-                    Title = "Giris basarisiz.",
+                    Title = "Giriş başarısız.",
                     Status = StatusCodes.Status401Unauthorized,
-                    Detail = "E-posta veya sifre hatali, ya da bu hesap backoffice erisimine sahip degil."
+                    Detail = "E-posta veya şifre hatalı, ya da bu hesap backoffice erişimine sahip değil."
                 }),
                 _ => BadRequest(new ProblemDetails
                 {
                     Type = "https://api.rezervise.com/problems/validation",
-                    Title = "Giris basarisiz.",
+                    Title = "Giriş başarısız.",
                     Status = StatusCodes.Status400BadRequest,
                     Detail = result.Error.Message
                 })

@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Bekleme listesi slot teklifi. Sure dolan teklifler kabul edilemez;
-    /// superseded teklifler ilk basarili kabuldan sonra olusur.
+    /// Bekleme listesi slot teklifi. Süre dolan teklifler kabul edilemez;
+    /// superseded teklifler ilk başarılı kabuldan sonra oluşur.
     /// </summary>
     public class WaitlistOfferConfiguration : BaseConfiguration<WaitlistOffer>
     {

@@ -1,20 +1,20 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Izin takibi yapilan iletisim kanallari (dokuman Modul 16).
+    /// İzin takibi yapılan iletişim kanalları (doküman Modül 16).
     /// </summary>
     public enum EnumConsentChannel
     {
-        /// <summary>SMS kanali.</summary>
+        /// <summary>SMS kanalı.</summary>
         Sms = 0,
 
-        /// <summary>E-posta kanali.</summary>
+        /// <summary>E-posta kanalı.</summary>
         Email = 1,
 
-        /// <summary>WhatsApp kanali.</summary>
+        /// <summary>WhatsApp kanalı.</summary>
         WhatsApp = 2,
 
-        /// <summary>Push bildirim kanali.</summary>
+        /// <summary>Push bildirim kanalı.</summary>
         Push = 3
     }
 }

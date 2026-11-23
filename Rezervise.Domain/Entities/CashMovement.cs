@@ -4,9 +4,9 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Kasa hareketi (manuel giris/cikis, iade kaynakli cikis vb.).
-    /// ReferenceId doluysa hareket bir odeme kaydindan turemistir
-    /// (orn. nakit iadenin ters kaydi); bos ise manuel girilen harekettir.
+    /// Kasa hareketi (manuel giriş/çıkış, iade kaynaklı çıkış vb.).
+    /// ReferenceId doluysa hareket bir ödeme kaydından türemiştir
+    /// (orn. nakit iadenin ters kaydı); boş ise manuel girilen harekettir.
     /// </summary>
     public class CashMovement : BaseEntity
     {
@@ -34,19 +34,19 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (cashSessionId == Guid.Empty)
-                throw new ArgumentException("Kasa oturumu ID bos olamaz.", nameof(cashSessionId));
+                throw new ArgumentException("Kasa oturumu ID boş olamaz.", nameof(cashSessionId));
 
             if (createdBy == Guid.Empty)
-                throw new ArgumentException("Hareketi olusturan kullanici ID bos olamaz.", nameof(createdBy));
+                throw new ArgumentException("Hareketi oluşturan kullanıcı ID boş olamaz.", nameof(createdBy));
 
             if (amount <= 0)
-                throw new DomainException("Kasa hareket tutari sifirdan buyuk olmalidir.");
+                throw new DomainException("Kasa hareket tutarı sıfırdan büyük olmalıdır.");
 
             if (reason is not null && reason.Length > 500)
-                throw new DomainException("Kasa hareket gerekcesi 500 karakterden uzun olamaz.");
+                throw new DomainException("Kasa hareket gerekçesi 500 karakterden uzun olamaz.");
 
             BusinessId = businessId;
             CashSessionId = cashSessionId;

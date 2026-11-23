@@ -27,29 +27,29 @@ namespace Rezervise.Application.Features.Users.Commands.VerifyEmail
         {
             try
             {
-                // 1. Kullanici kontrolu. Silinmis hesap dogrulanamaz.
+                // 1. Kullanıcı kontrolü. Silinmiş hesap doğrulanamaz.
                 var users = await _userRepository.FindAsync(
                     u => u.Id == request.UserId && !u.IsDeleted, cancellationToken);
 
                 var user = users.FirstOrDefault();
                 if (user is null)
-                    return Result<Guid>.Failure(Error.NotFound("Kullanici", request.UserId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Kullanıcı", request.UserId.ToString()));
 
-                // 2. Zaten dogrulanmis mi?
+                // 2. Zaten doğrulanmış mi?
                 if (user.IsEmailVerified)
-                    return Result<Guid>.Failure(Error.Conflict("Email zaten dogrulanmis."));
+                    return Result<Guid>.Failure(Error.Conflict("Email zaten doğrulanmış."));
 
-                // 3. Dogrulama kodu kontrolu: kod konfigurasyondan gelir ve tanimli degilse
-                //    dogrulama tamamen kapalidir (fail closed). Sabit kod production'a cikmaz.
+                // 3. Doğrulama kodu kontrolü: kod konfigürasyondan gelir ve tanımlı değilse
+                //    doğrulama tamamen kapalıdır (fail closed). Sabit kod production'a çıkmaz.
                 var configuredCode = _configuration["EmailVerification:DevelopmentCode"];
 
                 if (string.IsNullOrWhiteSpace(configuredCode))
                     return Result<Guid>.Failure(Error.Validation("EmailVerification.NotConfigured"));
 
                 if (!string.Equals(request.VerificationCode, configuredCode, StringComparison.Ordinal))
-                    return Result<Guid>.Failure(Error.Validation("Gecersiz dogrulama kodu."));
+                    return Result<Guid>.Failure(Error.Validation("Geçersiz doğrulama kodu."));
 
-                // 4. Domain kurallari ile dogrula
+                // 4. Domain kuralları ile doğrula
                 user.VerifyEmail();
 
                 // 5. Kaydet
@@ -63,7 +63,7 @@ namespace Rezervise.Application.Features.Users.Commands.VerifyEmail
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Email dogrulanirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Email doğrulanırken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -1,8 +1,8 @@
 namespace Rezervise.Application.Common.DTOs
 {
     /// <summary>
-    /// Anonim erisilebilen public isletme sayfasi ozeti.
-    /// Kisisel veri icermez.
+    /// Anonim erişilebilen public işletme sayfası özeti.
+    /// Kişisel veri içermez.
     /// </summary>
     public class PublicPageDto
     {
@@ -12,7 +12,7 @@ namespace Rezervise.Application.Common.DTOs
         public List<PublicPageServiceDto> Services { get; set; } = new();
     }
 
-    /// <summary>Public sayfada listelenen hizmet ozeti.</summary>
+    /// <summary>Public sayfada listelenen hizmet özeti.</summary>
     public class PublicPageServiceDto
     {
         public Guid Id { get; set; }

@@ -7,15 +7,15 @@ namespace Rezervise.Domain.ValueObjects
     {
         public string Value { get; private set; }
 
-        private Email() { } // EF Core icin
+        private Email() { } // EF Core için
 
         public Email(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new DomainException("Email bos olamaz.");
+                throw new DomainException("Email boş olamaz.");
 
             if (!IsValidEmail(value))
-                throw new DomainException("Gecersiz email format.");
+                throw new DomainException("Geçersiz email format.");
 
             Value = value.ToLowerInvariant().Trim();
         }

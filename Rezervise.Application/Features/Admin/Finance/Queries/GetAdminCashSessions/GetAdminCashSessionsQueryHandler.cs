@@ -68,7 +68,7 @@ namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminCashSessi
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<AdminCashSessionDto>>.Failure(
-                    Error.Internal("Kasa oturumlari getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kasa oturumları getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

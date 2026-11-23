@@ -8,24 +8,24 @@ namespace Rezervise.Application.Features.BusinessCategories.Commands.CreateCateg
         {
             RuleFor(x => x.Name)
                 .NotEmpty()
-                .WithMessage("Kategori adi bos olamaz.")
+                .WithMessage("Kategori adı boş olamaz.")
                 .MinimumLength(2)
-                .WithMessage("Kategori adi en az 2 karakter olmalidir.")
+                .WithMessage("Kategori adı en az 2 karakter olmalıdır.")
                 .MaximumLength(100)
-                .WithMessage("Kategori adi en fazla 100 karakter olmalidir.");
+                .WithMessage("Kategori adı en fazla 100 karakter olmalıdır.");
 
             RuleFor(x => x.Description)
                 .MaximumLength(500)
-                .WithMessage("Aciklama en fazla 500 karakter olmalidir.");
+                .WithMessage("Açıklama en fazla 500 karakter olmalıdır.");
 
             RuleFor(x => x.DisplayOrder)
                 .GreaterThanOrEqualTo(0)
-                .WithMessage("Siralama numarasi negatif olamaz.");
+                .WithMessage("Sıralama numarası negatif olamaz.");
 
             RuleFor(x => x.CorrespondingBusinessType)
                 .IsInEnum()
                 .When(x => x.CorrespondingBusinessType.HasValue)
-                .WithMessage("Gecersiz isletme tipi.");
+                .WithMessage("Geçersiz işletme tipi.");
         }
     }
 }

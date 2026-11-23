@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Prim (komisyon) kurali. Uygulama penceresi EffectiveFrom/EffectiveTo
-    /// ile sinirlidir; kapsam alanlari bos ise kural geneldir.
+    /// Prim (komisyon) kuralı. Uygulama penceresi EffectiveFrom/EffectiveTo
+    /// ile sınırlıdır; kapsam alanları boş ise kural geneldir.
     /// </summary>
     public class CommissionRuleConfiguration : BaseConfiguration<CommissionRule>
     {

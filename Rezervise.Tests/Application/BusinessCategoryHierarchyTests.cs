@@ -19,8 +19,8 @@ public class BusinessCategoryHierarchyTests
     public async Task GetAll_ShouldReturnRootsWithSubCategoriesAndCounts()
     {
         var ownerId = Guid.NewGuid();
-        var root = new BusinessCategory(Guid.NewGuid(), "Guzellik ve Kisisel Bakim", 1);
-        var child = new BusinessCategory(Guid.NewGuid(), "Kuafor", 1);
+        var root = new BusinessCategory(Guid.NewGuid(), "Güzellik ve Kişisel Bakım", 1);
+        var child = new BusinessCategory(Guid.NewGuid(), "Kuaför", 1);
         root.AddSubCategory(child);
 
         var business = TestData.NewBusiness(ownerId);

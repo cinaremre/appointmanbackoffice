@@ -9,9 +9,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Businesses.Commands.UpdateBusinessByAdmin
 {
     /// <summary>
-    /// Isletme guncelleme handler'i (dokuman Modul 8). Alan degisikligi
-    /// entity'nin kendi Set metotlariyla yapilir; kritik islem oldugu icin
-    /// denetim kaydina "Update" aksiyonuyla yazilir.
+    /// İşletme güncelleme handler'i (doküman Modül 8). Alan değişikliği
+    /// entity'nin kendi Set metotlarıyla yapılır; kritik işlem öldüğü için
+    /// denetim kaydına "Update" aksiyonuyla yazılır.
     /// </summary>
     public class UpdateBusinessByAdminCommandHandler : IRequestHandler<UpdateBusinessByAdminCommand, Result<Guid>>
     {
@@ -39,32 +39,32 @@ namespace Rezervise.Application.Features.Admin.Businesses.Commands.UpdateBusines
         {
             try
             {
-                // 1. En az bir alan gonderilmeli.
+                // 1. En az bir alan gönderilmeli.
                 var hasName = !string.IsNullOrWhiteSpace(request.Name);
                 var hasDescription = request.Description is not null;
 
                 if (!hasName && !hasDescription)
                     return Result<Guid>.Failure(
-                        Error.Validation("Guncellenecek en az bir alan (Name veya Description) gereklidir."));
+                        Error.Validation("Güncellenecek en az bir alan (Name veya Description) gereklidir."));
 
-                // 2. Yonetici kimligi denetim kaydi icin zorunludur.
+                // 2. Yönetici kimliği denetim kaydı için zorunludur.
                 if (_currentUser.UserId is null)
                     return Result<Guid>.Failure(Error.Unauthorized());
 
-                // 3. Isletme kontrolu.
+                // 3. İşletme kontrolü.
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
 
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 4. Onceki degerler denetim kaydi icin yakalanir.
+                // 4. Önceki değerler denetim kaydı için yakalanır.
                 var oldValues = JsonSerializer.Serialize(new
                 {
                     business.Name,
                     business.Description
                 });
 
-                // 5. Entity'nin kendi guncelleme metotlari kullanilir.
+                // 5. Entity'nin kendi güncelleme metotları kullanılır.
                 if (hasName)
                     business.SetName(request.Name!.Trim());
 
@@ -73,7 +73,7 @@ namespace Rezervise.Application.Features.Admin.Businesses.Commands.UpdateBusines
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // 6. Denetim kaydi: actor JWT kimliginden cozulur.
+                // 6. Denetim kaydı: actor JWT kimliğinden çözülür.
                 await _auditSink.RecordAsync(
                     _currentUser.UserId.Value,
                     ResolveActorRole(),
@@ -97,13 +97,13 @@ namespace Rezervise.Application.Features.Admin.Businesses.Commands.UpdateBusines
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(
-                    Error.Internal("Isletme guncellenirken bir hata olustu.", ex.Message));
+                    Error.Internal("İşletme güncellenirken bir hata oluştu.", ex.Message));
             }
         }
 
         /// <summary>
-        /// Denetim kaydina yazilacak rol: bilinen ilk rol; roller cozulemiyorsa
-        /// geriye donuk uyumluluk icin "Admin" sabiti.
+        /// Denetim kaydına yazılacak rol: bilinen ilk rol; roller çözülemiyorsa
+        /// geriye dönük uyumluluk için "Admin" sabiti.
         /// </summary>
         private string ResolveActorRole()
             => _currentUser.Roles.FirstOrDefault() ?? "Admin";

@@ -5,20 +5,20 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Businesses.Queries.GetMyBusinesses
 {
     /// <summary>
-    /// Isletme sahibinin kendi isletme listesi. Sahiplik JWT kimliginden
-    /// cozulur; istekte isletme/sahip filtresi yoktur, yanit her zaman
-    /// cagriya ait kayitlarla sinirlidir.
+    /// İşletme sahibinin kendi işletme listesi. Sahiplik JWT kimliğinden
+    /// çözülür; istekte işletme/sahip filtresi yoktur, yanıt her zaman
+    /// çağrıya ait kayıtlarla sınırlıdır.
     /// </summary>
     public class GetMyBusinessesQuery : IRequest<Result<AdminPagedResult<OwnerBusinessListItemDto>>>
     {
-        /// <summary>1 tabanli sayfa numarasi.</summary>
+        /// <summary>1 tabanlı sayfa numarası.</summary>
         public int Page { get; set; } = 1;
 
-        /// <summary>Sayfa boyutu; handler en fazla 200'e sinirlar.</summary>
+        /// <summary>Sayfa boyutu; handler en fazla 200'e sınırlar.</summary>
         public int PageSize { get; set; } = 50;
     }
 
-    /// <summary>Isletme sahibinin isletme liste satiri.</summary>
+    /// <summary>İşletme sahibinin işletme liste satırı.</summary>
     public class OwnerBusinessListItemDto
     {
         public Guid Id { get; init; }

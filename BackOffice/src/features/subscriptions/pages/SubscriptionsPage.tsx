@@ -50,44 +50,44 @@ import {
 } from "../types";
 
 /**
- * Abonelik ve ozellik yonetimi (dokuman Modul 14-15).
+ * Abonelik ve özellik yönetimi (doküman Modül 14-15).
  * - Plan listesi: GET /subscription-plans (DataTable).
- * - Plan olusturma: POST /subscription-plans (react-hook-form + zod).
- * - Isletme bazli erisim: aktif abonelik + override listesi + yeni override
+ * - Plan oluşturma: POST /subscription-plans (react-hook-form + zod).
+ * - İşletme bazlı erişim: aktif abonelik + override listesi + yeni override
  *   formu (POST /businesses/{id}/features/feature-overrides). Override kritik
- *   islemdir; gerekce alani formda ZORUNLUDUR ve denetim kaydina yazilir.
- * Mutasyon sonrasi ["subscriptions"] anahtari topluca gecersiz kilinir.
+ *   işlemdir; gerekçe alanı formda ZORUNLUDUR ve denetim kaydına yazılır.
+ * Mutasyon sonrası ["subscriptions"] anahtarı topluca geçersiz kılınır.
  */
 
-/** Plan olusturma formu semasi. Fiyat string girilir, gonderimde sayiya cevrilir. */
+/** Plan oluşturma formu şeması. Fiyat string girilir, gönderimde sayıya çevrilir. */
 const planSchema = z.object({
-  name: z.string().trim().min(3, "Plan adi en az 3 karakter olmali."),
+  name: z.string().trim().min(3, "Plan adı en az 3 karakter olmalı."),
   price: z
     .string()
     .trim()
     .min(1, "Fiyat zorunludur.")
-    .refine((value) => Number(value.replace(",", ".")) > 0, "Fiyat sifirdan buyuk pozitif bir deger olmali."),
+    .refine((value) => Number(value.replace(",", ".")) > 0, "Fiyat sıfırdan büyük pozitif bir değer olmalı."),
   billingPeriod: z.enum(["Monthly", "Yearly"]),
   featureIds: z.array(z.string()),
 });
 type PlanFormValues = z.infer<typeof planSchema>;
 
-/** Ozellik override formu; gerekce ZORUNLU (kritik islem, dokuman 5.4/24). */
+/** Özellik override formu; gerekçe ZORUNLU (kritik işlem, doküman 5.4/24). */
 const overrideSchema = z
   .object({
-    featureId: z.string().min(1, "Bir ozellik secin."),
+    featureId: z.string().min(1, "Bir özellik seçin."),
     isEnabled: z.boolean(),
     quota: z.string().trim(),
-    validFrom: z.string().min(1, "Baslangic tarihi zorunludur."),
+    validFrom: z.string().min(1, "Başlangıç tarihi zorunludur."),
     validUntil: z.string().trim(),
-    reason: z.string().trim().min(3, "Gerekce zorunludur; en az 3 karakter girin."),
+    reason: z.string().trim().min(3, "Gerekçe zorunludur; en az 3 karakter girin."),
   })
   .refine((v) => v.quota === "" || (Number.isInteger(Number(v.quota)) && Number(v.quota) >= 0), {
-    message: "Kota sifir veya daha buyuk tam sayi olmali.",
+    message: "Kota sıfır veya daha büyük tam sayı olmalı.",
     path: ["quota"],
   })
   .refine((v) => v.validUntil === "" || v.validUntil >= v.validFrom, {
-    message: "Bitis tarihi baslangictan once olamaz.",
+    message: "Bitiş tarihi başlangıçtan önce olamaz.",
     path: ["validUntil"],
   });
 type OverrideFormValues = z.infer<typeof overrideSchema>;
@@ -108,12 +108,12 @@ export function SubscriptionsPage() {
   const notify = (message: string, severity: "success" | "error" = "success") =>
     setSnack({ message, severity });
 
-  // === Okuma sorgulari (anahtarlar modul onekiyle) ===
+  // === Okuma sorguları (anahtarlar modül önekiyle) ===
   const plansQuery = useQuery({
     queryKey: ["subscriptions", "plans"],
     queryFn: async ({ signal }) => {
       const { items } = await getList<SubscriptionPlanDto>("/subscription-plans", signal);
-      // Enum sayisal da gelebilir; toleransli etikete cevir.
+      // Enum sayısal da gelebilir; toleranslı etikete cevir.
       return items.map((plan) => ({ ...plan, billingPeriod: toBillingPeriod(plan.billingPeriod) }));
     },
   });
@@ -123,7 +123,7 @@ export function SubscriptionsPage() {
     queryFn: ({ signal }) => getList<FeatureDefinitionDto>("/features", signal),
   });
 
-  // === Isletme bazli erisim bolumu ===
+  // === İşletme bazlı erişim bolumu ===
   const [businessInput, setBusinessInput] = useState("");
   const [businessError, setBusinessError] = useState<string | null>(null);
   const [businessId, setBusinessId] = useState<string | null>(null);
@@ -136,14 +136,14 @@ export function SubscriptionsPage() {
       return;
     }
     if (!isGuid(value)) {
-      setBusinessError("Gecerli bir isletme kimligi (GUID) girin.");
+      setBusinessError("Geçerli bir işletme kimliği (GUID) girin.");
       return;
     }
     setBusinessError(null);
     setBusinessId(value);
   };
 
-  // Aktif abonelik yoksa endpoint basariyla data null doner; hata degil.
+  // Aktif abonelik yoksa endpoint başarıyla data null döner; hata değil.
   const subscriptionQuery = useQuery({
     queryKey: ["subscriptions", "business-subscription", businessId],
     queryFn: ({ signal }) =>
@@ -161,8 +161,8 @@ export function SubscriptionsPage() {
     (featuresQuery.data?.items ?? []).map((feature) => [feature.code, feature.name]),
   );
 
-  // Backend tum gecmisi dondurur; arayuzu gecerlilik penceresi icindekiler.
-  // Anlik zaman mount aninda bir kez hesaplanir (render safi kalir).
+  // Backend tüm geçmişi döndürür; arayüzü geçerlilik penceresi içindekiler.
+  // Anlık zaman mount anında bir kez hesaplanır (render safi kalır).
   const [loadedAtMs] = useState(() => Date.now());
   const activeOverrides = (overridesQuery.data?.items ?? []).filter((row) => {
     const from = Date.parse(row.validFrom);
@@ -170,7 +170,7 @@ export function SubscriptionsPage() {
     return from <= loadedAtMs && loadedAtMs <= until;
   });
 
-  // === Plan olusturma mutasyonu ===
+  // === Plan oluşturma mutasyonu ===
   const [planOpen, setPlanOpen] = useState(false);
   const [quotas, setQuotas] = useState<Record<string, string>>({});
 
@@ -191,7 +191,7 @@ export function SubscriptionsPage() {
         name: values.name.trim(),
         price: Number(values.price.replace(",", ".")),
         currency: "TRY",
-        // Backend enum'u sayisal bekler: 0=Monthly, 1=Yearly.
+        // Backend enum'u sayısal bekler: 0=Monthly, 1=Yearly.
         billingPeriod: BILLING_PERIOD_VALUES[values.billingPeriod],
         features: values.featureIds.map((featureId) => ({
           featureId,
@@ -201,11 +201,11 @@ export function SubscriptionsPage() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
-      notify("Abonelik plani olusturuldu.");
+      notify("Abonelik planı oluşturuldu.");
       closePlanDialog();
     },
     onError: (error) =>
-      notify(error instanceof ApiError ? error.userMessage : "Plan olusturulamadi.", "error"),
+      notify(error instanceof ApiError ? error.userMessage : "Plan oluşturulamadı.", "error"),
   });
 
   function openPlanDialog() {
@@ -220,7 +220,7 @@ export function SubscriptionsPage() {
     setQuotas({});
   }
 
-  // === Ozellik override mutasyonu ===
+  // === Özellik override mutasyonu ===
   const {
     register: registerOverride,
     handleSubmit: handleSubmitOverride,
@@ -241,7 +241,7 @@ export function SubscriptionsPage() {
 
   const grantOverrideMutation = useMutation({
     mutationFn: (values: OverrideFormValues) => {
-      if (businessId === null) throw new Error("Once bir isletme getirin.");
+      if (businessId === null) throw new Error("Önce bir işletme getirin.");
       return postItem<string>(`/businesses/${businessId}/features/feature-overrides`, {
         featureId: values.featureId,
         isEnabled: values.isEnabled,
@@ -253,7 +253,7 @@ export function SubscriptionsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
-      notify("Ozellik override kaydi olusturuldu.");
+      notify("Özellik override kaydı oluşturuldu.");
       resetOverride({
         featureId: "",
         isEnabled: true,
@@ -264,26 +264,26 @@ export function SubscriptionsPage() {
       });
     },
     onError: (error) =>
-      notify(error instanceof ApiError ? error.userMessage : "Override kaydi olusturulamadi.", "error"),
+      notify(error instanceof ApiError ? error.userMessage : "Override kaydı oluşturulamadı.", "error"),
   });
 
-  // === Plan tablosu sutunlari ===
+  // === Plan tablosu sütunları ===
   const planColumns: DataTableColumn<SubscriptionPlanDto>[] = [
-    { key: "name", header: "Plan Adi", render: (row) => row.name },
+    { key: "name", header: "Plan Adı", render: (row) => row.name },
     { key: "price", header: "Fiyat", render: (row) => formatPrice(row.price, row.currency) },
-    { key: "period", header: "Donem", render: (row) => BILLING_PERIOD_LABELS[row.billingPeriod] },
+    { key: "period", header: "Dönem", render: (row) => BILLING_PERIOD_LABELS[row.billingPeriod] },
     {
       key: "isActive",
       header: "Aktif",
       render: (row) => <StatusBadge status={row.isActive ? "Aktif" : "Pasif"} />,
     },
-    { key: "featureCount", header: "Ozellik Sayisi", render: (row) => String(row.features.length) },
+    { key: "featureCount", header: "Özellik Sayısı", render: (row) => String(row.features.length) },
   ];
 
   const overrideColumns: DataTableColumn<FeatureOverrideDto>[] = [
     {
       key: "feature",
-      header: "Ozellik",
+      header: "Özellik",
       render: (row) =>
         featureNameByCode.get(row.featureCode)
           ? `${featureNameByCode.get(row.featureCode)} (${row.featureCode})`
@@ -297,19 +297,19 @@ export function SubscriptionsPage() {
     {
       key: "quota",
       header: "Kota",
-      render: (row) => (row.quotaOverride === null || row.quotaOverride === undefined ? "Plan kotasi" : String(row.quotaOverride)),
+      render: (row) => (row.quotaOverride === null || row.quotaOverride === undefined ? "Plan kotası" : String(row.quotaOverride)),
     },
     {
       key: "validFrom",
-      header: "Baslangic",
+      header: "Başlangıç",
       render: (row) => new Date(row.validFrom).toLocaleDateString("tr-TR"),
     },
     {
       key: "validUntil",
-      header: "Bitis",
+      header: "Bitiş",
       render: (row) => (row.validUntil ? new Date(row.validUntil).toLocaleDateString("tr-TR") : "Belirsiz"),
     },
-    { key: "reason", header: "Gerekce", render: (row) => row.reason ?? "-" },
+    { key: "reason", header: "Gerekçe", render: (row) => row.reason ?? "-" },
   ];
 
   const plans = plansQuery.data;
@@ -322,14 +322,14 @@ export function SubscriptionsPage() {
         actions={
           canUpdate ? (
             <Button variant="contained" onClick={openPlanDialog}>
-              Plan Olustur
+              Plan Oluştur
             </Button>
           ) : undefined
         }
       />
 
       <DataTable<SubscriptionPlanDto>
-        ariaLabel="abonelik planlari listesi"
+        ariaLabel="abonelik planları listesi"
         columns={planColumns}
         rows={plans}
         loading={plansQuery.isPending}
@@ -339,7 +339,7 @@ export function SubscriptionsPage() {
         totalCount={plans?.length ?? 0}
         onPageChange={() => {}}
         onPageSizeChange={() => {}}
-        emptyLabel="Henuz abonelik plani tanimlanmamis."
+        emptyLabel="Henüz abonelik planı tanımlanmamış."
         onRefresh={() => plansQuery.refetch()}
       />
 
@@ -347,11 +347,11 @@ export function SubscriptionsPage() {
 
       <Box>
         <Typography variant="h6" component="h2" gutterBottom>
-          Isletme Bazli Ozellik Erisimi
+          İşletme Bazlı Özellik Erişimi
         </Typography>
         <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ alignItems: { xs: "stretch", sm: "center" } }}>
           <TextField
-            label="Isletme Kimligi (GUID)"
+            label="İşletme Kimliği (GUID)"
             size="small"
             sx={{ minWidth: { sm: 320 } }}
             value={businessInput}
@@ -361,7 +361,7 @@ export function SubscriptionsPage() {
               if (e.key === "Enter") loadBusiness();
             }}
             error={businessError !== null}
-            helperText={businessError ?? "Abonelik ve override kayitlarini getirmek icin GUID girip Enter'a basin."}
+            helperText={businessError ?? "Abonelik ve override kayıtlarını getirmek için GUID girip Enter'a basın."}
           />
           <Button variant="outlined" onClick={loadBusiness} sx={{ height: 40 }}>
             Getir
@@ -381,10 +381,10 @@ export function SubscriptionsPage() {
                     <Typography variant="subtitle1">Aktif Abonelik: {subscription.planName}</Typography>
                     <StatusBadge status={subscriptionStatusLabel(subscription.status)} />
                     <Typography variant="body2" color="text.secondary">
-                      Baslangic: {new Date(subscription.startAt).toLocaleDateString("tr-TR")}
+                      Başlangıç: {new Date(subscription.startAt).toLocaleDateString("tr-TR")}
                       {subscription.endAt
-                        ? ` - Bitis: ${new Date(subscription.endAt).toLocaleDateString("tr-TR")}`
-                        : " - Belirsiz sure"}
+                        ? ` - Bitiş: ${new Date(subscription.endAt).toLocaleDateString("tr-TR")}`
+                        : " - Belirsiz süre"}
                     </Typography>
                   </Stack>
                   <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: "wrap" }}>
@@ -393,7 +393,7 @@ export function SubscriptionsPage() {
                         key={feature.featureCode}
                         size="small"
                         variant="outlined"
-                        label={`${feature.featureCode}${feature.isEnabled ? "" : " (kapali)"} - ${quotaLabel(feature.includedQuota)}`}
+                        label={`${feature.featureCode}${feature.isEnabled ? "" : " (kapalı)"} - ${quotaLabel(feature.includedQuota)}`}
                       />
                     ))}
                   </Stack>
@@ -401,15 +401,15 @@ export function SubscriptionsPage() {
               </Card>
             ) : (
               <Alert severity="info" sx={{ mb: 2 }}>
-                Bu isletmenin gecerli aboneligi bulunamadi.
+                Bu işletmenin geçerli aboneliği bulunamadı.
               </Alert>
             )}
 
             <Typography variant="subtitle1" component="h3" gutterBottom>
-              Gecerli Ozellik Override Kayitlari
+              Geçerli Özellik Override Kayıtları
             </Typography>
             <DataTable<FeatureOverrideDto>
-              ariaLabel="ozellik override listesi"
+              ariaLabel="özellik override listesi"
               columns={overrideColumns}
               rows={activeOverrides}
               loading={overridesQuery.isPending}
@@ -419,7 +419,7 @@ export function SubscriptionsPage() {
               totalCount={activeOverrides.length}
               onPageChange={() => {}}
               onPageSizeChange={() => {}}
-              emptyLabel="Bu isletme icin gecerli override kaydi yok."
+              emptyLabel="Bu işletme için geçerli override kaydı yok."
               onRefresh={() => overridesQuery.refetch()}
             />
 
@@ -427,10 +427,10 @@ export function SubscriptionsPage() {
               <Card variant="outlined" sx={{ mt: 3 }}>
                 <CardContent>
                   <Typography variant="subtitle1" component="h3" gutterBottom>
-                    Yeni Ozellik Override
+                    Yeni Özellik Override
                   </Typography>
                   <Alert severity="warning" sx={{ mb: 2 }}>
-                    Kritik islem: erisim karari denetim kaydina yazilir. Gerekce alani zorunludur.
+                    Kritik işlem: erişim kararı denetim kaydına yazılır. Gerekçe alanı zorunludur.
                   </Alert>
                   <Stack spacing={2}>
                     <Controller
@@ -439,10 +439,10 @@ export function SubscriptionsPage() {
                       render={({ field }) => (
                         <TextField
                           select
-                          label="Ozellik"
+                          label="Özellik"
                           {...field}
                           error={overrideErrors.featureId !== undefined}
-                          helperText={overrideErrors.featureId?.message ?? "Erisim karari verilecek ozellik."}
+                          helperText={overrideErrors.featureId?.message ?? "Erişim kararı verilecek özellik."}
                         >
                           {(featuresQuery.data?.items ?? []).map((feature) => (
                             <MenuItem key={feature.id} value={feature.id}>
@@ -464,7 +464,7 @@ export function SubscriptionsPage() {
                               onBlur={field.onBlur}
                             />
                           }
-                          label={field.value ? "Erisim acik" : "Erisim kapali"}
+                          label={field.value ? "Erişim açık" : "Erişim kapalı"}
                         />
                       )}
                     />
@@ -474,10 +474,10 @@ export function SubscriptionsPage() {
                         sx={{ minWidth: { sm: 180 } }}
                         {...registerOverride("quota")}
                         error={overrideErrors.quota !== undefined}
-                        helperText={overrideErrors.quota?.message ?? "Bos birakilirsa plan kotasi gecerli kalir."}
+                        helperText={overrideErrors.quota?.message ?? "Boş bırakılırsa plan kotası geçerli kalır."}
                       />
                       <TextField
-                        label="Baslangic"
+                        label="Başlangıç"
                         type="date"
                         sx={{ minWidth: { sm: 180 } }}
                         slotProps={{ inputLabel: { shrink: true } }}
@@ -486,22 +486,22 @@ export function SubscriptionsPage() {
                         helperText={overrideErrors.validFrom?.message ?? " "}
                       />
                       <TextField
-                        label="Bitis (ops.)"
+                        label="Bitiş (ops.)"
                         type="date"
                         sx={{ minWidth: { sm: 180 } }}
                         slotProps={{ inputLabel: { shrink: true } }}
                         {...registerOverride("validUntil")}
                         error={overrideErrors.validUntil !== undefined}
-                        helperText={overrideErrors.validUntil?.message ?? "Bos = belirsiz sure."}
+                        helperText={overrideErrors.validUntil?.message ?? "Boş = belirsiz süre."}
                       />
                     </Stack>
                     <TextField
-                      label="Gerekce (zorunlu)"
+                      label="Gerekçe (zorunlu)"
                       multiline
                       minRows={2}
                       {...registerOverride("reason")}
                       error={overrideErrors.reason !== undefined}
-                      helperText={overrideErrors.reason?.message ?? "Bu karar denetim kaydina yazilir."}
+                      helperText={overrideErrors.reason?.message ?? "Bu karar denetim kaydına yazılır."}
                     />
                     <Box>
                       <Button
@@ -521,7 +521,7 @@ export function SubscriptionsPage() {
         ) : null}
       </Box>
 
-      {/* Plan olusturma diyalogu */}
+      {/* Plan oluşturma diyalogu */}
       <Dialog
         open={planOpen}
         onClose={planOpen ? closePlanDialog : undefined}
@@ -529,11 +529,11 @@ export function SubscriptionsPage() {
         fullWidth
         fullScreen={is_mobile}
       >
-        <DialogTitle>Yeni Abonelik Plani</DialogTitle>
+        <DialogTitle>Yeni Abonelik Planı</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
             <TextField
-              label="Plan Adi"
+              label="Plan Adı"
               {...registerPlan("name")}
               error={planErrors.name !== undefined}
               helperText={planErrors.name?.message ?? " "}
@@ -542,7 +542,7 @@ export function SubscriptionsPage() {
               label="Fiyat (TL)"
               {...registerPlan("price")}
               error={planErrors.price !== undefined}
-              helperText={planErrors.price?.message ?? "Aylik/yillik plan fiyati."}
+              helperText={planErrors.price?.message ?? "Aylık/yıllık plan fiyatı."}
             />
             <Controller
               name="billingPeriod"
@@ -550,19 +550,19 @@ export function SubscriptionsPage() {
               render={({ field }) => (
                 <TextField
                   select
-                  label="Faturalandirma Donemi"
+                  label="Faturalandırma Dönemi"
                   {...field}
                   error={planErrors.billingPeriod !== undefined}
                   helperText={planErrors.billingPeriod?.message ?? " "}
                 >
-                  <MenuItem value="Monthly">Aylik</MenuItem>
-                  <MenuItem value="Yearly">Yillik</MenuItem>
+                  <MenuItem value="Monthly">Aylık</MenuItem>
+                  <MenuItem value="Yearly">Yıllık</MenuItem>
                 </TextField>
               )}
             />
             <Box>
               <Typography variant="subtitle2" gutterBottom>
-                Plana Dahil Ozellikler
+                Plana Dahil Özellikler
               </Typography>
               <Controller
                 name="featureIds"
@@ -604,14 +604,14 @@ export function SubscriptionsPage() {
                             onChange={(e) =>
                               setQuotas((prev) => ({ ...prev, [feature.id]: e.target.value }))
                             }
-                            helperText={checked ? "Bos = sinirsiz" : " "}
+                            helperText={checked ? "Boş = sınırsız" : " "}
                           />
                         </Stack>
                       );
                     })}
                     {(featuresQuery.data?.items ?? []).length === 0 ? (
                       <Typography color="text.secondary">
-                        Ozellik tanimi bulunamadi; once ozellik katalogu tanimlanmali.
+                        Özellik tanımı bulunamadı; önce özellik katalogu tanımlanmalı.
                       </Typography>
                     ) : null}
                   </Stack>
@@ -622,14 +622,14 @@ export function SubscriptionsPage() {
         </DialogContent>
         <DialogActions>
           <Button onClick={closePlanDialog} disabled={createPlanMutation.isPending}>
-            Vazgec
+            Vazgeç
           </Button>
           <Button
             variant="contained"
             onClick={handleSubmitPlan((values) => createPlanMutation.mutate(values))}
             disabled={createPlanMutation.isPending}
           >
-            {createPlanMutation.isPending ? "Olusturuluyor..." : "Plani Olustur"}
+            {createPlanMutation.isPending ? "Oluşturuluyor..." : "Planı Oluştur"}
           </Button>
         </DialogActions>
       </Dialog>

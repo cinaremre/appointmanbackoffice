@@ -4,15 +4,15 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Businesses.Queries.GetMyBusinessDetail
 {
     /// <summary>
-    /// Isletme sahibinin kendi isletmesinin detayi. Sahiplik handler'da
-    /// dogrulanir; baskasinin isletmesi FORBIDDEN doner.
+    /// İşletme sahibinin kendi işletmesinin detayı. Sahiplik handler'da
+    /// doğrulanır; başkasının işletmesi FORBIDDEN döner.
     /// </summary>
     public class GetMyBusinessDetailQuery : IRequest<Result<OwnerBusinessDetailDto>>
     {
         public Guid BusinessId { get; set; }
     }
 
-    /// <summary>Isletme detayi + operasyonel sayilar.</summary>
+    /// <summary>İşletme detayı + operasyonel sayılar.</summary>
     public class OwnerBusinessDetailDto
     {
         public Guid Id { get; init; }
@@ -39,13 +39,13 @@ namespace Rezervise.Application.Features.Owner.Businesses.Queries.GetMyBusinessD
 
         public DateTime CreatedAt { get; init; }
 
-        /// <summary>Aktif (satista) hizmet sayisi.</summary>
+        /// <summary>Aktif (satışta) hizmet sayısı.</summary>
         public int ActiveServiceCount { get; init; }
 
-        /// <summary>Silinmemis calisan sayisi.</summary>
+        /// <summary>Silinmemiş çalışan sayısı.</summary>
         public int EmployeeCount { get; init; }
 
-        /// <summary>Bugunun (UTC) randevu sayisi.</summary>
+        /// <summary>Bugünün (UTC) randevu sayısı.</summary>
         public int TodayAppointmentCount { get; init; }
     }
 }

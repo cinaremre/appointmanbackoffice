@@ -1,27 +1,27 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Anonim takip olayi tipleri. Kisisel veri tasinmaz;
-    /// yalnizca AnonymousSessionId (istemciden opsiyonel) ile korelasyon yapilir.
+    /// Anonim takip olayı tipleri. Kişisel veri taşınmaz;
+    /// yalnızca AnonymousSessionId (istemciden opsiyonel) ile korelasyon yapılır.
     /// </summary>
     public enum EnumTrackingEventType
     {
-        /// <summary>Link/sayfa ilk kez acildi.</summary>
+        /// <summary>Link/sayfa ilk kez açıldı.</summary>
         LinkOpened = 0,
 
-        /// <summary>Hizmet detayi goruntulendi.</summary>
+        /// <summary>Hizmet detayı görüntülendi.</summary>
         ServiceViewed = 1,
 
-        /// <summary>Randevu talebi olusturuldu.</summary>
+        /// <summary>Randevu talebi oluşturuldu.</summary>
         AppointmentRequested = 2,
 
-        /// <summary>Randevu isletme tarafindan onaylandi.</summary>
+        /// <summary>Randevu işletme tarafından onaylandı.</summary>
         AppointmentConfirmed = 3,
 
-        /// <summary>Randevu gerceklesti.</summary>
+        /// <summary>Randevu gerçekleşti.</summary>
         AppointmentCompleted = 4,
 
-        /// <summary>Odeme alindi.</summary>
+        /// <summary>Ödeme alındı.</summary>
         PaymentReceived = 5
     }
 }

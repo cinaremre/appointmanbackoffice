@@ -5,15 +5,15 @@ using MediatR;
 namespace Rezervise.Application.Features.Packages.Queries.GetCustomerPackageBalance
 {
     /// <summary>
-    /// Musteri paketinin hak bakiyesini getirir (dokuman Modul 5):
-    /// satin alinan toplam, aktif rezervasyon, tuketilen ve kalan seans sayisi.
+    /// Müşteri paketinin hak bakiyesini getirir (doküman Modül 5):
+    /// satın alınan toplam, aktif rezervasyon, tüketilen ve kalan seans sayısı.
     /// </summary>
     public class GetCustomerPackageBalanceQuery : IRequest<Result<CustomerPackageBalanceDto>>
     {
         public Guid CustomerPackageId { get; set; }
     }
 
-    /// <summary>Paket bakiyesi. Kalan hak hareket toplamlarindan hesaplanir.</summary>
+    /// <summary>Paket bakiyesi. Kalan hak hareket toplamlarından hesaplanır.</summary>
     public class CustomerPackageBalanceDto
     {
         public Guid CustomerPackageId { get; set; }
@@ -23,16 +23,16 @@ namespace Rezervise.Application.Features.Packages.Queries.GetCustomerPackageBala
         public EnumCustomerPackageStatus Status { get; set; }
         public DateTime ExpiresAt { get; set; }
 
-        /// <summary>Paket taniminda satin alinan toplam seans sayisi.</summary>
+        /// <summary>Paket tanımında satın alınan toplam seans sayısı.</summary>
         public int PurchasedTotal { get; set; }
 
-        /// <summary>Aktif (kullanilmamis) rezervasyon sayisi.</summary>
+        /// <summary>Aktif (kullanılmamış) rezervasyon sayısı.</summary>
         public int ActiveReservations { get; set; }
 
-        /// <summary>Tuketilen seans sayisi.</summary>
+        /// <summary>Tüketilen seans sayısı.</summary>
         public int Consumed { get; set; }
 
-        /// <summary>Kalan seans sayisi = PurchasedTotal - ActiveReservations - Consumed.</summary>
+        /// <summary>Kalan seans sayısı = PurchasedTotal - ActiveReservations - Consumed.</summary>
         public int Remaining { get; set; }
     }
 }

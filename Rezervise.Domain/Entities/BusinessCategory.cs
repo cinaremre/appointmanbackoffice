@@ -40,10 +40,10 @@ namespace Rezervise.Domain.Entities
         public void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new DomainException("Kategori adi bos olamaz.");
+                throw new DomainException("Kategori adı boş olamaz.");
 
             if (name.Length < 2 || name.Length > 100)
-                throw new DomainException("Kategori adi 2-100 karakter arasinda olmalidir.");
+                throw new DomainException("Kategori adı 2-100 karakter arasında olmalıdır.");
 
             Name = name;
             UpdatedAt = DateTime.UtcNow;
@@ -52,7 +52,7 @@ namespace Rezervise.Domain.Entities
         public void SetDescription(string? description)
         {
             if (description != null && description.Length > 500)
-                throw new DomainException("A�iklama 500 karakterden uzun olamaz.");
+                throw new DomainException("Açiklama 500 karakterden uzun olamaz.");
 
             Description = description;
             UpdatedAt = DateTime.UtcNow;
@@ -61,7 +61,7 @@ namespace Rezervise.Domain.Entities
         public void SetIconUrl(string? iconUrl)
         {
             if (iconUrl != null && !Uri.IsWellFormedUriString(iconUrl, UriKind.Absolute))
-                throw new DomainException("Ge�ersiz URL formati.");
+                throw new DomainException("Geçersiz URL formatı.");
 
             IconUrl = iconUrl;
             UpdatedAt = DateTime.UtcNow;
@@ -70,7 +70,7 @@ namespace Rezervise.Domain.Entities
         public void SetImageUrl(string? imageUrl)
         {
             if (imageUrl != null && !Uri.IsWellFormedUriString(imageUrl, UriKind.Absolute))
-                throw new DomainException("Ge�ersiz URL formati.");
+                throw new DomainException("Geçersiz URL formatı.");
 
             ImageUrl = imageUrl;
             UpdatedAt = DateTime.UtcNow;
@@ -79,7 +79,7 @@ namespace Rezervise.Domain.Entities
         public void SetDisplayOrder(int order)
         {
             if (order < 0)
-                throw new DomainException("Siralama numarasi negatif olamaz.");
+                throw new DomainException("Sıralama numarası negatif olamaz.");
 
             DisplayOrder = order;
             UpdatedAt = DateTime.UtcNow;
@@ -103,9 +103,9 @@ namespace Rezervise.Domain.Entities
                 throw new DomainException("Kategori kendisinin alt kategorisi olamaz.");
 
             if (parentCategory != null && parentCategory.ParentCategoryId == Id)
-                throw new DomainException("D�ng�sel kategori iliskisi olusturulamaz.");
+                throw new DomainException("Döngüsel kategori ilişkisi oluşturulamaz.");
 
-            // Eski parent'tan �ikar
+            // Eski parent'tan çikar
             if (ParentCategory != null)
             {
                 ParentCategory._subCategories.Remove(this);
@@ -132,7 +132,7 @@ namespace Rezervise.Domain.Entities
                 throw new DomainException("Kategori kendisini alt kategori olarak ekleyemez.");
 
             if (_subCategories.Contains(subCategory))
-                throw new DomainException("Bu alt kategori zaten eklenmis.");
+                throw new DomainException("Bu alt kategori zaten eklenmiş.");
 
             subCategory.SetParentCategory(this);
             UpdatedAt = DateTime.UtcNow;
@@ -144,7 +144,7 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(subCategory));
 
             if (!_subCategories.Contains(subCategory))
-                throw new DomainException("Bu alt kategori bulunamadi.");
+                throw new DomainException("Bu alt kategori bulunamadı.");
 
             subCategory.SetParentCategory(null);
             UpdatedAt = DateTime.UtcNow;

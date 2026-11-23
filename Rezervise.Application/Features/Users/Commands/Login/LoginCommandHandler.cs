@@ -36,8 +36,8 @@ namespace Rezervise.Application.Features.Users.Commands.Login
             {
                 var identifier = request.Email?.Trim() ?? string.Empty;
 
-                // Tek alan iki formati da kabul eder: '@' iceriyorsa e-posta, aksi halde telefon.
-                // Alan adi geriye donuk uyumluluk icin "Email" olarak korunmustur.
+                // Tek alan iki formatı da kabul eder: '@' içeriyorsa e-posta, aksi halde telefon.
+                // Alan adı geriye dönük uyumluluk için "Email" olarak korunmuştur.
                 User? user = null;
 
                 if (identifier.Contains('@'))
@@ -49,8 +49,8 @@ namespace Rezervise.Application.Features.Users.Commands.Login
                 }
                 else if (!string.IsNullOrWhiteSpace(identifier))
                 {
-                    // PhoneNumber gecersiz girdide DomainException firlatir; bunu kimlik hatasina
-                    // ceviriyoruz ki istemci her durumda ayni sabit cevabi alsin.
+                    // PhoneNumber geçersiz girdide DomainException fırlatır; bunu kimlik hatasına
+                    // çeviriyoruz ki istemci her durumda aynı sabit cevabı alsın.
                     PhoneNumber? phoneNumber = null;
 
                     try
@@ -64,7 +64,7 @@ namespace Rezervise.Application.Features.Users.Commands.Login
 
                     if (phoneNumber is not null)
                     {
-                        // PhoneNumber value converter ile tek kolona map'li; esitlik SQL'e cevrilebilir.
+                        // PhoneNumber value converter ile tek kolona map'li; eşitlik SQL'e çevrilebilir.
                         var usersByPhone = await _userRepository.FindAsync(
                             u => u.PhoneNumber == phoneNumber && !u.IsDeleted, cancellationToken);
 
@@ -96,11 +96,11 @@ namespace Rezervise.Application.Features.Users.Commands.Login
                     return Result<LoginResponse>.Failure(Error.Unauthorized("Auth.InvalidCredentials"));
                 }
 
-                // Sifre dogru ama hicbir dogrulama tamamlanmamis: giris engellenir.
-                // OTP (telefon) dogrulamasi tek basina yeterlidir; e-posta dogrulanmamis
-                // olsa bile kullanici "123456" kodunu girdigi anda giris yapabilir.
-                // E-posta gonderilemeyen test ortaminda yanlis yonlendirme olmamasi icin
-                // hata mesaji artik OTP'yi isaret eder.
+                // Şifre doğru ama hiçbir doğrulama tamamlanmamış: giriş engellenir.
+                // OTP (telefon) doğrulaması tek basına yeterlidir; e-posta doğrulanmamış
+                // olsa bile kullanıcı "123456" kodunu girdiği anda giriş yapabilir.
+                // E-posta gönderilemeyen test ortamında yanlış yönlendirme olmaması için
+                // hata mesajı artık OTP'yi işaret eder.
                 if (!user.IsEmailVerified && !user.IsPhoneVerified)
                 {
                     _metrics.RecordLoginAttempt("phone_not_verified");

@@ -5,7 +5,7 @@ using MediatR;
 namespace Rezervise.Application.Features.Marketing.Commands.CreateCampaign
 {
     /// <summary>
-    /// Yeni pazarlama kampanyasi olusturur (Instagram, Meta Ads, Google Ads vb.).
+    /// Yeni pazarlama kampanyası oluşturur (Instagram, Meta Ads, Google Ads vb.).
     /// </summary>
     public class CreateCampaignCommand : IRequest<Result<Guid>>
     {

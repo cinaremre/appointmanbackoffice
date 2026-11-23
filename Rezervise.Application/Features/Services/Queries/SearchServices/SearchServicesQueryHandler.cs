@@ -49,10 +49,10 @@ namespace Rezervise.Application.Features.Services.Queries.SearchServices
                         (s.Description != null && s.Description.ToLower().Contains(term)));
                 }
 
-                // Navigation'lar yuklenmezse DTO'daki ServiceCategoryName "Unknown",
-                // BusinessName ve BusinessAddress null doner. GetName() cevirilere bagli
-                // oldugu icin Translations da include edilir.
-                // Address owned type oldugu icin Business yuklendiginde otomatik gelir.
+                // Navigation'lar yüklenmezse DTO'daki ServiceCategoryName "Unknown",
+                // BusinessName ve BusinessAddress null döner. GetName() çevirilere bağlı
+                // öldüğü için Translations da include edilir.
+                // Address owned type öldüğü için Business yüklendiğinde otomatik gelir.
                 var services = await _serviceRepository.FindWithIncludesAsync(
                     predicate,
                     new[]
@@ -91,7 +91,7 @@ namespace Rezervise.Application.Features.Services.Queries.SearchServices
             catch (Exception ex)
             {
                 return Result<List<ServiceDto>>.Failure(
-                    Error.Internal("Hizmetler aranirken bir hata olustu.", ex.Message));
+                    Error.Internal("Hizmetler aranırken bir hata oluştu.", ex.Message));
             }
         }
     }

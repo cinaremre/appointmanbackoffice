@@ -40,22 +40,22 @@ namespace Rezervise.Application.Features.Commissions.Commands.AccrueCommission
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde OwnerId'si değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Forbidden("Bu isletmeye prim tahakkuk etme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu işletmeye prim tahakkuk etme yetkiniz yok."));
 
-                // 3. Calisan kontrolu: calisan isletmeye ait olmali.
+                // 3. Çalışan kontrolü: çalışan işletmeye ait olmalı.
                 var employee = await _employeeRepository.GetByIdAsync(request.EmployeeId, cancellationToken);
                 if (employee is null || employee.BusinessId != request.BusinessId)
-                    return Result<Guid>.Failure(Error.NotFound("Calisan", request.EmployeeId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Çalışan", request.EmployeeId.ToString()));
 
-                // 4. Uygun kural secimi: su an gecerli (aktif + pencere icinde) ve
-                //    kapsam alanlari eslesen kurallar arasindan en spesifik olani.
+                // 4. Uygun kural seçimi: su an geçerli (aktif + pencere içinde) ve
+                //    kapsam alanları eşleşen kurallar arasından en spesifik olanı.
                 var utcNow = _dateTime.UtcNow;
 
                 var rules = await _ruleRepository.FindAsync(
@@ -72,14 +72,14 @@ namespace Rezervise.Application.Features.Commissions.Commands.AccrueCommission
                 var rule = candidates.FirstOrDefault();
                 if (rule is null)
                     return Result<Guid>.Failure(Error.BusinessRule(
-                        "Bu islem icin uygun aktif prim kurali bulunamadi.",
-                        $"Kural penceresi disi veya kapsam alani eslesmeyen kural. CalisanId: {request.EmployeeId}"));
+                        "Bu işlem için uygun aktif prim kuralı bulunamadı.",
+                        $"Kural penceresi dışı veya kapsam alani eşleşmeyen kural. CalisanId: {request.EmployeeId}"));
 
-                // 5. Hesap: yuzde tiplerinde BaseAmount * Rate, sabit tipte FixedAmount.
-                //    BaseAmount cagiranin verdigi tahsil edilen tutardir (tahsilat tabanli).
+                // 5. Hesap: yüzde tiplerinde BaseAmount * Rate, sabit tipte FixedAmount.
+                //    BaseAmount çağıranın verdiği tahsil edilen tutardır (tahsilat tabanlı).
                 var commissionAmount = rule.Calculate(request.BaseAmount);
 
-                // 6. Tahakkuk kaydini olustur.
+                // 6. Tahakkuk kaydını oluştur.
                 var accrual = new CommissionAccrual(
                     request.BusinessId,
                     request.EmployeeId,
@@ -101,13 +101,13 @@ namespace Rezervise.Application.Features.Commissions.Commands.AccrueCommission
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Prim tahakkuk edilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Prim tahakkuk edilirken bir hata oluştu.", ex.Message));
             }
         }
 
         /// <summary>
-        /// Kural kapsam alani islemle cakisir mi? Kural bir alana bagliysa o alan
-        /// islemde verilmis/eslesen olmali; bagli degilse kural genel kabul edilir.
+        /// Kural kapsam alani işlemle çakışır mi? Kural bir alana bağlıysa o alan
+        /// işlemde verilmiş/eşleşen olmalı; bağlı değilse kural genel kabul edilir.
         /// </summary>
         private static bool MatchesScope(CommissionRule rule, AccrueCommissionCommand request)
         {
@@ -124,9 +124,9 @@ namespace Rezervise.Application.Features.Commissions.Commands.AccrueCommission
         }
 
         /// <summary>
-        /// Spesifiklik puani: EmployeeId+ServiceId (veya ProductId) eslesmesi en
-        /// spesifik, yalniz EmployeeId eslesmesi ikinci, yalniz ServiceId genel,
-        /// kapsam alani olmayan genel kural en dusuk puanlidir.
+        /// Spesifiklik puanı: EmployeeId+ServiceId (veya ProductId) eşleşmesi en
+        /// spesifik, yalnız EmployeeId eşleşmesi ikinci, yalnız ServiceId genel,
+        /// kapsam alani olmayan genel kural en düşük puanlıdır.
         /// </summary>
         private static int SpecificityScore(CommissionRule rule, AccrueCommissionCommand request)
         {

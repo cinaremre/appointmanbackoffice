@@ -7,10 +7,10 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Users.Commands.RevokeUserSessions
 {
     /// <summary>
-    /// Kullanicinin tum oturumlarini gecersiz kilar. User entity'sindeki mevcut
-    /// <see cref="User.RevokeRefreshToken"/> metodu aktif ve onceki refresh
-    /// token hash'lerini null'a ceker; yeni bir domain metodu eklenmez.
-    /// Kritik islem oldugu icin denetim kaydina yazilir (Action=RevokeSessions).
+    /// Kullanıcının tüm oturumlarını geçersiz kılar. User entity'sindeki mevcut
+    /// <see cref="User.RevokeRefreshToken"/> metodu aktif ve önceki refresh
+    /// token hash'lerini null'a çeker; yeni bir domain metodu eklenmez.
+    /// Kritik işlem öldüğü için denetim kaydına yazılır (Action=RevokeSessions).
     /// </summary>
     public class RevokeUserSessionsCommandHandler : IRequestHandler<RevokeUserSessionsCommand, Result>
     {
@@ -41,25 +41,25 @@ namespace Rezervise.Application.Features.Admin.Users.Commands.RevokeUserSessions
         {
             try
             {
-                // 1. Yonetici kimligi JWT'den cozulur.
+                // 1. Yönetici kimliği JWT'den çözülür.
                 if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
                     return Result.Failure(Error.Unauthorized("Auth.Unauthorized"));
 
                 var actorId = _currentUser.UserId.Value;
                 var actorRole = _currentUser.Roles.FirstOrDefault() ?? "Unknown";
 
-                // 2. Gerekce zorunludur.
+                // 2. Gerekçe zorunludur.
                 var reason = request.Reason?.Trim();
                 if (string.IsNullOrEmpty(reason))
-                    return Result.Failure(Error.Validation("Oturum iptali gerekcesi zorunludur."));
+                    return Result.Failure(Error.Validation("Oturum iptali gerekçesi zorunludur."));
 
-                // 3. Kullaniciyi yukle; yoksa NotFound.
+                // 3. Kullanıcıyı yükle; yoksa NotFound.
                 var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
                 if (user is null)
-                    return Result.Failure(Error.NotFoundById("Kullanici", request.UserId));
+                    return Result.Failure(Error.NotFoundById("Kullanıcı", request.UserId));
 
-                // 4. Oturumlari gecersiz kil: mevcut RevokeRefreshToken metodu
-                //    aktif ve onceki hash alanlarini temizler. Boylece kullanici
+                // 4. Oturumları geçersiz kil: mevcut RevokeRefreshToken metodu
+                //    aktif ve önceki hash alanlarını temizler. Böylece kullanıcı
                 //    elindeki refresh token ile yeni access token alamaz.
                 var hadActiveToken = user.RefreshTokenHash is not null;
                 user.RevokeRefreshToken(_dateTimeService.UtcNow);
@@ -67,7 +67,7 @@ namespace Rezervise.Application.Features.Admin.Users.Commands.RevokeUserSessions
                 // 5. Kaydet.
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // 6. Denetim kaydi: hash degerleri asla kayda yazilmaz.
+                // 6. Denetim kaydı: hash değerleri asla kayda yazılmaz.
                 await _auditSink.RecordAsync(
                     actorId,
                     actorRole,
@@ -87,7 +87,7 @@ namespace Rezervise.Application.Features.Admin.Users.Commands.RevokeUserSessions
             catch (Exception ex)
             {
                 return Result.Failure(Error.Internal(
-                    "Kullanici oturumlari iptal edilirken bir hata olustu.", ex.Message));
+                    "Kullanıcı oturumları iptal edilirken bir hata oluştu.", ex.Message));
             }
         }
     }

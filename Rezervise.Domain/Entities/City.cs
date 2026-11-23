@@ -6,8 +6,8 @@ using Rezervise.Domain.Events;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Il (ornek: Istanbul, Ankara).
-    /// Id int cunku 81 il icin Guid gereksiz yer kaplar.
+    /// İl (örnek: Istanbul, Ankara).
+    /// Id int çünkü 81 il için Guid gereksiz yer kaplar.
     /// </summary>
     public class City : IAggregateRoot
     {
@@ -41,9 +41,9 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Seed verisi icin ID'li kurucu.
-        /// Turk plaka kodu (1-81) dogal anahtar olarak Id'ye atanir; boylece
-        /// Address.CityId ile seed verisi arasinda kopus olmaz.
+        /// Seed verişi için ID'li kurucu.
+        /// Türk plaka kodu (1-81) doğal anahtar olarak Id'ye atanır; böylece
+        /// Address.CityId ile seed verişi arasında kopuş olmaz.
         /// </summary>
         public City(int id, string name, string countryCode)
         {

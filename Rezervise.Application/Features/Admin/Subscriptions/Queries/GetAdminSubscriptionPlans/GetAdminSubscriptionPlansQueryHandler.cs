@@ -6,9 +6,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetAdminSubscriptionPlans
 {
     /// <summary>
-    /// Planlari ve ozelliklerini birlestirip dondurur. Ilk surumde uc
-    /// koleksiyon tamamen belleke cekilip eslenir; plan sayisi dusuk
-    /// oldugundan (dokuman 13) bu kabul edilebilir.
+    /// Planları ve özelliklerini birleştirip döndürür. İlk sürümde uç
+    /// koleksiyon tamamen belleke çekilip eşlenir; plan sayısı düşük
+    /// öldüğündan (doküman 13) bu kabul edilebilir.
     /// </summary>
     public class GetAdminSubscriptionPlansQueryHandler
         : IRequestHandler<GetAdminSubscriptionPlansQuery, Result<IReadOnlyList<AdminSubscriptionPlanDto>>>
@@ -33,14 +33,14 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetAdminSub
         {
             try
             {
-                // 1. Planlar, plan-ozellik kayitlari ve ozellik tanimlari.
+                // 1. Planlar, plan-özellik kayıtları ve özellik tanımları.
                 var plans = await _planRepository.FindAsync(p => !p.IsDeleted, cancellationToken);
                 var planFeatures = await _planFeatureRepository.FindAsync(f => !f.IsDeleted, cancellationToken);
                 var definitions = await _featureDefinitionRepository.FindAsync(d => !d.IsDeleted, cancellationToken);
 
                 var definitionById = definitions.ToDictionary(d => d.Id);
 
-                // 2. Plan bazinda ozellik eslesmesi; tanimi silinmis satirlar atlanir.
+                // 2. Plan bazında özellik eşleşmesi; tanımı silinmiş satırlar atlanır.
                 var result = plans
                     .OrderBy(p => p.Name, StringComparer.Ordinal)
                     .Select(plan => new AdminSubscriptionPlanDto
@@ -69,7 +69,7 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetAdminSub
             catch (Exception ex)
             {
                 return Result<IReadOnlyList<AdminSubscriptionPlanDto>>.Failure(
-                    Error.Internal("Planlar getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Planlar getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

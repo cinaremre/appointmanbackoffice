@@ -6,9 +6,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Categories.Queries.GetBusinessCategoryTree
 {
     /// <summary>
-    /// Tum isletme kategorilerini duz liste olarak dondurur.
-    /// ChildCount ParentId sayimiyla hesaplanir; navigation yuklemesine
-    /// ihtiyac duyulmaz. Sira: once DisplayOrder, sonra ad.
+    /// Tüm işletme kategorilerini düz liste olarak döndürür.
+    /// ChildCount ParentId sayımıyla hesaplanır; navigation yüklemesine
+    /// ihtiyaç duyulmaz. Sıra: önce DisplayOrder, sonra ad.
     /// </summary>
     public class GetBusinessCategoryTreeQueryHandler
         : IRequestHandler<GetBusinessCategoryTreeQuery, Result<List<AdminBusinessCategoryTreeNodeDto>>>
@@ -34,8 +34,8 @@ namespace Rezervise.Application.Features.Admin.Categories.Queries.GetBusinessCat
                     .Where(c => request.IncludeInactive || c.IsActive)
                     .ToList();
 
-                // Cocuk sayimi ParentId uzerinden: navigation koleksiyonlari
-                // fake/EF farklarindan bagimsiz, her zaman dogru sonuc verir.
+                // Çocuk sayımı ParentId üzerinden: navigation koleksiyonları
+                // fake/EF farklarından bağımsız, her zaman doğru sonuç verir.
                 var childCountById = visible
                     .Where(c => c.ParentCategoryId.HasValue)
                     .GroupBy(c => c.ParentCategoryId!.Value)
@@ -60,7 +60,7 @@ namespace Rezervise.Application.Features.Admin.Categories.Queries.GetBusinessCat
             catch (Exception ex)
             {
                 return Result<List<AdminBusinessCategoryTreeNodeDto>>.Failure(
-                    Error.Internal("Kategori agaci getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kategori ağacı getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

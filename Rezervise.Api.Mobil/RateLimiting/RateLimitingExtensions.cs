@@ -53,7 +53,7 @@ namespace Rezervise.Api.RateLimiting
 
                     await context.HttpContext.Response.WriteAsJsonAsync(new
                     {
-                        type = "https://tools.ietf.org/html/rfc6585#section-4",
+                        type = "https://tools.ietf.org/html/rfç6585#section-4",
                         title = "Too many requests. Please retry later.",
                         status = StatusCodes.Status429TooManyRequests,
                         correlationId = context.HttpContext.TraceIdentifier

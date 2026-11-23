@@ -4,12 +4,12 @@ using MediatR;
 namespace Rezervise.Application.Features.Users.Commands.UpdateUserLanguage
 {
     /// <summary>
-    /// Kullanicinin dil tercihini gunceller. Sonraki isteklerde kullaniciya
-    /// donen metinler bu dile gore cozulur.
+    /// Kullanıcının dil tercihini günceller. Sonraki isteklerde kullanıcıya
+    /// dönen metinler bu dile göre çözülür.
     /// </summary>
     public class UpdateUserLanguageCommand : IRequest<Result<Guid>>
     {
-        /// <summary>Dili guncellenecek kullanici.</summary>
+        /// <summary>Dili güncellenecek kullanıcı.</summary>
         public Guid UserId { get; set; }
 
         /// <summary>Yeni dil kodu ("tr" / "en").</summary>

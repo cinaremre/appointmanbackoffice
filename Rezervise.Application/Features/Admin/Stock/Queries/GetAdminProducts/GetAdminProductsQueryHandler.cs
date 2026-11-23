@@ -33,7 +33,7 @@ namespace Rezervise.Application.Features.Admin.Stock.Queries.GetAdminProducts
                 var search = string.IsNullOrWhiteSpace(request.Search) ? null : request.Search.Trim();
                 var isActive = request.IsActive;
 
-                // 1. Urun filtresi: isletme, durum ve serbest metin (ad/SKU).
+                // 1. Ürün filtresi: işletme, durum ve serbest metin (ad/SKU).
                 var products = await _productRepository.FindAsync(
                     p => !p.IsDeleted
                         && (businessId == null || p.BusinessId == businessId)
@@ -51,8 +51,8 @@ namespace Rezervise.Application.Features.Admin.Stock.Queries.GetAdminProducts
                     .Take(pageSize)
                     .ToList();
 
-                // 2. Stok bakiyesi: sayfadaki urunlerin hareketlerini tek sorguda
-                //    cekip bellek icinde topla (ilk surum, dokuman Modul 17).
+                // 2. Stok bakiyesi: sayfadaki ürünlerin hareketlerini tek sorguda
+                //    çekip bellek içinde topla (ilk sürüm, doküman Modül 17).
                 var productIds = pageItems.Select(p => p.Id).ToList();
 
                 var movements = productIds.Count == 0
@@ -61,7 +61,7 @@ namespace Rezervise.Application.Features.Admin.Stock.Queries.GetAdminProducts
                         m => productIds.Contains(m.ProductId) && !m.IsDeleted,
                         cancellationToken)).ToList();
 
-                // 3. DTO: hareket defterinin isaretli toplami bakiyedir.
+                // 3. DTO: hareket defterinin işaretli toplamı bakiyedir.
                 var items = pageItems
                     .Select(p => new AdminProductDto
                     {
@@ -93,7 +93,7 @@ namespace Rezervise.Application.Features.Admin.Stock.Queries.GetAdminProducts
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<AdminProductDto>>.Failure(
-                    Error.Internal("Urun listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Ürün listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -6,9 +6,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Reports.Queries.GetFeatureAdoption
 {
     /// <summary>
-    /// Ozellik benimseme handler'i (dokuman Modul 18). Kayitlarin FeatureId
-    /// alani FeatureDefinition ile eslestirilir; ayni isletmenin ayni ozellik
-    /// icin birden cok override'i tek sayilir.
+    /// Özellik benimseme handler'i (doküman Modül 18). Kayıtların FeatureId
+    /// alani FeatureDefinition ile eşleştirilir; aynı işletmenin aynı özellik
+    /// için birden çok override'i tek sayılır.
     /// </summary>
     public class GetFeatureAdoptionQueryHandler : IRequestHandler<GetFeatureAdoptionQuery, Result<List<FeatureAdoptionDto>>>
     {
@@ -27,15 +27,15 @@ namespace Rezervise.Application.Features.Admin.Reports.Queries.GetFeatureAdoptio
         {
             try
             {
-                // 1. Ozelligi acik (enabled) ve silinmemis override kayitlari.
+                // 1. Özelliği açık (enabled) ve silinmemiş override kayıtları.
                 var overrides = await _overrideRepository.FindAsync(
                     o => o.IsEnabled && !o.IsDeleted, cancellationToken);
 
-                // 2. Ozellik tanimlari FeatureId eslestirmesi icin.
+                // 2. Özellik tanımları FeatureId eşleştirmesi için.
                 var features = await _featureRepository.GetAllAsync(cancellationToken);
                 var featureById = features.ToDictionary(f => f.Id);
 
-                // 3. Ozellik koduna benimseme sayisi: ayni isletme tek sayilir.
+                // 3. Özellik koduna benimseme sayısı: aynı işletme tek sayılır.
                 var adoption = overrides
                     .GroupBy(o => o.FeatureId)
                     .Select(g =>
@@ -45,7 +45,7 @@ namespace Rezervise.Application.Features.Admin.Reports.Queries.GetFeatureAdoptio
                         return new FeatureAdoptionDto
                         {
                             FeatureCode = feature?.Code ?? "BILINMEYEN_OZELLIK",
-                            FeatureName = feature?.Name ?? "Bilinmeyen Ozellik",
+                            FeatureName = feature?.Name ?? "Bilinmeyen Özellik",
                             BusinessCount = g.Select(o => o.BusinessId).Distinct().Count()
                         };
                     })
@@ -58,7 +58,7 @@ namespace Rezervise.Application.Features.Admin.Reports.Queries.GetFeatureAdoptio
             catch (Exception ex)
             {
                 return Result<List<FeatureAdoptionDto>>.Failure(
-                    Error.Internal("Ozellik benimseme raporu hazirlanirken bir hata olustu.", ex.Message));
+                    Error.Internal("Özellik benimseme raporu hazırlanırken bir hata oluştu.", ex.Message));
             }
         }
     }

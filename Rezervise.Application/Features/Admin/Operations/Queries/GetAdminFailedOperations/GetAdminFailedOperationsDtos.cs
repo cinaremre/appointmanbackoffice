@@ -3,30 +3,30 @@ using Rezervise.Application.Features.Admin.Operations.Queries.GetAdminJobs;
 namespace Rezervise.Application.Features.Admin.Operations.Queries.GetAdminFailedOperations
 {
     /// <summary>
-    /// Basarisiz operasyonlar raporu: Failed aktarim isleri (tam liste) ve
-    /// Failed satir ornekleri (ilk 50).
+    /// Başarısız operasyonlar raporu: Failed aktarım işleri (tam liste) ve
+    /// Failed satır örnekleri (ilk 50).
     /// </summary>
     public class AdminFailedOperationsDto
     {
-        /// <summary>Failed durumundaki tum aktarim isleri.</summary>
+        /// <summary>Failed durumundaki tüm aktarım işleri.</summary>
         public List<AdminJobDto> FailedJobs { get; set; } = new();
 
-        /// <summary>Basarisiz satir ornekleri; ilk 50 ile sinirlidir.</summary>
+        /// <summary>Başarısız satır örnekleri; ilk 50 ile sınırlıdır.</summary>
         public List<AdminFailedRowDto> FailedRows { get; set; } = new();
     }
 
-    /// <summary>Basarisiz bir aktarim satirinin ornek kaydi.</summary>
+    /// <summary>Başarısız bir aktarım satırının örnek kaydı.</summary>
     public class AdminFailedRowDto
     {
         public Guid ImportJobId { get; set; }
 
-        /// <summary>CSV icindeki 1 tabanli satir numarasi.</summary>
+        /// <summary>CSV içindeki 1 tabanlı satır numarası.</summary>
         public int RowNumber { get; set; }
 
-        /// <summary>Normalize edilmis telefon; mukerrer anahtar.</summary>
+        /// <summary>Normalize edilmiş telefon; mükerrer anahtar.</summary>
         public string? SourceRecordKey { get; set; }
 
-        /// <summary>Hatanin kisa aciklamasi.</summary>
+        /// <summary>Hatanın kısa açıklaması.</summary>
         public string? ErrorDetails { get; set; }
     }
 }

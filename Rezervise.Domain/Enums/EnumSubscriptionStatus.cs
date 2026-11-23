@@ -1,17 +1,17 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Isletme aboneliginin durumu (dokuman Modul 14).
+    /// İşletme aboneliğinin durumu (doküman Modül 14).
     /// </summary>
     public enum EnumSubscriptionStatus
     {
-        /// <summary>Abonelik aktif; plan ozellikleri kullanilabilir.</summary>
+        /// <summary>Abonelik aktif; plan özellikleri kullanılabilir.</summary>
         Active = 0,
 
-        /// <summary>Sure doldu veya yeni abonelikle degistirildi.</summary>
+        /// <summary>Süre doldu veya yeni abonelikle değiştirildi.</summary>
         Expired = 1,
 
-        /// <summary>Isletme aboneligi iptal etti.</summary>
+        /// <summary>İşletme aboneliği iptal etti.</summary>
         Cancelled = 2
     }
 }

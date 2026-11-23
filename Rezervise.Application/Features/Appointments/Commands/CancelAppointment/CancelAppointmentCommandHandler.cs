@@ -39,7 +39,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.CancelAppointment
                 if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
                     return Result<Guid>.Failure(Error.Unauthorized("Auth.Unauthorized"));
 
-                // 1. Randevu kontrolu (isletme/calisan yetkisi icin iliskiler yuklenir).
+                // 1. Randevu kontrolü (işletme/çalışan yetkisi için ilişkiler yüklenir).
                 var appointment = await _appointmentRepository.GetByIdWithIncludesAsync(
                     request.AppointmentId,
                     cancellationToken,
@@ -49,7 +49,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.CancelAppointment
                 if (appointment is null)
                     return Result<Guid>.Failure(Error.NotFound("Randevu", request.AppointmentId.ToString()));
 
-                // 2. Yetki kontrolu - randevu sahibi musteri, isletme sahibi veya atanmis calisan.
+                // 2. Yetki kontrolü - randevu sahibi müşteri, işletme sahibi veya atanmış çalışan.
                 var isBusinessSide =
                     (appointment.Business is not null &&
                      CallerAuthorization.CanActForBusiness(_currentUser, appointment.Business.OwnerId)) ||
@@ -61,14 +61,14 @@ namespace Rezervise.Application.Features.Appointments.Commands.CancelAppointment
 
                 var now = _dateTimeService.UtcNow;
 
-                // 2b. Musteri son 2 saatte iptal edemez; isletme ve calisan muaf.
+                // 2b. Müşteri son 2 saatte iptal edemez; işletme ve çalışan muaf.
                 if (!isBusinessSide && appointment.IsWithinCustomerCutoff(now))
                     return Result<Guid>.Failure(Error.BusinessRule(
-                        $"Randevuya {Appointment.CustomerChangeCutoffHours} saatten az kaldigi icin iptal edilemez."));
+                        $"Randevuya {Appointment.CustomerChangeCutoffHours} saatten az kaldığı için iptal edilemez."));
 
-                // 3. Domain kurallari ile iptal et.
-                //    Ayni referans zamani kullanildigi icin es zamanli iki iptal
-                //    isteginden ikincisi rowversion cakismasi ile reddedilir.
+                // 3. Domain kuralları ile iptal et.
+                //    Aynı referans zamanı kullanıldığı için es zamanlı iki iptal
+                //    isteğinden ikincisi rowversion çakışması ile reddedilir.
                 appointment.Cancel(request.Reason, request.CancelledBy ?? "User", now);
 
                 // 4. Kaydet
@@ -88,7 +88,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.CancelAppointment
             }
             catch (Exception)
             {
-                return Result<Guid>.Failure(Error.Internal("Randevu iptal edilirken bir hata olustu."));
+                return Result<Guid>.Failure(Error.Internal("Randevu iptal edilirken bir hata oluştu."));
             }
         }
     }

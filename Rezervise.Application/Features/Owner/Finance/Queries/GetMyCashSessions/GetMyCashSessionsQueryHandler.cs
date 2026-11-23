@@ -10,9 +10,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMyCashSessions
 {
     /// <summary>
-    /// Isletme sahibinin kasa oturumu listesi. Sahiplik OwnerScope ile
-    /// dogrulanir; oturumlar salt okunur listelenir, acma/kapama domain
-    /// komutlariyla yapilir.
+    /// İşletme sahibinin kasa oturumu listesi. Sahiplik OwnerScope ile
+    /// doğrulanır; oturumlar salt okunur listelenir, açma/kapama domain
+    /// komutlarıyla yapılır.
     /// </summary>
     public class GetMyCashSessionsQueryHandler
         : IRequestHandler<GetMyCashSessionsQuery, Result<AdminPagedResult<OwnerCashSessionDto>>>
@@ -37,28 +37,28 @@ namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMyCashSessions
         {
             try
             {
-                // 1. Sahiplik: isletme JWT sahibine ait olmali.
+                // 1. Sahiplik: işletme JWT sahibine ait olmalı.
                 var owned = await OwnerScope.FindOwnedBusinessAsync(
                     _businessRepository, _currentUser, request.BusinessId, cancellationToken);
 
                 if (owned.IsFailure)
                     return Result<AdminPagedResult<OwnerCashSessionDto>>.Failure(owned.Error!);
 
-                // 2. Sayfalama kurallari.
+                // 2. Sayfalama kuralları.
                 var page = AdminPaging.NormalizePage(request.Page);
                 var pageSize = AdminPaging.ClampPageSize(request.PageSize);
 
                 var businessId = request.BusinessId;
                 var status = request.Status;
 
-                // 3. Filtre: isletme + durum.
+                // 3. Filtre: işletme + durum.
                 var sessions = await _cashSessionRepository.FindAsync(
                     s => s.BusinessId == businessId
                         && !s.IsDeleted
                         && (status == null || s.Status == status),
                     cancellationToken);
 
-                // 4. En yeni oturum once.
+                // 4. En yeni oturum önce.
                 var ordered = sessions
                     .OrderByDescending(s => s.OpenedAt)
                     .ThenBy(s => s.Id)
@@ -95,7 +95,7 @@ namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMyCashSessions
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<OwnerCashSessionDto>>.Failure(
-                    Error.Internal("Kasa oturumu listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kasa oturumu listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

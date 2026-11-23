@@ -43,7 +43,7 @@ namespace Rezervise.Infrastructure.Persistence.Repositories
 
             try
             {
-                // Kayit, exception cevirisi ve domain event dispatch'i AppDbContext'te toplanir.
+                // Kayıt, exception çevirisi ve domain event dispatch'i AppDbContext'te toplanır.
                 await _context.SaveChangesAsync(cancellationToken);
                 await _transaction.CommitAsync(cancellationToken);
             }
@@ -55,7 +55,7 @@ namespace Rezervise.Infrastructure.Persistence.Repositories
                 }
                 catch
                 {
-                    // Rollback hatasi asil hatayi mask elemeli.
+                    // Rollback hatası asıl hatayı mask elemeli.
                 }
 
                 throw;
@@ -93,10 +93,10 @@ namespace Rezervise.Infrastructure.Persistence.Repositories
         }
 
         /// <summary>
-        /// Verilen isi belirtilen izolasyon seviyesinde tek transaction icinde
-        /// calistirir, basarili olursa commit eder, hata olursa geri alir.
-        /// Rezervasyon gibi aralik cakismasi riski tasiyan akislarda
-        /// <see cref="IsolationLevel.Serializable"/> kullanilir.
+        /// Verilen isi belirtilen izolasyon seviyesinde tek transaction içinde
+        /// çalıştırır, başarılı olursa commit eder, hata olursa geri alır.
+        /// Rezervasyon gibi aralık çakışması riski taşıyan akışlarda
+        /// <see cref="IsolationLevel.Serializable"/> kullanılır.
         /// </summary>
         public async Task<T> ExecuteInTransactionAsync<T>(
             Func<CancellationToken, Task<T>> operation,
@@ -122,7 +122,7 @@ namespace Rezervise.Infrastructure.Persistence.Repositories
             }
         }
 
-        /// <summary>Donus degeri olmayan isler icin ayni davranis.</summary>
+        /// <summary>Dönüş değeri olmayan işler için aynı davranış.</summary>
         public Task ExecuteInTransactionAsync(
             Func<CancellationToken, Task> operation,
             IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,
@@ -148,8 +148,8 @@ namespace Rezervise.Infrastructure.Persistence.Repositories
 
             if (disposing)
             {
-                // Transaction bu birime ait; DbContext scoped oldugu icin
-                // yasam dongusunu DI konteyneri yonetir, burada dispose edilmez.
+                // Transaction bu birime ait; DbContext scoped öldüğü için
+                // yaşam döngüsünü DI konteyneri yönetir, burada dispose edilmez.
                 _transaction?.Dispose();
                 _transaction = null;
             }

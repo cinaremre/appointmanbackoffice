@@ -4,11 +4,11 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Stok hareketi. Hareketler defter (ledger) mantigiyla calisir:
-    /// bir kez yazilir, guncellenmez veya silinmez (Update metodu yoktur).
-    /// Giris tipleri (PurchaseIn, CustomerReturn) pozitif, cikis tipleri
-    /// negatif isaretle saklanir; boylece bakiye = hareketlerin toplami.
-    /// Miktar cagri tarafindan her zaman pozitif verilir, isareti
+    /// Stok hareketi. Hareketler defter (ledger) mantığıyla çalışır:
+    /// bir kez yazılır, güncellenmez veya silinmez (Update metodu yoktur).
+    /// Giriş tipleri (PurchaseIn, CustomerReturn) pozitif, çıkış tipleri
+    /// negatif işaretle saklanır; böylece bakiye = hareketlerin toplamı.
+    /// Miktar çağrı tarafından her zaman pozitif verilir, işareti
     /// constructor hareket tipinden belirler.
     /// </summary>
     public class StockMovement : BaseEntity
@@ -20,24 +20,24 @@ namespace Rezervise.Domain.Entities
         public EnumStockMovementType MovementType { get; private set; }
 
         /// <summary>
-        /// Isaretli miktar: giris hareketlerinde pozitif, cikis
-        /// hareketlerinde negatif. Bakiye hesabi dogrudan toplanir.
+        /// İşaretli miktar: giriş hareketlerinde pozitif, çıkış
+        /// hareketlerinde negatif. Bakiye hesabı doğrudan toplanır.
         /// </summary>
         public decimal Quantity { get; private set; }
 
-        /// <summary>Birim maliyet (girisler icin alis fiyati, cikislar icin 0 olabilir).</summary>
+        /// <summary>Birim maliyet (girişler için alış fiyatı, çıkışlar için 0 olabilir).</summary>
         public decimal UnitCost { get; private set; }
 
-        /// <summary>Referans kayit tipi (orn. "Appointment", "Sale"). Cift isleme engeli icin kullanilir.</summary>
+        /// <summary>Referans kayıt tipi (orn. "Appointment", "Sale"). Çift işleme engeli için kullanılır.</summary>
         public string? ReferenceType { get; private set; }
 
-        /// <summary>Referans kayit ID'si. Ayni (ReferenceType, ReferenceId) ikinci kez islenemez.</summary>
+        /// <summary>Referans kayıt ID'si. Aynı (ReferenceType, ReferenceId) ikinci kez işlenemez.</summary>
         public Guid? ReferenceId { get; private set; }
 
-        /// <summary>Hareketin gerceklestigi an (UTC).</summary>
+        /// <summary>Hareketin gerçekleştiği an (UTC).</summary>
         public DateTime OccurredAt { get; private set; }
 
-        private StockMovement() { } // EF Core icin
+        private StockMovement() { } // EF Core için
 
         public StockMovement(
             Guid businessId,
@@ -66,26 +66,26 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (productId == Guid.Empty)
-                throw new ArgumentException("Urun ID bos olamaz.", nameof(productId));
+                throw new ArgumentException("Ürün ID boş olamaz.", nameof(productId));
 
-            // Miktar her zaman pozitif girilir; isareti hareket tipi belirler.
+            // Miktar her zaman pozitif girilir; işareti hareket tipi belirler.
             if (quantity <= 0)
-                throw new DomainException("Stok hareket miktari sifirdan buyuk olmalidir.");
+                throw new DomainException("Stok hareket miktarı sıfırdan büyük olmalıdır.");
 
             if (quantity > 99999999.99m)
-                throw new DomainException("Stok hareket miktari cok yuksek.");
+                throw new DomainException("Stok hareket miktarı çok yüksek.");
 
             if (unitCost < 0)
                 throw new DomainException("Birim maliyet negatif olamaz.");
 
             if (unitCost > 99999999.99m)
-                throw new DomainException("Birim maliyet cok yuksek.");
+                throw new DomainException("Birim maliyet çok yüksek.");
 
             if (occurredAt == default)
-                throw new DomainException("Hareket tarihi bos olamaz.");
+                throw new DomainException("Hareket tarihi boş olamaz.");
 
             if (referenceId.HasValue && string.IsNullOrWhiteSpace(referenceType))
                 throw new DomainException("Referans ID verildiyse referans tipi de verilmelidir.");
@@ -101,14 +101,14 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Giris tipi mi? Yalnizca PurchaseIn ve CustomerReturn bakiyeyi
-        /// artirir; sayim duzeltmesi dahil diger tipler cikis kabul edilir.
+        /// Giriş tipi mi? Yalnızca PurchaseIn ve CustomerReturn bakiyeyi
+        /// artırır; sayım düzeltmesi dahil diğer tipler çıkış kabul edilir.
         /// </summary>
         private static bool IsIncoming(EnumStockMovementType movementType)
             => movementType is EnumStockMovementType.PurchaseIn
                 or EnumStockMovementType.CustomerReturn;
 
-        /// <summary>Hareket defteri kaydi oldugundan guncelleme apisi bilincli olarak yoktur.
-        /// Hatali hareket duzeltilmek istenirse ters yonlu yeni hareket yazilir.</summary>
+        /// <summary>Hareket defteri kaydı öldüğündan güncelleme apısı bilinçli olarak yoktur.
+        /// Hatalı hareket düzeltilmek istenirse ters yönlü yeni hareket yazılır.</summary>
     }
 }

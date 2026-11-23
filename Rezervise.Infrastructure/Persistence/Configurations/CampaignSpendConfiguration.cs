@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Kampanya harcamasi. Manuel giris veya API senkronu ile yazilir;
-    /// ilk surumde ayni gun+tutar tekrari bilincli olarak serbesttir.
+    /// Kampanya harcaması. Manuel giriş veya API senkronu ile yazılır;
+    /// ilk sürümde aynı gün+tutar tekrarı bilinçli olarak serbesttir.
     /// </summary>
     public class CampaignSpendConfiguration : BaseConfiguration<CampaignSpend>
     {

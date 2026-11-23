@@ -76,7 +76,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
         {
             if (await context.ServiceCategories.AnyAsync())
             {
-                logger.LogInformation("ServiceCategories zaten mevcut, atlaniyor.");
+                logger.LogInformation("ServiceCategories zaten mevcut, atlanıyor.");
                 return;
             }
 
@@ -84,114 +84,114 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
 
             // ===== ROOT KATEGORILER =====
             var hairServices = CreateCategory(HairServicesId, 1, "#FF6B6B", null,
-                "Sa� Hizmetleri", "Hair Services",
-                "Sa� kesimi, boyama ve bakim hizmetleri", "Haircut, coloring and care services");
+                "Saç Hizmetleri", "Hair Services",
+                "Saç kesimi, boyama ve bakım hizmetleri", "Haircut, coloring and çare services");
 
             var beardShave = CreateCategory(BeardShaveId, 2, "#4A5568", null,
-                "Sakal & Tiras", "Beard & Shave",
-                "Sakal kesimi ve tiras hizmetleri", "Beard trimming and shaving services");
+                "Sakal & Tıraş", "Beard & Shave",
+                "Sakal kesimi ve tıraş hizmetleri", "Beard trimming and shaving services");
 
             var dentalServices = CreateCategory(DentalServicesId, 3, "#4299E1", null,
-                "Dis Hizmetleri", "Dental Services",
-                "Dis tedavisi ve bakimi", "Dental treatment and care");
+                "Dış Hizmetleri", "Dental Services",
+                "Dış tedavisi ve bakımı", "Dental treatment and çare");
 
             var tattooPiercing = CreateCategory(TattooPiercingId, 4, "#9F7AEA", null,
-                "D�vme & Piercing", "Tattoo & Piercing",
-                "D�vme ve piercing hizmetleri", "Tattoo and piercing services");
+                "Dövme & Piercing", "Tattoo & Piercing",
+                "Dövme ve piercing hizmetleri", "Tattoo and piercing services");
 
             var skinBeauty = CreateCategory(SkinBeautyId, 5, "#ED8936", null,
-                "Cilt & G�zellik", "Skin & Beauty",
-                "Cilt bakimi ve g�zellik hizmetleri", "Skin care and beauty services");
+                "Cilt & Güzellik", "Skin & Beauty",
+                "Cilt bakımı ve güzellik hizmetleri", "Skin çare and beauty services");
 
             var massageSpa = CreateCategory(MassageSpaId, 6, "#38B2AC", null,
                 "Masaj & Spa", "Massage & Spa",
                 "Masaj ve spa hizmetleri", "Massage and spa services");
 
             var nailCare = CreateCategory(NailCareId, 7, "#F687B3", null,
-                "Tirnak Bakimi", "Nail Care",
-                "Manik�r, pedik�r ve tirnak sanati", "Manicure, pedicure and nail art");
+                "Tırnak Bakımı", "Nail Çare",
+                "Manikür, pedikür ve tırnak sanatı", "Manicure, pedicure and nail art");
 
             var makeup = CreateCategory(MakeupId, 8, "#FC8181", null,
                 "Makyaj", "Makeup",
                 "Profesyonel makyaj hizmetleri", "Professional makeup services");
 
             var hairRemoval = CreateCategory(HairRemovalId, 9, "#68D391", null,
-                "Epilasyon & Agda", "Hair Removal",
-                "Epilasyon ve agda hizmetleri", "Waxing and hair removal services");
+                "Epilasyon & Ağda", "Hair Removal",
+                "Epilasyon ve ağda hizmetleri", "Waxing and hair removal services");
 
             var healthTherapy = CreateCategory(HealthTherapyId, 10, "#F56565", null,
-                "Saglik & Terapi", "Health & Therapy",
-                "Saglik ve terapi hizmetleri", "Health and therapy services");
+                "Sağlık & Terapi", "Health & Therapy",
+                "Sağlık ve terapi hizmetleri", "Health and therapy services");
 
             // ===== LEAF KATEGORILER =====
 
             var haircut = CreateLeaf(HaircutId, 1, hairServices,
-                "Sa� Kesimi", "Haircut",
-                "Erkek ve kadin sa� kesimi", "Men's and women's haircut");
+                "Saç Kesimi", "Haircut",
+                "Erkek ve kadın saç kesimi", "Men's and women's haircut");
 
             var coloring = CreateLeaf(ColoringId, 2, hairServices,
-                "Sa� Boyama", "Hair Coloring",
-                "Sa� boyama ve renklendirme", "Hair coloring and dyeing");
+                "Saç Boyama", "Hair Coloring",
+                "Saç boyama ve renklendirme", "Hair coloring and dyeing");
 
             var styling = CreateLeaf(StylingId, 3, hairServices,
-                "Sa� Sekillendirme", "Hair Styling",
-                "F�n, masa ve sekillendirme", "Blow dry, curling and styling");
+                "Saç Şekillendirme", "Hair Styling",
+                "Fön, masa ve şekillendirme", "Blow dry, curling and styling");
 
             var hairTreatment = CreateLeaf(HairTreatmentId, 4, hairServices,
-                "Sa� Bakimi", "Hair Treatment",
-                "Sa� bakim ve tedavi hizmetleri", "Hair care and treatment");
+                "Saç Bakımı", "Hair Treatment",
+                "Saç bakım ve tedavi hizmetleri", "Hair çare and treatment");
 
             var beardTrim = CreateLeaf(BeardTrimId, 1, beardShave,
                 "Sakal Kesimi", "Beard Trim",
-                "Sakal d�zeltme ve sekillendirme", "Beard trimming and shaping");
+                "Sakal düzeltme ve şekillendirme", "Beard trimming and shaping");
 
             var shave = CreateLeaf(ShaveId, 2, beardShave,
-                "Tiras", "Shave",
-                "Ustura tirasi ve klasik tiras", "Razor shave and classic shave");
+                "Tıraş", "Shave",
+                "Ustura tıraşı ve klasik tıraş", "Razor shave and classic shave");
 
             var dentalCleaning = CreateLeaf(DentalCleaningId, 1, dentalServices,
-                "Dis Temizligi", "Dental Cleaning",
-                "Dis tasi temizligi ve polisaj", "Scaling and polishing");
+                "Dış Temizliği", "Dental Cleaning",
+                "Dış taşı temizliği ve polisaj", "Scaling and polishing");
 
             var filling = CreateLeaf(FillingId, 2, dentalServices,
                 "Dolgu", "Filling",
                 "Kompozit ve amalgam dolgu", "Composite and amalgam filling");
 
             var extraction = CreateLeaf(ExtractionId, 3, dentalServices,
-                "Dis �ekimi", "Tooth Extraction",
-                "Basit ve cerrahi dis �ekimi", "Simple and surgical extraction");
+                "Dış Çekimi", "Tooth Extraction",
+                "Basit ve cerrahi dış çekimi", "Simple and surgical extraction");
 
             var rootCanal = CreateLeaf(RootCanalId, 4, dentalServices,
                 "Kanal Tedavisi", "Root Canal",
                 "Endodontik tedavi", "Endodontic treatment");
 
             var whitening = CreateLeaf(WhiteningId, 5, dentalServices,
-                "Dis Beyazlatma", "Teeth Whitening",
-                "Ofis tipi beyazlatma", "In-office whitening");
+                "Dış Beyazlatma", "Teeth Whitening",
+                "Ofis tipi beyazlatma", "İn-office whitening");
 
             var smallTattoo = CreateLeaf(SmallTattooId, 1, tattooPiercing,
-                "K���k D�vme", "Small Tattoo",
-                "5cm'e kadar d�vme", "Tattoo up to 5cm");
+                "Küçük Dövme", "Small Tattoo",
+                "5cm'e kadar dövme", "Tattoo up to 5cm");
 
             var mediumTattoo = CreateLeaf(MediumTattooId, 2, tattooPiercing,
-                "Orta D�vme", "Medium Tattoo",
-                "5-15cm arasi d�vme", "Tattoo 5-15cm");
+                "Orta Dövme", "Medium Tattoo",
+                "5-15cm arası dövme", "Tattoo 5-15cm");
 
             var largeTattoo = CreateLeaf(LargeTattooId, 3, tattooPiercing,
-                "B�y�k D�vme", "Large Tattoo",
-                "15cm �zeri d�vme", "Tattoo over 15cm");
+                "Büyük Dövme", "Large Tattoo",
+                "15cm üzeri dövme", "Tattoo over 15cm");
 
             var piercing = CreateLeaf(PiercingId, 4, tattooPiercing,
                 "Piercing", "Piercing",
-                "V�cut piercing hizmetleri", "Body piercing services");
+                "Vücut piercing hizmetleri", "Body piercing services");
 
             var tattooRemoval = CreateLeaf(TattooRemovalId, 5, tattooPiercing,
-                "D�vme Silme", "Tattoo Removal",
-                "Lazer ile d�vme silme", "Laser tattoo removal");
+                "Dövme Silme", "Tattoo Removal",
+                "Lazer ile dövme silme", "Laser tattoo removal");
 
             var facial = CreateLeaf(FacialId, 1, skinBeauty,
-                "Y�z Bakimi", "Facial",
-                "Profesyonel y�z bakimi", "Professional facial care");
+                "Yüz Bakımı", "Facial",
+                "Profesyonel yüz bakımı", "Professional facial çare");
 
             var chemicalPeel = CreateLeaf(ChemicalPeelId, 2, skinBeauty,
                 "Kimyasal Peeling", "Chemical Peel",
@@ -203,87 +203,87 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
 
             var skinAnalysis = CreateLeaf(SkinAnalysisId, 4, skinBeauty,
                 "Cilt Analizi", "Skin Analysis",
-                "Detayli cilt analizi", "Detailed skin analysis");
+                "Detaylı cilt analizi", "Detailed skin analysis");
 
             var swedishMassage = CreateLeaf(SwedishMassageId, 1, massageSpa,
-                "Isve� Masaji", "Swedish Massage",
-                "Klasik Isve� masaji", "Classic Swedish massage");
+                "Isveç Masajı", "Swedish Massage",
+                "Klasik Isveç masajı", "Classic Swedish massage");
 
             var deepTissue = CreateLeaf(DeepTissueId, 2, massageSpa,
-                "Derin Doku Masaji", "Deep Tissue Massage",
-                "Derin doku masaji", "Deep tissue massage");
+                "Derin Doku Masajı", "Deep Tissue Massage",
+                "Derin doku masajı", "Deep tissue massage");
 
             var thaiMassage = CreateLeaf(ThaiMassageId, 3, massageSpa,
-                "Tay Masaji", "Thai Massage",
-                "Geleneksel Tay masaji", "Traditional Thai massage");
+                "Tay Masajı", "Thai Massage",
+                "Geleneksel Tay masajı", "Traditional Thai massage");
 
             var hotStone = CreateLeaf(HotStoneId, 4, massageSpa,
-                "Sicak Tas Masaji", "Hot Stone Massage",
-                "Sicak tas masaji", "Hot stone massage");
+                "Sıcak Tas Masajı", "Hot Stone Massage",
+                "Sıcak tas masajı", "Hot stone massage");
 
             var aromatherapy = CreateLeaf(AromatherapyId, 5, massageSpa,
                 "Aromaterapi", "Aromatherapy",
-                "Aromaterapi masaji", "Aromatherapy massage");
+                "Aromaterapi masajı", "Aromatherapy massage");
 
             var manicure = CreateLeaf(ManicureId, 1, nailCare,
-                "Manik�r", "Manicure",
-                "Klasik ve spa manik�r", "Classic and spa manicure");
+                "Manikür", "Manicure",
+                "Klasik ve spa manikür", "Classic and spa manicure");
 
             var pedicure = CreateLeaf(PedicureId, 2, nailCare,
-                "Pedik�r", "Pedicure",
-                "Klasik ve spa pedik�r", "Classic and spa pedicure");
+                "Pedikür", "Pedicure",
+                "Klasik ve spa pedikür", "Classic and spa pedicure");
 
             var nailArt = CreateLeaf(NailArtId, 3, nailCare,
-                "Tirnak Sanati", "Nail Art",
-                "Nail art ve s�sleme", "Nail art and decoration");
+                "Tırnak Sanatı", "Nail Art",
+                "Nail art ve süsleme", "Nail art and decoration");
 
             var gelPolish = CreateLeaf(GelPolishId, 4, nailCare,
-                "Kalici Oje", "Gel Polish",
-                "Gel ve kalici oje", "Gel and permanent polish");
+                "Kalıcı Oje", "Gel Polish",
+                "Gel ve kalıcı oje", "Gel and permanent polish");
 
             var nailExtension = CreateLeaf(NailExtensionId, 5, nailCare,
-                "Tirnak Uzatma", "Nail Extension",
-                "Protez tirnak ve uzatma", "Prosthetic nails and extensions");
+                "Tırnak Uzatma", "Nail Extension",
+                "Protez tırnak ve uzatma", "Prosthetic nails and extensions");
 
             var dailyMakeup = CreateLeaf(DailyMakeupId, 1, makeup,
-                "G�nl�k Makyaj", "Daily Makeup",
-                "G�nl�k makyaj uygulamasi", "Daily makeup application");
+                "Günlük Makyaj", "Daily Makeup",
+                "Günlük makyaj uygulaması", "Daily makeup application");
 
             var bridalMakeup = CreateLeaf(BridalMakeupId, 2, makeup,
-                "Gelin Makyaji", "Bridal Makeup",
-                "Gelin makyaji", "Bridal makeup");
+                "Gelin Makyajı", "Bridal Makeup",
+                "Gelin makyajı", "Bridal makeup");
 
             var eveningMakeup = CreateLeaf(EveningMakeupId, 3, makeup,
-                "Gece Makyaji", "Evening Makeup",
-                "�zel davet ve gece makyaji", "Special event and evening makeup");
+                "Gece Makyajı", "Evening Makeup",
+                "Özel davet ve gece makyajı", "Special event and evening makeup");
 
             var eyelashExt = CreateLeaf(EyelashExtId, 4, makeup,
                 "Kirpik Uzatma", "Eyelash Extension",
-                "Ipek kirpik ve uzatma", "Silk lash and extensions");
+                "İpek kirpik ve uzatma", "Silk lash and extensions");
 
             var fullBodyWax = CreateLeaf(FullBodyWaxId, 1, hairRemoval,
-                "Tam V�cut Agda", "Full Body Wax",
-                "Tam v�cut agda", "Full body waxing");
+                "Tam Vücut Ağda", "Full Body Wax",
+                "Tam vücut ağda", "Full body waxing");
 
             var legWax = CreateLeaf(LegWaxId, 2, hairRemoval,
-                "Bacak Agda", "Leg Wax",
-                "Bacak agda", "Leg waxing");
+                "Bacak Ağda", "Leg Wax",
+                "Bacak ağda", "Leg waxing");
 
             var underarmWax = CreateLeaf(UnderarmWaxId, 3, hairRemoval,
-                "Koltuk Alti Agda", "Underarm Wax",
-                "Koltuk alti agda", "Underarm waxing");
+                "Koltuk Altı Ağda", "Underarm Wax",
+                "Koltuk altı ağda", "Underarm waxing");
 
             var bikiniWax = CreateLeaf(BikiniWaxId, 4, hairRemoval,
-                "Bikini Agda", "Bikini Wax",
-                "Bikini b�lgesi agda", "Bikini area waxing");
+                "Bikini Ağda", "Bikini Wax",
+                "Bikini bölgesi ağda", "Bikini area waxing");
 
             var physiotherapy = CreateLeaf(PhysiotherapyId, 1, healthTherapy,
                 "Fizyoterapi", "Physiotherapy",
                 "Fizik tedavi ve rehabilitasyon", "Physical therapy and rehabilitation");
 
             var chiropractic = CreateLeaf(ChiropracticId, 2, healthTherapy,
-                "Kayropraktik", "Chiropractic",
-                "Kayropraktik tedavi", "Chiropractic treatment");
+                "Kayropraktık", "Chiropractic",
+                "Kayropraktık tedavi", "Chiropractic treatment");
 
             var acupuncture = CreateLeaf(AcupunctureId, 3, healthTherapy,
                 "Akupunktur", "Acupuncture",
@@ -291,7 +291,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
 
             var psychotherapy = CreateLeaf(PsychotherapyId, 4, healthTherapy,
                 "Psikoterapi", "Psychotherapy",
-                "Psikolojik danismanlik", "Psychological counseling");
+                "Psikolojik danışmanlık", "Psychological counseling");
 
             var allCategories = new List<ServiceCategory>
             {

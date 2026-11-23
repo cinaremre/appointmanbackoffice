@@ -9,8 +9,8 @@ namespace Rezervise.Application.Features.Businesses.Queries.SearchBusinesses
         public Guid? CategoryId { get; set; }
 
         /// <summary>
-        /// Sehir adi (orn. "Ankara"). CityId verilmemisse bu ada gore ID cozulur.
-        /// CityId doluysa dikkate alinmaz.
+        /// Şehir adı (orn. "Ankara"). CityId verilmemişse bu ada göre ID çözülür.
+        /// CityId doluysa dikkate alınmaz.
         /// </summary>
         public string? City { get; set; }
 
@@ -20,8 +20,8 @@ namespace Rezervise.Application.Features.Businesses.Queries.SearchBusinesses
         public int? NeighborhoodId { get; set; }
 
         /// <summary>
-        /// Istekte konum bilgisi gelmezse kullanicinin kayitli adresini
-        /// kullanabilmek icin gonderilen kullanici ID'si.
+        /// İstekte konum bilgisi gelmezse kullanıcının kayıtlı adresini
+        /// kullanabilmek için gönderilen kullanıcı ID'si.
         /// </summary>
         public Guid? CurrentUserId { get; set; }
         public int PageNumber { get; set; } = 1;

@@ -15,14 +15,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers
 {
     /// <summary>
-    /// Abonelik ve ozellik yonetimi (dokuman Modul 13).
-    /// Yazma uclari mevcut domain komutlarini (CreatePlan/AssignSubscription/
+    /// Abonelik ve özellik yönetimi (doküman Modül 13).
+    /// Yazma uçları mevcut domain komutlarını (CreatePlan/AssignSubscription/
     /// GrantFeatureOverride) IMediator ile sarmalayan admin handler'lara
-    /// baglanir; bu controller yalnizca HTTP eslemesi yapar.
+    /// bağlanır; bu controller yalnızca HTTP eşlemesi yapar.
     ///
     /// Route notu: controller birden fazla kaynak grubunu (subscription-plans,
-    /// features, businesses/...) tasiidigindan sablonlar action seviyesinde
-    /// verilir; sinif seviyesinde taban "api/v1/admin" sabitlenir.
+    /// features, businesses/...) taşııdığından şablonlar action seviyesinde
+    /// verilir; sınıf seviyesinde taban "api/v1/admin" sabitlenir.
     /// </summary>
     [ApiController]
     [Authorize]
@@ -36,7 +36,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             _mediator = mediator;
         }
 
-        /// <summary>Tum abonelik planlarini plan basina ozellik listesiyle dondurur.</summary>
+        /// <summary>Tüm abonelik planlarını plan basına özellik listesiyle döndürür.</summary>
         [HttpGet("subscription-plans")]
         [Authorize(Policy = AdminPermissions.SubscriptionRead)]
         public async Task<IActionResult> GetSubscriptionPlans(CancellationToken cancellationToken)
@@ -51,10 +51,10 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Yeni abonelik plani olusturur. Domain kurallari mevcut
-        /// CreatePlanCommand uzerinde yurutulur; islem denetimi yazilir.
+        /// Yeni abonelik planı oluşturur. Domain kuralları mevcut
+        /// CreatePlanCommand üzerinde yürütülür; işlem denetimi yazılır.
         /// </summary>
-        /// <returns>Olusturulan planin ID'si</returns>
+        /// <returns>Oluşturulan planın ID'si</returns>
         [HttpPost("subscription-plans")]
         [Authorize(Policy = AdminPermissions.SubscriptionUpdate)]
         public async Task<IActionResult> CreateSubscriptionPlan(
@@ -71,8 +71,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Isletmenin gecerli aboneligini plan adi ve ozellik listesiyle dondurur.
-        /// Aktif abonelik yoksa Data null olan basari cevabi doner.
+        /// İşletmenin geçerli aboneliğini plan adı ve özellik listesiyle döndürür.
+        /// Aktif abonelik yoksa Data null olan başarı cevabı döner.
         /// </summary>
         [HttpGet("businesses/{businessId:guid}/subscription")]
         [Authorize(Policy = AdminPermissions.SubscriptionRead)]
@@ -92,9 +92,9 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Isletmeye abonelik plani atar; varsa eski aktif abonelik Expired yapilir.
+        /// İşletmeye abonelik planı atar; varsa eski aktif abonelik Expired yapılır.
         /// </summary>
-        /// <returns>Olusturulan aboneligin ID'si</returns>
+        /// <returns>Oluşturulan aboneliğin ID'si</returns>
         [HttpPost("businesses/{businessId:guid}/subscription/change")]
         [Authorize(Policy = AdminPermissions.SubscriptionUpdate)]
         public async Task<IActionResult> ChangeBusinessSubscription(
@@ -102,7 +102,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             [FromBody] AssignSubscriptionByAdminCommand command,
             CancellationToken cancellationToken)
         {
-            // Isletme kimligi route'tan gelir; govdedeki degerin yerine gecer.
+            // İşletme kimliği route'tan gelir; gövdedeki değerin yerine geçer.
             command.BusinessId = businessId;
 
             var result = await _mediator.Send(command, cancellationToken);
@@ -115,8 +115,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Platformda tanimli tum ozellikleri listeler; plan ve override
-        /// uclarindaki ozellik secimi bu listeden yapilir.
+        /// Platformda tanımlı tüm özellikleri listeler; plan ve override
+        /// uçlarındaki özellik seçimi bu listeden yapılır.
         /// </summary>
         [HttpGet("features")]
         [Authorize(Policy = AdminPermissions.FeatureRead)]
@@ -131,7 +131,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkEnvelope(result.Value!);
         }
 
-        /// <summary>Isletmeye verilmis ozellik override kararlari listeler.</summary>
+        /// <summary>İşletmeye verilmiş özellik override kararları listeler.</summary>
         [HttpGet("businesses/{businessId:guid}/features")]
         [Authorize(Policy = AdminPermissions.FeatureRead)]
         public async Task<IActionResult> GetBusinessFeatureOverrides(
@@ -150,9 +150,9 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Isletmeye ozellik bazli gecici erisim karari (override) verir.
+        /// İşletmeye özellik bazlı geçici erişim kararı (override) verir.
         /// </summary>
-        /// <returns>Olusturulan override kaydinin ID'si</returns>
+        /// <returns>Oluşturulan override kaydının ID'si</returns>
         [HttpPost("businesses/{businessId:guid}/features/feature-overrides")]
         [Authorize(Policy = AdminPermissions.FeatureOverride)]
         public async Task<IActionResult> GrantFeatureOverride(
@@ -160,7 +160,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             [FromBody] GrantFeatureOverrideByAdminCommand command,
             CancellationToken cancellationToken)
         {
-            // Isletme kimligi route'tan gelir; govdedeki degerin yerine gecer.
+            // İşletme kimliği route'tan gelir; gövdedeki değerin yerine geçer.
             command.BusinessId = businessId;
 
             var result = await _mediator.Send(command, cancellationToken);
@@ -172,7 +172,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkEnvelope(result.Value!);
         }
 
-        /// <summary>Isletmenin son uc donemdeki ozellik kullanim sayilari.</summary>
+        /// <summary>İşletmenin son uç dönemdeki özellik kullanım sayıları.</summary>
         [HttpGet("businesses/{businessId:guid}/usage")]
         [Authorize(Policy = AdminPermissions.FeatureRead)]
         public async Task<IActionResult> GetBusinessFeatureUsage(

@@ -38,28 +38,28 @@ namespace Rezervise.Application.Features.Waitlist.Commands.JoinWaitlist
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Hizmet kontrolu: ayni isletmenin hizmeti olmali.
+                // 2. Hizmet kontrolü: aynı işletmenin hizmeti olmalı.
                 var service = await _serviceRepository.GetByIdAsync(request.ServiceId, cancellationToken);
                 if (service is null)
                     return Result<Guid>.Failure(Error.NotFound("Hizmet", request.ServiceId.ToString()));
 
                 if (service.BusinessId != request.BusinessId)
-                    return Result<Guid>.Failure(Error.Validation("Hizmet bu isletmeye ait degil.", $"ServiceId: {request.ServiceId}"));
+                    return Result<Guid>.Failure(Error.Validation("Hizmet bu işletmeye ait değil.", $"ServiceId: {request.ServiceId}"));
 
-                // 3. Hedef musteriyi belirle:
-                //    - Isletme sahibi baskasi adina kayit acabilir (CustomerId govdeden).
-                //    - Musteri kendi adina kayit acar; kimlik JWT'den cozulur,
-                //      govdede baska bir musteri ID verilmisse kabul edilmez.
+                // 3. Hedef müşteriyi belirle:
+                //    - İşletme sahibi başkası adına kayıt açabilir (CustomerId gövdeden).
+                //    - Müşteri kendi adına kayıt açar; kimlik JWT'den çözülür,
+                //      gövdede başka bir müşteri ID verilmişse kabul edilmez.
                 Guid customerId;
                 if (CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
                 {
                     if (request.CustomerId == Guid.Empty)
-                        return Result<Guid>.Failure(Error.Validation("Isletme adina kayit acilirken musteri ID belirtilmelidir."));
+                        return Result<Guid>.Failure(Error.Validation("İşletme adına kayıt açılırken müşteri ID belirtilmelidir."));
 
                     customerId = request.CustomerId;
                 }
@@ -71,15 +71,15 @@ namespace Rezervise.Application.Features.Waitlist.Commands.JoinWaitlist
                 }
                 else
                 {
-                    return Result<Guid>.Failure(Error.Forbidden("Bekleme listesine yalnizca kendi adiniza veya isletme sahibi olarak kayit acabilirsiniz."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bekleme listesine yalnızca kendi adınıza veya işletme sahibi olarak kayıt açabilirsiniz."));
                 }
 
-                // 4. Musteri kontrolu
+                // 4. Müşteri kontrolü
                 var customer = await _userRepository.GetByIdAsync(customerId, cancellationToken);
                 if (customer is null)
-                    return Result<Guid>.Failure(Error.NotFound("Musteri", customerId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Müşteri", customerId.ToString()));
 
-                // 5. Ayni musteri + ayni hizmet icin aktif kayit engellenir.
+                // 5. Aynı müşteri + aynı hizmet için aktif kayıt engellenir.
                 var existing = await _waitlistEntryRepository.FindAsync(
                     e => e.BusinessId == request.BusinessId &&
                          e.CustomerId == customerId &&
@@ -89,9 +89,9 @@ namespace Rezervise.Application.Features.Waitlist.Commands.JoinWaitlist
                     cancellationToken);
 
                 if (existing.Any())
-                    return Result<Guid>.Failure(Error.Conflict("Bu musteri icin ayni hizmette zaten aktif bir bekleme listesi kaydi var."));
+                    return Result<Guid>.Failure(Error.Conflict("Bu müşteri için aynı hizmette zaten aktif bir bekleme listesi kaydı var."));
 
-                // 6. Kaydi olustur
+                // 6. Kaydı oluştur
                 var entry = new WaitlistEntry(
                     request.BusinessId,
                     customerId,
@@ -112,7 +112,7 @@ namespace Rezervise.Application.Features.Waitlist.Commands.JoinWaitlist
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Bekleme listesine kayit eklenirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Bekleme listesine kayıt eklenirken bir hata oluştu.", ex.Message));
             }
         }
     }

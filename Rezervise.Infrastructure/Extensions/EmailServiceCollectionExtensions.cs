@@ -8,20 +8,20 @@ using Microsoft.Extensions.Logging;
 namespace Rezervise.Infrastructure.Extensions
 {
     /// <summary>
-    /// E-posta hattinin kayit yardimcilari. Tasima, baslangicta secilir:
-    /// Development degilse ve SMTP ayarlari doluysa SMTP, aksi halde log modu.
+    /// E-posta hattının kayıt yardımcıları. Taşıma, başlangıçta seçilir:
+    /// Development değilse ve SMTP ayarları doluysa SMTP, aksi halde log modu.
     /// </summary>
     public static class EmailServiceCollectionExtensions
     {
         /// <summary>
-        /// E-posta kuyrugunu ve tasimasini kaydeder. Yapilandirma bozuksa bile
-        /// uygulama acilista durmaz; log moduna duser.
+        /// E-posta kuyruğunu ve taşımasını kaydeder. Yapılandırma bozuksa bile
+        /// uygulama açılışta durmaz; log moduna düşer.
         /// </summary>
         /// <param name="services">Servis koleksiyonu.</param>
-        /// <param name="configuration">Uygulama yapilandirmasi ("Email" bolumu).</param>
+        /// <param name="configuration">Uygulama yapılandırması ("Email" bölümü).</param>
         /// <param name="isDevelopment">Ortam Development mi.</param>
-        /// <returns>Zincirleme icin ayni koleksiyon.</returns>
-        /// <exception cref="ArgumentNullException">Zorunlu arguman null oldugunda firlatilir.</exception>
+        /// <returns>Zincirleme için aynı koleksiyon.</returns>
+        /// <exception cref="ArgumentNullException">Zorunlu argüman null öldüğünda fırlatılır.</exception>
         public static IServiceCollection AddEmailInfrastructure(
             this IServiceCollection services,
             IConfiguration configuration,
@@ -33,7 +33,7 @@ namespace Rezervise.Infrastructure.Extensions
             var options = EmailOptions.FromConfiguration(configuration);
             services.AddSingleton(options);
 
-            // SMTP yalnizca gercekten yapilandirilmissa ve Development degilse kullanilir.
+            // SMTP yalnızca gerçekten yapılandırılmışsa ve Development değilse kullanılır.
             var useSmtp = !isDevelopment
                           && options.HasSmtpConfiguration
                           && !string.IsNullOrWhiteSpace(options.FromAddress);
@@ -44,13 +44,13 @@ namespace Rezervise.Infrastructure.Extensions
             }
             else
             {
-                // Govde yalnizca Development ortaminda loglanir; aksi halde token gizlenir.
+                // Gövde yalnızca Development ortamında loğlanır; aksi halde token gizlenir.
                 services.AddSingleton<IEmailService>(sp => new LogEmailService(
                     sp.GetRequiredService<ILogger<LogEmailService>>(),
                     isDevelopment));
             }
 
-            // Ayni ornek hem uretici hem tuketici arayuzlerini karsilar.
+            // Aynı örnek hem üretici hem tüketici arayüzlerini karşılar.
             services.AddSingleton<EmailQueue>();
             services.AddSingleton<IEmailQueue>(sp => sp.GetRequiredService<EmailQueue>());
             services.AddSingleton<IEmailQueueReader>(sp => sp.GetRequiredService<EmailQueue>());

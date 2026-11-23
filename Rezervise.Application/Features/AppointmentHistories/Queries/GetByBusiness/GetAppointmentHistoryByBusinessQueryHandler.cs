@@ -33,8 +33,8 @@ namespace Rezervise.Application.Features.AppointmentHistories.Queries.GetByBusin
         {
             try
             {
-                // 0. Rol kontrolu-controller'da; burada isletme bazli yetki kontrolu
-                //    JWT kimligiyle yapilir. Admin/SuperAdmin sahip kontrolunu atlar.
+                // 0. Rol kontrolü-controller'da; burada işletme bazlı yetki kontrolü
+                //    JWT kimliğiyle yapılır. Admin/SuperAdmin sahip kontrolünü atlar.
                 if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
                     return Result<List<AppointmentHistoryDto>>.Failure(
                         Error.Unauthorized("Auth.Unauthorized"));
@@ -43,13 +43,13 @@ namespace Rezervise.Application.Features.AppointmentHistories.Queries.GetByBusin
                     request.BusinessId, cancellationToken);
                 if (business is null)
                     return Result<List<AppointmentHistoryDto>>.Failure(
-                        Error.NotFound("Isletme", request.BusinessId.ToString()));
+                        Error.NotFound("İşletme", request.BusinessId.ToString()));
 
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
                     return Result<List<AppointmentHistoryDto>>.Failure(
-                        Error.Forbidden("Bu isletmenin randevu gecmisini goruntuleme yetkiniz yok."));
+                        Error.Forbidden("Bu işletmenin randevu geçmişini görüntüleme yetkiniz yok."));
 
-                // 1. Once isletmeye ait randevu ID'lerini bul
+                // 1. Önce işletmeye ait randevu ID'lerini bul
                 var appointments = await _appointmentRepository.FindAsync(
                     a => a.BusinessId == request.BusinessId && !a.IsDeleted,
                     cancellationToken);
@@ -59,7 +59,7 @@ namespace Rezervise.Application.Features.AppointmentHistories.Queries.GetByBusin
                 if (!appointmentIds.Any())
                     return Result<List<AppointmentHistoryDto>>.Success(new List<AppointmentHistoryDto>());
 
-                // 2. Bu randevulara ait gecmis kayitlarini getir
+                // 2. Bu randevulara ait geçmiş kayıtlarını getir
                 Expression<Func<AppointmentHistory, bool>> predicate = h =>
                     appointmentIds.Contains(h.AppointmentId) && !h.IsDeleted;
 
@@ -84,7 +84,7 @@ namespace Rezervise.Application.Features.AppointmentHistories.Queries.GetByBusin
                     .Take(request.PageSize)
                     .ToList();
 
-                // 4. DTO'ya donustur
+                // 4. DTO'ya dönüştür
                 var dtos = pagedHistories.Select(h => new AppointmentHistoryDto
                 {
                     Id = h.Id,
@@ -106,7 +106,7 @@ namespace Rezervise.Application.Features.AppointmentHistories.Queries.GetByBusin
             catch (Exception ex)
             {
                 return Result<List<AppointmentHistoryDto>>.Failure(
-                    Error.Internal("Randevu gecmisi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Randevu geçmişi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

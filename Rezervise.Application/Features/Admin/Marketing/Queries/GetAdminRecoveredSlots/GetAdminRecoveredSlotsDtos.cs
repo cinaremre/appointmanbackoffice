@@ -2,36 +2,36 @@ using Rezervise.Domain.Enums;
 
 namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminRecoveredSlots
 {
-    /// <summary>Iptal edilen randevudan aciga cikan slotun yonetici gorunumu.</summary>
+    /// <summary>İptal edilen randevudan açığa çıkan slotun yönetici görünümü.</summary>
     public class AdminRecoveredSlotDto
     {
         public Guid Id { get; set; }
         public Guid BusinessId { get; set; }
 
-        /// <summary>Iptal edilen randevunun kimligi.</summary>
+        /// <summary>İptal edilen randevunun kimliği.</summary>
         public Guid CancelledAppointmentId { get; set; }
 
-        /// <summary>Slotu dolduran yeni randevu; henuz doldurulmadiysa bos.</summary>
+        /// <summary>Slotu dolduran yeni randevu; henüz doldurulmadıysa boş.</summary>
         public Guid? ReplacementAppointmentId { get; set; }
 
-        /// <summary>Slotun aciga ciktigi an.</summary>
+        /// <summary>Slotun açığa çıktığı an.</summary>
         public DateTime ReleasedAt { get; set; }
 
-        /// <summary>Slotun yeniden dolduruldugu an; dolmadiysa bos.</summary>
+        /// <summary>Slotun yeniden doldurulduğu an; dolmadıysa boş.</summary>
         public DateTime? RebookedAt { get; set; }
         public EnumRecoveredSlotStatus Status { get; set; }
     }
 
     /// <summary>
-    /// Kurtarilan kapasite raporu: slot listesi ve ozet toplamlar. Toplam
-    /// Rebooked sayisi item DTO'nun disinda, rapor duzeyinde tasinir.
+    /// Kurtarılan kapasite raporu: slot listesi ve özet toplamlar. Toplam
+    /// Rebooked sayısı item DTO'nun dışında, rapor düzeyinde taşınır.
     /// </summary>
     public class AdminRecoveredSlotReportDto
     {
         public IReadOnlyList<AdminRecoveredSlotDto> Items { get; set; }
             = Array.Empty<AdminRecoveredSlotDto>();
 
-        /// <summary>Filtreye uyan slotlar arasindaki toplam Rebooked sayisi.</summary>
+        /// <summary>Filtreye uyan slotlar arasındaki toplam Rebooked sayısı.</summary>
         public int TotalRebooked { get; set; }
     }
 }

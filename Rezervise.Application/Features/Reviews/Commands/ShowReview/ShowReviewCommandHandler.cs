@@ -32,21 +32,21 @@ namespace Rezervise.Application.Features.Reviews.Commands.ShowReview
         {
             try
             {
-                // 0. Controller'daki rol kisitinin yaninda handler seviyesinde de
-                //    yonetici zorunlulugu dogrulanir (defense in depth).
+                // 0. Controller'daki rol kısıtının yanında handler seviyesinde de
+                //    yönetici zorunluluğu doğrulanır (defense in depth).
                 if (!CallerAuthorization.IsAdministrator(_currentUser))
-                    return Result<Guid>.Failure(Error.Forbidden("Yorumu gosterme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Forbidden("Yorumu gösterme yetkiniz yok."));
 
-                // 1. Yorum kontrolu
+                // 1. Yorum kontrolü
                 var review = await _reviewRepository.GetByIdAsync(request.ReviewId, cancellationToken);
                 if (review is null)
                     return Result<Guid>.Failure(Error.NotFound("Yorum", request.ReviewId.ToString()));
 
-                // 2. Yorum zaten gorunur mu?
+                // 2. Yorum zaten görünür mü?
                 if (review.IsVisible)
                     return Result<Guid>.Failure(Error.Conflict("Review.AlreadyVisible"));
 
-                // 3. G�sterme ve puan yeniden hesaplamasi ayni transaction'da.
+                // 3. Gösterme ve puan yeniden hesaplaması aynı transaction'da.
                 await _unitOfWork.ExecuteInTransactionAsync(async token =>
                 {
                     review.Show();
@@ -62,8 +62,8 @@ namespace Rezervise.Application.Features.Reviews.Commands.ShowReview
             }
             catch (Exception)
             {
-                // Beklenmeyen hata detayi istemciye sizdirilmaz.
-                return Result<Guid>.Failure(Error.Internal("Yorum gosterilirken bir hata olustu."));
+                // Beklenmeyen hata detayı istemciye sızdırılmaz.
+                return Result<Guid>.Failure(Error.Internal("Yorum gösterilirken bir hata oluştu."));
             }
         }
 

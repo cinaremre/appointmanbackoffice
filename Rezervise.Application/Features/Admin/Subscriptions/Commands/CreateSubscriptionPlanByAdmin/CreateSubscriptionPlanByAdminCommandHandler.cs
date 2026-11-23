@@ -8,9 +8,9 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Commands.CreateSubs
 {
     /// <summary>
     /// CreatePlanCommand'i IMediator ile sarmalar. Yetki ve domain
-    /// dogrulamalari icerdeki handler'dadir; burada yalnizca istek
-    /// cevrilir ve basari sonrasi kritik islem denetimi
-    /// AdminAuditRecorder uzerinden yazilir.
+    /// doğrulamaları içerdeki handler'dadır; burada yalnızca istek
+    /// çevrilir ve başarı sonrası kritik işlem denetimi
+    /// AdminAuditRecorder üzerinden yazılır.
     /// </summary>
     public class CreateSubscriptionPlanByAdminCommandHandler
         : IRequestHandler<CreateSubscriptionPlanByAdminCommand, Result<Guid>>
@@ -38,7 +38,7 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Commands.CreateSubs
         {
             try
             {
-                // 1. Domain komutuna cevir; kurallar icerdeki handler'dadir.
+                // 1. Domain komutuna çevir; kurallar içerdeki handler'dadır.
                 var command = new CreatePlanCommand
                 {
                     Name = request.Name,
@@ -60,8 +60,8 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Commands.CreateSubs
                 if (result.IsFailure)
                     return Result<Guid>.Failure(result.Error!);
 
-                // 2. Kritik islem denetimi: plan olusturma platform genelidir,
-                //    businessId bos birakilir.
+                // 2. Kritik işlem denetimi: plan oluşturma platform genelidir,
+                //    businessId boş bırakılır.
                 await AdminAuditRecorder.RecordAsync(
                     _adminAuditSink,
                     _adminAuditContext,
@@ -79,7 +79,7 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Commands.CreateSubs
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(
-                    Error.Internal("Admin plan olusturma sirasinda bir hata olustu.", ex.Message));
+                    Error.Internal("Admin plan oluşturma sırasında bir hata oluştu.", ex.Message));
             }
         }
     }

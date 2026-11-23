@@ -34,16 +34,16 @@ namespace Rezervise.Application.Features.Reengagement.Commands.CreateReengagemen
         {
             try
             {
-                // 1. Isletme kontrolu.
+                // 1. İşletme kontrolü.
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki: kural tanimlamak isletme sahibi veya platform yoneticisi isidir.
+                // 2. Yetki: kural tanımlamak işletme sahibi veya platform yöneticisi işidir.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Unauthorized("Bu isletmeye geri cagirma kurali ekleme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Unauthorized("Bu işletmeye geri çağırma kuralı ekleme yetkiniz yok."));
 
-                // 3. Kural bir hizmete bagliysa hizmet bu isletmede olmali.
+                // 3. Kural bir hizmete bağlıysa hizmet bu işletmede olmalı.
                 if (request.ServiceId.HasValue)
                 {
                     var serviceExists = await _serviceRepository.ExistsAsync(
@@ -53,10 +53,10 @@ namespace Rezervise.Application.Features.Reengagement.Commands.CreateReengagemen
                         cancellationToken);
 
                     if (!serviceExists)
-                        return Result<Guid>.Failure(Error.BusinessRule("Kurala baglanacak hizmet bu isletmede bulunamadi."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Kurala bağlanacak hizmet bu işletmede bulunamadı."));
                 }
 
-                // 4. Kural olustur; alan dogrulamasi entity icinde yapilir.
+                // 4. Kural oluştur; alan doğrulaması entity içinde yapılır.
                 var rule = new BusinessReengagementRule(
                     request.BusinessId,
                     request.ServiceId,
@@ -78,7 +78,7 @@ namespace Rezervise.Application.Features.Reengagement.Commands.CreateReengagemen
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Geri cagirma kurali olusturulurken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Geri çağırma kuralı oluşturulurken bir hata oluştu.", ex.Message));
             }
         }
     }

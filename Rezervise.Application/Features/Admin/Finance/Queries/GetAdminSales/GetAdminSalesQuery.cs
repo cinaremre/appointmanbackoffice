@@ -6,32 +6,32 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminSales
 {
     /// <summary>
-    /// Satis listesi (dokuman Modul 16). Salt okunur endpoint: tutar
-    /// duzeltmeleri iade/ters kayit domain komutlariyla yapilir, burada
-    /// veri asla degistirilmez.
+    /// Satış listesi (doküman Modül 16). Salt okunur endpoint: tutar
+    /// düzeltmeleri iade/ters kayıt domain komutlarıyla yapılır, burada
+    /// veri asla değiştirilmez.
     /// </summary>
     public class GetAdminSalesQuery : IRequest<Result<AdminSalesListDto>>
     {
         public Guid? BusinessId { get; set; }
 
-        /// <summary>Dahil; bu tarihten sonraki satislar.</summary>
+        /// <summary>Dahil; bu tarihten sonraki satışlar.</summary>
         public DateTime? FromDate { get; set; }
 
-        /// <summary>Dahil; bu tarihe kadar olan satislar.</summary>
+        /// <summary>Dahil; bu tarihe kadar olan satışlar.</summary>
         public DateTime? ToDate { get; set; }
 
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 50;
     }
 
-    /// <summary>Sayfalanmis satis listesi + filtre kapsamindaki GrandTotal toplami.</summary>
+    /// <summary>Sayfalanmış satış listesi + filtre kapsamındaki GrandTotal toplamı.</summary>
     public class AdminSalesListDto : AdminPagedResult<AdminSaleDto>
     {
-        /// <summary>Filtreye uyan TUM satislarin (yalnizca sayfa degil) toplam tutari.</summary>
+        /// <summary>Filtreye uyan TUM satışların (yalnızca sayfa değil) toplam tutarı.</summary>
         public decimal TotalGrandTotal { get; init; }
     }
 
-    /// <summary>Tek satis satirinin admin gorunumu.</summary>
+    /// <summary>Tek satış satırının admin görünümü.</summary>
     public class AdminSaleDto
     {
         public Guid Id { get; set; }

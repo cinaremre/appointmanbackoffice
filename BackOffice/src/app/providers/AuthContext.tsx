@@ -4,9 +4,9 @@ import { hasPermission } from "../../shared/constants/permissions";
 import type { OwnerPermission, Permission } from "../../shared/constants/permissions";
 
 /**
- * Oturum yonetimi (dokuman 7). Token localStorage'da TUTULMAZ;
- * sessionStorage kullanimi sekme kapanisinda oturumu da bitirir.
- * Nihai yetki kontrolu backend'dedir; burada yalnizca UX kurulur.
+ * Oturum yönetimi (doküman 7). Token localStorage'da TUTULMAZ;
+ * sessionStorage kullanımı sekme kapanışında oturumu da bitirir.
+ * Nihai yetki kontrolü backend'dedir; burada yalnızca UX kurulur.
  */
 
 interface AuthState {
@@ -52,8 +52,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!response.ok) {
       throw new Error(
         response.status === 401
-          ? "E-posta veya sifre hatali, ya da bu hesap backoffice erisimine sahip degil."
-          : "Giris basarisiz. Lutfen tekrar deneyin.",
+          ? "E-posta veya şifre hatalı, ya da bu hesap backoffice erişimine sahip değil."
+          : "Giriş başarısız. Lütfen tekrar deneyin.",
       );
     }
 
@@ -92,6 +92,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth(): AuthContextValue {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth, AuthProvider icinde kullanilmalidir.");
+  if (!context) throw new Error("useAuth, AuthProvider içinde kullanilmalidir.");
   return context;
 }

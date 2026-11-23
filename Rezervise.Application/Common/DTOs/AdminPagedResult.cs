@@ -1,24 +1,24 @@
 namespace Rezervise.Application.Common.DTOs
 {
     /// <summary>
-    /// Backoffice listeleme sorgularinin sayfali sonucu (dokuman 7.4).
-    /// Sayfa degerleri handler tarafinda sinirlanir: pageSize en fazla 200'dir.
+    /// Backoffice listeleme sorgularının sayfalı sonucu (doküman 7.4).
+    /// Sayfa değerleri handler tarafında sınırlanır: pageSize en fazla 200'dir.
     /// </summary>
     public class AdminPagedResult<T>
     {
-        /// <summary>Sayfadaki kayitlar.</summary>
+        /// <summary>Sayfadaki kayıtlar.</summary>
         public IReadOnlyList<T> Items { get; init; } = Array.Empty<T>();
 
-        /// <summary>1 tabanli sayfa numarasi.</summary>
+        /// <summary>1 tabanlı sayfa numarası.</summary>
         public int Page { get; init; }
 
-        /// <summary>Sinirlanmis sayfa boyutu.</summary>
+        /// <summary>Sınırlanmış sayfa boyutu.</summary>
         public int PageSize { get; init; }
 
-        /// <summary>Filtreyle eslesen toplam kayit sayisi.</summary>
+        /// <summary>Filtreyle eşleşen toplam kayıt sayısı.</summary>
         public long TotalCount { get; init; }
 
-        /// <summary>Toplam sayfa sayisi.</summary>
+        /// <summary>Toplam sayfa sayısı.</summary>
         public int TotalPages => PageSize <= 0 ? 0 : (int)Math.Ceiling(TotalCount / (double)PageSize);
 
         /// <summary>Sonraki sayfa var mi?</summary>

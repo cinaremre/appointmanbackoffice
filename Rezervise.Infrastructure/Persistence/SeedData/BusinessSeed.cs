@@ -20,44 +20,44 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
         {
             if (await context.Businesses.AnyAsync())
             {
-                logger.LogInformation("Businesses zaten mevcut, atlaniyor.");
+                logger.LogInformation("Businesses zaten mevcut, atlanıyor.");
                 return;
             }
 
             var businesses = new List<Business>
             {
-                CreateBusiness(Biz1Id, "Kadikoy Berberi", "Kadikoyun en eski berberi, 20 yillik tecrube.",
-                    EnumBusinessType.Barber, "Caferaga Mahallesi, Moda Caddesi", "45", "3",
+                CreateBusiness(Biz1Id, "Kadıköy Berberi", "Kadıköy'ün en eski berberi, 20 yıllık tecrübe.",
+                    EnumBusinessType.Barber, "Caferağa Mahallesi, Moda Caddesi", "45", "3",
                     34, 438, "34710",
                     "+902161234567", "info@kadikoyberberi.com", UserSeed.Owner1Id,
                     BusinessCategorySeed.BarberId, 4.5m, 12),
 
-                CreateBusiness(Biz2Id, "Besiktas Kuafor", "Kadinlara ozel sac tasarim ve bakim merkezi.",
-                    EnumBusinessType.Hairdresser, "Sair Nedim Caddesi", "12", "1",
+                CreateBusiness(Biz2Id, "Beşiktaş Kuaför", "Kadınlara özel saç tasarım ve bakım merkezi.",
+                    EnumBusinessType.Hairdresser, "Şair Nedim Caddesi", "12", "1",
                     34, 425, "34349",
                     "+902121234568", "info@besiktaskuafor.com", UserSeed.Owner2Id,
                     BusinessCategorySeed.HairdresserId, 4.8m, 25),
 
-                CreateBusiness(Biz3Id, "Taksim Tattoo Studio", "Profesyonel dovme sanatcilari.",
-                    EnumBusinessType.Tattoo, "Istiklal Caddesi", "78", "2",
+                CreateBusiness(Biz3Id, "Taksim Tattoo Studio", "Profesyonel dövme sanatçıları.",
+                    EnumBusinessType.Tattoo, "İstiklal Caddesi", "78", "2",
                     34, 428, "34430",
                     "+902121234569", "info@taksimtattoo.com", UserSeed.Owner3Id,
                     BusinessCategorySeed.TattooId, 4.9m, 38),
 
-                CreateBusiness(Biz4Id, "Cankaya Berber", "Ankaranin en modern berber salonu.",
-                    EnumBusinessType.Barber, "Tunal Hilmi Caddesi", "101", "5",
+                CreateBusiness(Biz4Id, "Çankaya Berber", "Ankara'nın en modern berber salonu.",
+                    EnumBusinessType.Barber, "Tunalı Hilmi Caddesi", "101", "5",
                     6, 64, "06550",
                     "+903121234567", "info@cankayaberber.com", UserSeed.Owner1Id,
                     BusinessCategorySeed.BarberId, 4.2m, 8),
 
-                CreateBusiness(Biz5Id, "Alsancak Dis Klinigi", "Modern dis sagligi merkezi.",
-                    EnumBusinessType.Dentist, "Kibris Sehitleri Caddesi", "22", "4",
+                CreateBusiness(Biz5Id, "Alsancak Diş Kliniği", "Modern diş sağlığı merkezi.",
+                    EnumBusinessType.Dentist, "Kıbrıs Şehitleri Caddesi", "22", "4",
                     35, 476, "35220",
                     "+902321234567", "info@alsancakdis.com", UserSeed.Owner2Id,
                     BusinessCategorySeed.DentistId, 4.7m, 45),
 
-                CreateBusiness(Biz6Id, "Nilufer Agda Salonu", "Hijyenik agda ve epilasyon.",
-                    EnumBusinessType.Waxing, "FSM Bulvari", "55", "1",
+                CreateBusiness(Biz6Id, "Nilüfer Ağda Salonu", "Hijyenik ağda ve epilasyon.",
+                    EnumBusinessType.Waxing, "FSM Bulvarı", "55", "1",
                     16, 200, "16110",
                     "+902241234567", "info@niluferagda.com", UserSeed.Owner3Id,
                     BusinessCategorySeed.WaxingId, 4.3m, 6)
@@ -69,7 +69,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
             await context.Businesses.AddRangeAsync(businesses);
             await context.SaveChangesAsync();
 
-            logger.LogInformation("Businesses seed edildi: {Count} isletme", businesses.Count);
+            logger.LogInformation("Businesses seed edildi: {Count} işletme", businesses.Count);
         }
 
         private static Business CreateBusiness(Guid id, string name, string desc, EnumBusinessType type,
@@ -84,7 +84,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
             for (int i = 0; i < totalReviews; i++)
                 business.IncrementTotalReviews();
 
-            //  KATEGORI ATA (EKLE)
+            //  KATEGORİ ATA (EKLE)
             // BusinessCategory entity'sini context'ten almak yerine ID ile set et
             typeof(Business).GetProperty("CategoryId")?.SetValue(business, categoryId);
 

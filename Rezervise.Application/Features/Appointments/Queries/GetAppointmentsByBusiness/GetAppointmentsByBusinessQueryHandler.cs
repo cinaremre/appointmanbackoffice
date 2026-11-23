@@ -34,13 +34,13 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAppointmentsByB
                 if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
                     return Result<List<AppointmentDto>>.Failure(Error.Unauthorized("Auth.Unauthorized"));
 
-                // Yetki, govdedeki id'ye degil yuklenen isletmenin sahibine gore verilir.
+                // Yetki, gövdedeki id'ye değil yüklenen işletmenin sahibine göre verilir.
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<List<AppointmentDto>>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<List<AppointmentDto>>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<List<AppointmentDto>>.Failure(Error.Forbidden("Bu isletmenin randevularini goruntuleme yetkiniz yok."));
+                    return Result<List<AppointmentDto>>.Failure(Error.Forbidden("Bu işletmenin randevularını görüntüleme yetkiniz yok."));
 
                 // 1. Filtreleme
                 Expression<Func<Appointment, bool>> predicate = a => a.BusinessId == request.BusinessId && !a.IsDeleted;
@@ -72,7 +72,7 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAppointmentsByB
                     .Take(request.PageSize)
                     .ToList();
 
-                // 4. DTO'ya donustur
+                // 4. DTO'ya dönüştür
                 var dtos = pagedAppointments.Select(a => new AppointmentDto
                 {
                     Id = a.Id,
@@ -96,7 +96,7 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAppointmentsByB
             catch (Exception)
             {
                 return Result<List<AppointmentDto>>.Failure(
-                    Error.Internal("Randevular getirilirken bir hata olustu."));
+                    Error.Internal("Randevular getirilirken bir hata oluştu."));
             }
         }
     }

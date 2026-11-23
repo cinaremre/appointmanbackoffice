@@ -6,9 +6,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinessDetail
 {
     /// <summary>
-    /// Isletme detay handler'i (dokuman Modul 8). Sayilar ayri repository
-    /// sorgulariyla hesaplanir; buyuk olcekte tek read model sorgusunda
-    /// birlestirilecektir.
+    /// İşletme detay handler'i (doküman Modül 8). Sayılar ayrı repository
+    /// sorgularıyla hesaplanır; büyük ölçekte tek read model sorgusunda
+    /// birleştirilecektir.
     /// </summary>
     public class GetBusinessDetailQueryHandler : IRequestHandler<GetBusinessDetailQuery, Result<AdminBusinessDetailDto>>
     {
@@ -33,14 +33,14 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinessDet
         {
             try
             {
-                // 1. Isletme kaydi.
+                // 1. İşletme kaydı.
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
 
                 if (business is null)
                     return Result<AdminBusinessDetailDto>.Failure(
-                        Error.NotFound("Isletme", request.BusinessId.ToString()));
+                        Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Operasyonel sayilar: calisan, aktif hizmet, son 30 gun randevu.
+                // 2. Operasyonel sayılar: çalışan, aktif hizmet, son 30 gün randevu.
                 var businessId = business.Id;
                 var cutoff = DateTime.UtcNow.AddDays(-30);
 
@@ -80,7 +80,7 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinessDet
             catch (Exception ex)
             {
                 return Result<AdminBusinessDetailDto>.Failure(
-                    Error.Internal("Isletme detayi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("İşletme detayı getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

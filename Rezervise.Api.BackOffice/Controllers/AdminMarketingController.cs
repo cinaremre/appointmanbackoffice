@@ -13,8 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers
 {
     /// <summary>
-    /// Pazarlama ve gelir geri kazanimi raporlari (dokuman Modul 15). Route'lar
-    /// BackOfficeControllerBase uzerindeki "api/v1/admin" oneki ile birlesir:
+    /// Pazarlama ve gelir geri kazanımı raporları (doküman Modül 15). Route'lar
+    /// BackOfficeControllerBase üzerindeki "api/v1/admin" öneki ile birleşir:
     /// GET api/v1/admin/marketing/campaigns
     /// GET api/v1/admin/marketing/campaigns/{id}/performance
     /// GET api/v1/admin/waitlist/overview
@@ -31,8 +31,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Kampanya listesi: isletme, kanal ve aktiflik filtreleriyle sayfali
-        /// sonuc; her kampanya toplam harcama ve atif sayisi tasir.
+        /// Kampanya listesi: işletme, kanal ve aktiflik filtreleriyle sayfalı
+        /// sonuç; her kampanya toplam harcama ve atıf sayısı taşır.
         /// </summary>
         [HttpGet("marketing/campaigns")]
         [Authorize(Policy = AdminPermissions.MarketingRead)]
@@ -59,8 +59,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Kampanya performans ozeti: toplam harcama, atfedilen randevu ve
-        /// tamamlanan randevu sayilari.
+        /// Kampanya performans özeti: toplam harcama, atfedilen randevu ve
+        /// tamamlanan randevu sayıları.
         /// </summary>
         [HttpGet("marketing/campaigns/{id:guid}/performance")]
         [Authorize(Policy = AdminPermissions.MarketingRead)]
@@ -78,8 +78,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Bekleme listesi genel bakisi: aktif kayit, teklif durumlari ve
-        /// kurtarilan slot sayilari.
+        /// Bekleme listesi genel bakışı: aktif kayıt, teklif durumları ve
+        /// kurtarılan slot sayıları.
         /// </summary>
         [HttpGet("waitlist/overview")]
         [Authorize(Policy = AdminPermissions.MarketingRead)]
@@ -97,7 +97,7 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Geri cagirma denemeleri: isletme, durum ve tarih filtreleriyle liste.
+        /// Geri çağırma denemeleri: işletme, durum ve tarih filtreleriyle liste.
         /// </summary>
         [HttpGet("reengagement/attempts")]
         [Authorize(Policy = AdminPermissions.MarketingRead)]
@@ -122,8 +122,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Kurtarilan kapasite raporu: iptallerden aciga cikan slotlar ve
-        /// toplam Rebooked ozet sayisi.
+        /// Kurtarılan kapasite raporu: iptallerden açığa çıkan slotlar ve
+        /// toplam Rebooked özet sayısı.
         /// </summary>
         [HttpGet("waitlist/recovered-slots")]
         [Authorize(Policy = AdminPermissions.MarketingRead)]
@@ -146,8 +146,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Hata kodunu HTTP durum koduna esler; izin hatasi 403, kimlik hatasi
-        /// 401, bulunamadi 404 olarak doner.
+        /// Hata kodunu HTTP durum koduna eşler; izin hatası 403, kimlik hatası
+        /// 401, bulunamadı 404 olarak döner.
         /// </summary>
         private IActionResult FromError<T>(Result<T> result)
         {

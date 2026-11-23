@@ -3,16 +3,16 @@ using Rezervise.Application.Common.Models;
 namespace Rezervise.Application.Common.Interfaces
 {
     /// <summary>
-    /// E-posta gonderim soyutlamasi. Uygulamalar tasima hatalarinda istisna
-    /// firlatmaz; hatayi loglar ve yutar ki cagiran akis etkilenmesin.
+    /// E-posta gönderim soyutlaması. Uygulamalar taşıma hatalarında istisna
+    /// fırlatmaz; hatayı loglar ve yutar ki çağıran akış etkilenmesin.
     /// </summary>
     public interface IEmailService
     {
         /// <summary>
-        /// Mesaji gonderir. Tasima hatasi olursa istisna firlatilmaz.
+        /// Mesajı gönderir. Taşıma hatası olursa istisna fırlatılmaz.
         /// </summary>
-        /// <param name="message">Gonderilecek mesaj.</param>
-        /// <param name="cancellationToken">Iptal belirteci.</param>
+        /// <param name="message">Gönderilecek mesaj.</param>
+        /// <param name="cancellationToken">İptal belirteci.</param>
         Task SendAsync(EmailMessage message, CancellationToken cancellationToken = default);
     }
 }

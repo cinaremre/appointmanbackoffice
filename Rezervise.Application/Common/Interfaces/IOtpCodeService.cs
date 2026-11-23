@@ -3,27 +3,27 @@ using Rezervise.Domain.Entities;
 namespace Rezervise.Application.Common.Interfaces
 {
     /// <summary>
-    /// Telefon dogrulama (OTP) kodunun uretimi ve dogrulanmasi.
-    /// Ham kod yalnizca SMS govdesinde yer alir; veritabaninda hash'i saklanir.
+    /// Telefon doğrulama (OTP) kodunun üretimi ve doğrulanması.
+    /// Ham kod yalnızca SMS gövdesinde yer alır; veritabanında hash'i saklanır.
     /// </summary>
     public interface IOtpCodeService
     {
         /// <summary>
-        /// Yeni kod uretir, hash'ini kullaniciya yazar ve gonderilecek ham kodu dondurur.
-        /// Sabit kod yapilandirilmissa o kod kullanilir.
+        /// Yeni kod üretir, hash'ini kullanıcıya yazar ve gönderilecek ham kodu döndürür.
+        /// Sabit kod yapılandırılmışsa o kod kullanılır.
         /// </summary>
-        /// <param name="user">Kodu alacak kullanici.</param>
-        /// <param name="utcNow">Islem zamani (UTC).</param>
-        /// <returns>SMS ile gonderilecek ham kod.</returns>
+        /// <param name="user">Kodu alacak kullanıcı.</param>
+        /// <param name="utcNow">İşlem zamanı (UTC).</param>
+        /// <returns>SMS ile gönderilecek ham kod.</returns>
         string IssueCode(User user, DateTime utcNow);
 
         /// <summary>
-        /// Kodu dogrular; basarili oldugunda kullaniciyi telefon dogrulanmis sayar.
+        /// Kodu doğrular; başarılı öldüğünda kullanıcıyı telefon doğrulanmış sayar.
         /// </summary>
-        /// <param name="user">Dogrulanacak kullanici.</param>
-        /// <param name="code">Kullanici girdisi.</param>
-        /// <param name="utcNow">Islem zamani (UTC).</param>
-        /// <returns>Basarili mi ve basarisizsa hata anahtari.</returns>
+        /// <param name="user">Doğrulanacak kullanıcı.</param>
+        /// <param name="code">Kullanıcı girdisi.</param>
+        /// <param name="utcNow">İşlem zamanı (UTC).</param>
+        /// <returns>Başarılı mi ve başarısızsa hata anahtarı.</returns>
         (bool Success, string? ErrorKey) VerifyCode(User user, string code, DateTime utcNow);
     }
 }

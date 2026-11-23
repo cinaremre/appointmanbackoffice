@@ -1,8 +1,8 @@
 namespace Rezervise.Domain.Events.Consent
 {
     /// <summary>
-    /// Bir musterinin iletisim izni degistiginde uretilir (dokuman Modul 16).
-    /// Ayni deger tekrar atandiginda uretilmez.
+    /// Bir müşterinin iletişim izni değiştiğinde üretilir (doküman Modül 16).
+    /// Aynı değer tekrar atandığında üretilmez.
     /// </summary>
     public class CommunicationConsentChangedEvent : DomainEventBase
     {

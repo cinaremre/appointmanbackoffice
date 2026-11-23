@@ -10,8 +10,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Subscriptions.Commands.AssignSubscriptionByAdmin
 {
     /// <summary>
-    /// AssignSubscriptionCommand'i IMediator ile sarmalar. Onceki aktif
-    /// abonelikler denetim kaydinda oldValues olarak ozetlenir.
+    /// AssignSubscriptionCommand'i IMediator ile sarmalar. Önceki aktif
+    /// abonelikler denetim kaydında oldValues olarak özetlenir.
     /// </summary>
     public class AssignSubscriptionByAdminCommandHandler
         : IRequestHandler<AssignSubscriptionByAdminCommand, Result<Guid>>
@@ -42,8 +42,8 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Commands.AssignSubs
         {
             try
             {
-                // 1. Denetim icin mevcut aktif abonelikleri onceden oku;
-                //    atama sonrasi bunlar Expired olacak.
+                // 1. Denetim için mevcut aktif abonelikleri önceden oku;
+                //    atama sonrası bunlar Expired olacak.
                 var activeSubscriptions = await _subscriptionRepository.FindAsync(
                     s => s.BusinessId == request.BusinessId
                         && s.Status == EnumSubscriptionStatus.Active
@@ -55,7 +55,7 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Commands.AssignSubs
                     : $"ActiveCount={activeSubscriptions.Count}; "
                         + string.Join(", ", activeSubscriptions.Select(s => $"{s.Id}({s.PlanId})"));
 
-                // 2. Domain komutuna cevir; kurallar icerdeki handler'dadir.
+                // 2. Domain komutuna çevir; kurallar içerdeki handler'dadır.
                 var command = new AssignSubscriptionCommand
                 {
                     BusinessId = request.BusinessId,
@@ -69,7 +69,7 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Commands.AssignSubs
                 if (result.IsFailure)
                     return Result<Guid>.Failure(result.Error!);
 
-                // 3. Kritik islem denetimi: isletme kimligi ile birlikte yazilir.
+                // 3. Kritik işlem denetimi: işletme kimliği ile birlikte yazılır.
                 await AdminAuditRecorder.RecordAsync(
                     _adminAuditSink,
                     _adminAuditContext,
@@ -88,7 +88,7 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Commands.AssignSubs
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(
-                    Error.Internal("Admin abonelik atamasi sirasinda bir hata olustu.", ex.Message));
+                    Error.Internal("Admin abonelik ataması sırasında bir hata oluştu.", ex.Message));
             }
         }
     }

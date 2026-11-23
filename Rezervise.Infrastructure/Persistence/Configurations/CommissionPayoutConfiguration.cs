@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Prim odeme donemi. Donem kapatilirken odenen toplam prim tutari
-    /// kaydedilir; donem baslangic/bitis UTC olarak tutulur.
+    /// Prim ödeme dönemi. Dönem kapatılırken ödenen toplam prim tutarı
+    /// kaydedilir; dönem başlangıç/bitiş UTC olarak tutulur.
     /// </summary>
     public class CommissionPayoutConfiguration : BaseConfiguration<CommissionPayout>
     {

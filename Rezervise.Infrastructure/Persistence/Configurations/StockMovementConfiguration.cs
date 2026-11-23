@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Stok hareketi defteri. Kayitlar degistirilemez; bakiye hareket
-    /// toplamlarindan hesaplanir. Ayni (ReferenceType, ReferenceId)
-    // cifti islenemez (cift isleme engeli).
+    /// Stok hareketi defteri. Kayıtlar değiştirilemez; bakiye hareket
+    /// toplamlarından hesaplanır. Aynı (ReferenceType, ReferenceId)
+    // çifti işlenemez (çift işleme engeli).
     /// </summary>
     public class StockMovementConfiguration : BaseConfiguration<StockMovement>
     {
@@ -52,8 +52,8 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.HasIndex(x => x.BusinessId)
                 .HasDatabaseName("IX_StockMovements_BusinessId");
 
-            // Cift isleme engeli: ayni referansli hareket ikinci kez
-            // yazilamaz. Referanssiz (manuel) hareketler filtreye girmez.
+            // Çift işleme engeli: aynı referanslı hareket ikinci kez
+            // yazılamaz. Referanssız (manuel) hareketler filtreye girmez.
             builder.HasIndex(x => new { x.ReferenceType, x.ReferenceId })
                 .IsUnique()
                 .HasFilter("[ReferenceType] IS NOT NULL AND [ReferenceId] IS NOT NULL")

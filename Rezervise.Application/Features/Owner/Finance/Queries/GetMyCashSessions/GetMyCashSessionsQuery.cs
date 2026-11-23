@@ -6,8 +6,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMyCashSessions
 {
     /// <summary>
-    /// Isletme sahibinin kasa oturumu listesi. Sahiplik handler'da
-    /// dogrulanir; oturumlar salt okunur listelenir.
+    /// İşletme sahibinin kasa oturumu listesi. Sahiplik handler'da
+    /// doğrulanır; oturumlar salt okunur listelenir.
     /// </summary>
     public class GetMyCashSessionsQuery : IRequest<Result<AdminPagedResult<OwnerCashSessionDto>>>
     {
@@ -16,14 +16,14 @@ namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMyCashSessions
         /// <summary>Oturum durumu filtresi.</summary>
         public EnumCashSessionStatus? Status { get; set; }
 
-        /// <summary>1 tabanli sayfa numarasi.</summary>
+        /// <summary>1 tabanlı sayfa numarası.</summary>
         public int Page { get; set; } = 1;
 
-        /// <summary>Sayfa boyutu; handler en fazla 200'e sinirlar.</summary>
+        /// <summary>Sayfa boyutu; handler en fazla 200'e sınırlar.</summary>
         public int PageSize { get; set; } = 50;
     }
 
-    /// <summary>Owner kasa oturumu satiri; rapo detaylariyla.</summary>
+    /// <summary>Owner kasa oturumu satırı; rapo detaylarıyla.</summary>
     public class OwnerCashSessionDto
     {
         public Guid Id { get; init; }
@@ -44,10 +44,10 @@ namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMyCashSessions
 
         public decimal? CountedCash { get; init; }
 
-        /// <summary>Beklenen ile sayilan nakit arasindaki fark.</summary>
+        /// <summary>Beklenen ile sayılan nakit arasındaki fark.</summary>
         public decimal? Difference { get; init; }
 
-        /// <summary>Durum sayisal deger olarak doner (EnumCashSessionStatus).</summary>
+        /// <summary>Durum sayısal değer olarak döner (EnumCashSessionStatus).</summary>
         public EnumCashSessionStatus Status { get; init; }
     }
 }

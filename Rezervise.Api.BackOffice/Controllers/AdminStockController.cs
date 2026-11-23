@@ -11,14 +11,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers
 {
     /// <summary>
-    /// Stok ve musteri paketi okuma uclari (dokuman Modul 17).
-    /// Stok bakiyesi hareket defterinden toplanir; paket kalan haklari
-    /// PackageUsage hareketlerinden hesaplanir. Tum ucra salt okunurdur,
-    /// duzeltmeler domain komutlariyla yapilir.
+    /// Stok ve müşteri paketi okuma uçları (doküman Modül 17).
+    /// Stok bakiyesi hareket defterinden toplanır; paket kalan hakları
+    /// PackageUsage hareketlerinden hesaplanır. Tüm ücra salt okunurdur,
+    /// düzeltmeler domain komutlarıyla yapılır.
     ///
-    /// Route notu: "stock" ve "packages" gruplari ayni controller'da
-    /// toplandigindan sinif seviyesinde taban "api/v1/admin" sabitlenir,
-    /// sablonlar action seviyesinde verilir.
+    /// Route notu: "stock" ve "packages" grupları aynı controller'da
+    /// toplandığından sınıf seviyesinde taban "api/v1/admin" sabitlenir,
+    /// şablonlar action seviyesinde verilir.
     /// </summary>
     [ApiController]
     [Authorize]
@@ -32,7 +32,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             _mediator = mediator;
         }
 
-        /// <summary>Urun listesi + hareket defterinden hesaplanan stok bakiyesi.</summary>
+        /// <summary>Ürün listesi + hareket defterinden hesaplanan stok bakiyesi.</summary>
         [HttpGet("stock/products")]
         [Authorize(Policy = AdminPermissions.StockRead)]
         public async Task<IActionResult> GetProducts(
@@ -60,7 +60,7 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Stok hareket listesi; defter kayitlari oldugu gibi listelenir.
+        /// Stok hareket listesi; defter kayıtları öldüğü gibi listelenir.
         /// </summary>
         [HttpGet("stock/movements")]
         [Authorize(Policy = AdminPermissions.StockRead)]
@@ -91,8 +91,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Musteri paketi listesi + kalan hak ozeti; paket hareketlerinden
-        /// (Rezervasyon/Tuketim) hesaplanir.
+        /// Müşteri paketi listesi + kalan hak özeti; paket hareketlerinden
+        /// (Rezervasyon/Tüketim) hesaplanır.
         /// </summary>
         [HttpGet("packages")]
         [Authorize(Policy = AdminPermissions.PackageRead)]

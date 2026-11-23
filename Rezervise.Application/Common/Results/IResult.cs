@@ -7,11 +7,11 @@ namespace Rezervise.Application.Common.Results
         Error? Error { get; }
 
         /// <summary>
-        /// Hatasi degistirilmis yeni bir sonuc uretir. Api katmani lokalize
-        /// edilmis mesaji bu yontemle zarfa geri yazar.
+        /// Hatası değiştirilmiş yeni bir sonuç üretir. Api katmanı lokalize
+        /// edilmiş mesajı bu yöntemle zarfa geri yazar.
         /// </summary>
         /// <param name="error">Yeni hata bilgisi.</param>
-        /// <returns>Hatasi degistirilmis sonuc.</returns>
+        /// <returns>Hatası değiştirilmiş sonuç.</returns>
         IResult WithError(Error error);
     }
 }

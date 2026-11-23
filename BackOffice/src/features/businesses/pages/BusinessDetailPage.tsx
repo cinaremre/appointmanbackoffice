@@ -33,22 +33,22 @@ import { useAuth } from "../../../app/providers/AuthContext";
 import type { AuditEntry, BusinessDetail } from "../types";
 
 /**
- * ISLETME detay sayfasi (dokuman 9).
- * "Genel" ve "Audit Gecmisi" sekmeleri; askiya alma/aktiflestirme
- * gerekce zorunlu onay diyaloguyla, duzenleme RHF + zod ile yapilir.
+ * İŞLETME detay sayfası (doküman 9).
+ * "Genel" ve "Audit Geçmişi" sekmeleri; askıya alma/aktifleştirme
+ * gerekçe zorunlu onay diyaloguyla, düzenleme RHF + zod ile yapılır.
  */
 
 const editSchema = z.object({
-  name: z.string().trim().min(3, "Isletme adi en az 3 karakter olmali."),
-  description: z.string().trim().max(1000, "Aciklama en fazla 1000 karakter olabilir."),
+  name: z.string().trim().min(3, "İşletme adı en az 3 karakter olmalı."),
+  description: z.string().trim().max(1000, "Açıklama en fazla 1000 karakter olabilir."),
 });
 
 type BusinessEditForm = z.infer<typeof editSchema>;
 
 const SUSPEND_IMPACT =
-  "Bu isletmeyi askiya almak yeni rezervasyonlarin gorunurlugunu etkileyebilir. Mevcut randevular isletme politikasina gore korunur.";
+  "Bu işletmeyi askıya almak yeni rezervasyonların görünürlüğünü etkileyebilir. Mevcut randevular işletme politikasına göre korunur.";
 const ACTIVATE_IMPACT =
-  "Bu isletmeyi aktiflestirmek isletmenin yeni rezervasyonlarda tekrar gorunur olmasini saglar. Mevcut randevular ve isletme politikasi etkilenmez.";
+  "Bu işletmeyi aktifleştirmek işletmenin yeni rezervasyonlarda tekrar görünür olmasını sağlar. Mevcut randevular ve işletme politikası etkilenmez.";
 
 type DetailTab = "general" | "audit";
 type PendingStatusAction = "suspend" | "activate";
@@ -81,7 +81,7 @@ export function BusinessDetailPage() {
     enabled: id !== undefined,
   });
 
-  // Audit gecmisi yalnizca ilgili sekme acildiginda cekilir.
+  // Audit geçmişi yalnızca ilgili sekme açıldığında çekilir.
   const auditQuery = useQuery({
     queryKey: ["businesses", "detail", id, "audit"],
     queryFn: ({ signal }) => getList<AuditEntry>(`/businesses/${id}/audit`, signal),
@@ -92,37 +92,37 @@ export function BusinessDetailPage() {
     mutationFn: (values: BusinessEditForm) =>
       patchItem<BusinessDetail>(`/businesses/${id}`, values),
     onSuccess: () => {
-      setFeedback({ severity: "success", message: "Isletme bilgileri guncellendi." });
+      setFeedback({ severity: "success", message: "İşletme bilgileri güncellendi." });
       void queryClient.invalidateQueries({ queryKey: ["businesses"] });
     },
     onError: (error: unknown) => {
-      setFeedback({ severity: "error", message: toErrorMessage(error, "Guncelleme basarisiz.") });
+      setFeedback({ severity: "error", message: toErrorMessage(error, "Güncelleme başarısız.") });
     },
   });
 
   const suspendMutation = useMutation({
     mutationFn: (reason: string) => postItem(`/businesses/${id}/suspend`, { reason }),
     onSuccess: () => {
-      setFeedback({ severity: "success", message: "Isletme askiya alindi." });
+      setFeedback({ severity: "success", message: "İşletme askıya alındı." });
       setPendingAction(null);
       void queryClient.invalidateQueries({ queryKey: ["businesses"] });
     },
     onError: (error: unknown) => {
-      setFeedback({ severity: "error", message: toErrorMessage(error, "Askiya alma basarisiz.") });
+      setFeedback({ severity: "error", message: toErrorMessage(error, "Askıya alma başarısız.") });
     },
   });
 
   const activateMutation = useMutation({
     mutationFn: (reason: string) => postItem(`/businesses/${id}/activate`, { reason }),
     onSuccess: () => {
-      setFeedback({ severity: "success", message: "Isletme aktiflestirildi." });
+      setFeedback({ severity: "success", message: "İşletme aktifleştirildi." });
       setPendingAction(null);
       void queryClient.invalidateQueries({ queryKey: ["businesses"] });
     },
     onError: (error: unknown) => {
       setFeedback({
         severity: "error",
-        message: toErrorMessage(error, "Aktiflestirme basarisiz."),
+        message: toErrorMessage(error, "Aktifleştirme başarısız."),
       });
     },
   });
@@ -132,7 +132,7 @@ export function BusinessDetailPage() {
     defaultValues: { name: "", description: "" },
   });
 
-  // Detay yuklenince form alanlari sunucu verisiyle esitlenir.
+  // Detay yüklenince form alanları sunucu verisiyle eşitlenir.
   useEffect(() => {
     const detail = detailQuery.data;
     if (!detail) return;
@@ -156,7 +156,7 @@ export function BusinessDetailPage() {
   if (id === undefined) {
     return (
       <Box>
-        <Alert severity="error">Gecersiz isletme adresi: kimlik bilgisi eksik.</Alert>
+        <Alert severity="error">Geçersiz işletme adresi: kimlik bilgisi eksik.</Alert>
       </Box>
     );
   }
@@ -167,12 +167,12 @@ export function BusinessDetailPage() {
   const detail = detailQuery.data!;
 
   const infoFields: Array<{ label: string; value: string }> = [
-    { label: "Sehir (cityId)", value: detail.cityId },
+    { label: "Şehir (cityId)", value: detail.cityId },
     { label: "Sahip (ownerId)", value: detail.ownerId },
-    { label: "Calisan Sayisi", value: String(detail.employeeCount) },
-    { label: "Aktif Hizmet Sayisi", value: String(detail.activeServiceCount) },
-    { label: "Son Randevu Sayisi", value: String(detail.recentAppointmentCount) },
-    { label: "Kayit Tarihi", value: formatDateTime(detail.createdAt) },
+    { label: "Çalışan Sayısı", value: String(detail.employeeCount) },
+    { label: "Aktif Hizmet Sayısı", value: String(detail.activeServiceCount) },
+    { label: "Son Randevu Sayısı", value: String(detail.recentAppointmentCount) },
+    { label: "Kayıt Tarihi", value: formatDateTime(detail.createdAt) },
   ];
 
   const auditEntries = auditQuery.data?.items ?? [];
@@ -183,7 +183,7 @@ export function BusinessDetailPage() {
         title={detail.name}
         actions={
           <Button variant="outlined" onClick={() => navigate("/businesses")}>
-            Listeye Don
+            Listeye Dön
           </Button>
         }
       />
@@ -191,18 +191,18 @@ export function BusinessDetailPage() {
         <StatusBadge status={detail.status} />
         {canSuspend && detail.status === "Active" ? (
           <Button color="warning" variant="outlined" onClick={() => setPendingAction("suspend")}>
-            Askiya Al
+            Askıya Al
           </Button>
         ) : null}
         {canSuspend && detail.status === "Suspended" ? (
           <Button color="success" variant="outlined" onClick={() => setPendingAction("activate")}>
-            Aktiflestir
+            Aktifleştir
           </Button>
         ) : null}
       </Box>
       <Tabs value={tab} onChange={onTabChange} sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
         <Tab value="general" label="Genel" />
-        {canReadAudit ? <Tab value="audit" label="Audit Gecmisi" /> : null}
+        {canReadAudit ? <Tab value="audit" label="Audit Geçmişi" /> : null}
       </Tabs>
 
       {tab === "audit" && canReadAudit ? (
@@ -211,16 +211,16 @@ export function BusinessDetailPage() {
         ) : auditQuery.isError ? (
           <ErrorState error={auditQuery.error} />
         ) : auditEntries.length === 0 ? (
-          <EmptyState label="Bu isletme icin denetim kaydi bulunamadi." />
+          <EmptyState label="Bu işletme için denetim kaydı bulunamadı." />
         ) : (
           <TableContainer>
-            <Table size="small" aria-label="isletme denetim kayitlari">
+            <Table size="small" aria-label="işletme denetim kayıtları">
               <TableHead>
                 <TableRow>
                   <TableCell>Tarih</TableCell>
-                  <TableCell>Aktor</TableCell>
+                  <TableCell>Aktör</TableCell>
                   <TableCell>Aksiyon</TableCell>
-                  <TableCell>Gerekce</TableCell>
+                  <TableCell>Gerekçe</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -258,7 +258,7 @@ export function BusinessDetailPage() {
           {detail.description ? (
             <Box sx={{ mt: 2 }}>
               <Typography variant="body2" color="text.secondary">
-                Aciklama
+                Açıklama
               </Typography>
               <Typography variant="body1">{detail.description}</Typography>
             </Box>
@@ -267,7 +267,7 @@ export function BusinessDetailPage() {
             <Card sx={{ mt: 3 }}>
               <CardContent>
                 <Typography variant="h6" gutterBottom>
-                  Bilgileri Duzenle
+                  Bilgileri Düzenle
                 </Typography>
                 <form onSubmit={handleSubmit(onEditSubmit)} noValidate>
                   <Grid container spacing={2}>
@@ -277,13 +277,13 @@ export function BusinessDetailPage() {
                         name="name"
                         render={({ field, fieldState }) => (
                           <TextField
-                            label="Isletme Adi"
+                            label="İşletme Adı"
                             fullWidth
                             value={field.value}
                             onChange={field.onChange}
                             onBlur={field.onBlur}
                             error={fieldState.error !== undefined}
-                            helperText={fieldState.error?.message ?? "Isletmenin gorunen adi."}
+                            helperText={fieldState.error?.message ?? "İşletmenin görünen adı."}
                           />
                         )}
                       />
@@ -294,7 +294,7 @@ export function BusinessDetailPage() {
                         name="description"
                         render={({ field, fieldState }) => (
                           <TextField
-                            label="Aciklama"
+                            label="Açıklama"
                             fullWidth
                             multiline
                             minRows={3}
@@ -303,7 +303,7 @@ export function BusinessDetailPage() {
                             onBlur={field.onBlur}
                             error={fieldState.error !== undefined}
                             helperText={
-                              fieldState.error?.message ?? "Isletme hakkinda kisa aciklama."
+                              fieldState.error?.message ?? "İşletme hakkında kısa açıklama."
                             }
                           />
                         )}
@@ -324,9 +324,9 @@ export function BusinessDetailPage() {
 
       <ReasonConfirmDialog
         open={pendingAction !== null}
-        title={pendingAction === "suspend" ? "Isletmeyi Askiya Al" : "Isletmeyi Aktiflestir"}
+        title={pendingAction === "suspend" ? "İşletmeyi Askıya Al" : "İşletmeyi Aktifleştir"}
         impact={pendingAction === "suspend" ? SUSPEND_IMPACT : ACTIVATE_IMPACT}
-        confirmLabel={pendingAction === "suspend" ? "Askiya Al" : "Aktiflestir"}
+        confirmLabel={pendingAction === "suspend" ? "Askıya Al" : "Aktifleştir"}
         busy={statusMutation.isPending}
         onCancel={() => setPendingAction(null)}
         onConfirm={(reason) => statusMutation.mutate(reason)}

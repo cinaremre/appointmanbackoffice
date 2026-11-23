@@ -5,7 +5,7 @@ using MediatR;
 namespace Rezervise.Application.Features.Imports.Queries.GetImportJobResult
 {
     /// <summary>
-    /// Aktarim isinin ozetini ve satir bazli sonuclarini getirir.
+    /// Aktarım işinin özetini ve satır bazlı sonuçlarını getirir.
     /// </summary>
     public class GetImportJobResultQuery : IRequest<Result<ImportJobResultDto>>
     {

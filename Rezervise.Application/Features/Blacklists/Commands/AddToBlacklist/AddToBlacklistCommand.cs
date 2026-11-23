@@ -5,13 +5,13 @@ namespace Rezervise.Application.Features.Blacklists.Commands.AddToBlacklist
 {
     public class AddToBlacklistCommand : IRequest<Result<Guid>>
     {
-        // JWT'den alinacak (isletme sahibi)
+        // JWT'den alınacak (işletme sahibi)
         public Guid RequesterId { get; set; }
 
-        // Kara listeye alinacak kullanici
+        // Kara listeye alınacak kullanıcı
         public Guid UserId { get; set; }
 
-        // Hangi isletme
+        // Hangi işletme
         public Guid BusinessId { get; set; }
 
         // Sebep (opsiyonel)

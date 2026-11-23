@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Isletmenin plana baglanmasi. Isletme basina aktif abonelik benzersizdir;
-    /// yeni atamada eskisi handler tarafindan Expired yapilir.
+    /// İşletmenin plana bağlanması. İşletme basına aktif abonelik benzersizdir;
+    /// yeni atamada eskisi handler tarafından Expired yapılır.
     /// </summary>
     public class BusinessSubscriptionConfiguration : BaseConfiguration<BusinessSubscription>
     {

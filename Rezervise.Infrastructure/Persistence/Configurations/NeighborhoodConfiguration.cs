@@ -12,8 +12,8 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
 
             builder.HasKey(x => x.Id);
 
-            // Mahalle seed'i kaynak verideki ID'leri explicit yazacagi icin
-            // IDENTITY uretimi kapatilir.
+            // Mahalle seed'i kaynak verideki ID'leri explicit yazacağı için
+            // IDENTITY üretimi kapatılır.
             builder.Property(x => x.Id)
                 .ValueGeneratedNever();
 

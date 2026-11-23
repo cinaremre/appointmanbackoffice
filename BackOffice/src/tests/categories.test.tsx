@@ -6,7 +6,7 @@ import { AuthProvider } from "../app/providers/AuthContext";
 import { CategoriesPage } from "../features/categories/pages/CategoriesPage";
 
 /**
- * CategoriesPage testleri (dokuman 10). Ortak sarmalayici:
+ * CategoriesPage testleri (doküman 10). Ortak sarmalayıcı:
  * AuthProvider + QueryClientProvider + MemoryRouter; oturum
  * sessionStorage fake'i ile kurulur (backoffice.auth + backoffice.token).
  */
@@ -24,7 +24,7 @@ function fakeAuth(): void {
   sessionStorage.setItem("backoffice.token", "test-token");
 }
 
-/** client.ts'in kullandigi en kucuk Response benzeti. */
+/** client.ts'in kullandigi en küçük Response benzeti. */
 function jsonResponse(body: unknown): Response {
   return { ok: true, status: 200, json: async () => body } as unknown as Response;
 }
@@ -55,13 +55,13 @@ describe("CategoriesPage", () => {
     sessionStorage.clear();
   });
 
-  it("kategorileri agac sirasiyla render eder ve istek token tasir", async () => {
+  it("kategorileri ağaç sırasıyla render eder ve istek token taşır", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       jsonResponse({
         data: [
-          { id: "cat-1", name: "Kuafor", parentId: null, displayOrder: 1, isActive: true, childCount: 1 },
-          { id: "cat-2", name: "Sac Kesim", parentId: "cat-1", displayOrder: 1, isActive: true, childCount: 0 },
-          { id: "cat-3", name: "Guzellik Salonu", parentId: null, displayOrder: 2, isActive: true, childCount: 0 },
+          { id: "cat-1", name: "Kuaför", parentId: null, displayOrder: 1, isActive: true, childCount: 1 },
+          { id: "cat-2", name: "Saç Kesim", parentId: "cat-1", displayOrder: 1, isActive: true, childCount: 0 },
+          { id: "cat-3", name: "Güzellik Salonu", parentId: null, displayOrder: 2, isActive: true, childCount: 0 },
         ],
       }),
     );
@@ -69,19 +69,19 @@ describe("CategoriesPage", () => {
 
     renderCategoriesPage();
 
-    // Agac render: parent ve cocuk isimleri gorunur.
-    expect(await screen.findByText("Kuafor")).toBeInTheDocument();
-    expect(screen.getByText("Sac Kesim")).toBeInTheDocument();
-    expect(screen.getByText("Guzellik Salonu")).toBeInTheDocument();
+    // Agac render: parent ve çocuk isimleri görünür.
+    expect(await screen.findByText("Kuaför")).toBeInTheDocument();
+    expect(screen.getByText("Saç Kesim")).toBeInTheDocument();
+    expect(screen.getByText("Güzellik Salonu")).toBeInTheDocument();
 
-    // Siralama: parent (sira 1) cocugundan once, root'lar displayOrder'a gore.
+    // Sıralama: parent (sıra 1) çocuğundan önce, root'lar displayOrder'a göre.
     const joined = (await screen.findAllByRole("listitem"))
       .map((item) => item.textContent ?? "")
       .join("|");
-    expect(joined.indexOf("Kuafor")).toBeLessThan(joined.indexOf("Sac Kesim"));
-    expect(joined.indexOf("Kuafor")).toBeLessThan(joined.indexOf("Guzellik Salonu"));
+    expect(joined.indexOf("Kuaför")).toBeLessThan(joined.indexOf("Saç Kesim"));
+    expect(joined.indexOf("Kuaför")).toBeLessThan(joined.indexOf("Güzellik Salonu"));
 
-    // Istek Authorization header'i oturum token'i ile gitti.
+    // İstek Authorization header'i oturum token'i ile gitti.
     expect(fetchMock).toHaveBeenCalledWith(
       "/api/v1/admin/categories",
       expect.objectContaining({
@@ -90,11 +90,11 @@ describe("CategoriesPage", () => {
     );
   });
 
-  it("liste bossa EmptyState gosterir", async () => {
+  it("liste boşsa EmptyState gösterir", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ data: [] })));
 
     renderCategoriesPage();
 
-    expect(await screen.findByText("Kategori bulunamadi.")).toBeInTheDocument();
+    expect(await screen.findByText("Kategori bulunamadı.")).toBeInTheDocument();
   });
 });

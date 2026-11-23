@@ -9,8 +9,8 @@ namespace Rezervise.Infrastructure.Persistence.Context
         {
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
 
-            // Baglanti dizesini burada dogrudan belirtiyoruz.
-            // Daha sonra API katmanindaki appsettings.json'dan okumak daha iyi olacaktir.
+            // Bağlantı dizesini burada doğrudan belirtiyoruz.
+            // Daha sonra API katmanındaki appsettings.json'dan okumak daha iyi olacaktır.
             optionsBuilder.UseSqlServer("Server=.;Database=RezerviseDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
 
             return new AppDbContext(optionsBuilder.Options);

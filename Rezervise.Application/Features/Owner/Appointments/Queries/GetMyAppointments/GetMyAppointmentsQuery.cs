@@ -6,9 +6,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Appointments.Queries.GetMyAppointments
 {
     /// <summary>
-    /// Isletme sahibinin kendi isletmesinin randevulari. Sahiplik
-    /// handler'da dogrulanir; durum ve tarih araligi filtreleriyle
-    /// sayfalanir.
+    /// İşletme sahibinin kendi işletmesinin randevuları. Sahiplik
+    /// handler'da doğrulanır; durum ve tarih aralığı filtreleriyle
+    /// sayfalanır.
     /// </summary>
     public class GetMyAppointmentsQuery : IRequest<Result<AdminPagedResult<OwnerAppointmentListItemDto>>>
     {
@@ -17,20 +17,20 @@ namespace Rezervise.Application.Features.Owner.Appointments.Queries.GetMyAppoint
         /// <summary>Randevu durumu filtresi.</summary>
         public EnumAppointmentStatus? Status { get; set; }
 
-        /// <summary>Randevu tarihi alt siniri (UTC, dahil).</summary>
+        /// <summary>Randevu tarihi alt sınırı (UTC, dahil).</summary>
         public DateTime? FromDate { get; set; }
 
-        /// <summary>Randevu tarihi ust siniri (UTC, dahil).</summary>
+        /// <summary>Randevu tarihi üst sınırı (UTC, dahil).</summary>
         public DateTime? ToDate { get; set; }
 
-        /// <summary>1 tabanli sayfa numarasi.</summary>
+        /// <summary>1 tabanlı sayfa numarası.</summary>
         public int Page { get; set; } = 1;
 
-        /// <summary>Sayfa boyutu; handler en fazla 200'e sinirlar.</summary>
+        /// <summary>Sayfa boyutu; handler en fazla 200'e sınırlar.</summary>
         public int PageSize { get; set; } = 50;
     }
 
-    /// <summary>Owner randevu liste satiri.</summary>
+    /// <summary>Owner randevu liste satırı.</summary>
     public class OwnerAppointmentListItemDto
     {
         public Guid Id { get; init; }
@@ -43,7 +43,7 @@ namespace Rezervise.Application.Features.Owner.Appointments.Queries.GetMyAppoint
 
         public DateTime AppointmentDate { get; init; }
 
-        /// <summary>Durum sayisal deger olarak doner (EnumAppointmentStatus).</summary>
+        /// <summary>Durum sayısal değer olarak döner (EnumAppointmentStatus).</summary>
         public EnumAppointmentStatus Status { get; init; }
 
         public string? Notes { get; init; }

@@ -67,7 +67,7 @@ namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminCommissio
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<AdminCommissionDto>>.Failure(
-                    Error.Internal("Prim listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Prim listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

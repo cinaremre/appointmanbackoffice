@@ -8,7 +8,7 @@ namespace Rezervise.Application.Features.Notifications.Commands.MarkAsRead
         {
             RuleFor(x => x.NotificationId)
                 .NotEmpty()
-                .WithMessage("Bildirim ID bos olamaz.");
+                .WithMessage("Bildirim ID boş olamaz.");
         }
     }
 }

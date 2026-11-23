@@ -10,7 +10,7 @@ namespace Rezervise.Api.Configuration
         public const string SectionName = "SecurityHeaders";
 
         /// <summary>Content-Security-Policy value.</summary>
-        public string ContentSecurityPolicy { get; init; } = "default-src 'none'; frame-ancestors 'none'; base-uri 'none'";
+        public string ContentSecurityPolicy { get; init; } = "default-srç 'none'; frame-ancestors 'none'; base-uri 'none'";
 
         /// <summary>X-Frame-Options value; prevents clickjacking.</summary>
         public string FrameOptions { get; init; } = "DENY";

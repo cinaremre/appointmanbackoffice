@@ -2,13 +2,13 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { ReasonConfirmDialog } from "../shared/components/ReasonConfirmDialog";
 
-/** Kritik islem onayi: gerekce olmadan islem gonderilmez (dokuman 5.4). */
+/** Kritik işlem onayı: gerekçe olmadan işlem gönderilmez (doküman 5.4). */
 describe("ReasonConfirmDialog", () => {
-  it("gerekce bosken onay butonu pasiftir", () => {
+  it("gerekçe boşken onay butonu pasiftir", () => {
     render(
       <ReasonConfirmDialog
         open
-        title="Isletmeyi Askya Al"
+        title="İşletmeyi Askya Al"
         impact="Mevcut randevular korunur."
         onCancel={() => {}}
         onConfirm={() => {}}
@@ -19,20 +19,20 @@ describe("ReasonConfirmDialog", () => {
     expect(confirmButton).toBeDisabled();
   });
 
-  it("gerekce girilince onay cagrilir", async () => {
+  it("gerekçe girilince onay çağrılır", async () => {
     const onConfirm = vi.fn();
     render(
       <ReasonConfirmDialog
         open
-        title="Isletmeyi Askya Al"
+        title="İşletmeyi Askya Al"
         impact="Mevcut randevular korunur."
         onCancel={() => {}}
         onConfirm={onConfirm}
       />,
     );
 
-    const reasonInput = screen.getByLabelText(/Gerekce/i);
-    fireEvent.change(reasonInput, { target: { value: "Sikayet incelemesi" } });
+    const reasonInput = screen.getByLabelText(/Gerekçe/i);
+    fireEvent.change(reasonInput, { target: { value: "Şikayet incelemesi" } });
 
     await waitFor(() => {
       const confirmButton = screen.getByRole("button", { name: "Onayla" });
@@ -40,22 +40,22 @@ describe("ReasonConfirmDialog", () => {
     });
 
     fireEvent.click(screen.getByRole("button", { name: "Onayla" }));
-    expect(onConfirm).toHaveBeenCalledWith("Sikayet incelemesi");
+    expect(onConfirm).toHaveBeenCalledWith("Şikayet incelemesi");
   });
 
-  it("etki metni kullanicaya acikca gosterilir", () => {
+  it("etki metni kullanıcıya açıkça gösterilir", () => {
     render(
       <ReasonConfirmDialog
         open
-        title="Isletmeyi Askya Al"
-        impact="Bu isletmeyi askiya almak yeni rezervasyonlarin gorunurlugunu etkileyebilir."
+        title="İşletmeyi Askya Al"
+        impact="Bu işletmeyi askıya almak yeni rezervasyonların görünürlüğünü etkileyebilir."
         onCancel={() => {}}
         onConfirm={() => {}}
       />,
     );
 
     expect(
-      screen.getByText(/yeni rezervasyonlarin gorunurlugunu etkileyebilir/i),
+      screen.getByText(/yeni rezervasyonların görünürlüğünü etkileyebilir/i),
     ).toBeInTheDocument();
   });
 });

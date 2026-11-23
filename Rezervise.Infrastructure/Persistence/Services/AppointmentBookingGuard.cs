@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore;
 namespace Rezervise.Infrastructure.Persistence.Services
 {
     /// <summary>
-    /// Rezervasyon cakisma kontrolunu yapar. Izolasyon seviyesini bu metot degistirmez;
-    /// arayan SERIALIZABLE transaction icinde cagirmalidir. Bu kosul saglandiginda
-    /// aralik kilidi sayesinde iki paralel istegin ayni zaman araligina randevu
-    /// eklemesi engellenir ve check-then-act yarisi serilestirilir.
+    /// Rezervasyon çakışma kontrolünü yapar. İzolasyon seviyesini bu metot değiştirmez;
+    /// arayan SERIALIZABLE transaction içinde çağırmalıdır. Bu koşul sağlandığında
+    /// aralık kilidi sayesinde iki paralel isteğin aynı zaman aralığına randevu
+    /// eklemesi engellenir ve check-then-act yarısı serileştirilir.
     /// </summary>
     public sealed class AppointmentBookingGuard : IAppointmentBookingGuard
     {
@@ -24,9 +24,9 @@ namespace Rezervise.Infrastructure.Persistence.Services
         }
 
         /// <summary>
-        /// Cakisan aktif randevu olup olmadigini belirler.
-        /// Bitis saati bos olan randevular icin servis suresi kullanilir;
-        /// bu formul Domain tarafindaki OverlapsWith ile aynidir.
+        /// Çakışan aktif randevu olup olmadığını belirler.
+        /// Bitiş saati boş olan randevular için servis süresi kullanılır;
+        /// bu formül Domain tarafındaki OverlapsWith ile aynıdır.
         /// </summary>
         public Task<bool> HasConflictAsync(
             Guid employeeId,
@@ -36,9 +36,9 @@ namespace Rezervise.Infrastructure.Persistence.Services
             Guid? excludeAppointmentId = null,
             CancellationToken cancellationToken = default)
         {
-            // Soft delete global filtresi IgnoreQueryFilters ile kaldirildigi icin
-            // silinmemis kayit kosulu acikca uygulanir. Null exclude id SQL'de
-            // "<> NULL" ile tum satirlari elediginden HasValue ile korunur.
+            // Soft delete global filtresi IgnoreQueryFilters ile kaldırıldığı için
+            // silinmemiş kayıt koşulu açıkça uygulanır. Null exclude id SQL'de
+            // "<> NULL" ile tüm satırları elediğinden HasValue ile korunur.
             return _context.Appointments
                 .IgnoreQueryFilters()
                 .AnyAsync(

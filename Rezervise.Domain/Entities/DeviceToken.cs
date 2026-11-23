@@ -4,21 +4,21 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Bir kullanicinin mobil cihazi icin FCM push token kaydi.
-    /// Token asla hassas degil gibi ele alinmaz: yalnizca sahibine bildirim
-    /// gondermekte kullanilir. Ayni kullanici + token cifti tek kayittir;
-    /// cihaz uygulama kaldirdiginda token pasiflestirilir.
+    /// Bir kullanıcının mobil cihazı için FCM push token kaydı.
+    /// Token asla hassas değil gibi ele alınmaz: yalnızca sahibine bildirim
+    /// göndermekte kullanılır. Aynı kullanıcı + token çifti tek kayıttır;
+    /// cihaz uygulama kaldırdığında token pasifleştirilir.
     /// </summary>
     public class DeviceToken : BaseEntity
     {
         public Guid UserId { get; private set; }
 
-        /// <summary>FCM tarafindan uretilen cihaz token'i.</summary>
+        /// <summary>FCM tarafından üretilen cihaz token'i.</summary>
         public string Token { get; private set; }
 
         public EnumDevicePlatform Platform { get; private set; }
 
-        /// <summary>Gecersizlesmis (UNREGISTERED donen) token gonderime acik degildir.</summary>
+        /// <summary>Geçersizleşmiş (UNREGISTERED dönen) token gönderime açık değildir.</summary>
         public bool IsActive { get; private set; }
 
         public DateTime LastSeenAtUtc { get; private set; }
@@ -28,12 +28,12 @@ namespace Rezervise.Domain.Entities
         public DeviceToken(Guid userId, string token, EnumDevicePlatform platform, DateTime nowUtc)
         {
             if (userId == Guid.Empty)
-                throw new ArgumentException("Kullanici ID bos olamaz.", nameof(userId));
+                throw new ArgumentException("Kullanıcı ID boş olamaz.", nameof(userId));
 
             if (string.IsNullOrWhiteSpace(token))
                 throw new DomainException("DeviceToken.TokenRequired");
 
-            // FCM token'lari uzun (140-240 karakter) ve degisken uzunluktadir.
+            // FCM token'lari uzun (140-240 karakter) ve değişken uzunluktadır.
             if (token.Length < 40 || token.Length > 512)
                 throw new DomainException("DeviceToken.TokenLength");
 
@@ -44,7 +44,7 @@ namespace Rezervise.Domain.Entities
             LastSeenAtUtc = DateTime.SpecifyKind(nowUtc, DateTimeKind.Utc);
         }
 
-        /// <summary>Ayni cihazin tekrar kaydi: gorunurlugu tazeler.</summary>
+        /// <summary>Aynı cihazın tekrar kaydı: görünürlüğü tazeler.</summary>
         public void Touch(DateTime nowUtc)
         {
             LastSeenAtUtc = DateTime.SpecifyKind(nowUtc, DateTimeKind.Utc);
@@ -53,8 +53,8 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// FCM'den UNREGISTERED donen token'i gonderime kapatir.
-        /// Silmek yerine pasiflestirilir; mukerrer kayitlar korunur.
+        /// FCM'den UNREGISTERED dönen token'i gönderime kapatır.
+        /// Silmek yerine pasifleştirilir; mükerrer kayıtlar korunur.
         /// </summary>
         public void Deactivate()
         {

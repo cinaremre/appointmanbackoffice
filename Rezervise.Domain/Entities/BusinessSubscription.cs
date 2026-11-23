@@ -4,8 +4,8 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Isletmenin bir abonelik planina baglanmasi (dokuman Modul 14).
-    /// Ayni anda tek aktif abonelik beklenir; yeni atamada eskisi Expired yapilir.
+    /// İşletmenin bir abonelik planına bağlanması (doküman Modül 14).
+    /// Aynı anda tek aktif abonelik beklenir; yeni atamada eskisi Expired yapılır.
     /// </summary>
     public class BusinessSubscription : BaseEntity
     {
@@ -13,7 +13,7 @@ namespace Rezervise.Domain.Entities
         public Guid PlanId { get; private set; }
         public DateTime StartAt { get; private set; }
 
-        /// <summary>UTC bitis ani; null = belirsiz sure.</summary>
+        /// <summary>UTC bitiş anı; null = belirsiz süre.</summary>
         public DateTime? EndAt { get; private set; }
 
         public EnumSubscriptionStatus Status { get; private set; }
@@ -33,13 +33,13 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (planId == Guid.Empty)
-                throw new ArgumentException("Plan ID bos olamaz.", nameof(planId));
+                throw new ArgumentException("Plan ID boş olamaz.", nameof(planId));
 
             if (endAt.HasValue && endAt.Value <= startAt)
-                throw new DomainException("Abonelik bitis tarihi baslangictan sonra olmali.");
+                throw new DomainException("Abonelik bitiş tarihi başlangıçtan sonra olmalı.");
 
             BusinessId = businessId;
             PlanId = planId;
@@ -51,8 +51,8 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Verilen UTC anda abonelik aktif mi? Durum Active olmali ve
-        /// now [StartAt, EndAt) araligina dusmeli.
+        /// Verilen UTC anda abonelik aktif mi? Durum Active olmalı ve
+        /// now [StartAt, EndAt) aralığına düşmeli.
         /// </summary>
         public bool IsActiveAt(DateTime utc)
         {
@@ -62,7 +62,7 @@ namespace Rezervise.Domain.Entities
                 && !IsDeleted;
         }
 
-        /// <summary>Yeni atama veya sure dolusu; sadece aktif abonelik expire edilir.</summary>
+        /// <summary>Yeni atama veya süre dolusu; sadece aktif abonelik expire edilir.</summary>
         public void MarkExpired()
         {
             if (Status != EnumSubscriptionStatus.Active)

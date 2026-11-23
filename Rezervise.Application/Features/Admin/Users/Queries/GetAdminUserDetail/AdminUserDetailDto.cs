@@ -3,8 +3,8 @@ using Rezervise.Domain.Enums;
 namespace Rezervise.Application.Features.Admin.Users.Queries.GetAdminUserDetail
 {
     /// <summary>
-    /// Kullanici detayi (dokuman Modul 11). Gizli alanlar (sifre hash'i,
-    /// token hash'leri) bilincli olarak dondurulmez.
+    /// Kullanıcı detayı (doküman Modül 11). Gizli alanlar (şifre hash'i,
+    /// token hash'leri) bilinçli olarak döndürülmez.
     /// </summary>
     public class AdminUserDetailDto
     {
@@ -19,14 +19,14 @@ namespace Rezervise.Application.Features.Admin.Users.Queries.GetAdminUserDetail
         public DateTime? LastLoginDate { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        /// <summary>Kullanicinin sahip oldugu isletmeler.</summary>
+        /// <summary>Kullanıcının sahip öldüğü işletmeler.</summary>
         public IReadOnlyList<AdminUserBusinessDto> OwnedBusinesses { get; set; } = Array.Empty<AdminUserBusinessDto>();
 
-        /// <summary>Kullanicinin bagli calisan kayitlari (Employee.UserId iliskisi).</summary>
+        /// <summary>Kullanıcının bağlı çalışan kayıtları (Employee.UserId ilişkisi).</summary>
         public IReadOnlyList<AdminUserEmployeeDto> EmployeePositions { get; set; } = Array.Empty<AdminUserEmployeeDto>();
     }
 
-    /// <summary>Kullanicinin sahibi oldugu isletmenin ozeti.</summary>
+    /// <summary>Kullanıcının sahibi öldüğü işletmenin özeti.</summary>
     public class AdminUserBusinessDto
     {
         public Guid Id { get; set; }
@@ -34,7 +34,7 @@ namespace Rezervise.Application.Features.Admin.Users.Queries.GetAdminUserDetail
         public bool IsActive { get; set; }
     }
 
-    /// <summary>Kullanicinin calisan olarak kayitli oldugu pozisyon ozeti.</summary>
+    /// <summary>Kullanıcının çalışan olarak kayıtlı öldüğü pozisyon özeti.</summary>
     public class AdminUserEmployeeDto
     {
         public Guid Id { get; set; }

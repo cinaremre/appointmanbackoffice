@@ -34,14 +34,14 @@ import {
 } from "../types";
 
 /**
- * Owner stok sayfasi. Sekmeler: Urunler / Hareketler / Paketler.
- * Tamami salt okunur; stok giris/cikis ve satis islemleri kasa akisindan
- * domain komutlariyla yurutulur. Urun bakiyesi minimum altina dustugunde
- * metin rengiyle vurgulanir (renk tek basina gosterge degildir).
+ * Owner stok sayfası. Sekmeler: Ürünler / Hareketler / Paketler.
+ * Tamami salt okunur; stok giriş/çıkış ve satış işlemleri kasa akışından
+ * domain komutlarıyla yürütülür. Ürün bakiyesi minimum altına düştüğünde
+ * metin rengiyle vurgulanır (renk tek başına gösterge değildir).
  */
 
 const STOCK_TABS = [
-  { key: "products", label: "Urunler" },
+  { key: "products", label: "Ürünler" },
   { key: "movements", label: "Hareketler" },
   { key: "packages", label: "Paketler" },
 ] as const;
@@ -66,7 +66,7 @@ export function OwnerStockPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
 
-  // Hareket filtresi: GUID opsiyoneldir; bos birakilinca tum hareketler.
+  // Hareket filtresi: GUID opsiyoneldir; boş bırakılınca tüm hareketler.
   const [movementProductInput, setMovementProductInput] = useState("");
   const [movementProductFilter, setMovementProductFilter] = useState("");
 
@@ -115,11 +115,11 @@ export function OwnerStockPage() {
     setPage(1);
   };
 
-  // === Sutun tanimlari ===
+  // === Sütun tanımları ===
   const productColumns: DataTableColumn<OwnerProductListItem>[] = [
     { key: "sku", header: "SKU", render: (row) => row.sku },
-    { key: "name", header: "Urun", render: (row) => row.name },
-    { key: "salePrice", header: "Satis Fiyati", render: (row) => formatMoney(row.salePrice) },
+    { key: "name", header: "Ürün", render: (row) => row.name },
+    { key: "salePrice", header: "Satış Fiyatı", render: (row) => formatMoney(row.salePrice) },
     { key: "minimumStock", header: "Min Stok", render: (row) => String(row.minimumStock) },
     {
       key: "balance",
@@ -141,10 +141,10 @@ export function OwnerStockPage() {
   ];
 
   const movementColumns: DataTableColumn<OwnerStockMovementListItem>[] = [
-    { key: "productId", header: "Urun", render: (row) => <GuidText value={row.productId} /> },
+    { key: "productId", header: "Ürün", render: (row) => <GuidText value={row.productId} /> },
     {
       key: "movementType",
-      header: "Tur",
+      header: "Tür",
       render: (row) => movementTypeLabel(row.movementType),
     },
     { key: "quantity", header: "Miktar", render: (row) => String(row.quantity) },
@@ -154,10 +154,10 @@ export function OwnerStockPage() {
   ];
 
   const packageColumns: DataTableColumn<OwnerCustomerPackageListItem>[] = [
-    { key: "customerId", header: "Musteri", render: (row) => <GuidText value={row.customerId} /> },
+    { key: "customerId", header: "Müşteri", render: (row) => <GuidText value={row.customerId} /> },
     { key: "packageId", header: "Paket", render: (row) => <GuidText value={row.packageId} /> },
     { key: "purchasedAt", header: "Alim Tarihi", render: (row) => formatDateOnly(row.purchasedAt) },
-    { key: "expiresAt", header: "Bitis Tarihi", render: (row) => formatDateOnly(row.expiresAt) },
+    { key: "expiresAt", header: "Bitiş Tarihi", render: (row) => formatDateOnly(row.expiresAt) },
     {
       key: "status",
       header: "Durum",
@@ -175,7 +175,7 @@ export function OwnerStockPage() {
     return (
       <Box>
         <PageHeader title="Stok ve Paketler" />
-        <EmptyState label="Size ait isletme bulunamadi." />
+        <EmptyState label="Size ait işletme bulunamadı." />
       </Box>
     );
   }
@@ -191,7 +191,7 @@ export function OwnerStockPage() {
         <TextField
           select
           size="small"
-          label="Isletme"
+          label="İşletme"
           value={businessId}
           onChange={(e) => setSelectedId(e.target.value)}
           disabled={businesses.length <= 1}
@@ -224,8 +224,8 @@ export function OwnerStockPage() {
             totalCount={productsQuery.data?.pagination.totalCount ?? 0}
             onPageChange={onPageChange}
             onPageSizeChange={onPageSizeChange}
-            emptyLabel="Urun bulunamadi."
-            ariaLabel="urun listesi"
+            emptyLabel="Ürün bulunamadı."
+            ariaLabel="ürün listesi"
             onRefresh={() => void productsQuery.refetch()}
           />
         </Box>
@@ -236,7 +236,7 @@ export function OwnerStockPage() {
           <Stack direction="row" spacing={2} sx={{ mb: 2, alignItems: "center", flexWrap: "wrap" }}>
             <TextField
               size="small"
-              label="Urun Kimligi (GUID, opsiyonel)"
+              label="Ürün Kimliği (GUID, opsiyonel)"
               value={movementProductInput}
               onChange={(e) => setMovementProductInput(e.target.value)}
               sx={{ minWidth: 300 }}
@@ -271,7 +271,7 @@ export function OwnerStockPage() {
             totalCount={movementsQuery.data?.pagination.totalCount ?? 0}
             onPageChange={onPageChange}
             onPageSizeChange={onPageSizeChange}
-            emptyLabel="Stok hareketi bulunamadi."
+            emptyLabel="Stok hareketi bulunamadı."
             ariaLabel="stok hareketleri tablosu"
             onRefresh={() => void movementsQuery.refetch()}
           />
@@ -290,8 +290,8 @@ export function OwnerStockPage() {
             totalCount={packagesQuery.data?.pagination.totalCount ?? 0}
             onPageChange={onPageChange}
             onPageSizeChange={onPageSizeChange}
-            emptyLabel="Musteri paketi bulunamadi."
-            ariaLabel="musteri paketleri tablosu"
+            emptyLabel="Müşteri paketi bulunamadı."
+            ariaLabel="müşteri paketleri tablosu"
             onRefresh={() => void packagesQuery.refetch()}
           />
         </Box>

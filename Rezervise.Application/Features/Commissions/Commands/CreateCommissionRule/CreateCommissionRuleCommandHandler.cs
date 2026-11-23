@@ -40,21 +40,21 @@ namespace Rezervise.Application.Features.Commissions.Commands.CreateCommissionRu
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde OwnerId'si değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Forbidden("Bu isletmeye prim kurali tanimlama yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu işletmeye prim kuralı tanımlama yetkiniz yok."));
 
-                // 3. Kapsam referanslarini dogrula: hepsi ayni isletmeye ait olmali.
+                // 3. Kapsam referanslarını doğrula: hepsi aynı işletmeye ait olmalı.
                 if (request.EmployeeId.HasValue)
                 {
                     var employee = await _employeeRepository.GetByIdAsync(request.EmployeeId.Value, cancellationToken);
                     if (employee is null || employee.BusinessId != request.BusinessId)
-                        return Result<Guid>.Failure(Error.NotFound("Calisan", request.EmployeeId.Value.ToString()));
+                        return Result<Guid>.Failure(Error.NotFound("Çalışan", request.EmployeeId.Value.ToString()));
                 }
 
                 if (request.ServiceId.HasValue)
@@ -68,11 +68,11 @@ namespace Rezervise.Application.Features.Commissions.Commands.CreateCommissionRu
                 {
                     var product = await _productRepository.GetByIdAsync(request.ProductId.Value, cancellationToken);
                     if (product is null || product.BusinessId != request.BusinessId)
-                        return Result<Guid>.Failure(Error.NotFound("Urun", request.ProductId.Value.ToString()));
+                        return Result<Guid>.Failure(Error.NotFound("Ürün", request.ProductId.Value.ToString()));
                 }
 
-                // 4. Kurali olustur (entity pencere ve oran kurallarini uygular:
-                //    EffectiveFrom <= EffectiveTo, oran 0-1 arasi, ...)
+                // 4. Kuralı oluştur (entity pencere ve oran kurallarını uygular:
+                //    EffectiveFrom <= EffectiveTo, oran 0-1 arası, ...)
                 var rule = new CommissionRule(
                     request.BusinessId,
                     request.CalculationType,
@@ -96,7 +96,7 @@ namespace Rezervise.Application.Features.Commissions.Commands.CreateCommissionRu
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Prim kurali olusturulurken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Prim kuralı oluşturulurken bir hata oluştu.", ex.Message));
             }
         }
     }

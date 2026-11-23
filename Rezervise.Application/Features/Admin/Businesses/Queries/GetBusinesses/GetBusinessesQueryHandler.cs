@@ -9,9 +9,9 @@ using System.Linq.Expressions;
 namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinesses
 {
     /// <summary>
-    /// Isletme listesi handler'i (dokuman Modul 8). Ilk surum filtrelemeyi
-    /// repository uzerinde bellek icinde yapar; buyuk olcekte ozet/read model
-    /// tablosuna tasinacaktir.
+    /// İşletme listesi handler'i (doküman Modül 8). İlk sürüm filtrelemeyi
+    /// repository üzerinde bellek içinde yapar; büyük ölçekte özet/read model
+    /// tablosuna taşınacaktır.
     /// </summary>
     public class GetBusinessesQueryHandler : IRequestHandler<GetBusinessesQuery, Result<AdminBusinessListResult>>
     {
@@ -26,11 +26,11 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinesses
         {
             try
             {
-                // 1. Sayfalama kurallari: page alt siniri 1, pageSize 200 ust siniri.
+                // 1. Sayfalama kuralları: page alt sınırı 1, pageSize 200 üst sınırı.
                 var page = AdminPagination.NormalizePage(request.Page);
                 var pageSize = AdminPagination.ClampPageSize(request.PageSize);
 
-                // 2. Durum filtresi: entity IsActive bayragi uzerinden
+                // 2. Durum filtresi: entity IsActive bayrağı üzerinden
                 //    "Active"/"Suspended" olarak ifade edilir.
                 Expression<Func<Business, bool>> predicate = b => !b.IsDeleted;
 
@@ -49,11 +49,11 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinesses
                     else
                     {
                         return Result<AdminBusinessListResult>.Failure(
-                            Error.Validation("Status filtresi yalnizca Active veya Suspended olabilir."));
+                            Error.Validation("Status filtresi yalnızca Active veya Suspended olabilir."));
                     }
                 }
 
-                // 3. Ad aramasi: Turkce karakterleri dusuren normalizer ile icerik eslesmesi.
+                // 3. Ad araması: Türkçe karakterleri düşüren normalizer ile içerik eşleşmesi.
                 var normalizedSearch = SearchNormalizer.Normalize(request.Search);
 
                 if (!string.IsNullOrEmpty(normalizedSearch))
@@ -62,14 +62,14 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinesses
                         b => SearchNormalizer.Normalize(b.Name).Contains(normalizedSearch));
                 }
 
-                // 4. Sehir filtresi: adres value object uzerinden.
+                // 4. Şehir filtresi: adres value object üzerinden.
                 if (request.CityId.HasValue)
                 {
                     var cityId = request.CityId.Value;
                     predicate = predicate.AndAlso(b => b.Address.CityId == cityId);
                 }
 
-                // 5. Bellek ici filtre + sayfalama (ilk surum).
+                // 5. Bellek içi filtre + sayfalama (ilk sürüm).
                 var businesses = await _businessRepository.FindAsync(predicate, cancellationToken);
 
                 var totalCount = businesses.Count;
@@ -101,7 +101,7 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinesses
             catch (Exception ex)
             {
                 return Result<AdminBusinessListResult>.Failure(
-                    Error.Internal("Isletme listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("İşletme listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

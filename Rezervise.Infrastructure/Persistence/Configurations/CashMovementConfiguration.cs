@@ -38,7 +38,7 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.Property(x => x.CashSessionId)
                 .IsRequired();
 
-            // Oturum kapanis hesabi (giris/cikis toplamlari) icin index.
+            // Oturum kapanış hesabı (giriş/çıkış toplamları) için index.
             builder.HasIndex(x => x.CashSessionId)
                 .HasDatabaseName("IX_CashMovements_CashSessionId");
             builder.HasIndex(x => x.BusinessId);

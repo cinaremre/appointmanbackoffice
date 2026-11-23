@@ -7,35 +7,35 @@ using Microsoft.Extensions.Logging;
 namespace Rezervise.Api.Localization
 {
     /// <summary>
-    /// Oturum acmis kullanici icin dil tercihini belirler.
-    /// Once token icindeki <c>language</c> claim'ine bakar (hizli yol, DB sorgusu yok);
-    /// claim yoksa (ornegin eski token) kullanici kaydindaki <c>LanguageCode</c> okunur.
-    /// Anonim isteklerde null doner, boylece siradaki provider (Accept-Language) devreye girer.
+    /// Oturum açmış kullanıcı için dil tercihini belirler.
+    /// Önce token içindeki <c>language</c> claim'ine bakar (hızlı yol, DB sorgusu yok);
+    /// claim yoksa (örneğin eski token) kullanıcı kaydındaki <c>LanguageCode</c> okunur.
+    /// Anonim isteklerde null döner, böylece sıradaki provider (Accept-Language) devreye girer.
     /// </summary>
     public sealed class UserLanguageCultureProvider : IRequestCultureProvider
     {
-        /// <summary>Token icinde dil tercihini tasiyan claim adi.</summary>
+        /// <summary>Token içinde dil tercihini taşıyan claim adı.</summary>
         public const string LanguageClaimType = "language";
 
         private static readonly string[] SupportedLanguageCodes = { "tr", "en" };
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public async Task<ProviderCultureResult?> DetermineProviderCultureResult(HttpContext httpContext)
         {
             try
             {
                 var user = httpContext.User;
 
-                // Anonim istek: karar verme, sonraki provider'a birak.
+                // Anonim istek: karar verme, sonraki provider'a bırak.
                 if (user?.Identity?.IsAuthenticated != true)
                     return null;
 
-                // 1. Hizli yol: token icindeki dil claim'i.
+                // 1. Hızlı yol: token içindeki dil claim'i.
                 var claimLanguage = Normalize(user.FindFirst(LanguageClaimType)?.Value);
                 if (claimLanguage is not null)
                     return new ProviderCultureResult(claimLanguage);
 
-                // 2. Yedek yol: claim yoksa kullanici kaydindan oku.
+                // 2. Yedek yol: claim yoksa kullanıcı kaydından oku.
                 var userIdValue = user.FindFirst(ClaimTypes.NameIdentifier)?.Value
                                   ?? user.FindFirst("userId")?.Value;
 
@@ -56,18 +56,18 @@ namespace Rezervise.Api.Localization
             }
             catch (Exception ex)
             {
-                // Kultur cozumleme hatasi istegi bloklamaz; header tabanli tespite dusulur.
+                // Kültür çözümleme hatası isteği bloklamaz; header tabanlı tespite düşülür.
                 var loggerFactory = httpContext.RequestServices.GetService(typeof(ILoggerFactory)) as ILoggerFactory;
                 loggerFactory?
                     .CreateLogger<UserLanguageCultureProvider>()
-                    .LogWarning(ex, "Kullanici dil tercihi okunamadi, Accept-Language tespitine dusuldu.");
+                    .LogWarning(ex, "Kullanıcı dil tercihi okunamadı, Accept-Language tespitine düşüldü.");
 
                 return null;
             }
         }
 
         /// <summary>
-        /// Dil kodunu iki harfli kucuk forma indirger; desteklenmiyorsa null doner.
+        /// Dil kodunu iki harfli küçük forma indirger; desteklenmiyorsa null döner.
         /// </summary>
         /// <param name="value">Ham dil kodu.</param>
         /// <returns>Desteklenen kod ("tr"/"en") veya null.</returns>

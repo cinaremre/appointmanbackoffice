@@ -5,16 +5,16 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Stock.Queries.GetAdminProducts
 {
     /// <summary>
-    /// Urun listesi + stok bakiyesi (dokuman Modul 17). Bakiye hareket
-    /// defterinden (StockMovement) toplanir; Product uzerinde bakiye
-    /// tutulmaz. Ilk surumde sayfadaki urunlerin hareketleri belleke
-    /// cekilip toplanir (bellek ici hesap, dokuman 17).
+    /// Ürün listesi + stok bakiyesi (doküman Modül 17). Bakiye hareket
+    /// defterinden (StockMovement) toplanır; Product üzerinde bakiye
+    /// tutulmaz. İlk sürümde sayfadaki ürünlerin hareketleri belleke
+    /// çekilip toplanır (bellek içi hesap, doküman 17).
     /// </summary>
     public class GetAdminProductsQuery : IRequest<Result<AdminPagedResult<AdminProductDto>>>
     {
         public Guid? BusinessId { get; set; }
 
-        /// <summary>Urun adi veya SKU icinde aranir; bos ise filtre uygulanmaz.</summary>
+        /// <summary>Ürün adı veya SKU içinde aranır; boş ise filtre uygulanmaz.</summary>
         public string? Search { get; set; }
 
         public bool? IsActive { get; set; }
@@ -23,7 +23,7 @@ namespace Rezervise.Application.Features.Admin.Stock.Queries.GetAdminProducts
         public int PageSize { get; set; } = 50;
     }
 
-    /// <summary>Tek urunun stok bakiyesiyle birlikte admin gorunumu.</summary>
+    /// <summary>Tek ürünün stok bakiyesiyle birlikte admin görünümü.</summary>
     public class AdminProductDto
     {
         public Guid Id { get; set; }
@@ -37,7 +37,7 @@ namespace Rezervise.Application.Features.Admin.Stock.Queries.GetAdminProducts
         public decimal MinimumStock { get; set; }
         public bool IsActive { get; set; }
 
-        /// <summary>Hareket defterinin isaretli toplami; girisler pozitif, cikislar negatif.</summary>
+        /// <summary>Hareket defterinin işaretli toplamı; girişler pozitif, çıkışlar negatif.</summary>
         public decimal StockBalance { get; set; }
     }
 }

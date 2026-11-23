@@ -30,7 +30,7 @@ namespace Rezervise.Domain.Entities
     : base(id)
         {
             if (serviceCategoryId == Guid.Empty)
-                throw new ArgumentException("Kategori ID bos olamaz.", nameof(serviceCategoryId));
+                throw new ArgumentException("Kategori ID boş olamaz.", nameof(serviceCategoryId));
 
             ServiceCategoryId = serviceCategoryId;
             LanguageCode = NormalizeLanguageCode(languageCode);
@@ -48,10 +48,10 @@ namespace Rezervise.Domain.Entities
         private void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new DomainException("Kategori adi bos olamaz.");
+                throw new DomainException("Kategori adı boş olamaz.");
 
             if (name.Length < 2 || name.Length > 100)
-                throw new DomainException("Kategori adi 2-100 karakter arasinda olmalidir.");
+                throw new DomainException("Kategori adı 2-100 karakter arasında olmalıdır.");
 
             Name = name.Trim();
             UpdatedAt = DateTime.UtcNow;
@@ -60,7 +60,7 @@ namespace Rezervise.Domain.Entities
         private void SetDescription(string? description)
         {
             if (description != null && description.Length > 500)
-                throw new DomainException("Aciklama 500 karakterden uzun olamaz.");
+                throw new DomainException("Açıklama 500 karakterden uzun olamaz.");
 
             Description = description;
             UpdatedAt = DateTime.UtcNow;
@@ -69,15 +69,15 @@ namespace Rezervise.Domain.Entities
         private static string NormalizeLanguageCode(string languageCode)
         {
             if (string.IsNullOrWhiteSpace(languageCode))
-                throw new DomainException("Dil kodu bos olamaz.");
+                throw new DomainException("Dil kodu boş olamaz.");
 
             languageCode = languageCode.Trim().ToLowerInvariant();
 
             if (languageCode.Length != 2 && languageCode.Length != 5)
-                throw new DomainException("Dil kodu 2 karakter (tr) veya 5 karakter (tr-TR) olmalidir.");
+                throw new DomainException("Dil kodu 2 karakter (tr) veya 5 karakter (tr-TR) olmalıdır.");
 
             if (languageCode.Length == 5 && languageCode[2] != '-')
-                throw new DomainException("5 karakterli dil kodu 'xx-XX' formatinda olmalidir.");
+                throw new DomainException("5 karakterli dil kodu 'xx-XX' formatında olmalıdır.");
 
             return languageCode;
         }

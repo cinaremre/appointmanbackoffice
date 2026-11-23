@@ -6,16 +6,16 @@ import { AuthProvider } from "../app/providers/AuthContext";
 import { UserListPage } from "../features/users/pages/UserListPage";
 
 /**
- * Kullanici listesi sayfa testleri (dokuman 12). fetch mock'lanir;
- * AuthProvider + QueryClientProvider + MemoryRouter sarmalayicilari
- * gercek sayfa ortamini taklit eder.
+ * Kullanıcı listesi sayfa testleri (doküman 12). fetch mock'lanır;
+ * AuthProvider + QueryClientProvider + MemoryRouter sarmalayıcıları
+ * gerçek sayfa ortamini taklit eder.
  */
 
 const USERS = [
   {
     id: "u1",
     firstName: "Ali",
-    lastName: "Yilmaz",
+    lastName: "Yılmaz",
     email: "ali@example.com",
     phoneNumber: "5551112233",
     role: "Admin",
@@ -24,7 +24,7 @@ const USERS = [
   },
   {
     id: "u2",
-    firstName: "Ayse",
+    firstName: "Ayşe",
     lastName: "Demir",
     email: "ayse@example.com",
     phoneNumber: "5554445566",
@@ -34,7 +34,7 @@ const USERS = [
   },
 ];
 
-/** Basarili liste cevabi: { data, pagination } envelope'u. */
+/** Başarılı liste cevabı: { data, pagination } envelope'u. */
 function okEnvelope(data: unknown) {
   return {
     ok: true,
@@ -86,7 +86,7 @@ afterEach(() => {
 });
 
 describe("UserListPage", () => {
-  it("kullanici listesini render eder ve e-postalar gorunur", async () => {
+  it("kullanıcı listesini render eder ve e-postalar görünür", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => okEnvelope(USERS)));
 
     renderPage();
@@ -95,12 +95,12 @@ describe("UserListPage", () => {
     expect(screen.getByText("ayse@example.com")).toBeInTheDocument();
   });
 
-  it("bos listede EmptyState gosterir", async () => {
+  it("boş listede EmptyState gösterir", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => okEnvelope([])));
 
     renderPage();
 
-    expect(await screen.findByText("Kayitli kullanici bulunamadi.")).toBeInTheDocument();
+    expect(await screen.findByText("Kayıtlı kullanıcı bulunamadı.")).toBeInTheDocument();
     expect(screen.queryByText("ali@example.com")).not.toBeInTheDocument();
   });
 });

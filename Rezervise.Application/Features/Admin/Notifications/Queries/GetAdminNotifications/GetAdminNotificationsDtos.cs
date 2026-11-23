@@ -3,8 +3,8 @@ using Rezervise.Domain.Enums;
 namespace Rezervise.Application.Features.Admin.Notifications.Queries.GetAdminNotifications
 {
     /// <summary>
-    /// Backoffice bildirim satiri. Mevcut in-app Notification entity'sinin
-    /// yonetici gorunumu icin sadelestirilmis kopyasi.
+    /// Backoffice bildirim satırı. Mevcut in-app Notification entity'sinin
+    /// yönetici görünümü için sadeleştirilmiş kopyası.
     /// </summary>
     public class AdminNotificationDto
     {
@@ -17,18 +17,18 @@ namespace Rezervise.Application.Features.Admin.Notifications.Queries.GetAdminNot
         public DateTime SentAt { get; set; }
     }
 
-    /// <summary>Sayfali bildirim listesi sonucu.</summary>
+    /// <summary>Sayfalı bildirim listesi sonucu.</summary>
     public class AdminNotificationListDto
     {
         public IReadOnlyList<AdminNotificationDto> Items { get; set; } = Array.Empty<AdminNotificationDto>();
 
-        /// <summary>Kirpanma sonrasi uygulanan sayfa numarasi.</summary>
+        /// <summary>Kırpanma sonrası uygulanan sayfa numarası.</summary>
         public int Page { get; set; }
 
-        /// <summary>Kirpanma sonrasi uygulanan sayfa boyutu.</summary>
+        /// <summary>Kırpanma sonrası uygulanan sayfa boyutu.</summary>
         public int PageSize { get; set; }
 
-        /// <summary>Filtreye uyan toplam bildirim sayisi.</summary>
+        /// <summary>Filtreye uyan toplam bildirim sayısı.</summary>
         public long TotalCount { get; set; }
     }
 }

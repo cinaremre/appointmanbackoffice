@@ -46,20 +46,20 @@ namespace Rezervise.Application.Features.Reengagement.Queries.GetReengagementCan
         {
             try
             {
-                // 1. Isletme kontrolu.
+                // 1. İşletme kontrolü.
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
                     return Result<List<ReengagementCandidateDto>>.Failure(
-                        Error.NotFound("Isletme", request.BusinessId.ToString()));
+                        Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki: aday listesi isletme sahibi veya platform yoneticisine aittir.
+                // 2. Yetki: aday listesi işletme sahibi veya platform yöneticisine aittir.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
                     return Result<List<ReengagementCandidateDto>>.Failure(
-                        Error.Unauthorized("Bu isletmenin geri cagirma adaylarini gorme yetkiniz yok."));
+                        Error.Unauthorized("Bu işletmenin geri çağırma adaylarını görme yetkiniz yok."));
 
                 var now = _dateTime.UtcNow;
 
-                // 3. Kaynaklari topluca getir; dongu icinde sorgu yapilmaz.
+                // 3. Kaynakları topluca getir; döngü içinde sorgu yapılmaz.
                 var rules = await _ruleRepository.FindAsync(
                     r => r.BusinessId == request.BusinessId && r.IsEnabled && !r.IsDeleted,
                     cancellationToken);
@@ -68,7 +68,7 @@ namespace Rezervise.Application.Features.Reengagement.Queries.GetReengagementCan
                     h => h.BusinessId == request.BusinessId && !h.IsDeleted,
                     cancellationToken);
 
-                // Gelecek randevusu olan musteriler: aday olmasin.
+                // Gelecek randevusu olan müşteriler: aday olmasın.
                 var futureAppointments = await _appointmentRepository.FindAsync(
                     a => a.BusinessId == request.BusinessId
                         && (a.Status == EnumAppointmentStatus.Pending || a.Status == EnumAppointmentStatus.Confirmed)
@@ -76,14 +76,14 @@ namespace Rezervise.Application.Features.Reengagement.Queries.GetReengagementCan
                         && !a.IsDeleted,
                     cancellationToken);
 
-                // Cooldown icindeki onceki denemeler.
+                // Cooldown içindeki önceki denemeler.
                 var openAttempts = await _attemptRepository.FindAsync(
                     a => a.BusinessId == request.BusinessId
                         && (a.Status == EnumReengagementStatus.Eligible || a.Status == EnumReengagementStatus.Notified)
                         && !a.IsDeleted,
                     cancellationToken);
 
-                // Pazarlama izni kaydi bilinen musteriler (ilk surum: kanal fark etmeksizin).
+                // Pazarlama izni kaydı bilinen müşteriler (ilk sürüm: kanal fark etmeksizin).
                 var marketingPreferences = await _preferenceRepository.FindAsync(
                     p => p.BusinessId == request.BusinessId
                         && p.Purpose == EnumConsentPurpose.Marketing
@@ -103,23 +103,23 @@ namespace Rezervise.Application.Features.Reengagement.Queries.GetReengagementCan
 
                 foreach (var rule in rules)
                 {
-                    // Kuralin hizmet kapsami: null = tum hizmetler.
+                    // Kuralın hizmet kapsamı: null = tüm hizmetler.
                     var ruleHistories = rule.ServiceId.HasValue
                         ? histories.Where(h => h.ServiceId == rule.ServiceId.Value)
                         : histories;
 
                     foreach (var history in ruleHistories)
                     {
-                        // 4. Esik: son ziyaretten gecen gun, IntervalDays - LeadDays'e ulasmis olmali.
+                        // 4. Eşik: son ziyaretten geçen gün, IntervalDays - LeadDays'e ulaşmış olmalı.
                         var daysSinceLastVisit = (now - history.LastCompletedAt).TotalDays;
                         if (daysSinceLastVisit < rule.IntervalDays - rule.LeadDays)
                             continue;
 
-                        // 5. Bu hizmette gelecek randevusu varsa aday degil.
+                        // 5. Bu hizmette gelecek randevusu varsa aday değil.
                         if (futureAppointmentKeys.Contains((history.CustomerId, history.ServiceId)))
                             continue;
 
-                        // 6. Cooldown icinde acik (Eligible/Notified) deneme varsa aday degil.
+                        // 6. Cooldown içinde açık (Eligible/Notified) deneme varsa aday değil.
                         var cooldownStart = now.AddDays(-rule.CooldownDays);
                         var inCooldown = openAttempts.Any(a =>
                             a.CustomerId == history.CustomerId
@@ -129,8 +129,8 @@ namespace Rezervise.Application.Features.Reengagement.Queries.GetReengagementCan
                         if (inCooldown)
                             continue;
 
-                        // 7. Ayni musteri+hizmet cifti birden fazla kuralla tekrar listelenmez;
-                        //    isaretleme yalniz gercekten aday olustugunda yapilir.
+                        // 7. Aynı müşteri+hizmet çifti birden fazla kuralla tekrar listelenmez;
+                        //    işaretleme yalnız gerçekten aday oluştuğunda yapılır.
                         if (!emitted.Add((history.CustomerId, history.ServiceId)))
                             continue;
 
@@ -142,7 +142,7 @@ namespace Rezervise.Application.Features.Reengagement.Queries.GetReengagementCan
                             LastCompletedAt = history.LastCompletedAt,
                             VisitCount = history.VisitCount,
                             MedianIntervalDays = history.MedianIntervalDays,
-                            // Sablon degiskenleri gonderim aninda doldurulur.
+                            // Şablon değişkenleri gönderim anında doldurulur.
                             SuggestedMessage = rule.TemplateMessage,
                             IsConsentKnown = consentKnownCustomers.Contains(history.CustomerId)
                         });
@@ -154,7 +154,7 @@ namespace Rezervise.Application.Features.Reengagement.Queries.GetReengagementCan
             catch (Exception ex)
             {
                 return Result<List<ReengagementCandidateDto>>.Failure(
-                    Error.Internal("Geri cagirma adaylari listelenirken bir hata olustu.", ex.Message));
+                    Error.Internal("Geri çağırma adayları listelenirken bir hata oluştu.", ex.Message));
             }
         }
     }

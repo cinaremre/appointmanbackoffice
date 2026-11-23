@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers
 {
     /// <summary>
-    /// Yonetici denetim kayitlari (dokuman Modul 21). Route,
-    /// BackOfficeControllerBase uzerindeki "api/v1/admin" oneki ile birlesir:
+    /// Yönetici denetim kayıtları (doküman Modül 21). Route,
+    /// BackOfficeControllerBase üzerindeki "api/v1/admin" öneki ile birleşir:
     /// GET api/v1/admin/audit-logs
     /// </summary>
     public sealed class AdminAuditController : BackOfficeControllerBase
@@ -22,8 +22,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Denetim kayitlari: aktor, isletme, varlik tipi ve tarih filtreleriyle
-        /// sayfali sonuc; CreatedAtUtc tersten sirali.
+        /// Denetim kayıtları: aktör, işletme, varlık tipi ve tarih filtreleriyle
+        /// sayfalı sonuç; CreatedAtUtc tersten sıralı.
         /// </summary>
         [HttpGet("audit-logs")]
         [Authorize(Policy = AdminPermissions.AuditRead)]
@@ -54,8 +54,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Hata kodunu HTTP durum koduna esler; izin hatasi 403, kimlik hatasi
-        /// 401, bulunamadi 404 olarak doner.
+        /// Hata kodunu HTTP durum koduna eşler; izin hatası 403, kimlik hatası
+        /// 401, bulunamadı 404 olarak döner.
         /// </summary>
         private IActionResult FromError<T>(Result<T> result)
         {

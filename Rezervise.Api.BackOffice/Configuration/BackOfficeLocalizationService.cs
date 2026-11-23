@@ -4,9 +4,9 @@ using Rezervise.Application.Common.Interfaces;
 namespace Rezervise.BackOffice.Api.Configuration
 {
     /// <summary>
-    /// Backoffice icin minimal lokalizasyon hizmeti. Admin uclari
-    /// lokalizasyona bagli degildir; MediatR validator'larinin DI
-    /// bagimliligini karsilar ve anahtari oldugu gibi dondurur.
+    /// Backoffice için minimal lokalizasyon hizmeti. Admin uçları
+    /// lokalizasyona bağlı değildir; MediatR validatör'larının DI
+    /// bağımlılığını karşılar ve anahtarı öldüğü gibi döndürür.
     /// </summary>
     public sealed class BackOfficeLocalizationService : ILocalizationService
     {

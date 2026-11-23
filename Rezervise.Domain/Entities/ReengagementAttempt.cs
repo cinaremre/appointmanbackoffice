@@ -4,27 +4,27 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Tek bir geri cagirma denemesi (dokuman Modul 13).
-    /// Aday bulunur (Eligible), bildirim gonderilir (Notified) ve donusum
-    /// randevuya baglanir (Converted).
+    /// Tek bir geri çağırma denemesi (doküman Modül 13).
+    /// Aday bulunur (Eligible), bildirim gönderilir (Notified) ve dönüşüm
+    /// randevuya bağlanır (Converted).
     /// </summary>
     public class ReengagementAttempt : BaseEntity
     {
         public Guid BusinessId { get; private set; }
 
-        /// <summary>Musterinin User ID'si.</summary>
+        /// <summary>Müşterinin User ID'si.</summary>
         public Guid CustomerId { get; private set; }
 
         public Guid ServiceId { get; private set; }
         public Guid RuleId { get; private set; }
 
-        /// <summary>Gonderim varsa bildirim kaydinin ID'si.</summary>
+        /// <summary>Gönderim varsa bildirim kaydının ID'si.</summary>
         public Guid? NotificationId { get; private set; }
 
         public DateTime TriggeredAt { get; private set; }
         public EnumReengagementStatus Status { get; private set; }
 
-        /// <summary>Donusum gerceklesirse olusan randevunun ID'si.</summary>
+        /// <summary>Dönüşüm gerçekleşirse oluşan randevunun ID'si.</summary>
         public Guid? ConvertedAppointmentId { get; private set; }
 
         // Navigation Properties
@@ -41,16 +41,16 @@ namespace Rezervise.Domain.Entities
             : base(Guid.NewGuid())
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (customerId == Guid.Empty)
-                throw new ArgumentException("Musteri ID bos olamaz.", nameof(customerId));
+                throw new ArgumentException("Müşteri ID boş olamaz.", nameof(customerId));
 
             if (serviceId == Guid.Empty)
-                throw new ArgumentException("Hizmet ID bos olamaz.", nameof(serviceId));
+                throw new ArgumentException("Hizmet ID boş olamaz.", nameof(serviceId));
 
             if (ruleId == Guid.Empty)
-                throw new ArgumentException("Kural ID bos olamaz.", nameof(ruleId));
+                throw new ArgumentException("Kural ID boş olamaz.", nameof(ruleId));
 
             BusinessId = businessId;
             CustomerId = customerId;
@@ -60,7 +60,7 @@ namespace Rezervise.Domain.Entities
             Status = EnumReengagementStatus.Eligible;
         }
 
-        /// <summary>Aday icin bildirim gonderildi olarak isaretler.</summary>
+        /// <summary>Aday için bildirim gönderildi olarak işaretler.</summary>
         public void MarkNotified(Guid? notificationId = null)
         {
             if (Status != EnumReengagementStatus.Eligible)
@@ -71,11 +71,11 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Geri cagirma randevuya donustu.</summary>
+        /// <summary>Geri çağırma randevuya dönüştü.</summary>
         public void MarkConverted(Guid appointmentId)
         {
             if (appointmentId == Guid.Empty)
-                throw new ArgumentException("Randevu ID bos olamaz.", nameof(appointmentId));
+                throw new ArgumentException("Randevu ID boş olamaz.", nameof(appointmentId));
 
             if (Status != EnumReengagementStatus.Notified)
                 return;
@@ -85,7 +85,7 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Izin/molal nedeniyle gonderim engellendi.</summary>
+        /// <summary>İzin/molal nedeniyle gönderim engellendi.</summary>
         public void MarkSuppressed()
         {
             if (Status != EnumReengagementStatus.Eligible)
@@ -95,7 +95,7 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Cooldown suresi devrede; deneme ertelendi.</summary>
+        /// <summary>Cooldown süresi devrede; deneme ertelendi.</summary>
         public void MarkCooldown()
         {
             if (Status != EnumReengagementStatus.Eligible)

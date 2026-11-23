@@ -38,11 +38,11 @@ namespace Rezervise.Application.Features.Admin.Categories.Commands.CreateBusines
             try
             {
                 if (string.IsNullOrWhiteSpace(request.Name))
-                    return Result<Guid>.Failure(Error.Validation("Kategori adi zorunludur."));
+                    return Result<Guid>.Failure(Error.Validation("Kategori adı zorunludur."));
 
                 var name = request.Name.Trim();
 
-                // 1. Ust kategori var mi?
+                // 1. Üst kategori var mi?
                 BusinessCategory? parent = null;
                 if (request.ParentId.HasValue)
                 {
@@ -51,10 +51,10 @@ namespace Rezervise.Application.Features.Admin.Categories.Commands.CreateBusines
 
                     if (parent is null)
                         return Result<Guid>.Failure(
-                            Error.NotFound("Ust kategori", request.ParentId.Value.ToString()));
+                            Error.NotFound("Üst kategori", request.ParentId.Value.ToString()));
                 }
 
-                // 2. Ayni ada sahip aktif kardes karari (ilk surum kurali).
+                // 2. Aynı ada sahip aktif kardeş kararı (ilk sürüm kuralı).
                 var sameName = await _categoryRepository.FindAsync(
                     c => c.Name == name
                         && c.ParentCategoryId == request.ParentId
@@ -64,9 +64,9 @@ namespace Rezervise.Application.Features.Admin.Categories.Commands.CreateBusines
 
                 if (sameName.Any())
                     return Result<Guid>.Failure(
-                        Error.Conflict("Ayni ada sahip aktif bir kardes kategori zaten mevcut."));
+                        Error.Conflict("Aynı ada sahip aktif bir kardeş kategori zaten mevcut."));
 
-                // 3. Domain entity olustur ve ust iliskisini kur.
+                // 3. Domain entity oluştur ve üst ilişkisini kur.
                 var category = new BusinessCategory(name, request.DisplayOrder);
 
                 if (parent is not null)
@@ -75,7 +75,7 @@ namespace Rezervise.Application.Features.Admin.Categories.Commands.CreateBusines
                 await _categoryRepository.AddAsync(category, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // 4. Denetim kaydi: kritik yonetici islemi.
+                // 4. Denetim kaydı: kritik yönetici işlemi.
                 await AdminAuditRecorder.RecordAsync(
                     _auditSink,
                     _auditContext,
@@ -96,7 +96,7 @@ namespace Rezervise.Application.Features.Admin.Categories.Commands.CreateBusines
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(
-                    Error.Internal("Kategori olusturulurken bir hata olustu.", ex.Message));
+                    Error.Internal("Kategori oluşturulurken bir hata oluştu.", ex.Message));
             }
         }
     }

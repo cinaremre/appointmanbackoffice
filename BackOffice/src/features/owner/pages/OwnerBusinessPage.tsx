@@ -26,14 +26,14 @@ import type { OwnedBusinessDetail } from "../types";
 import { activeText, formatDateTime } from "../types";
 
 /**
- * Owner isletme bilgileri sayfasi. Kapsam: kendi isletmesi. Kart bilgileri
- * salt okunur gosterilir; ad/aciklama duzenlemesi RHF + zod ile yapilir ve
- * PATCH ile gonderilir. Nihai yetki kontrolu SUNUCUDADIR.
+ * Owner işletme bilgileri sayfası. Kapsam: kendi işletmesi. Kart bilgileri
+ * salt okunur gösterilir; ad/açıklama düzenlemesi RHF + zod ile yapılır ve
+ * PATCH ile gönderilir. Nihai yetki kontrolü SUNUCUDADIR.
  */
 
 const businessEditSchema = z.object({
-  name: z.string().trim().min(3, "Isletme adi en az 3 karakter olmali."),
-  description: z.string().trim().max(1000, "Aciklama en fazla 1000 karakter olabilir."),
+  name: z.string().trim().min(3, "İşletme adı en az 3 karakter olmalı."),
+  description: z.string().trim().max(1000, "Açıklama en fazla 1000 karakter olabilir."),
 });
 
 type BusinessEditForm = z.infer<typeof businessEditSchema>;
@@ -56,7 +56,7 @@ export function OwnerBusinessPage() {
   const [selectedId, setSelectedId] = useState("");
   const [feedback, setFeedback] = useState<Feedback>(null);
 
-  // Tek isletme otomatik secilir.
+  // Tek işletme otomatik seçilir.
   const businessId = selectedId || businesses[0]?.id || "";
 
   const detailQuery = useQuery({
@@ -68,12 +68,12 @@ export function OwnerBusinessPage() {
   const patchMutation = useMutation({
     mutationFn: (values: BusinessEditForm) => ownerPatchItem(`/businesses/${businessId}`, values),
     onSuccess: () => {
-      setFeedback({ severity: "success", message: "Isletme bilgileri guncellendi." });
+      setFeedback({ severity: "success", message: "İşletme bilgileri güncellendi." });
       void queryClient.invalidateQueries({ queryKey: ["owner", "businesses"] });
       void queryClient.invalidateQueries({ queryKey: ["owner", "business", "detail", businessId] });
     },
     onError: (error: unknown) => {
-      setFeedback({ severity: "error", message: toErrorMessage(error, "Guncelleme basarisiz.") });
+      setFeedback({ severity: "error", message: toErrorMessage(error, "Güncelleme başarısız.") });
     },
   });
 
@@ -82,7 +82,7 @@ export function OwnerBusinessPage() {
     defaultValues: { name: "", description: "" },
   });
 
-  // Detay yuklenince form alanlari sunucu verisiyle esitlenir.
+  // Detay yüklenince form alanları sunucu verisiyle eşitlenir.
   useEffect(() => {
     const detail = detailQuery.data;
     if (!detail) return;
@@ -98,8 +98,8 @@ export function OwnerBusinessPage() {
   if (businesses.length === 0) {
     return (
       <Box>
-        <PageHeader title="Isletme Bilgileri" />
-        <EmptyState label="Size ait isletme bulunamadi." />
+        <PageHeader title="İşletme Bilgileri" />
+        <EmptyState label="Size ait işletme bulunamadı." />
       </Box>
     );
   }
@@ -108,21 +108,21 @@ export function OwnerBusinessPage() {
 
   const infoFields: Array<{ label: string; value: string }> = detail
     ? [
-        { label: "Sehir (cityId)", value: detail.cityId },
+        { label: "Şehir (cityId)", value: detail.cityId },
         {
           label: "Puan",
           value: `${detail.rating.toFixed(1)} (${detail.totalReviews} yorum)`,
         },
-        { label: "Aktif Hizmet Sayisi", value: String(detail.activeServiceCount) },
-        { label: "Calisan Sayisi", value: String(detail.employeeCount) },
-        { label: "Bugunku Randevu", value: String(detail.todaysAppointmentCount) },
-        { label: "Kayit Tarihi", value: formatDateTime(detail.createdAt) },
+        { label: "Aktif Hizmet Sayısı", value: String(detail.activeServiceCount) },
+        { label: "Çalışan Sayısı", value: String(detail.employeeCount) },
+        { label: "Bugünkü Randevu", value: String(detail.todaysAppointmentCount) },
+        { label: "Kayıt Tarihi", value: formatDateTime(detail.createdAt) },
       ]
     : [];
 
   return (
     <Box>
-      <PageHeader title="Isletme Bilgileri" />
+      <PageHeader title="İşletme Bilgileri" />
       <Stack
         direction={{ xs: "column", md: "row" }}
         spacing={2}
@@ -131,7 +131,7 @@ export function OwnerBusinessPage() {
         <TextField
           select
           size="small"
-          label="Isletme"
+          label="İşletme"
           value={businessId}
           onChange={(e) => setSelectedId(e.target.value)}
           disabled={businesses.length <= 1}
@@ -168,7 +168,7 @@ export function OwnerBusinessPage() {
           {detail.description ? (
             <Box sx={{ mt: 2 }}>
               <Typography variant="body2" color="text.secondary">
-                Aciklama
+                Açıklama
               </Typography>
               <Typography variant="body1">{detail.description}</Typography>
             </Box>
@@ -177,7 +177,7 @@ export function OwnerBusinessPage() {
             <Card sx={{ mt: 3 }}>
               <CardContent>
                 <Typography variant="h6" gutterBottom>
-                  Bilgileri Duzenle
+                  Bilgileri Düzenle
                 </Typography>
                 <form onSubmit={handleSubmit(onEditSubmit)} noValidate>
                   <Grid container spacing={2}>
@@ -187,13 +187,13 @@ export function OwnerBusinessPage() {
                         name="name"
                         render={({ field, fieldState }) => (
                           <TextField
-                            label="Isletme Adi"
+                            label="İşletme Adı"
                             fullWidth
                             value={field.value}
                             onChange={field.onChange}
                             onBlur={field.onBlur}
                             error={fieldState.error !== undefined}
-                            helperText={fieldState.error?.message ?? "Isletmenin gorunen adi."}
+                            helperText={fieldState.error?.message ?? "İşletmenin görünen adı."}
                           />
                         )}
                       />
@@ -204,7 +204,7 @@ export function OwnerBusinessPage() {
                         name="description"
                         render={({ field, fieldState }) => (
                           <TextField
-                            label="Aciklama"
+                            label="Açıklama"
                             fullWidth
                             multiline
                             minRows={3}
@@ -213,7 +213,7 @@ export function OwnerBusinessPage() {
                             onBlur={field.onBlur}
                             error={fieldState.error !== undefined}
                             helperText={
-                              fieldState.error?.message ?? "Isletme hakkinda kisa aciklama."
+                              fieldState.error?.message ?? "İşletme hakkında kısa açıklama."
                             }
                           />
                         )}

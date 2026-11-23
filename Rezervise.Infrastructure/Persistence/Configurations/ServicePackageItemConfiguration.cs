@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Paketin icindeki tek hizmet kalemi. Ayni pakette ayni hizmet bir kez
-    /// tanimlanabilir.
+    /// Paketin içindeki tek hizmet kalemi. Aynı pakette aynı hizmet bir kez
+    /// tanımlanabilir.
     /// </summary>
     public class ServicePackageItemConfiguration : BaseConfiguration<ServicePackageItem>
     {

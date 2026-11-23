@@ -17,7 +17,7 @@ using Rezervise.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ===== Yapilandirma =====
+// ===== Yapılandırma =====
 var jwtSettings = builder.Configuration.GetSection(BackOfficeJwtSettings.SectionName)
     .Get<BackOfficeJwtSettings>() ?? new BackOfficeJwtSettings();
 
@@ -30,20 +30,20 @@ builder.Services.AddSingleton(paginationSettings);
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
-// MediatR tum Application assembly'sini tarar: musteri handler'larinin
-// bagimlilikleri (e-posta kuyrugu, OTP, push, lokalizasyon) DI dogrulamasi icin
-// burada da karsilanir; musteri HTTP uclari backoffice'te acik DEGILDIR.
-// Ortak altyapi tek uzanti ile kurulur (unutmaya karsi).
+// MediatR tüm Application assembly'sını tarar: müşteri handler'larının
+// bağımlılıkleri (e-posta kuyruğu, OTP, push, lokalizasyon) DI doğrulaması için
+// burada da karşılanır; müşteri HTTP uçları backoffice'te açık DEGILDIR.
+// Ortak altyapı tek uzantı ile kurulur (unutmaya karşı).
 builder.Services.AddSharedInfrastructure(
     builder.Configuration,
     builder.Environment.IsDevelopment());
 builder.Services.AddHostedService<Rezervise.Api.BackOffice.Services.PushBackgroundService>();
 builder.Services.AddSingleton<Rezervise.Application.Common.Interfaces.ILocalizationService, BackOfficeLocalizationService>();
 
-// ===== Yonetici kimligi: claim'lerden cozelir, govdeye guvenilmez =====
+// ===== Yönetici kimliği: claim'lerden çözelir, gövdeye güvenilmez =====
 builder.Services.AddBackOfficeCurrentUser();
 
-// ===== Kimlik dogrulama: ayri audience, musteri token'lari gecersiz =====
+// ===== Kimlik doğrulama: ayrı audience, müşteri token'lari geçersiz =====
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -59,15 +59,15 @@ builder.Services
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
             ClockSkew = jwtSettings.ClockSkew,
             // TokenService rolleri ClaimTypes.Role olarak yazar; [Authorize(Roles=...)]
-            // dogrulamasi ayni claim turunu okumalidir.
+            // doğrulaması aynı claim türünü okumalıdır.
             RoleClaimType = ClaimTypes.Role
         };
     });
 
-// ===== Permission bazli yetki =====
+// ===== Permission bazlı yetki =====
 builder.Services.AddBackOfficeAuthorization();
 
-// ===== Denetim baglami =====
+// ===== Denetim bağlamı =====
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IAdminAuditContext, AdminAuditContextAccessor>();
 
@@ -75,15 +75,15 @@ builder.Services.AddScoped<IAdminAuditContext, AdminAuditContextAccessor>();
 builder.Services.AddControllers();
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
-    // Model dogrulama hatalari RFC 9457 ProblemDetails ile doner.
+    // Model doğrulama hataları RFC 9457 ProblemDetails ile döner.
     options.InvalidModelStateResponseFactory = context =>
     {
         var problemDetails = new ProblemDetails
         {
             Type = "https://api.rezervise.com/problems/validation",
-            Title = "Istek dogrulamasi basarisiz.",
+            Title = "İstek doğrulaması başarısız.",
             Status = StatusCodes.Status400BadRequest,
-            Detail = "Gonderilen alanlar kurallara uygun degil.",
+            Detail = "Gönderilen alanlar kurallara uygun değil.",
             Extensions =
             {
                 ["traceId"] = context.HttpContext.Response.Headers["X-Correlation-ID"].ToString(),
@@ -100,7 +100,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     };
 });
 
-// ===== Rate limiting: backoffice ayri pencere =====
+// ===== Rate limiting: backoffice ayrı pencere =====
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -129,7 +129,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// ===== OpenAPI: yalnizca Development ortaminda acik (dokuman 24) =====
+// ===== OpenAPI: yalnızca Development ortamında açık (doküman 24) =====
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddEndpointsApiExplorer();
@@ -154,15 +154,15 @@ app.UseCors("BackOffice");
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Health endpoint: orkestrasyon ve izleme icin (dokuman 20.2).
+// Health endpoint: orkestrasyon ve izleme için (doküman 20.2).
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }))
     .AllowAnonymous();
 
 app.MapControllers();
 
-// Veritabanini otomatik migrate et. Docker/Sunucu kurulumlarinda tek
-// host kalkinca ornek veri de hazirlansin diye migrate sonrasi seed
-// calistirilir (musteri API'si ile ayni desen: yan etkiler kapatilir).
+// Veritabanını otomatik migrate et. Docker/Sunucu kurulumlarında tek
+// hoşt kalkınca örnek veri de hazırlansın diye migrate sonrası seed
+// çalıştırılır (müşteri API'si ile aynı desen: yan etkiler kapatılır).
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<Rezervise.Infrastructure.Persistence.Context.AppDbContext>();
@@ -170,7 +170,7 @@ using (var scope = app.Services.CreateScope())
 
     await dbContext.Database.MigrateAsync();
 
-    // Seed sirasinda uretilen domain event'leri e-posta/audit yan etkisi uretmez.
+    // Seed sırasında üretilen domain event'leri e-posta/audit yan etkisi üretmez.
     var sideEffects = scope.ServiceProvider.GetRequiredService<Rezervise.Application.Common.Services.EventSideEffectDeduplicator>();
     var sideEffectsWereEnabled = sideEffects.Enabled;
     sideEffects.Enabled = false;

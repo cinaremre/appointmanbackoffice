@@ -3,7 +3,7 @@ using FluentValidation;
 namespace Rezervise.Application.Features.Users.Commands.ResendVerificationEmail
 {
     /// <summary>
-    /// Yeniden gonderim istegindeki e-posta adresini denetler.
+    /// Yeniden gönderim isteğindeki e-posta adresini denetler.
     /// </summary>
     public class ResendVerificationEmailCommandValidator : AbstractValidator<ResendVerificationEmailCommand>
     {
@@ -11,9 +11,9 @@ namespace Rezervise.Application.Features.Users.Commands.ResendVerificationEmail
         {
             RuleFor(x => x.Email)
                 .NotEmpty()
-                .WithMessage("E-posta adresi bos olamaz.")
+                .WithMessage("E-posta adresi boş olamaz.")
                 .EmailAddress()
-                .WithMessage("Gecerli bir e-posta adresi giriniz.")
+                .WithMessage("Geçerli bir e-posta adresi giriniz.")
                 .MaximumLength(255)
                 .WithMessage("E-posta adresi en fazla 255 karakter olabilir.");
         }

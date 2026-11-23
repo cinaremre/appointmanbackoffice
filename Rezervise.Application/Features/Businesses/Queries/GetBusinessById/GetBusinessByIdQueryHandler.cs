@@ -19,14 +19,14 @@ namespace Rezervise.Application.Features.Businesses.Queries.GetBusinessById
         {
             try
             {
-                // 1. Isletmeyi ID'ye gore getir
+                // 1. İşletmeyi ID'ye göre getir
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
 
-                // 2. Isletme bulunamadiysa hata dondur
+                // 2. İşletme bulunamadıysa hata döndür
                 if (business is null)
-                    return Result<BusinessDto>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<BusinessDto>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 3. Verileri DTO'ya donustur
+                // 3. Verileri DTO'ya dönüştür
                 var dto = new BusinessDto
                 {
                     Id = business.Id,
@@ -50,7 +50,7 @@ namespace Rezervise.Application.Features.Businesses.Queries.GetBusinessById
             }
             catch (Exception ex)
             {
-                return Result<BusinessDto>.Failure(Error.Internal("Isletme bilgileri getirilirken bir hata olustu.", ex.Message));
+                return Result<BusinessDto>.Failure(Error.Internal("İşletme bilgileri getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -9,8 +9,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Employees.Commands.RejectTimeOff
 {
     /// <summary>
-    /// Calisan iznini reddeder (soft delete). Yetki: ilgili isletmenin sahibi veya yoneticisi.
-    /// Aktor kimligi her zaman JWT'den gelir; govde RequesterId'si yetki kaynagi degildir.
+    /// Çalışan iznini reddeder (soft delete). Yetki: ilgili işletmenin sahibi veya yöneticisi.
+    /// Aktör kimliği her zaman JWT'den gelir; gövde RequesterId'si yetki kaynağı değildir.
     /// </summary>
     public class RejectTimeOffCommandHandler : IRequestHandler<RejectTimeOffCommand, Result<Guid>>
     {
@@ -45,28 +45,28 @@ namespace Rezervise.Application.Features.Employees.Commands.RejectTimeOff
 
                 var callerId = _currentUser.UserId.Value;
 
-                // Govde RequesterId'si yetki kaynagi degil; JWT ile tutarsizsa reddet.
+                // Gövde RequesterId'si yetki kaynağı değil; JWT ile tutarsızsa reddet.
                 if (request.RequesterId != Guid.Empty && request.RequesterId != callerId)
                     return Result<Guid>.Failure(
-                        Error.Unauthorized("Bu islem icin yetkisiz kullanici."));
+                        Error.Unauthorized("Bu işlem için yetkisiz kullanıcı."));
 
                 var timeOff = await _timeOffRepository.GetByIdAsync(
                     request.TimeOffId, cancellationToken);
                 if (timeOff is null || timeOff.IsDeleted)
                     return Result<Guid>.Failure(
-                        Error.NotFound("Izin", request.TimeOffId.ToString()));
+                        Error.NotFound("İzin", request.TimeOffId.ToString()));
 
                 var employee = await _employeeRepository.GetByIdAsync(
                     timeOff.EmployeeId, cancellationToken);
                 if (employee is null)
                     return Result<Guid>.Failure(
-                        Error.NotFound("Calisan", timeOff.EmployeeId.ToString()));
+                        Error.NotFound("Çalışan", timeOff.EmployeeId.ToString()));
 
                 var business = await _businessRepository.GetByIdAsync(
                     employee.BusinessId, cancellationToken);
                 if (business is null)
                     return Result<Guid>.Failure(
-                        Error.NotFound("Isletme", employee.BusinessId.ToString()));
+                        Error.NotFound("İşletme", employee.BusinessId.ToString()));
 
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
                     return Result<Guid>.Failure(
@@ -85,7 +85,7 @@ namespace Rezervise.Application.Features.Employees.Commands.RejectTimeOff
             catch (Exception)
             {
                 return Result<Guid>.Failure(
-                    Error.Internal("Izin reddedilirken bir hata olustu."));
+                    Error.Internal("İzin reddedilirken bir hata oluştu."));
             }
         }
     }

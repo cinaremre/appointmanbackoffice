@@ -7,9 +7,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Reports.Queries.GetPlatformOverview
 {
     /// <summary>
-    /// Platform ozet handler'i (dokuman Modul 18). Ilk surum sayimlari
-    /// repository FindAsync ile bellek icinde yapar; buyuk olcekte hazir
-    /// ozet tablolarindan okunacaktir.
+    /// Platform özet handler'i (doküman Modül 18). İlk sürüm sayımları
+    /// repository FindAsync ile bellek içinde yapar; büyük ölçekte hazır
+    /// özet tablolarından okunacaktır.
     /// </summary>
     public class GetPlatformOverviewQueryHandler : IRequestHandler<GetPlatformOverviewQuery, Result<PlatformOverviewDto>>
     {
@@ -28,7 +28,7 @@ namespace Rezervise.Application.Features.Admin.Reports.Queries.GetPlatformOvervi
         {
             try
             {
-                // 1. Isletme sayimlari: durumlar IsActive bayragi uzerinden.
+                // 1. İşletme sayımları: durumlar IsActive bayrağı üzerinden.
                 var businesses = await _businessRepository.FindAsync(
                     b => !b.IsDeleted, cancellationToken);
 
@@ -38,7 +38,7 @@ namespace Rezervise.Application.Features.Admin.Reports.Queries.GetPlatformOvervi
                 var suspendedBusinesses = businesses.Count(b => !b.IsActive);
                 var newRegistrations = businesses.Count(b => b.CreatedAt >= registrationCutoff);
 
-                // 2. Randevu sayimlari ve oranlar.
+                // 2. Randevu sayımları ve oranlar.
                 var appointments = await _appointmentRepository.FindAsync(
                     a => !a.IsDeleted, cancellationToken);
 
@@ -47,7 +47,7 @@ namespace Rezervise.Application.Features.Admin.Reports.Queries.GetPlatformOvervi
                 var cancelledAppointments = appointments.Count(a => a.Status == EnumAppointmentStatus.Cancelled);
                 var noShowAppointments = appointments.Count(a => a.Status == EnumAppointmentStatus.NoShow);
 
-                // 3. Oranlar: sifir randevu durumunda sifira bolme engellenir.
+                // 3. Oranlar: sıfır randevu durumunda sıfıra bölme engellenir.
                 var cancellationRate = totalAppointments == 0
                     ? 0m
                     : Math.Round(cancelledAppointments * 100.0m / totalAppointments, 2);
@@ -71,7 +71,7 @@ namespace Rezervise.Application.Features.Admin.Reports.Queries.GetPlatformOvervi
             catch (Exception ex)
             {
                 return Result<PlatformOverviewDto>.Failure(
-                    Error.Internal("Platform ozeti hesaplanirken bir hata olustu.", ex.Message));
+                    Error.Internal("Platform özeti hesaplanırken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -3,8 +3,8 @@ using Rezervise.Domain.Enums;
 namespace Rezervise.Application.Features.Admin.Operations.Queries.GetAdminJobs
 {
     /// <summary>
-    /// Veri aktarim isinin yonetici gorunumu. Ilk surumde ham CSV icerigi ve
-    /// kolon eslesmesi gibi agir alanlar bilincli olarak tasinmaz.
+    /// Veri aktarım işinin yönetici görünümü. İlk sürümde ham CSV içeriği ve
+    /// kolon eşleşmesi gibi ağır alanlar bilinçli olarak taşınmaz.
     /// </summary>
     public class AdminJobDto
     {
@@ -19,18 +19,18 @@ namespace Rezervise.Application.Features.Admin.Operations.Queries.GetAdminJobs
         public DateTime? CompletedAt { get; set; }
     }
 
-    /// <summary>Sayfali aktarim isi listesi sonucu.</summary>
+    /// <summary>Sayfalı aktarım isi listesi sonucu.</summary>
     public class AdminJobListDto
     {
         public IReadOnlyList<AdminJobDto> Items { get; set; } = Array.Empty<AdminJobDto>();
 
-        /// <summary>Kirpanma sonrasi uygulanan sayfa numarasi.</summary>
+        /// <summary>Kırpanma sonrası uygulanan sayfa numarası.</summary>
         public int Page { get; set; }
 
-        /// <summary>Kirpanma sonrasi uygulanan sayfa boyutu.</summary>
+        /// <summary>Kırpanma sonrası uygulanan sayfa boyutu.</summary>
         public int PageSize { get; set; }
 
-        /// <summary>Filtreye uyan toplam is sayisi.</summary>
+        /// <summary>Filtreye uyan toplam is sayısı.</summary>
         public long TotalCount { get; set; }
     }
 }

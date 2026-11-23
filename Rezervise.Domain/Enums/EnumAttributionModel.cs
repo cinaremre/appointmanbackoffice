@@ -5,19 +5,19 @@ namespace Rezervise.Domain.Enums
     /// </summary>
     public enum EnumAttributionModel
     {
-        /// <summary>Son dogrudan olmayan tik (varsayilan).</summary>
+        /// <summary>Son doğrudan olmayan tık (varsayılan).</summary>
         LastNonDirectClick = 0,
 
         /// <summary>Bilinen ilk temas.</summary>
         FirstKnownTouch = 1,
 
-        /// <summary>Dogrudan erisim.</summary>
+        /// <summary>Doğrudan erişim.</summary>
         Direct = 2,
 
-        /// <summary>Organik erisim.</summary>
+        /// <summary>Organik erişim.</summary>
         Organic = 3,
 
-        /// <summary>Ucretli kanal.</summary>
+        /// <summary>Ücretli kanal.</summary>
         Paid = 4,
 
         /// <summary>Kaynak bilinmiyor.</summary>

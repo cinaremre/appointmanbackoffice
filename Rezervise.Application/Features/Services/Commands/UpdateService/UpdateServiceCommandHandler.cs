@@ -35,25 +35,25 @@ namespace Rezervise.Application.Features.Services.Commands.UpdateService
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde OwnerId'si değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Unauthorized("Bu hizmeti guncelleme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Unauthorized("Bu hizmeti güncelleme yetkiniz yok."));
 
-                // 3. Hizmet kontrolu
+                // 3. Hizmet kontrolü
                 var service = await _serviceRepository.GetByIdAsync(request.ServiceId, cancellationToken);
                 if (service is null)
                     return Result<Guid>.Failure(Error.NotFound("Hizmet", request.ServiceId.ToString()));
 
-                // 4. Hizmet isletmeye ait mi?
+                // 4. Hizmet işletmeye ait mi?
                 if (service.BusinessId != request.BusinessId)
-                    return Result<Guid>.Failure(Error.BusinessRule("Hizmet bu isletmeye ait degil."));
+                    return Result<Guid>.Failure(Error.BusinessRule("Hizmet bu işletmeye ait değil."));
 
-                // 5. Kategori kontrolu
+                // 5. Kategori kontrolü
                 var serviceCategory = await _serviceCategoryRepository.GetByIdAsync(request.ServiceCategoryId, cancellationToken);
                 if (serviceCategory is null)
                     return Result<Guid>.Failure(Error.NotFound("Kategori", request.ServiceCategoryId.ToString()));
@@ -61,12 +61,12 @@ namespace Rezervise.Application.Features.Services.Commands.UpdateService
                 if (!serviceCategory.IsLeaf())
                     return Result<Guid>.Failure(Error.BusinessRule("Hizmet sadece leaf kategoriye atanabilir."));
 
-                // 6. Kategori isletmede var mi?
+                // 6. Kategori işletmede var mi?
                 var rootCategory = serviceCategory.GetRootCategory();
                 if (rootCategory is not null && !business.HasServiceCategory(rootCategory.Id))
-                    return Result<Guid>.Failure(Error.BusinessRule("Bu kategori isletmeye ekli degil."));
+                    return Result<Guid>.Failure(Error.BusinessRule("Bu kategori işletmeye ekli değil."));
 
-                // 7. Ayni isimde baska hizmet var mi?
+                // 7. Aynı isimde başka hizmet var mi?
                 var existingServices = await _serviceRepository.FindAsync(
                     s => s.Name == request.Name && s.BusinessId == request.BusinessId && s.Id != request.ServiceId && !s.IsDeleted,
                     cancellationToken);
@@ -74,7 +74,7 @@ namespace Rezervise.Application.Features.Services.Commands.UpdateService
                 if (existingServices.Any())
                     return Result<Guid>.Failure(Error.Conflict("Bu isimde bir hizmet zaten mevcut."));
 
-                // 8. Guncelle
+                // 8. Güncelle
                 var money = new Money(request.Price, request.Currency);
                 service.UpdateService(
                     request.Name,
@@ -94,7 +94,7 @@ namespace Rezervise.Application.Features.Services.Commands.UpdateService
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Hizmet guncellenirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Hizmet güncellenirken bir hata oluştu.", ex.Message));
             }
         }
     }

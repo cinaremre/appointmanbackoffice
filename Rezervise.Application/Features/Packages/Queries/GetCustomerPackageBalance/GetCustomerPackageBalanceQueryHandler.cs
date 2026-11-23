@@ -35,22 +35,22 @@ namespace Rezervise.Application.Features.Packages.Queries.GetCustomerPackageBala
         {
             try
             {
-                // 1. Musteri paketi kontrolu
+                // 1. Müşteri paketi kontrolü
                 var customerPackage = await _customerPackageRepository.GetByIdAsync(request.CustomerPackageId, cancellationToken);
                 if (customerPackage is null)
                     return Result<CustomerPackageBalanceDto>.Failure(
-                        Error.NotFound("Musteri paketi", request.CustomerPackageId.ToString()));
+                        Error.NotFound("Müşteri paketi", request.CustomerPackageId.ToString()));
 
-                // 2. Yetki: paketin musterisi veya isletme sahibi.
+                // 2. Yetki: paketin müşterisi veya işletme sahibi.
                 var business = await _businessRepository.GetByIdAsync(customerPackage.BusinessId, cancellationToken);
                 var isOwner = business is not null &&
                               CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId);
 
                 if (!isOwner && !CallerAuthorization.CanActAsUser(_currentUser, customerPackage.CustomerId))
                     return Result<CustomerPackageBalanceDto>.Failure(
-                        Error.Forbidden("Bu paketin bakiyesini goruntuleme yetkiniz yok."));
+                        Error.Forbidden("Bu paketin bakiyesini görüntüleme yetkiniz yok."));
 
-                // 3. Paket taniminin toplam seans sayisi.
+                // 3. Paket tanımının toplam seans sayısı.
                 var servicePackage = await _servicePackageRepository.GetByIdWithIncludesAsync(
                     customerPackage.ServicePackageId, cancellationToken, p => p.Items);
                 if (servicePackage is null)
@@ -59,7 +59,7 @@ namespace Rezervise.Application.Features.Packages.Queries.GetCustomerPackageBala
 
                 var purchasedTotal = servicePackage.GetTotalSessions();
 
-                // 4. Hareketleri topla: kalan hak entity'de tutulmaz, burada hesaplanir.
+                // 4. Hareketleri topla: kalan hak entity'de tutulmaz, burada hesaplanır.
                 var activeUsages = await _packageUsageRepository.FindAsync(
                     u => u.CustomerPackageId == request.CustomerPackageId &&
                          u.Status == EnumPackageUsageStatus.Active &&
@@ -70,7 +70,7 @@ namespace Rezervise.Application.Features.Packages.Queries.GetCustomerPackageBala
                 var consumed = activeUsages.Count(u => u.UsageType == EnumPackageUsageType.Consumption);
                 var remaining = purchasedTotal - activeReservations - consumed;
 
-                // 5. DTO dondur.
+                // 5. DTO döndür.
                 return Result<CustomerPackageBalanceDto>.Success(new CustomerPackageBalanceDto
                 {
                     CustomerPackageId = customerPackage.Id,
@@ -92,7 +92,7 @@ namespace Rezervise.Application.Features.Packages.Queries.GetCustomerPackageBala
             catch (Exception ex)
             {
                 return Result<CustomerPackageBalanceDto>.Failure(
-                    Error.Internal("Paket bakiyesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Paket bakiyesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -4,8 +4,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Categories.Commands.CreateBusinessCategoryByAdmin
 {
     /// <summary>
-    /// Platform yoneticisi yeni isletme kategorisi olusturur (dokuman Modul 9).
-    /// Ayni ada sahip AKTIF bir kardes kategori varsa Conflict doner (ilk surum).
+    /// Platform yöneticisi yeni işletme kategorisi oluşturur (doküman Modül 9).
+    /// Aynı ada sahip AKTIF bir kardeş kategori varsa Conflict döner (ilk sürüm).
     /// </summary>
     public class CreateBusinessCategoryByAdminCommand : IRequest<Result<Guid>>
     {

@@ -4,15 +4,15 @@ using MediatR;
 namespace Rezervise.Application.Features.Inventory.Commands.CreateProduct
 {
     /// <summary>
-    /// Isletmeye yeni stok urunu tanimlar. SKU isletme bazinda benzersizdir.
-    /// OwnerId govdeden degil JWT'den cozulur (Api katmani set eder).
+    /// İşletmeye yeni stok ürünü tanımlar. SKU işletme bazında benzersizdir.
+    /// OwnerId gövdeden değil JWT'den çözülür (Api katmanı set eder).
     /// </summary>
     public class CreateProductCommand : IRequest<Result<Guid>>
     {
         public Guid BusinessId { get; set; }
         public Guid OwnerId { get; set; }
 
-        /// <summary>Isletme icinde benzersiz stok kodu.</summary>
+        /// <summary>İşletme içinde benzersiz stok kodu.</summary>
         public string Sku { get; set; } = string.Empty;
 
         public string? Barcode { get; set; }
@@ -21,7 +21,7 @@ namespace Rezervise.Application.Features.Inventory.Commands.CreateProduct
 
         public Guid? CategoryId { get; set; }
 
-        /// <summary>Olcu birimi (varsayilan "adet").</summary>
+        /// <summary>Ölçü birimi (varsayılan "adet").</summary>
         public string Unit { get; set; } = "adet";
 
         public decimal PurchasePrice { get; set; }

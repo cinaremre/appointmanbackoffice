@@ -4,19 +4,19 @@ using MediatR;
 namespace Rezervise.Application.Features.Subscriptions.Commands.AssignSubscription
 {
     /// <summary>
-    /// Isletmeye abonelik plani atar (dokuman Modul 14).
-    /// Isletmenin varsa aktif aboneligi Expired yapilir.
-    /// Yalniz platform yoneticileri cagirabilir.
+    /// İşletmeye abonelik planı atar (doküman Modül 14).
+    /// İşletmenin varsa aktif aboneliği Expired yapılır.
+    /// Yalnız platform yöneticileri çağırabilir.
     /// </summary>
     public class AssignSubscriptionCommand : IRequest<Result<Guid>>
     {
         public Guid BusinessId { get; set; }
         public Guid PlanId { get; set; }
 
-        /// <summary>Abonelik baslangici (UTC).</summary>
+        /// <summary>Abonelik başlangıcı (UTC).</summary>
         public DateTime StartAt { get; set; }
 
-        /// <summary>Abonelik sonu (UTC); null = belirsiz sure.</summary>
+        /// <summary>Abonelik sonu (UTC); null = belirsiz süre.</summary>
         public DateTime? EndAt { get; set; }
     }
 }

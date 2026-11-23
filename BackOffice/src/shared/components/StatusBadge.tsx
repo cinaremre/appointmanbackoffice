@@ -1,19 +1,19 @@
 import { Chip } from "@mui/material";
 
 /**
- * Durum rozeti: renk tek basina gosterge degil; etiket metni
- * her zaman tasir (dokuman 5.2 erisilebilirlik).
+ * Durum rozeti: renk tek başına gösterge değil; etiket metni
+ * her zaman taşır (doküman 5.2 erişilebilirlik).
  */
 const COLOR_BY_STATUS: Record<string, "success" | "warning" | "error" | "info" | "default"> = {
   Active: "success",
   Aktif: "success",
   Suspended: "warning",
-  Askida: "warning",
+  Askıda: "warning",
   Archived: "default",
   Cancelled: "error",
-  Iptal: "error",
+  İptal: "error",
   Completed: "success",
-  Tamamlandi: "success",
+  Tamamlandı: "success",
   Pending: "info",
   Beklemede: "info",
   Confirmed: "info",

@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Kullanici islemlerini yonetir.
+    /// Kullanıcı işlemlerini yönetir.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -33,10 +33,10 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kullanicinin sifresini degistirir.
+        /// Kullanıcının şifresini değiştirir.
         /// </summary>
-        /// <param name="command">Sifre degistirme bilgileri</param>
-        /// <returns>Islem sonucu</returns>
+        /// <param name="command">Şifre değiştirme bilgileri</param>
+        /// <returns>İşlem sonucu</returns>
         [HttpPost("change-password")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
@@ -49,10 +49,10 @@ namespace Rezervise.Api.Controllers
 
             command.UserId = currentUserId.Value;
 
-            // 1. Command'i mediator ile gonder
+            // 1. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -60,10 +60,10 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kullanicinin profil bilgilerini gunceller.
+        /// Kullanıcının profil bilgilerini günceller.
         /// </summary>
-        /// <param name="command">Profil guncelleme bilgileri</param>
-        /// <returns>Islem sonucu</returns>
+        /// <param name="command">Profil güncelleme bilgileri</param>
+        /// <returns>İşlem sonucu</returns>
         [HttpPut("profile")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
@@ -76,10 +76,10 @@ namespace Rezervise.Api.Controllers
 
             command.UserId = currentUserId.Value;
 
-            // 1. Command'i mediator ile gonder
+            // 1. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -87,11 +87,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kullanicinin dil tercihini gunceller. Sonraki isteklerde donen
-        /// metinler bu dile gore cozulur.
+        /// Kullanıcının dil tercihini günceller. Sonraki isteklerde dönen
+        /// metinler bu dile göre çözülür.
         /// </summary>
-        /// <param name="command">Dil guncelleme bilgileri</param>
-        /// <returns>Islem sonucu</returns>
+        /// <param name="command">Dil güncelleme bilgileri</param>
+        /// <returns>İşlem sonucu</returns>
         [HttpPut("language")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
@@ -105,10 +105,10 @@ namespace Rezervise.Api.Controllers
 
             command.UserId = currentUserId.Value;
 
-            // 1. Command'i mediator ile gonder
+            // 1. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -116,10 +116,10 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// ID'ye gore kullanici getirir.
+        /// ID'ye göre kullanıcı getirir.
         /// </summary>
-        /// <param name="id">Kullanici ID'si</param>
-        /// <returns>Kullanici detayi</returns>
+        /// <param name="id">Kullanıcı ID'si</param>
+        /// <returns>Kullanıcı detayı</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Result<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<UserDto>), StatusCodes.Status404NotFound)]
@@ -134,13 +134,13 @@ namespace Rezervise.Api.Controllers
             if (id != currentUserId.Value && !isAdministrator)
                 return NotFound(Result<UserDto>.Failure(Error.NotFound("User", id.ToString())));
 
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetUserByIdQuery { UserId = id };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -148,23 +148,23 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Email'e gore kullanici getirir. (Sadece Admin)
+        /// Email'e göre kullanıcı getirir. (Sadece Admin)
         /// </summary>
-        /// <param name="email">Kullanici email adresi</param>
-        /// <returns>Kullanici detayi</returns>
+        /// <param name="email">Kullanıcı email adresi</param>
+        /// <returns>Kullanıcı detayı</returns>
         [HttpGet("email/{email}")]
         [Authorize(Policy = AuthorizationPolicies.AdministratorOnly)]
         [ProducesResponseType(typeof(Result<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<UserDto>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetUserByEmailQuery { Email = email };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -172,10 +172,10 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kullanicinin email adresini dogrular.
+        /// Kullanıcının email adresini doğrular.
         /// </summary>
-        /// <param name="command">Dogrulama bilgileri</param>
-        /// <returns>Islem sonucu</returns>
+        /// <param name="command">Doğrulama bilgileri</param>
+        /// <returns>İşlem sonucu</returns>
         [HttpPost("verify-email")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
@@ -188,10 +188,10 @@ namespace Rezervise.Api.Controllers
 
             command.UserId = currentUserId.Value;
 
-            // 1. Command'i mediator ile gonder
+            // 1. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -199,11 +199,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kullanicinin kendi hesabini siler ve kisisel bilgilerini anonimlestirir.
-        /// Aktor her zaman token'dan cozulur; istek govdesinden kullanici ID'si kabul edilmez.
+        /// Kullanıcının kendi hesabını siler ve kişisel bilgilerini anonimleştirir.
+        /// Aktör her zaman token'dan çözülür; istek gövdesinden kullanıcı ID'si kabul edilmez.
         /// </summary>
-        /// <param name="command">Mevcut sifreyi tasiyan silme istegi</param>
-        /// <returns>Islem sonucu</returns>
+        /// <param name="command">Mevcut şifreyi taşıyan silme isteği</param>
+        /// <returns>İşlem sonucu</returns>
         [HttpPost("delete-account")]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status400BadRequest)]
@@ -211,10 +211,10 @@ namespace Rezervise.Api.Controllers
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountCommand command)
         {
-            // 1. Command'i mediator ile gonder (kimlik handler icinde token'dan cozulur)
+            // 1. Command'i mediator ile gönder (kimlik handler içinde token'dan çözülür)
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 

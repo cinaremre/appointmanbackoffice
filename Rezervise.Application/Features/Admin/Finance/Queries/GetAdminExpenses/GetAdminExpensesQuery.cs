@@ -6,8 +6,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminExpenses
 {
     /// <summary>
-    /// Gider listesi (dokuman Modul 16). Salt okunur endpoint; gider
-    /// duzeltmeleri domain komutlariyla yapilir.
+    /// Gider listesi (doküman Modül 16). Salt okunur endpoint; gider
+    /// düzeltmeleri domain komutlarıyla yapılır.
     /// </summary>
     public class GetAdminExpensesQuery : IRequest<Result<AdminPagedResult<AdminExpenseDto>>>
     {
@@ -20,7 +20,7 @@ namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminExpenses
         public int PageSize { get; set; } = 50;
     }
 
-    /// <summary>Tek gider kaydinin admin gorunumu.</summary>
+    /// <summary>Tek gider kaydının admin görünümü.</summary>
     public class AdminExpenseDto
     {
         public Guid Id { get; set; }

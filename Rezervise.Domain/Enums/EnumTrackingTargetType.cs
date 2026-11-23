@@ -1,24 +1,24 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Takip linkinin yonlendirdigi hedef tipi.
-    /// TargetId alani bu tipe gore yorumlanir.
+    /// Takip linkinin yönlendirdiği hedef tipi.
+    /// TargetId alani bu tipe göre yorumlanır.
     /// </summary>
     public enum EnumTrackingTargetType
     {
-        /// <summary>Isletme public sayfasi.</summary>
+        /// <summary>İşletme public sayfası.</summary>
         Business = 0,
 
-        /// <summary>Tek bir hizmet detay sayfasi.</summary>
+        /// <summary>Tek bir hizmet detay sayfası.</summary>
         Service = 1,
 
-        /// <summary>Calisan profili.</summary>
+        /// <summary>Çalışan profili.</summary>
         Employee = 2,
 
-        /// <summary>Kampanya acilis sayfasi.</summary>
+        /// <summary>Kampanya açılış sayfası.</summary>
         Campaign = 3,
 
-        /// <summary>Sube sayfasi.</summary>
+        /// <summary>Şube sayfası.</summary>
         Branch = 4
     }
 }

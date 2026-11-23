@@ -20,12 +20,12 @@ namespace Rezervise.Application.Features.WorkingHours.Queries.GetByBusiness
         {
             try
             {
-                // 1. Isletmenin tum calisma saatlerini getir
+                // 1. İşletmenin tüm çalışma saatlerini getir
                 var workingHours = await _workingHourRepository.FindAsync(
                     w => w.BusinessId == request.BusinessId && !w.IsDeleted,
                     cancellationToken);
 
-                // 2. DTO'ya donustur
+                // 2. DTO'ya dönüştür
                 var dtos = workingHours.Select(w => new WorkingHourDto
                 {
                     Id = w.Id,
@@ -34,7 +34,7 @@ namespace Rezervise.Application.Features.WorkingHours.Queries.GetByBusiness
                     StartTime = w.StartTime,
                     EndTime = w.EndTime,
                     IsClosed = w.IsClosed,
-                    // DayOfWeek.ToString() framework'un Ingilizce adini doner; Turkce ad helper'dan alinir.
+                    // DayOfWeek.ToString() framework'un İngilizce adını döner; Türkçe ad helper'dan alınır.
                     DayName = DayNameHelper.ToTurkishName(w.DayOfWeek)
                 }).ToList();
 
@@ -43,7 +43,7 @@ namespace Rezervise.Application.Features.WorkingHours.Queries.GetByBusiness
             catch (Exception ex)
             {
                 return Result<List<WorkingHourDto>>.Failure(
-                    Error.Internal("Calisma saatleri getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Çalışma saatleri getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

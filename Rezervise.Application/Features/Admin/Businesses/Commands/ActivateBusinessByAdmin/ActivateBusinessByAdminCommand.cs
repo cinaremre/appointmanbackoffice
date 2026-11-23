@@ -4,14 +4,14 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Businesses.Commands.ActivateBusinessByAdmin
 {
     /// <summary>
-    /// Platform yoneticisinin askidaki isletmeyi yeniden aktif etmesi
-    /// (dokuman Modul 8). Denetim kaydina "Activate" aksiyonuyla yazilir.
+    /// Platform yöneticisinin askıdaki işletmeyi yeniden aktif etmesi
+    /// (doküman Modül 8). Denetim kaydına "Activate" aksiyonuyla yazılır.
     /// </summary>
     public class ActivateBusinessByAdminCommand : IRequest<Result<Guid>>
     {
         public Guid BusinessId { get; set; }
 
-        /// <summary>Aktif etme gerekcesi; opsiyonel, denetim kaydina yazilir.</summary>
+        /// <summary>Aktif etme gerekçesi; opsiyonel, denetim kaydına yazılır.</summary>
         public string? Reason { get; set; }
     }
 }

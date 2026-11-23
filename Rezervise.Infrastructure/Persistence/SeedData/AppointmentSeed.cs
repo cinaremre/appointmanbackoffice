@@ -23,14 +23,14 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
         {
             if (await context.Appointments.AnyAsync())
             {
-                logger.LogInformation("Appointments zaten mevcut, atlaniyor.");
+                logger.LogInformation("Appointments zaten mevcut, atlanıyor.");
                 return;
             }
 
             var today = DateTime.UtcNow.Date;
             var appointments = new List<Appointment>();
 
-            // GECMIS - Tamamlanmis
+            // GECMIS - Tamamlanmış
             appointments.Add(CreateAppointment(Apt1Id,
                 UserSeed.Customer1Id, BusinessSeed.Biz1Id, ServiceSeed.Svc1Id, EmployeeSeed.Emp1Id,
                 today.AddDays(-10).AddHours(10), EnumAppointmentStatus.Completed, "Klasik kesim",
@@ -48,7 +48,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
 
             appointments.Add(CreateAppointment(Apt4Id,
                 UserSeed.Customer4Id, BusinessSeed.Biz3Id, ServiceSeed.Svc9Id, EmployeeSeed.Emp6Id,
-                today.AddDays(-3).AddHours(15), EnumAppointmentStatus.Completed, "Kucuk dovme",
+                today.AddDays(-3).AddHours(15), EnumAppointmentStatus.Completed, "Küçük dövme",
                 today.AddDays(-3).AddHours(16)));
 
             appointments.Add(CreateAppointment(Apt5Id,
@@ -56,11 +56,11 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
                 today.AddDays(-2).AddHours(13), EnumAppointmentStatus.Completed, null,
                 today.AddDays(-2).AddHours(14)));
 
-            // GELECEK - Onaylanmis
+            // GELECEK - Onaylanmış
             appointments.Add(CreateAppointment(Apt6Id,
                 UserSeed.Customer1Id, BusinessSeed.Biz1Id, ServiceSeed.Svc1Id, EmployeeSeed.Emp1Id,
                 today.AddDays(1).AddHours(10), EnumAppointmentStatus.Confirmed,
-                "Ozel kesim istiyorum", null));
+                "Özel kesim istiyorum", null));
 
             appointments.Add(CreateAppointment(Apt7Id,
                 UserSeed.Customer2Id, BusinessSeed.Biz2Id, ServiceSeed.Svc5Id, EmployeeSeed.Emp4Id,
@@ -71,12 +71,12 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
             appointments.Add(CreateAppointment(Apt8Id,
                 UserSeed.Customer3Id, BusinessSeed.Biz5Id, ServiceSeed.Svc16Id, EmployeeSeed.Emp11Id,
                 today.AddDays(3).AddHours(11), EnumAppointmentStatus.Pending,
-                "Dis agrisi var", null));
+                "Dış ağrısı var", null));
 
             appointments.Add(CreateAppointment(Apt9Id,
                 UserSeed.Customer4Id, BusinessSeed.Biz3Id, ServiceSeed.Svc9Id, EmployeeSeed.Emp6Id,
                 today.AddDays(4).AddHours(16), EnumAppointmentStatus.Confirmed,
-                "Kucuk dovme - minimal tasarim", null));
+                "Küçük dövme - minimal tasarım", null));
 
             appointments.Add(CreateAppointment(Apt10Id,
                 UserSeed.Customer5Id, BusinessSeed.Biz1Id, ServiceSeed.Svc2Id, EmployeeSeed.Emp2Id,
@@ -92,7 +92,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
     Guid serviceId, Guid employeeId, DateTime appointmentDate, EnumAppointmentStatus status,
     string? notes, DateTime? completedAt = null, string? cancellationReason = null)
         {
-            // Seed icin gecmis tarihe izin ver
+            // Seed için geçmiş tarihe izin ver
             var appointment = new Appointment(
                 id, userId, businessId, serviceId, employeeId,
                 appointmentDate, notes,false);

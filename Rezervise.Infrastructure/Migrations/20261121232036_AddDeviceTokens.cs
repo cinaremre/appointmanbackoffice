@@ -5,18 +5,18 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Rezervise.Infrastructure.Migrations
 {
-    /// <inheritdoc />
+    /// <inheritdoç />
     public partial class AddDeviceTokens : Migration
     {
-        /// <inheritdoc />
+        /// <inheritdoç />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
                 name: "DeviceTokens",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
                     Token = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
                     Platform = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
@@ -49,7 +49,7 @@ namespace Rezervise.Infrastructure.Migrations
                 unique: true);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

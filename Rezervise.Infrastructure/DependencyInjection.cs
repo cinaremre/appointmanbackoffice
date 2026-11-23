@@ -29,15 +29,15 @@ namespace Rezervise.Infrastructure
             // Generic Repository
             services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
-            // Atomik sayac guncellemesi (lost update korumasi)
+            // Atomik sayaç güncellemesi (lost update koruması)
             services.AddScoped<IBusinessRatingUpdater, BusinessRatingUpdater>();
-            // Rezervasyon aralik kilidi (cift rezervasyon korumasi)
+            // Rezervasyon aralık kilidi (çift rezervasyon koruması)
             services.AddScoped<IAppointmentBookingGuard, AppointmentBookingGuard>();
-            // Domain event yan etkilerinin yapilandirilmis denetim kaydi
+            // Domain event yan etkilerinin yapılandırılmış denetim kaydı
             services.AddScoped<IWorkflowAuditSink, LoggingWorkflowAuditSink>();
-            // Ozellik erisimi: override > abonelik plani > varsayilan (Modul 14)
+            // Özellik erişimi: override > abonelik planı > varsayılan (Modül 14)
             services.AddScoped<IFeatureAccessService, FeatureAccessService>();
-            // Backoffice yonetici denetim kayitlari (Modul 21)
+            // Backoffice yönetici denetim kayıtları (Modül 21)
             services.AddScoped<IAdminAuditSink, AdminAuditSink>();
             return services;
         }

@@ -1,77 +1,77 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Kullanici rolleri
+    /// Kullanıcı rolleri
     /// </summary>
     public enum EnumUserRole
     {
         /// <summary>
-        /// M�steri - Randevu alan kullanici
+        /// Müsteri - Randevu alan kullanıcı
         /// </summary>
         Customer = 0,
 
         /// <summary>
-        /// Isletme Sahibi - Isletme y�neten kullanici
+        /// İşletme Sahibi - İşletme yöneten kullanıcı
         /// </summary>
         BusinessOwner = 1,
 
         /// <summary>
-        /// Admin - Sistem y�neticisi
+        /// Admin - Sistem yöneticisi
         /// </summary>
         Admin = 2,
 
         /// <summary>
-        /// S�per Admin - T�m yetkilere sahip sistem y�neticisi
+        /// Süper Admin - Tüm yetkilere sahip sistem yöneticisi
         /// </summary>
         SuperAdmin = 3,
 
         /// <summary>
-        /// �alisan - Isletmede �alisan personel
+        /// Çalisan - İşletmede çalisan personel
         /// </summary>
         Employee = 4,
 
         /// <summary>
-        /// Moderat�r - I�erik ve kullanici moderasyonu
+        /// Moderatör - Içerik ve kullanıcı moderasyonu
         /// </summary>
         Moderator = 5,
 
         /// <summary>
-        /// Destek - M�steri destek personeli
+        /// Destek - Müsteri destek personeli
         /// </summary>
         Support = 6,
 
         /// <summary>
-        /// Platform Yoneticisi - Backoffice'te isletme/kategori/operasyon yonetimi
+        /// Platform Yöneticisi - Backoffice'te işletme/kategori/operasyon yönetimi
         /// </summary>
         PlatformAdmin = 7,
 
         /// <summary>
-        /// Finans Yoneticisi - Backoffice'te abonelik, odeme ve finansal raporlar
+        /// Finans Yöneticisi - Backoffice'te abonelik, ödeme ve finansal raporlar
         /// </summary>
         FinanceAdmin = 8,
 
         /// <summary>
-        /// Destek Temsilcisi - Backoffice'te sinirli operasyonel mudahale
+        /// Destek Temsilcisi - Backoffice'te sınırlı operasyonel müdahale
         /// </summary>
         SupportAgent = 9,
 
         /// <summary>
-        /// Pazarlama Yoneticisi - Backoffice'te kampanya ve promosyon yonetimi
+        /// Pazarlama Yöneticisi - Backoffice'te kampanya ve promosyon yönetimi
         /// </summary>
         MarketingAdmin = 10,
 
         /// <summary>
-        /// Icerik Yoneticisi - Backoffice'te kategori ve hizmet siniflandirmasi
+        /// İçerik Yöneticisi - Backoffice'te kategori ve hizmet sınıflandırması
         /// </summary>
         ContentManager = 11,
 
         /// <summary>
-        /// Denetci - Backoffice'te salt okunur audit ve operasyon gecmisi
+        /// Denetçi - Backoffice'te salt okunur audit ve operasyon geçmişi
         /// </summary>
         Auditor = 12,
 
         /// <summary>
-        /// Salt Okunur Analist - Yetkilendirilen raporlari goruntuleme
+        /// Salt Okunur Analist - Yetkilendirilen raporları görüntüleme
         /// </summary>
         ReadOnlyAnalyst = 13
     }

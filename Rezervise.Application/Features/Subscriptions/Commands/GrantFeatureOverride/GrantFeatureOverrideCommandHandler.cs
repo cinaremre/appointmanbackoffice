@@ -37,21 +37,21 @@ namespace Rezervise.Application.Features.Subscriptions.Commands.GrantFeatureOver
         {
             try
             {
-                // 1. Yetki: erisim karari platform yoneticisi isidir.
+                // 1. Yetki: erişim kararı platform yöneticisi işidir.
                 if (!CallerAuthorization.IsAdministrator(_currentUser))
-                    return Result<Guid>.Failure(Error.Forbidden("Ozellik override yalniz platform yoneticileri icindir."));
+                    return Result<Guid>.Failure(Error.Forbidden("Özellik override yalnız platform yöneticileri içindir."));
 
-                // 2. Isletme kontrolu.
+                // 2. İşletme kontrolü.
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 3. Ozellik tanimi kontrolu.
+                // 3. Özellik tanımı kontrolü.
                 var feature = await _featureDefinitionRepository.GetByIdAsync(request.FeatureId, cancellationToken);
                 if (feature is null)
-                    return Result<Guid>.Failure(Error.NotFound("Ozellik", request.FeatureId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Özellik", request.FeatureId.ToString()));
 
-                // 4. Override kaydini olustur. GrantedBy govdeden degil JWT kimliginden alinir.
+                // 4. Override kaydını oluştur. GrantedBy gövdeden değil JWT kimliğinden alınır.
                 var overrideRecord = new BusinessFeatureOverride(
                     request.BusinessId,
                     request.FeatureId,
@@ -65,7 +65,7 @@ namespace Rezervise.Application.Features.Subscriptions.Commands.GrantFeatureOver
                 await _overrideRepository.AddAsync(overrideRecord, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // 5. Denetim kaydi: kim, hangi isletmeye, hangi ozelligi ne zaman verdi.
+                // 5. Denetim kaydı: kim, hangi işletmeye, hangi özelliği ne zaman verdi.
                 _auditSink.Record(
                     "Subscription.FeatureOverrideGranted",
                     Guid.NewGuid(),
@@ -82,7 +82,7 @@ namespace Rezervise.Application.Features.Subscriptions.Commands.GrantFeatureOver
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Ozellik override verilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Özellik override verilirken bir hata oluştu.", ex.Message));
             }
         }
     }

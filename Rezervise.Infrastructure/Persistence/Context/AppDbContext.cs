@@ -47,7 +47,7 @@ namespace Rezervise.Infrastructure.Persistence.Context
         public DbSet<IdempotencyRecord> IdempotencyRecords { get; set; }
         public DbSet<DeviceToken> DeviceTokens { get; set; }
 
-        // ===== Kasa ve satis (Modul 2) =====
+        // ===== Kasa ve satış (Modül 2) =====
         public DbSet<CashRegister> CashRegisters { get; set; }
         public DbSet<CashSession> CashSessions { get; set; }
         public DbSet<Sale> Sales { get; set; }
@@ -56,7 +56,7 @@ namespace Rezervise.Infrastructure.Persistence.Context
         public DbSet<CashMovement> CashMovements { get; set; }
         public DbSet<Expense> Expenses { get; set; }
 
-        // ===== Stok ve prim (Modul 3-4) =====
+        // ===== Stok ve prim (Modül 3-4) =====
         public DbSet<Product> Products { get; set; }
         public DbSet<StockMovement> StockMovements { get; set; }
         public DbSet<ServiceMaterial> ServiceMaterials { get; set; }
@@ -64,7 +64,7 @@ namespace Rezervise.Infrastructure.Persistence.Context
         public DbSet<CommissionAccrual> CommissionAccruals { get; set; }
         public DbSet<CommissionPayout> CommissionPayouts { get; set; }
 
-        // ===== Seans paketi ve bekleme listesi (Modul 5-10) =====
+        // ===== Seans paketi ve bekleme listesi (Modül 5-10) =====
         public DbSet<ServicePackage> ServicePackages { get; set; }
         public DbSet<ServicePackageItem> ServicePackageItems { get; set; }
         public DbSet<CustomerPackage> CustomerPackages { get; set; }
@@ -73,7 +73,7 @@ namespace Rezervise.Infrastructure.Persistence.Context
         public DbSet<WaitlistOffer> WaitlistOffers { get; set; }
         public DbSet<RecoveredSlot> RecoveredSlots { get; set; }
 
-        // ===== Rezervasyon sayfasi, takip, kampanya ve import (Modul 1-7-9) =====
+        // ===== Rezervasyon sayfası, takip, kampanya ve import (Modül 1-7-9) =====
         public DbSet<BusinessPublicPage> BusinessPublicPages { get; set; }
         public DbSet<TrackingLink> TrackingLinks { get; set; }
         public DbSet<TrackingEvent> TrackingEvents { get; set; }
@@ -83,7 +83,7 @@ namespace Rezervise.Infrastructure.Persistence.Context
         public DbSet<ImportJob> ImportJobs { get; set; }
         public DbSet<ImportRowResult> ImportRowResults { get; set; }
 
-        // ===== Entitlement, izin ve geri cagirma (Modul 13-14-16) =====
+        // ===== Entitlement, izin ve geri çağırma (Modül 13-14-16) =====
         public DbSet<FeatureDefinition> FeatureDefinitions { get; set; }        public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
         public DbSet<PlanFeature> PlanFeatures { get; set; }
         public DbSet<BusinessSubscription> BusinessSubscriptions { get; set; }
@@ -96,10 +96,10 @@ namespace Rezervise.Infrastructure.Persistence.Context
         public DbSet<CustomerServiceHistory> CustomerServiceHistories { get; set; }
         public DbSet<ReengagementAttempt> ReengagementAttempts { get; set; }
 
-        // ===== Backoffice denetim kayitlari (Modul 21) =====
+        // ===== Backoffice denetim kayıtları (Modül 21) =====
         public DbSet<AdminAuditLog> AdminAuditLogs { get; set; }
 
-        // ===== Backoffice toplu islemleri (Modul 10) =====
+        // ===== Backoffice toplu işlemleri (Modül 10) =====
         public DbSet<BulkOperation> BulkOperations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -110,16 +110,16 @@ namespace Rezervise.Infrastructure.Persistence.Context
 
         // ===== Concurrency / Constraint Translation =====
         /// <summary>
-        /// SaveChanges hatalarini anlamli domain istisnalarina cevirir:
+        /// SaveChanges hatalarını anlamlı domain istisnalarına çevirir:
         /// 2601/2627 -> DuplicateKeyException, 1205 -> ConcurrencyConflictException,
         /// DbUpdateConcurrencyException -> ConcurrencyConflictException.
-        /// Boylece handler'lardaki genel catch bloklari 500 uretmeden once
-        /// API katmani 409 Conflict dondurebilir.
+        /// Böylece handler'lardaki genel catch blokları 500 üretmeden önce
+        /// API katmanı 409 Conflict döndürebilir.
         /// </summary>
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            // Event'ler kayit oncesi snapshot'lanir: kayit sirasinda degisen
-            // entity durumlari sonrasi tekrar okunursa ayni event kacirilabilir.
+            // Event'ler kayıt öncesi snapshot'lanır: kayıt sırasında değişen
+            // entity durumları sonrası tekrar okunursa aynı event kaçırılabilir.
             var pendingEvents = SnapshotDomainEvents();
 
             try
@@ -133,13 +133,13 @@ namespace Rezervise.Infrastructure.Persistence.Context
             catch (DbUpdateConcurrencyException ex)
             {
                 throw new ConcurrencyConflictException(
-                    "Kayit baska bir islem tarafindan degistirildi. Lutfen tekrar deneyin.", ex);
+                    "Kayıt başka bir işlem tarafından değiştirildi. Lütfen tekrar deneyin.", ex);
             }
             catch (DbUpdateException ex)
             {
-                // Saglayiciya bagimli olmamak icin hata, ic istisnanin mesaji
-                // uzerinden siniflandirilir; boylece EF Core saglayici
-                // degisse de davranis korunur.
+                // Sağlayıcıya bağımlı olmamak için hata, iç istisnanın mesajı
+                // üzerinden sınıflandırılır; böylece EF Core sağlayıcı
+                // değişse de davranış korunur.
                 var message = ex.InnerException?.Message ?? string.Empty;
 
                 if (message.Contains("duplicate", StringComparison.OrdinalIgnoreCase) ||
@@ -157,7 +157,7 @@ namespace Rezervise.Infrastructure.Persistence.Context
                 if (message.Contains("deadlock", StringComparison.OrdinalIgnoreCase))
                 {
                     throw new ConcurrencyConflictException(
-                        "Islem gecici olarak kilitlendi. Lutfen tekrar deneyin.", ex);
+                        "İşlem geçici olarak kilitlendi. Lütfen tekrar deneyin.", ex);
                 }
 
                 throw;
@@ -165,7 +165,7 @@ namespace Rezervise.Infrastructure.Persistence.Context
         }
 
         /// <summary>
-        /// Takip edilen aggregate'lerde biriken domain event'lerini kayit oncesinde kopyalar.
+        /// Takip edilen aggregate'lerde biriken domain event'lerini kayıt öncesinde kopyalar.
         /// </summary>
         /// <returns>Kaynak aggregate'leriyle birlikte bekleyen event'ler.</returns>
         private List<(IAggregateRoot Aggregate, IDomainEvent Event)> SnapshotDomainEvents()
@@ -180,10 +180,10 @@ namespace Rezervise.Infrastructure.Persistence.Context
         }
 
         /// <summary>
-        /// Kayit basariliysa event'leri yayinlar ve kaynak aggregate'lerden temizler.
+        /// Kayıt başarılıysa event'leri yayınlar ve kaynak aggregate'lerden temizler.
         /// </summary>
-        /// <param name="pendingEvents">Kayit oncesi alinan event snapshot'i.</param>
-        /// <param name="cancellationToken">Iptal tokeni.</param>
+        /// <param name="pendingEvents">Kayıt öncesi alınan event snapshot'i.</param>
+        /// <param name="cancellationToken">İptal tokeni.</param>
         private async Task DispatchDomainEventsAsync(
             IReadOnlyCollection<(IAggregateRoot Aggregate, IDomainEvent Event)> pendingEvents,
             CancellationToken cancellationToken)
@@ -191,8 +191,8 @@ namespace Rezervise.Infrastructure.Persistence.Context
             if (pendingEvents.Count == 0)
                 return;
 
-            // Bir event handler ayni context uzerinde tekrar SaveChangesAsync
-            // cagirabilir; bu bayrak ayni snapshot'in iki kez yayinlanmasini engeller.
+            // Bir event handler aynı context üzerinde tekrar SaveChangesAsync
+            // çağırabilir; bu bayrak aynı snapshot'in iki kez yayınlanmasını engeller.
             _dispatchingDomainEvents = true;
 
             try
@@ -203,9 +203,9 @@ namespace Rezervise.Infrastructure.Persistence.Context
             }
             catch
             {
-                // Transaction icinde yayin hatasi sessizce gecilirse commit
-                // kismi islenmis bir degisikligi kalici hale getirir. Transaction
-                // disinda kayit zaten tamamlandigindan yanit bozulmaz.
+                // Transaction içinde yayın hatası sessizce geçilirse commit
+                // kısmı işlenmiş bir değişikliği kalıcı hale getirir. Transaction
+                // dışında kayıt zaten tamamlandığından yanıt bozulmaz.
                 if (Database.CurrentTransaction is not null)
                     throw;
             }
@@ -219,8 +219,8 @@ namespace Rezervise.Infrastructure.Persistence.Context
         }
 
         /// <summary>
-        /// SQL Server hata mesajindan ihlal edilen index veya kisit adini cikarir.
-        /// Mesaj formatlari: "with unique index 'IX_Name'" veya "constraint 'UQ_Name'".
+        /// SQL Server hata mesajından ihlal edilen index veya kısıt adını çıkarır.
+        /// Mesaj formatları: "with unique index 'IX_Name'" veya "constraint 'UQ_Name'".
         /// </summary>
         private static string? ExtractIndexName(string message)
         {
@@ -233,37 +233,37 @@ namespace Rezervise.Infrastructure.Persistence.Context
         }
 
         /// <summary>
-        /// Ihlal edilen varlik adini entry metadata'sindan okur.
-        /// Bulunamazsa genel bir ad doner.
+        /// İhlal edilen varlık adını entry metadata'sından okur.
+        /// Bulunamazsa genel bir ad döner.
         /// </summary>
         private static string ExtractEntityName(DbUpdateException exception)
         {
             return exception.Entries.Count > 0
                 ? exception.Entries[0].Metadata.ClrType.Name
-                : "Kayit";
+                : "Kayıt";
         }
 
         /// <summary>
-        /// Ihlal edilen index adina gore kullaniciya gosterilecek Turkce
-        /// mesaji secer.
+        /// İhlal edilen index adına göre kullanıcıya gösterilecek Türkçe
+        /// mesajı seçer.
         /// </summary>
         private static string MapDuplicateMessage(string? indexName)
         {
             return indexName switch
             {
                 "UX_Appointments_EmployeeId_AppointmentDate_Active"
-                    => "Bu saat araliginda zaten bir randevu var.",
+                    => "Bu saat aralığında zaten bir randevu var.",
                 "UX_Reviews_AppointmentId"
-                    => "Bu randevu icin zaten bir yorum yapilmis.",
+                    => "Bu randevu için zaten bir yorum yapılmış.",
                 "UX_BlacklistEntries_BusinessId_UserId"
-                    => "Bu kullanici zaten kara listede.",
+                    => "Bu kullanıcı zaten kara listede.",
                 "UX_Favorites_UserId_BusinessId"
-                    => "Bu isletme zaten favorilerinizde.",
+                    => "Bu işletme zaten favorilerinizde.",
                 "UX_Users_Email"
-                    => "Bu e-posta adresi zaten kayitli.",
+                    => "Bu e-posta adresi zaten kayıtlı.",
                 "UX_Users_PhoneNumber"
-                    => "Bu telefon numarasi zaten kayitli.",
-                _ => "Bu kayit zaten mevcut."
+                    => "Bu telefon numarası zaten kayıtlı.",
+                _ => "Bu kayıt zaten mevcut."
             };
         }
     }

@@ -11,16 +11,16 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
         {
             if (await context.Favorites.AnyAsync())
             {
-                logger.LogInformation("Favorites zaten mevcut, atlaniyor.");
+                logger.LogInformation("Favorites zaten mevcut, atlanıyor.");
                 return;
             }
 
             var today = DateTime.UtcNow.Date;
             var favorites = new List<Favorite>
             {
-                CreateFavorite(UserSeed.Customer1Id, BusinessSeed.Biz1Id, today.AddDays(-10), "En sevdigim berber"),
+                CreateFavorite(UserSeed.Customer1Id, BusinessSeed.Biz1Id, today.AddDays(-10), "En sevdiğim berber"),
                 CreateFavorite(UserSeed.Customer2Id, BusinessSeed.Biz2Id, today.AddDays(-8), null),
-                CreateFavorite(UserSeed.Customer4Id, BusinessSeed.Biz3Id, today.AddDays(-3), "Dovme icin favori"),
+                CreateFavorite(UserSeed.Customer4Id, BusinessSeed.Biz3Id, today.AddDays(-3), "Dövme için favori"),
                 CreateFavorite(UserSeed.Customer1Id, BusinessSeed.Biz5Id, today.AddDays(-5), null)
             };
 

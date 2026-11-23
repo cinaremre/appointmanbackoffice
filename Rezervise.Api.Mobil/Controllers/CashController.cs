@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Kasa tanimi ve oturum islemlerini yonetir. Yetki kontrolleri handler
-    /// katmaninda JWT kimligi ve isletme sahibi uzerinden yapilir.
+    /// Kasa tanımı ve oturum işlemlerini yönetir. Yetki kontrolleri handler
+    /// katmanında JWT kimliği ve işletme sahibi üzerinden yapılır.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -27,19 +27,19 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Isletmeye yeni kasa tanimlar.
+        /// İşletmeye yeni kasa tanımlar.
         /// </summary>
         /// <param name="command">Kasa bilgileri</param>
-        /// <returns>Olusturulan kasanin ID'si</returns>
+        /// <returns>Oluşturulan kasanın ID'si</returns>
         [HttpPost("register")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateRegister([FromBody] CreateCashRegisterCommand command)
         {
-            // 1. Command'i mediator ile gonder
+            // 1. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -47,19 +47,19 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kasada yeni oturum acar.
+        /// Kasada yeni oturum açar.
         /// </summary>
-        /// <param name="command">Acilis bilgileri</param>
-        /// <returns>Acilan oturumun ID'si</returns>
+        /// <param name="command">Açılış bilgileri</param>
+        /// <returns>Açılan oturumun ID'si</returns>
         [HttpPost("open")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> OpenSession([FromBody] OpenCashSessionCommand command)
         {
-            // 1. Command'i mediator ile gonder
+            // 1. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -67,19 +67,19 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Acik oturumu kapatir; beklenen/sayilan nakit farkini rapolar.
+        /// Açık oturumu kapatır; beklenen/sayılan nakit farkını rapolar.
         /// </summary>
-        /// <param name="command">Kapanis bilgileri</param>
-        /// <returns>Kapanis ozeti</returns>
+        /// <param name="command">Kapanış bilgileri</param>
+        /// <returns>Kapanış özeti</returns>
         [HttpPost("close")]
         [ProducesResponseType(typeof(Result<CashSessionCloseResult>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<CashSessionCloseResult>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CloseSession([FromBody] CloseCashSessionCommand command)
         {
-            // 1. Command'i mediator ile gonder
+            // 1. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -87,19 +87,19 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Acik oturuma manuel nakit girisi/cikisi ekler.
+        /// Açık oturuma manuel nakit girişi/çıkışı ekler.
         /// </summary>
         /// <param name="command">Hareket bilgileri</param>
-        /// <returns>Olusturulan hareketin ID'si</returns>
+        /// <returns>Oluşturulan hareketin ID'si</returns>
         [HttpPost("movement")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddMovement([FromBody] AddCashMovementCommand command)
         {
-            // 1. Command'i mediator ile gonder
+            // 1. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -107,22 +107,22 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kasayi devre disi birakir.
+        /// Kasayı devre dışı bırakır.
         /// </summary>
         /// <param name="id">Kasa ID'si</param>
-        /// <returns>Guncellenen kasanin ID'si</returns>
+        /// <returns>Güncellenen kasanın ID'si</returns>
         [HttpPost("register/{id}/deactivate")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeactivateRegister(Guid id)
         {
-            // 1. ID guvenilir kaynaktan (route) alinir
+            // 1. ID güvenilir kaynaktan (route) alınır
             var command = new SetCashRegisterActiveCommand { CashRegisterId = id, IsActive = false };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -130,22 +130,22 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Deaktif kasayi tekrar aktif eder.
+        /// Deaktif kasayı tekrar aktif eder.
         /// </summary>
         /// <param name="id">Kasa ID'si</param>
-        /// <returns>Guncellenen kasanin ID'si</returns>
+        /// <returns>Güncellenen kasanın ID'si</returns>
         [HttpPost("register/{id}/activate")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ActivateRegister(Guid id)
         {
-            // 1. ID guvenilir kaynaktan (route) alinir
+            // 1. ID güvenilir kaynaktan (route) alınır
             var command = new SetCashRegisterActiveCommand { CashRegisterId = id, IsActive = true };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 

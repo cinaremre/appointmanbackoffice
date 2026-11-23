@@ -25,12 +25,12 @@ namespace Rezervise.Application.Features.Notifications.Queries.GetNotificationsB
         {
             try
             {
-                // 0. Kimlik her zaman imzali token'dan gelir; istekteki hicbir alan kullaniciyi temsil etmez.
+                // 0. Kimlik her zaman imzalı token'dan gelir; istekteki hiçbir alan kullanıcıyı temsil etmez.
                 var currentUserId = _currentUser.UserId;
                 if (currentUserId is null)
                     return Result<List<NotificationDto>>.Failure(Error.Unauthorized("Auth.InvalidUser"));
 
-                // 1. Kullanicinin bildirimlerini getir
+                // 1. Kullanıcının bildirimlerini getir
                 var notifications = await _notificationRepository.FindAsync(
                     n => n.UserId == currentUserId.Value && !n.IsDeleted,
                     cancellationToken);
@@ -42,7 +42,7 @@ namespace Rezervise.Application.Features.Notifications.Queries.GetNotificationsB
                     .Take(request.PageSize)
                     .ToList();
 
-                // 3. DTO'ya donustur
+                // 3. DTO'ya dönüştür
                 var dtos = pagedNotifications.Select(n => new NotificationDto
                 {
                     Id = n.Id,
@@ -62,7 +62,7 @@ namespace Rezervise.Application.Features.Notifications.Queries.GetNotificationsB
             catch (Exception ex)
             {
                 return Result<List<NotificationDto>>.Failure(
-                    Error.Internal("Bildirimler getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Bildirimler getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

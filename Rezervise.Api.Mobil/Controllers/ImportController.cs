@@ -10,8 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Musteri verisi aktarimi (CSV). Isletme sahibi dosya yukler,
-    /// kolon eslesmesi ile islemi onaylar, sonucu sorgular.
+    /// Müşteri verişi aktarımı (CSV). İşletme sahibi dosya yükler,
+    /// kolon eşleşmesi ile işlemi onaylar, sonucu sorgular.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -26,20 +26,20 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// CSV dosyasi icin aktarim isi olusturur. Satirlar parse edilir,
-        /// is kolon eslesmesi (onay) bekler; satir kayitlari olusmaz.
+        /// CSV dosyası için aktarım isi oluşturur. Satırlar parse edilir,
+        /// is kolon eşleşmesi (onay) bekler; satır kayıtları oluşmaz.
         /// </summary>
-        /// <param name="command">Dosya ve CSV icerigi</param>
-        /// <returns>Aktarim isi ID'si</returns>
+        /// <param name="command">Dosya ve CSV içeriği</param>
+        /// <returns>Aktarım isi ID'si</returns>
         [HttpPost("create")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] CreateImportJobCommand command)
         {
-            // 1. Command'i mediator ile gonder
+            // 1. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -47,21 +47,21 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Aktarim isini kolon eslesmesi ile calistirir. Ayni telefon
-        /// (SourceRecordKey) tekrarlari SkippedDuplicate olarak atlanir.
-        /// Tamamlanmis is tekrar calistirilamaz (Conflict).
+        /// Aktarım işini kolon eşleşmesi ile çalıştırır. Aynı telefon
+        /// (SourceRecordKey) tekrarları SkippedDuplicate olarak atlanır.
+        /// Tamamlanmış is tekrar çalıştırılamaz (Conflict).
         /// </summary>
-        /// <param name="command">Is ID'si ve kolon eslesmesi (JSON)</param>
-        /// <returns>Aktarim isi ID'si</returns>
+        /// <param name="command">İs ID'si ve kolon eşleşmesi (JSON)</param>
+        /// <returns>Aktarım isi ID'si</returns>
         [HttpPost("execute")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Execute([FromBody] ExecuteImportJobCommand command)
         {
-            // 1. Command'i mediator ile gonder
+            // 1. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -69,22 +69,22 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Aktarim isinin ozetini ve satir bazli sonuclarini getirir.
+        /// Aktarım işinin özetini ve satır bazlı sonuçlarını getirir.
         /// </summary>
-        /// <param name="importJobId">Aktarim isi ID'si</param>
-        /// <returns>Ozet ve satir sonuclari</returns>
+        /// <param name="importJobId">Aktarım isi ID'si</param>
+        /// <returns>Özet ve satır sonuçları</returns>
         [HttpGet("result/{importJobId}")]
         [ProducesResponseType(typeof(Result<ImportJobResultDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<ImportJobResultDto>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetResult(Guid importJobId)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetImportJobResultQuery { ImportJobId = importJobId };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 

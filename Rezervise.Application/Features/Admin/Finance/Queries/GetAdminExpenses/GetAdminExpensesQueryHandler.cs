@@ -67,7 +67,7 @@ namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminExpenses
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<AdminExpenseDto>>.Failure(
-                    Error.Internal("Gider listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Gider listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

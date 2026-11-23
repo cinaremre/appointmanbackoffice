@@ -4,40 +4,40 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Reports.Queries.GetSubscriptionRevenue
 {
     /// <summary>
-    /// Abonelik gelir raporu (dokuman Modul 18). Aktif abonelik sayisi,
-    /// plan bazinda dagilim ve normalize aylik yinelenen gelir (MRR).
+    /// Abonelik gelir raporu (doküman Modül 18). Aktif abonelik sayısı,
+    /// plan bazında dağılım ve normalize aylık yinelenen gelir (MRR).
     /// </summary>
     public class GetSubscriptionRevenueQuery : IRequest<Result<SubscriptionRevenueDto>>
     {
     }
 
-    /// <summary>Abonelik gelir ozeti.</summary>
+    /// <summary>Abonelik gelir özeti.</summary>
     public class SubscriptionRevenueDto
     {
-        /// <summary>Su anda aktif abonelik sayisi.</summary>
+        /// <summary>Su anda aktif abonelik sayısı.</summary>
         public int ActiveSubscriptionCount { get; init; }
 
         /// <summary>
-        /// Aylik yinelenen gelir: Monthly planlar tam fiyat,
-        /// Yearly planlar fiyat/12 olarak toplanir.
+        /// Aylık yinelenen gelir: Monthly planlar tam fiyat,
+        /// Yearly planlar fiyat/12 olarak toplanır.
         /// </summary>
         public decimal Mrr { get; init; }
 
-        /// <summary>Ilk planin para birim kodu; plan yoksa bos metin.</summary>
+        /// <summary>İlk planın para birim kodu; plan yoksa boş metin.</summary>
         public string Currency { get; init; } = string.Empty;
 
-        /// <summary>Plan bazinda aktif isletme dagilimi.</summary>
+        /// <summary>Plan bazında aktif işletme dağılımı.</summary>
         public IReadOnlyList<PlanDistributionDto> Plans { get; init; } = Array.Empty<PlanDistributionDto>();
     }
 
-    /// <summary>Tek bir planin dagilim satiri.</summary>
+    /// <summary>Tek bir planın dağılım satırı.</summary>
     public class PlanDistributionDto
     {
         public Guid PlanId { get; init; }
 
         public string PlanName { get; init; } = string.Empty;
 
-        /// <summary>Bu plana aktif abone isletme sayisi.</summary>
+        /// <summary>Bu plana aktif abone işletme sayısı.</summary>
         public int BusinessCount { get; init; }
     }
 }

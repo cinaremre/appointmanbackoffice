@@ -4,15 +4,15 @@ using MediatR;
 namespace Rezervise.Application.Features.Users.Commands.VerifyPhoneOtp
 {
     /// <summary>
-    /// Kayit sonrasi gonderilen telefon dogrulama kodunu (OTP) dogrular.
-    /// Basarili dogrulamada kullanici telefon dogrulanmis sayilir ve giris yapabilir.
+    /// Kayıt sonrası gönderilen telefon doğrulama kodunu (OTP) doğrular.
+    /// Başarılı doğrulamada kullanıcı telefon doğrulanmış sayılır ve giriş yapabilir.
     /// </summary>
     public class VerifyPhoneOtpCommand : IRequest<Result<Guid>>
     {
-        /// <summary>Kodun gonderildigi telefon numarasi.</summary>
+        /// <summary>Kodun gönderildiği telefon numarası.</summary>
         public string PhoneNumber { get; set; }
 
-        /// <summary>Kullanici tarafindan girilen dogrulama kodu.</summary>
+        /// <summary>Kullanıcı tarafından girilen doğrulama kodu.</summary>
         public string Code { get; set; }
     }
 }

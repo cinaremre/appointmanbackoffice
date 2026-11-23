@@ -11,9 +11,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyPackages
 {
     /// <summary>
-    /// Isletme sahibinin musteri paketi listesi. Sahiplik OwnerScope ile
-    /// dogrulanir; kalan hak hareketlerden hesaplanir
-    /// (GetAdminCustomerPackages deseniyle ayni).
+    /// İşletme sahibinin müşteri paketi listesi. Sahiplik OwnerScope ile
+    /// doğrulanır; kalan hak hareketlerden hesaplanır
+    /// (GetAdminCustomerPackages deseniyle aynı).
     /// </summary>
     public class GetMyPackagesQueryHandler
         : IRequestHandler<GetMyPackagesQuery, Result<AdminPagedResult<OwnerCustomerPackageDto>>>
@@ -44,14 +44,14 @@ namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyPackages
         {
             try
             {
-                // 1. Sahiplik: isletme JWT sahibine ait olmali.
+                // 1. Sahiplik: işletme JWT sahibine ait olmalı.
                 var owned = await OwnerScope.FindOwnedBusinessAsync(
                     _businessRepository, _currentUser, request.BusinessId, cancellationToken);
 
                 if (owned.IsFailure)
                     return Result<AdminPagedResult<OwnerCustomerPackageDto>>.Failure(owned.Error!);
 
-                // 2. Sayfalama kurallari.
+                // 2. Sayfalama kuralları.
                 var page = AdminPaging.NormalizePage(request.Page);
                 var pageSize = AdminPaging.ClampPageSize(request.PageSize);
 
@@ -66,8 +66,8 @@ namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyPackages
                     .Take(pageSize)
                     .ToList();
 
-                // 3. Purchased: paket tanimindaki toplam seans sayisi
-                //    (ServicePackageItem toplami).
+                // 3. Purchased: paket tanımındaki toplam seans sayısı
+                //    (ServicePackageItem toplamı).
                 var servicePackageIds = pageItems
                     .Select(p => p.ServicePackageId)
                     .Distinct()
@@ -83,7 +83,7 @@ namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyPackages
                     purchasedByPackage[packageId] = servicePackage?.GetTotalSessions() ?? 0;
                 }
 
-                // 4. Hareketler: yalnizca sayfadaki paketler icin aktif kayitlar.
+                // 4. Hareketler: yalnızca sayfadaki paketler için aktif kayıtlar.
                 var customerPackageIds = pageItems.Select(p => p.Id).ToList();
 
                 var usages = customerPackageIds.Count == 0
@@ -94,7 +94,7 @@ namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyPackages
                             && !u.IsDeleted,
                         cancellationToken)).ToList();
 
-                // 5. DTO: kalan hak = purchased - tuketilen - rezerve.
+                // 5. DTO: kalan hak = purchased - tüketilen - rezerve.
                 var items = pageItems
                     .Select(p =>
                     {
@@ -132,7 +132,7 @@ namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyPackages
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<OwnerCustomerPackageDto>>.Failure(
-                    Error.Internal("Musteri paketi listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Müşteri paketi listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

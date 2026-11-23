@@ -2,7 +2,7 @@ using Rezervise.Domain.Enums;
 
 namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminReengagementAttempts
 {
-    /// <summary>Tek bir geri cagirma denemesinin yonetici gorunumu.</summary>
+    /// <summary>Tek bir geri çağırma denemesinin yönetici görünümü.</summary>
     public class AdminReengagementAttemptDto
     {
         public Guid Id { get; set; }
@@ -11,17 +11,17 @@ namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminReengag
         public Guid ServiceId { get; set; }
         public Guid RuleId { get; set; }
 
-        /// <summary>Gonderim varsa bildirim kaydinin kimligi.</summary>
+        /// <summary>Gönderim varsa bildirim kaydının kimliği.</summary>
         public Guid? NotificationId { get; set; }
 
         public DateTime TriggeredAt { get; set; }
         public EnumReengagementStatus Status { get; set; }
 
-        /// <summary>Donusum gerceklesirse olusan randevunun kimligi.</summary>
+        /// <summary>Dönüşüm gerçekleşirse oluşan randevunun kimliği.</summary>
         public Guid? ConvertedAppointmentId { get; set; }
     }
 
-    /// <summary>Filtreye uyan geri cagirma denemeleri (tarih tersten sirali).</summary>
+    /// <summary>Filtreye uyan geri çağırma denemeleri (tarih tersten sıralı).</summary>
     public class AdminReengagementAttemptListDto
     {
         public IReadOnlyList<AdminReengagementAttemptDto> Items { get; set; }

@@ -8,10 +8,10 @@ import type { OwnerDashboardResponse } from "../types";
 import { formatMoney, todayIsoDate } from "../types";
 
 /**
- * Isletme sahibi paneli (Modul 15.1 + gunluk satis ozeti).
- * Kapsam daima secili isletmedir; tarih degistirilerek diger gunlerin
- * ozeti goruntulenir. Tum hesaplar SUNUCUDA yapilir (GetBusinessDashboard
- * ve GetDailySalesSummary sorgulari); arayuz yalnizca gosterir.
+ * İşletme sahibi paneli (Modül 15.1 + günlük satış özeti).
+ * Kapsam daima seçili işletmedir; tarih değiştirilerek diğer günlerin
+ * özeti görüntülenir. Tüm hesaplar SUNUCUDA yapılır (GetBusinessDashboard
+ * ve GetDailySalesSummary sorguları); arayüz yalnızca gösterir.
  */
 
 function KpiCard({ label, value }: { label: string; value: string }) {
@@ -37,7 +37,7 @@ export function OwnerDashboardPage() {
   const [selectedId, setSelectedId] = useState("");
   const [date, setDate] = useState<string>(todayIsoDate());
 
-  // Tek isletme otomatik secilir; acik secim yoksa ilk isletme kullanilir.
+  // Tek işletme otomatik seçilir; açık seçim yoksa ilk işletme kullanılır.
   const businessId = selectedId || businesses[0]?.id || "";
   const effectiveDate = date || todayIsoDate();
 
@@ -56,8 +56,8 @@ export function OwnerDashboardPage() {
   if (businesses.length === 0) {
     return (
       <Box>
-        <PageHeader title="Isletme Paneli" />
-        <EmptyState label="Size ait isletme bulunamadi." />
+        <PageHeader title="İşletme Paneli" />
+        <EmptyState label="Size ait işletme bulunamadı." />
       </Box>
     );
   }
@@ -67,7 +67,7 @@ export function OwnerDashboardPage() {
 
   return (
     <Box>
-      <PageHeader title="Isletme Paneli" />
+      <PageHeader title="İşletme Paneli" />
       <Stack
         direction={{ xs: "column", md: "row" }}
         spacing={2}
@@ -76,7 +76,7 @@ export function OwnerDashboardPage() {
         <TextField
           select
           size="small"
-          label="Isletme"
+          label="İşletme"
           value={businessId}
           onChange={(e) => setSelectedId(e.target.value)}
           disabled={businesses.length <= 1}
@@ -91,7 +91,7 @@ export function OwnerDashboardPage() {
         <TextField
           size="small"
           type="date"
-          label="Gun"
+          label="Gün"
           value={date}
           onChange={(e) => setDate(e.target.value)}
           slotProps={{ inputLabel: { shrink: true } }}
@@ -106,33 +106,33 @@ export function OwnerDashboardPage() {
       ) : (
         <>
           <Typography variant="h6" component="h2" sx={{ mb: 1 }}>
-            Gunluk Randevu Ozeti
+            Günlük Randevu Özeti
           </Typography>
           <Grid container spacing={2}>
-            <KpiCard label="Bugunki Randevular" value={String(dashboard?.bugunkiRandevular ?? 0)} />
+            <KpiCard label="Bugünkü Randevular" value={String(dashboard?.bugunkiRandevular ?? 0)} />
             <KpiCard label="Tamamlanan" value={String(dashboard?.tamamlanan ?? 0)} />
-            <KpiCard label="Iptaller" value={String(dashboard?.iptaller ?? 0)} />
+            <KpiCard label="İptaller" value={String(dashboard?.iptaller ?? 0)} />
             <KpiCard label="Gelmeyen (NoShow)" value={String(dashboard?.noShow ?? 0)} />
             <KpiCard
-              label="Doluluk Orani"
+              label="Doluluk Oranı"
               value={`${Math.round((dashboard?.dolulukOrani ?? 0) * 100)} %`}
             />
           </Grid>
 
           <Typography variant="h6" component="h2" sx={{ mb: 1, mt: 3 }}>
-            Gunluk Satis Ozeti
+            Günlük Satış Özeti
           </Typography>
           <Grid container spacing={2}>
-            <KpiCard label="Satis Sayisi" value={String(summary?.salesCount ?? 0)} />
-            <KpiCard label="Toplam Satis" value={formatMoney(summary?.totalSales ?? 0)} />
+            <KpiCard label="Satış Sayısı" value={String(summary?.salesCount ?? 0)} />
+            <KpiCard label="Toplam Satış" value={formatMoney(summary?.totalSales ?? 0)} />
             <KpiCard label="Net Nakit Tahsilat" value={formatMoney(summary?.cashCollected ?? 0)} />
             <KpiCard label="Net Kart Tahsilat" value={formatMoney(summary?.cardCollected ?? 0)} />
-            <KpiCard label="Gider Toplami" value={formatMoney(summary?.totalExpenses ?? 0)} />
+            <KpiCard label="Gider Toplamı" value={formatMoney(summary?.totalExpenses ?? 0)} />
             <KpiCard
               label="Bekleyen Alacak"
               value={formatMoney(summary?.outstandingReceivables ?? 0)}
             />
-            <KpiCard label="Kasa" value={summary?.isCashOpen ? "Acik" : "Kapali"} />
+            <KpiCard label="Kasa" value={summary?.isCashOpen ? "Açık" : "Kapalı"} />
           </Grid>
         </>
       )}

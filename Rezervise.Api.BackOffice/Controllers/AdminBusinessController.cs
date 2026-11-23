@@ -13,8 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers
 {
     /// <summary>
-    /// Platform yonetimi isletme endpoint'leri (dokuman Modul 8).
-    /// Yetki policy'leriyle korunur; is kurallari handler'lardadir.
+    /// Platform yönetimi işletme endpoint'leri (doküman Modül 8).
+    /// Yetki policy'leriyle korunur; is kuralları handler'lardadır.
     /// </summary>
     [ApiController]
     [Authorize]
@@ -28,7 +28,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             _mediator = mediator;
         }
 
-        /// <summary>Isletme listesi; durum, ad aramasi ve sehir filtreleri.</summary>
+        /// <summary>İşletme listesi; durum, ad araması ve şehir filtreleri.</summary>
         [HttpGet]
         [Authorize(Policy = AdminPermissions.BusinessRead)]
         public async Task<IActionResult> GetList([FromQuery] GetBusinessesQuery query, CancellationToken cancellationToken)
@@ -44,7 +44,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkList(value.Items, value.Page, value.PageSize, value.TotalCount);
         }
 
-        /// <summary>Isletme detayi + calisan/hizmet/randevu ozetleri.</summary>
+        /// <summary>İşletme detayı + çalışan/hizmet/randevu özetleri.</summary>
         [HttpGet("{id:guid}")]
         [Authorize(Policy = AdminPermissions.BusinessRead)]
         public async Task<IActionResult> GetDetail(Guid id, CancellationToken cancellationToken)
@@ -58,7 +58,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkEnvelope(result.Value!);
         }
 
-        /// <summary>Isletme temel bilgilerini guncellestirir; denetim kaydi yazilir.</summary>
+        /// <summary>İşletme temel bilgilerini güncelleştirir; denetim kaydı yazılır.</summary>
         [HttpPatch("{id:guid}")]
         [Authorize(Policy = AdminPermissions.BusinessUpdate)]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateBusinessByAdminRequest body, CancellationToken cancellationToken)
@@ -80,13 +80,13 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkEnvelope(result.Value!);
         }
 
-        /// <summary>Isletmeyi askiya alir; Reason govdede zorunludur.</summary>
+        /// <summary>İşletmeyi askıya alır; Reason gövdede zorunludur.</summary>
         [HttpPost("{id:guid}/suspend")]
         [Authorize(Policy = AdminPermissions.BusinessSuspend)]
         public async Task<IActionResult> Suspend(Guid id, [FromBody] SuspendBusinessByAdminRequest? body, CancellationToken cancellationToken)
         {
-            // Gerekce bos gonderilirse handler dogrulama hatasi donerur ve
-            // buradan 400 BadRequest ile yansitilir.
+            // Gerekçe boş gönderilirse handler doğrulama hatası dönerur ve
+            // buradan 400 BadRequest ile yansıtılır.
             var command = new SuspendBusinessByAdminCommand
             {
                 BusinessId = id,
@@ -102,7 +102,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkEnvelope(result.Value!);
         }
 
-        /// <summary>Askidaki isletmeyi yeniden aktif eder; denetim kaydi yazilir.</summary>
+        /// <summary>Askıdaki işletmeyi yeniden aktif eder; denetim kaydı yazılır.</summary>
         [HttpPost("{id:guid}/activate")]
         [Authorize(Policy = AdminPermissions.BusinessSuspend)]
         public async Task<IActionResult> Activate(Guid id, [FromBody] ActivateBusinessByAdminRequest? body, CancellationToken cancellationToken)
@@ -122,7 +122,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkEnvelope(result.Value!);
         }
 
-        /// <summary>Isletme uzerindeki yonetici islemlerinin denetim kaydi.</summary>
+        /// <summary>İşletme üzerindeki yönetici işlemlerinin denetim kaydı.</summary>
         [HttpGet("{id:guid}/audit")]
         [Authorize(Policy = AdminPermissions.AuditRead)]
         public async Task<IActionResult> GetAuditTrail(Guid id, [FromQuery] int page = 1, [FromQuery] int pageSize = 50, CancellationToken cancellationToken = default)
@@ -145,24 +145,24 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkList(value.Items, value.Page, value.PageSize, value.TotalCount);
         }
 
-        /// <summary>PATCH govdesi: yalnizca gonderilen alanlar guncellenir.</summary>
+        /// <summary>PATCH gövdesi: yalnızca gönderilen alanlar güncellenir.</summary>
         public sealed class UpdateBusinessByAdminRequest
         {
             public string? Name { get; init; }
 
             public string? Description { get; init; }
 
-            /// <summary>Opsiyonel islem gerekcesi; denetim kaydina yazilir.</summary>
+            /// <summary>Opsiyonel işlem gerekçesi; denetim kaydına yazılır.</summary>
             public string? Reason { get; init; }
         }
 
-        /// <summary>Suspend govdesi: Reason zorunludur (handler dogrular).</summary>
+        /// <summary>Suspend gövdesi: Reason zorunludur (handler doğrular).</summary>
         public sealed class SuspendBusinessByAdminRequest
         {
             public string? Reason { get; init; }
         }
 
-        /// <summary>Activate govdesi: Reason opsiyoneldir.</summary>
+        /// <summary>Activate gövdesi: Reason opsiyoneldir.</summary>
         public sealed class ActivateBusinessByAdminRequest
         {
             public string? Reason { get; init; }

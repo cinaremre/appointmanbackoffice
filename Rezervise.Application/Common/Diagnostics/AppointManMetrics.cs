@@ -132,7 +132,7 @@ namespace Rezervise.Application.Common.Diagnostics
         public void RecordRefreshTokenRotation(string outcome)
             => _refreshTokenRotations.Add(1, new KeyValuePair<string, object?>(OutcomeTag, outcome));
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public void Dispose() => _meter.Dispose();
     }
 }

@@ -41,29 +41,29 @@ namespace Rezervise.Application.Features.Packages.Commands.ConsumePackageSession
         {
             try
             {
-                // 1. Musteri paketi kontrolu
+                // 1. Müşteri paketi kontrolü
                 var customerPackage = await _customerPackageRepository.GetByIdAsync(request.CustomerPackageId, cancellationToken);
                 if (customerPackage is null)
-                    return Result<Guid>.Failure(Error.NotFound("Musteri paketi", request.CustomerPackageId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Müşteri paketi", request.CustomerPackageId.ToString()));
 
-                // 2. Yetki: isletme sahibi veya paketin musterisi.
+                // 2. Yetki: işletme sahibi veya paketin müşterisi.
                 if (!await CanActOnPackageAsync(customerPackage, cancellationToken))
-                    return Result<Guid>.Failure(Error.Forbidden("Bu paket uzerinde islem yapma yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu paket üzerinde işlem yapma yetkiniz yok."));
 
-                // 3. Randevu kontrolu: tuketim icin randevu Completed olmali.
+                // 3. Randevu kontrolü: tüketim için randevu Completed olmalı.
                 var appointment = await _appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken);
                 if (appointment is null)
                     return Result<Guid>.Failure(Error.NotFound("Randevu", request.AppointmentId.ToString()));
 
                 if (appointment.Status != EnumAppointmentStatus.Completed)
-                    return Result<Guid>.Failure(Error.Conflict("Paket hakki yalnizca tamamlanan randevular icin tuketilebilir."));
+                    return Result<Guid>.Failure(Error.Conflict("Paket hakkı yalnızca tamamlanan randevular için tüketilebilir."));
 
                 if (appointment.BusinessId != customerPackage.BusinessId ||
                     appointment.ServiceId != request.ServiceId ||
                     appointment.UserId != customerPackage.CustomerId)
-                    return Result<Guid>.Failure(Error.Conflict("Randevu, paketin isletme/hizmet/musteri bilgileriyle uyumsuz."));
+                    return Result<Guid>.Failure(Error.Conflict("Randevu, paketin işletme/hizmet/müşteri bilgileriyle uyumsuz."));
 
-                // 4. Randevunun aktif Reservation hareketi olmali.
+                // 4. Randevunun aktif Reservation hareketi olmalı.
                 var reservations = await _packageUsageRepository.FindAsync(
                     u => u.CustomerPackageId == request.CustomerPackageId &&
                          u.AppointmentId == request.AppointmentId &&
@@ -73,10 +73,10 @@ namespace Rezervise.Application.Features.Packages.Commands.ConsumePackageSession
 
                 var reservation = reservations.FirstOrDefault();
                 if (reservation is null)
-                    return Result<Guid>.Failure(Error.Conflict("Bu randevu icin aktif paket rezervasyonu bulunamadi."));
+                    return Result<Guid>.Failure(Error.Conflict("Bu randevu için aktif paket rezervasyonu bulunamadı."));
 
                 // 5. Rezervasyon hareketini iptal et ve Consumption hareketi ekle.
-                //    Iki degisiklik ayni SaveChanges ile tek transaction'da kalir.
+                //    İki değişiklik aynı SaveChanges ile tek transaction'da kalır.
                 var now = _dateTime.UtcNow;
                 reservation.Cancel(now);
 
@@ -98,11 +98,11 @@ namespace Rezervise.Application.Features.Packages.Commands.ConsumePackageSession
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Paket hakki tuketilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Paket hakkı tüketilirken bir hata oluştu.", ex.Message));
             }
         }
 
-        /// <summary>Caller paketin sahibi isletmenin mi, yoksa paket musterisinin kendisi mi?</summary>
+        /// <summary>Caller paketin sahibi işletmenin mi, yoksa paket müşterisinin kendisi mi?</summary>
         private async Task<bool> CanActOnPackageAsync(CustomerPackage customerPackage, CancellationToken cancellationToken)
         {
             if (CallerAuthorization.CanActAsUser(_currentUser, customerPackage.CustomerId))

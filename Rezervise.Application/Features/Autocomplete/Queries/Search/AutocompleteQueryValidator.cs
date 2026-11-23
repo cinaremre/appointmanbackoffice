@@ -8,7 +8,7 @@ namespace Rezervise.Application.Features.Autocomplete.Queries.Search
     /// </summary>
     public class AutocompleteQueryValidator : AbstractValidator<AutocompleteQuery>
     {
-        // Karsilastirma buyuk/kucuk harf duyarsiz olsun diye OrdinalIgnoreCase kullanilir.
+        // Karşılaştırma büyük/küçük harf duyarsız olsun diye OrdinalIgnoreCase kullanılır.
         private static readonly HashSet<string> SupportedTypes = new(StringComparer.OrdinalIgnoreCase)
         {
             "city",
@@ -23,21 +23,21 @@ namespace Rezervise.Application.Features.Autocomplete.Queries.Search
         {
             RuleFor(x => x.Type)
                 .NotEmpty()
-                .WithMessage("Arama tipi bos olamaz.")
+                .WithMessage("Arama tipi boş olamaz.")
                 .Must(type => SupportedTypes.Contains((type ?? string.Empty).Trim()))
                 .WithMessage("Desteklenmeyen arama tipi.");
 
             RuleFor(x => x.Query)
                 .NotEmpty()
-                .WithMessage("Arama terimi bos olamaz.")
+                .WithMessage("Arama terimi boş olamaz.")
                 .MinimumLength(3)
-                .WithMessage("Arama terimi en az 3 karakter olmalidir.")
+                .WithMessage("Arama terimi en az 3 karakter olmalıdır.")
                 .MaximumLength(100)
                 .WithMessage("Arama terimi en fazla 100 karakter olabilir.");
 
             RuleFor(x => x.Limit)
                 .InclusiveBetween(1, 25)
-                .WithMessage("Sonuc sayisi 1-25 arasinda olmalidir.");
+                .WithMessage("Sonuç sayısı 1-25 arasında olmalıdır.");
         }
     }
 }

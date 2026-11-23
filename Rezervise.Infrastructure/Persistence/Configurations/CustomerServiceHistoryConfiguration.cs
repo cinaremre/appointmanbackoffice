@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Musteri x hizmet ziyaret ozeti. Geri cagirma aday hesabinin kaynagi;
-    /// medyan ziyaret araligi VisitCount >= 2 iken anlamlidir.
+    /// Müşteri x hizmet ziyaret özeti. Geri çağırma aday hesabının kaynağı;
+    /// medyan ziyaret aralığı VisitCount >= 2 iken anlamlıdır.
     /// </summary>
     public class CustomerServiceHistoryConfiguration : BaseConfiguration<CustomerServiceHistory>
     {
@@ -34,8 +34,8 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.Property(x => x.MedianIntervalDays)
                 .IsRequired(false);
 
-            // Iliskiler acikca Restrict tanimlanir: EF convention'in cascade
-            // secimi SQL Server'da "multiple cascade paths" hatasi uretir.
+            // İlişkiler açıkça Restrict tanımlanır: EF convention'in cascade
+            // seçimi SQL Server'da "multiple cascade paths" hatası üretir.
             builder.HasOne(x => x.Business)
                 .WithMany()
                 .HasForeignKey(x => x.BusinessId)

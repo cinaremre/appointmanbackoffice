@@ -12,8 +12,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers
 {
     /// <summary>
-    /// Operasyon izleme (dokuman Modul 20). Route'lar BackOfficeControllerBase
-    /// uzerindeki "api/v1/admin" oneki ile birlesir:
+    /// Operasyon izleme (doküman Modül 20). Route'lar BackOfficeControllerBase
+    /// üzerindeki "api/v1/admin" öneki ile birleşir:
     /// GET api/v1/admin/operations/jobs
     /// GET api/v1/admin/operations/jobs/{id}
     /// GET api/v1/admin/operations/failed
@@ -29,7 +29,7 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Aktarim isi listesi: isletme ve durum filtreleriyle sayfali sonuc.
+        /// Aktarım isi listesi: işletme ve durum filtreleriyle sayfalı sonuç.
         /// </summary>
         [HttpGet("operations/jobs")]
         [Authorize(Policy = AdminPermissions.OperationsRead)]
@@ -54,7 +54,7 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Aktarim isi detayi: is ozeti ve satir sonuclarinin ilk 200'u.
+        /// Aktarım isi detayı: is özeti ve satır sonuçlarının ilk 200'u.
         /// </summary>
         [HttpGet("operations/jobs/{id:guid}")]
         [Authorize(Policy = AdminPermissions.OperationsRead)]
@@ -72,8 +72,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Basarisiz operasyonlar: Failed isler ve ornek niteliginde basarisiz
-        /// satir kayitlari.
+        /// Başarısız operasyonlar: Failed işler ve örnek niteliğinde başarısız
+        /// satır kayıtları.
         /// </summary>
         [HttpGet("operations/failed")]
         [Authorize(Policy = AdminPermissions.OperationsRead)]
@@ -88,8 +88,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Sistem saglik raporu: uygulamanin ayakta oldugu bilgisi ve aktarim
-        /// islerinin durum sayilari.
+        /// Sistem sağlık raporu: uygulamanın ayakta öldüğü bilgisi ve aktarım
+        /// işlerinin durum sayıları.
         /// </summary>
         [HttpGet("operations/health")]
         [Authorize(Policy = AdminPermissions.OperationsRead)]
@@ -104,8 +104,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Hata kodunu HTTP durum koduna esler; izin hatasi 403, kimlik hatasi
-        /// 401, bulunamadi 404 olarak doner.
+        /// Hata kodunu HTTP durum koduna eşler; izin hatası 403, kimlik hatası
+        /// 401, bulunamadı 404 olarak döner.
         /// </summary>
         private IActionResult FromError<T>(Result<T> result)
         {

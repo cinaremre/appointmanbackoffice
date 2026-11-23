@@ -1,14 +1,14 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Prim odeme (payout) donem durumlari.
+    /// Prim ödeme (payout) dönem durumları.
     /// </summary>
     public enum EnumCommissionPayoutStatus
     {
-        /// <summary>Odeme bekliyor.</summary>
+        /// <summary>Ödeme bekliyor.</summary>
         Pending = 0,
 
-        /// <summary>Odenmis.</summary>
+        /// <summary>Ödenmiş.</summary>
         Paid = 1
     }
 }

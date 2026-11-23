@@ -10,9 +10,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyProducts
 {
     /// <summary>
-    /// Isletme sahibinin urun listesi. Sahiplik OwnerScope ile dogrulanir;
-    /// stok bakiyesi sayfadaki urunlerin hareketleri tek sorguda cekilip
-    /// bellek icinde toplanir (GetAdminProducts deseniyle ayni).
+    /// İşletme sahibinin ürün listesi. Sahiplik OwnerScope ile doğrulanır;
+    /// stok bakiyesi sayfadaki ürünlerin hareketleri tek sorguda çekilip
+    /// bellek içinde toplanır (GetAdminProducts deseniyle aynı).
     /// </summary>
     public class GetMyProductsQueryHandler
         : IRequestHandler<GetMyProductsQuery, Result<AdminPagedResult<OwnerProductDto>>>
@@ -40,14 +40,14 @@ namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyProducts
         {
             try
             {
-                // 1. Sahiplik: isletme JWT sahibine ait olmali.
+                // 1. Sahiplik: işletme JWT sahibine ait olmalı.
                 var owned = await OwnerScope.FindOwnedBusinessAsync(
                     _businessRepository, _currentUser, request.BusinessId, cancellationToken);
 
                 if (owned.IsFailure)
                     return Result<AdminPagedResult<OwnerProductDto>>.Failure(owned.Error!);
 
-                // 2. Sayfalama kurallari.
+                // 2. Sayfalama kuralları.
                 var page = AdminPaging.NormalizePage(request.Page);
                 var pageSize = AdminPaging.ClampPageSize(request.PageSize);
 
@@ -55,7 +55,7 @@ namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyProducts
                 var search = string.IsNullOrWhiteSpace(request.Search) ? null : request.Search.Trim();
                 var isActive = request.IsActive;
 
-                // 3. Urun filtresi: isletme, durum ve serbest metin (ad/SKU).
+                // 3. Ürün filtresi: işletme, durum ve serbest metin (ad/SKU).
                 var products = await _productRepository.FindAsync(
                     p => p.BusinessId == businessId
                         && !p.IsDeleted
@@ -73,8 +73,8 @@ namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyProducts
                     .Take(pageSize)
                     .ToList();
 
-                // 4. Stok bakiyesi: sayfadaki urunlerin hareketlerini tek sorguda
-                //    cekip bellek icinde topla (ilk surum).
+                // 4. Stok bakiyesi: sayfadaki ürünlerin hareketlerini tek sorguda
+                //    çekip bellek içinde topla (ilk sürüm).
                 var productIds = pageItems.Select(p => p.Id).ToList();
 
                 var movements = productIds.Count == 0
@@ -83,7 +83,7 @@ namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyProducts
                         m => productIds.Contains(m.ProductId) && !m.IsDeleted,
                         cancellationToken)).ToList();
 
-                // 5. DTO: hareket defterinin isaretli toplami bakiyedir.
+                // 5. DTO: hareket defterinin işaretli toplamı bakiyedir.
                 var items = pageItems
                     .Select(p => new OwnerProductDto
                     {
@@ -114,7 +114,7 @@ namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyProducts
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<OwnerProductDto>>.Failure(
-                    Error.Internal("Urun listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Ürün listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -32,17 +32,17 @@ namespace Rezervise.Application.Features.Reviews.Commands.DeleteReview
         {
             try
             {
-                // 1. Yorum kontrolu
+                // 1. Yorum kontrolü
                 var review = await _reviewRepository.GetByIdAsync(request.ReviewId, cancellationToken);
                 if (review is null)
                     return Result<Guid>.Failure(Error.NotFound("Yorum", request.ReviewId.ToString()));
 
-                // 2. Yetki kontrolu. Aktor kimligi imzali token'dan gelir;
-                //    istek govdesindeki UserId tek basina guvenilmez.
+                // 2. Yetki kontrolü. Aktör kimliği imzalı token'dan gelir;
+                //    istek gövdesindeki UserId tek basına güvenilmez.
                 if (!CallerAuthorization.CanActAsUser(_currentUser, review.UserId))
                     return Result<Guid>.Failure(Error.Unauthorized("Bu yorumu silme yetkiniz yok."));
 
-                // 3. Silme ve puan yeniden hesaplamasi ayni transaction'da.
+                // 3. Silme ve puan yeniden hesaplaması aynı transaction'da.
                 await _unitOfWork.ExecuteInTransactionAsync(async token =>
                 {
                     review.Delete();
@@ -58,8 +58,8 @@ namespace Rezervise.Application.Features.Reviews.Commands.DeleteReview
             }
             catch (Exception)
             {
-                // Beklenmeyen hata detayi istemciye sizdirilmaz.
-                return Result<Guid>.Failure(Error.Internal("Yorum silinirken bir hata olustu."));
+                // Beklenmeyen hata detayı istemciye sızdırılmaz.
+                return Result<Guid>.Failure(Error.Internal("Yorum silinirken bir hata oluştu."));
             }
         }
 

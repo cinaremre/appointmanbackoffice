@@ -5,12 +5,12 @@ using MediatR;
 namespace Rezervise.Application.Features.Inventory.Commands.RecordStockMovement
 {
     /// <summary>
-    /// Elle stok hareketi kaydeder (satin alma girisi, satis cikisi,
-    /// zayi, sayim duzeltmesi, ...). Miktar her zaman pozitif verilir;
-    /// isareti hareket tipinden hareket kendisi belirler.
-    /// Ayni (ReferenceType, ReferenceId) referansiyla ikinci hareket
-    /// kaydedilmez (cift isleme engeli).
-    /// OwnerId govdeden degil JWT'den cozulur (Api katmani set eder).
+    /// Elle stok hareketi kaydeder (satın alma girişi, satış çıkışı,
+    /// zayı, sayım düzeltmesi, ...). Miktar her zaman pozitif verilir;
+    /// işareti hareket tipinden hareket kendisi belirler.
+    /// Aynı (ReferenceType, ReferenceId) referansıyla ikinci hareket
+    /// kaydedilmez (çift işleme engeli).
+    /// OwnerId gövdeden değil JWT'den çözülür (Api katmanı set eder).
     /// </summary>
     public class RecordStockMovementCommand : IRequest<Result<Guid>>
     {
@@ -21,19 +21,19 @@ namespace Rezervise.Application.Features.Inventory.Commands.RecordStockMovement
 
         public EnumStockMovementType MovementType { get; set; }
 
-        /// <summary>Pozitif miktar; isaret hareket tipinden belirlenir.</summary>
+        /// <summary>Pozitif miktar; işaret hareket tipinden belirlenir.</summary>
         public decimal Quantity { get; set; }
 
-        /// <summary>Birim maliyet (opsiyonel; girislerde alis fiyati).</summary>
+        /// <summary>Birim maliyet (opsiyonel; girişlerde alış fiyatı).</summary>
         public decimal? UnitCost { get; set; }
 
-        /// <summary>Referans kayit tipi (opsiyonel; cift isleme engeli icin).</summary>
+        /// <summary>Referans kayıt tipi (opsiyonel; çift işleme engeli için).</summary>
         public string? ReferenceType { get; set; }
 
-        /// <summary>Referans kayit ID'si (opsiyonel).</summary>
+        /// <summary>Referans kayıt ID'si (opsiyonel).</summary>
         public Guid? ReferenceId { get; set; }
 
-        /// <summary>Hareket ani (UTC); verilmezse su an kullanilir.</summary>
+        /// <summary>Hareket anı (UTC); verilmezse su an kullanılır.</summary>
         public DateTime? OccurredAt { get; set; }
     }
 }

@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Seans paketi tanimi. Items cocuk koleksiyonu aggregate ici iliskiyle
-    /// tutulur; kalan hak hareketlerden hesaplanir.
+    /// Seans paketi tanımı. Items çocuk koleksiyonu aggregate içi ilişkiyle
+    /// tutulur; kalan hak hareketlerden hesaplanır.
     /// </summary>
     public class ServicePackageConfiguration : BaseConfiguration<ServicePackage>
     {
@@ -38,7 +38,7 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasDefaultValue(true);
 
-            // Items cocuk koleksiyonu: EF backing field uzerinden erisir.
+            // Items çocuk koleksiyonu: EF backing field üzerinden erişir.
             builder.Navigation(x => x.Items)
                 .UsePropertyAccessMode(PropertyAccessMode.Field);
 

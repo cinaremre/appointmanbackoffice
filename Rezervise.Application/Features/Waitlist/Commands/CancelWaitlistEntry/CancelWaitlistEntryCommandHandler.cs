@@ -34,12 +34,12 @@ namespace Rezervise.Application.Features.Waitlist.Commands.CancelWaitlistEntry
         {
             try
             {
-                // 1. Kayit kontrolu
+                // 1. Kayıt kontrolü
                 var entry = await _waitlistEntryRepository.GetByIdAsync(request.EntryId, cancellationToken);
                 if (entry is null)
-                    return Result<Guid>.Failure(Error.NotFound("Bekleme listesi kaydi", request.EntryId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Bekleme listesi kaydı", request.EntryId.ToString()));
 
-                // 2. Yetki: kaydin musterisi veya isletme sahibi.
+                // 2. Yetki: kaydın müşterisi veya işletme sahibi.
                 var isCustomer = CallerAuthorization.CanActAsUser(_currentUser, entry.CustomerId);
 
                 var isOwner = false;
@@ -51,9 +51,9 @@ namespace Rezervise.Application.Features.Waitlist.Commands.CancelWaitlistEntry
                 }
 
                 if (!isCustomer && !isOwner)
-                    return Result<Guid>.Failure(Error.Forbidden("Bu bekleme listesi kaydini iptal etme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu bekleme listesi kaydını iptal etme yetkiniz yok."));
 
-                // 3. Kaydi iptal et
+                // 3. Kaydı iptal et
                 entry.Cancel(_dateTime.UtcNow);
 
                 await _waitlistEntryRepository.UpdateAsync(entry, cancellationToken);
@@ -67,7 +67,7 @@ namespace Rezervise.Application.Features.Waitlist.Commands.CancelWaitlistEntry
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Bekleme listesi kaydi iptal edilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Bekleme listesi kaydı iptal edilirken bir hata oluştu.", ex.Message));
             }
         }
     }

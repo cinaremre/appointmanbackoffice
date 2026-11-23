@@ -2,7 +2,7 @@ using Rezervise.Domain.Enums;
 
 namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppointmentDetail
 {
-    /// <summary>Randevu detayi ve kisa gecmis (dokuman Modul 12).</summary>
+    /// <summary>Randevu detayı ve kısa geçmiş (doküman Modül 12).</summary>
     public class AdminAppointmentDetailDto
     {
         public Guid Id { get; set; }
@@ -17,11 +17,11 @@ namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppo
         public DateTime? CancelledAt { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        /// <summary>Durum gecmisi; en yeni kayit basta, en fazla 20 og.</summary>
+        /// <summary>Durum geçmişi; en yeni kayıt başta, en fazla 20 og.</summary>
         public IReadOnlyList<AdminAppointmentHistoryDto> History { get; set; } = Array.Empty<AdminAppointmentHistoryDto>();
     }
 
-    /// <summary>Gecmis ogesinin ozeti.</summary>
+    /// <summary>Geçmiş öğesinin özeti.</summary>
     public class AdminAppointmentHistoryDto
     {
         public Guid Id { get; set; }

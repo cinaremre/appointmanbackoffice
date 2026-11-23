@@ -10,8 +10,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMyPayments
 {
     /// <summary>
-    /// Isletme sahibinin odeme listesi. Sahiplik OwnerScope ile
-    /// dogrulanir; iade (ters) kayitlar bayrak filtresiyle ayri
+    /// İşletme sahibinin ödeme listesi. Sahiplik OwnerScope ile
+    /// doğrulanır; iade (ters) kayıtlar bayrak filtresiyle ayrı
     /// listelenebilir.
     /// </summary>
     public class GetMyPaymentsQueryHandler
@@ -37,14 +37,14 @@ namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMyPayments
         {
             try
             {
-                // 1. Sahiplik: isletme JWT sahibine ait olmali.
+                // 1. Sahiplik: işletme JWT sahibine ait olmalı.
                 var owned = await OwnerScope.FindOwnedBusinessAsync(
                     _businessRepository, _currentUser, request.BusinessId, cancellationToken);
 
                 if (owned.IsFailure)
                     return Result<AdminPagedResult<OwnerPaymentDto>>.Failure(owned.Error!);
 
-                // 2. Sayfalama kurallari.
+                // 2. Sayfalama kuralları.
                 var page = AdminPaging.NormalizePage(request.Page);
                 var pageSize = AdminPaging.ClampPageSize(request.PageSize);
 
@@ -53,7 +53,7 @@ namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMyPayments
                 var fromDate = request.FromDate;
                 var toDate = request.ToDate;
 
-                // 3. Filtre: isletme + iade bayragi + tarih araligi.
+                // 3. Filtre: işletme + iade bayrağı + tarih aralığı.
                 var payments = await _paymentRepository.FindAsync(
                     p => p.BusinessId == businessId
                         && !p.IsDeleted
@@ -62,7 +62,7 @@ namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMyPayments
                         && (toDate == null || p.PaidAt <= toDate),
                     cancellationToken);
 
-                // 4. En yeni odeme once.
+                // 4. En yeni ödeme önce.
                 var ordered = payments
                     .OrderByDescending(p => p.PaidAt)
                     .ThenBy(p => p.Id)
@@ -97,7 +97,7 @@ namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMyPayments
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<OwnerPaymentDto>>.Failure(
-                    Error.Internal("Odeme listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Ödeme listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

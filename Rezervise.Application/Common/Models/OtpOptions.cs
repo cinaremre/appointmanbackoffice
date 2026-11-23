@@ -4,42 +4,42 @@ using Microsoft.Extensions.Configuration;
 namespace Rezervise.Application.Common.Models
 {
     /// <summary>
-    /// "Otp" yapilandirma bolumunden okunan telefon dogrulama ayarlari.
-    /// Ortam degiskenleri (Otp__FixedCode gibi) appsettings degerlerini ezer.
+    /// "Otp" yapılandırma bölümünden okunan telefon doğrulama ayarları.
+    /// Ortam değişkenleri (Otp__FixedCode gibi) appsettings değerlerini ezer.
     /// </summary>
     public sealed class OtpOptions
     {
-        /// <summary>Yapilandirma bolum adi.</summary>
+        /// <summary>Yapılandırma bölüm adı.</summary>
         public const string SectionName = "Otp";
 
         /// <summary>
-        /// Sabit kod. SMS saglayici baglanana kadar gelistirme icin kullanilir;
-        /// dolu oldugunda uretilen ve kabul edilen kod budur. Uretimde bos birakilmalidir.
+        /// Sabit kod. SMS sağlayıcı bağlanana kadar geliştirme için kullanılır;
+        /// dolu öldüğünda üretilen ve kabul edilen kod budur. Üretimde boş bırakılmalıdır.
         /// </summary>
         public string? FixedCode { get; set; }
 
-        /// <summary>Uretilen kodun uzunlugu.</summary>
+        /// <summary>Üretilen kodun uzunluğu.</summary>
         public int CodeLength { get; set; } = 6;
 
-        /// <summary>Kodun gecerlilik suresi (dakika).</summary>
+        /// <summary>Kodun geçerlilik süresi (dakika).</summary>
         public int LifetimeMinutes { get; set; } = 5;
 
-        /// <summary>Maksimum dogrulama denemesi.</summary>
+        /// <summary>Maksimum doğrulama denemesi.</summary>
         public int MaxAttempts { get; set; } = 5;
 
-        /// <summary>Yeniden kod isteme icin beklenecek sure (saniye).</summary>
+        /// <summary>Yeniden kod isteme için beklenecek süre (saniye).</summary>
         public int ResendCooldownSeconds { get; set; } = 60;
 
-        /// <summary>Sabit kod yapilandirilmis mi?</summary>
+        /// <summary>Sabit kod yapılandırılmış mi?</summary>
         public bool HasFixedCode => !string.IsNullOrWhiteSpace(FixedCode);
 
         /// <summary>
-        /// Yapilandirmadan ayarlari okur. Eksik veya hatali degerler varsayilana duser;
-        /// yapilandirma hatasi uygulamayi durdurmaz.
+        /// Yapılandırmadan ayarları okur. Eksik veya hatalı değerler varsayılana düşer;
+        /// yapılandırma hatası uygulamayı durdurmaz.
         /// </summary>
-        /// <param name="configuration">Uygulama yapilandirmasi.</param>
-        /// <returns>Doldurulmus ayar nesnesi.</returns>
-        /// <exception cref="ArgumentNullException">Yapilandirma null oldugunda firlatilir.</exception>
+        /// <param name="configuration">Uygulama yapılandırması.</param>
+        /// <returns>Doldurulmuş ayar nesnesi.</returns>
+        /// <exception cref="ArgumentNullException">Yapılandırma null öldüğünda fırlatılır.</exception>
         public static OtpOptions FromConfiguration(IConfiguration configuration)
         {
             ArgumentNullException.ThrowIfNull(configuration);

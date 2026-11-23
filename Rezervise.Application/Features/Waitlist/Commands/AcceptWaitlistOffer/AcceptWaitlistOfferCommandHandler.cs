@@ -38,26 +38,26 @@ namespace Rezervise.Application.Features.Waitlist.Commands.AcceptWaitlistOffer
         {
             try
             {
-                // 1. Teklif kontrolu
+                // 1. Teklif kontrolü
                 var offer = await _waitlistOfferRepository.GetByIdAsync(request.OfferId, cancellationToken);
                 if (offer is null)
                     return Result<Guid>.Failure(Error.NotFound("Bekleme listesi teklifi", request.OfferId.ToString()));
 
-                // 2. Musteri kimligi teklifin kaydindan cozulur; govdeye guvenilmez.
+                // 2. Müşteri kimliği teklifin kaydından çözülür; gövdeye güvenilmez.
                 var entry = await _waitlistEntryRepository.GetByIdAsync(offer.WaitlistEntryId, cancellationToken);
                 if (entry is null)
-                    return Result<Guid>.Failure(Error.NotFound("Bekleme listesi kaydi", offer.WaitlistEntryId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Bekleme listesi kaydı", offer.WaitlistEntryId.ToString()));
 
                 if (!CallerAuthorization.CanActAsUser(_currentUser, entry.CustomerId))
-                    return Result<Guid>.Failure(Error.Forbidden("Bu teklifi yalnizca kendisine gonderilen musteri kabul edebilir."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu teklifi yalnızca kendisine gönderilen müşteri kabul edebilir."));
 
-                // 3. Teklifi kabul et (domain kurali: yalniz Pending ve suresi
-                //    henuz dolmamis teklifler kabul edilir).
+                // 3. Teklifi kabul et (domain kuralı: yalnız Pending ve süresi
+                //    henüz dolmamış teklifler kabul edilir).
                 var now = _dateTime.UtcNow;
                 offer.Accept(now);
 
-                // 4. Atomik yeniden kontrol (dokuman 10.6): kabul aninda slot
-                //    hala musait mi? Ayni slot icin aktif randevu varsa Conflict.
+                // 4. Atomik yeniden kontrol (doküman 10.6): kabul anında slot
+                //    hala müsait mi? Aynı slot için aktif randevu varsa Conflict.
                 var slotTaken = await _appointmentRepository.FindAsync(
                     a => a.BusinessId == offer.BusinessId &&
                          a.AppointmentDate == offer.SlotStart &&
@@ -67,9 +67,9 @@ namespace Rezervise.Application.Features.Waitlist.Commands.AcceptWaitlistOffer
                     cancellationToken);
 
                 if (slotTaken.Any())
-                    return Result<Guid>.Failure(Error.Conflict("Slot artik musait degil."));
+                    return Result<Guid>.Failure(Error.Conflict("Slot artık müsait değil."));
 
-                // 5. Ayni slot icin diger Pending teklifleri gecersizlestir.
+                // 5. Aynı slot için diğer Pending teklifleri geçersizleştir.
                 var otherPendingOffers = await _waitlistOfferRepository.FindAsync(
                     o => o.BusinessId == offer.BusinessId &&
                          o.SlotStart == offer.SlotStart &&
@@ -81,7 +81,7 @@ namespace Rezervise.Application.Features.Waitlist.Commands.AcceptWaitlistOffer
                 foreach (var other in otherPendingOffers)
                     other.Supersede();
 
-                // 6. Kabul edilen musteriye ait kaydi tamamla.
+                // 6. Kabul edilen müşteriye ait kaydı tamamla.
                 entry.Fulfill(now);
 
                 await _waitlistOfferRepository.UpdateAsync(offer, cancellationToken);
@@ -95,7 +95,7 @@ namespace Rezervise.Application.Features.Waitlist.Commands.AcceptWaitlistOffer
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Bekleme listesi teklifi kabul edilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Bekleme listesi teklifi kabul edilirken bir hata oluştu.", ex.Message));
             }
         }
     }

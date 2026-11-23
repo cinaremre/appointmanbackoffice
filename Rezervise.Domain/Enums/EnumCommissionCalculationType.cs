@@ -1,24 +1,24 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Komisyon (prim) hesaplama tipleri. Yuzde tiplerinde
-    /// CommissionRule.Rate alani 0-1 arasi oran tasir (orn. %20 = 0.20).
+    /// Komisyon (prim) hesaplama tipleri. Yüzde tiplerinde
+    /// CommissionRule.Rate alani 0-1 arası oran taşır (orn. %20 = 0.20).
     /// </summary>
     public enum EnumCommissionCalculationType
     {
-        /// <summary>Hizmet bedelinin yuzdesi; baz: hizmet tutari.</summary>
+        /// <summary>Hizmet bedelinin yüzdesi; baz: hizmet tutarı.</summary>
         ServicePercent = 0,
 
-        /// <summary>Calisanin urettigi toplam cirosunun yuzdesi.</summary>
+        /// <summary>Çalışanın ürettiği toplam cirosunun yüzdesi.</summary>
         EmployeePercent = 1,
 
-        /// <summary>Hizmet basina sabit tutar (FixedAmount).</summary>
+        /// <summary>Hizmet basına sabit tutar (FixedAmount).</summary>
         FixedPerService = 2,
 
-        /// <summary>Urun satis bedelinin yuzdesi.</summary>
+        /// <summary>Ürün satış bedelinin yüzdesi.</summary>
         ProductPercent = 3,
 
-        /// <summary>Kademeli yuzde (ilk surunde Rate ile ayni sekilde uygulanir).</summary>
+        /// <summary>Kademeli yüzde (ilk süründe Rate ile aynı şekilde uygulanır).</summary>
         TieredPercent = 4
     }
 }

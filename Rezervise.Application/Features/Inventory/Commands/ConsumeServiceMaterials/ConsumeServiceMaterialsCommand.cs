@@ -4,12 +4,12 @@ using MediatR;
 namespace Rezervise.Application.Features.Inventory.Commands.ConsumeServiceMaterials
 {
     /// <summary>
-    /// Tamamlanmis bir randevunun gercek malzeme tuketimini stok hareketlerine
-    /// isler. Miktarlar varsayilan receteden otomatik onerilmez; cagri tarafindan
-    /// gerceklesen tuketim olarak verilir. Hareketler ServiceConsumption tipinde,
-    /// ReferenceType="Appointment" ve ReferenceId=randevu ID olarak yazilir;
-    /// boylece ayni randevu icin tuketim ikinci kez islenemez.
-    /// OwnerId govdeden degil JWT'den cozulur (Api katmani set eder).
+    /// Tamamlanmış bir randevunun gerçek malzeme tüketimini stok hareketlerine
+    /// işler. Miktarlar varsayılan reçeteden otomatik önerilmez; çağrı tarafından
+    /// gerçekleşen tüketim olarak verilir. Hareketler ServiceConsumption tipinde,
+    /// ReferenceType="Appointment" ve ReferenceId=randevu ID olarak yazılır;
+    /// böylece aynı randevu için tüketim ikinci kez işlenemez.
+    /// OwnerId gövdeden değil JWT'den çözülür (Api katmanı set eder).
     /// </summary>
     public class ConsumeServiceMaterialsCommand : IRequest<Result<int>>
     {
@@ -18,16 +18,16 @@ namespace Rezervise.Application.Features.Inventory.Commands.ConsumeServiceMateri
 
         public Guid AppointmentId { get; set; }
 
-        /// <summary>Gerceklesen tuketim listesi: (urun, miktar) ciftleri.</summary>
+        /// <summary>Gerçekleşen tüketim listesi: (ürün, miktar) çiftleri.</summary>
         public List<ConsumeMaterialLine> Materials { get; set; } = new();
     }
 
-    /// <summary>Tuketilen tek malzeme satiri.</summary>
+    /// <summary>Tüketilen tek malzeme satırı.</summary>
     public class ConsumeMaterialLine
     {
         public Guid ProductId { get; set; }
 
-        /// <summary>Tuketilen miktar (pozitif).</summary>
+        /// <summary>Tüketilen miktar (pozitif).</summary>
         public decimal Quantity { get; set; }
     }
 }

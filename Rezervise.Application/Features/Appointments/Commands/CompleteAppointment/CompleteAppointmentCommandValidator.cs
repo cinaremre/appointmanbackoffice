@@ -8,11 +8,11 @@ namespace Rezervise.Application.Features.Appointments.Commands.CompleteAppointme
         {
             RuleFor(x => x.AppointmentId)
                 .NotEmpty()
-                .WithMessage("Randevu ID bos olamaz.");
+                .WithMessage("Randevu ID boş olamaz.");
 
             RuleFor(x => x.BusinessId)
                 .NotEmpty()
-                .WithMessage("Isletme ID bos olamaz.");
+                .WithMessage("İşletme ID boş olamaz.");
         }
     }
 }

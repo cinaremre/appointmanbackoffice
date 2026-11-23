@@ -4,8 +4,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Marketing.Commands.RecordCampaignSpend
 {
     /// <summary>
-    /// Kampanya harcamasi kaydeder. Ayni CampaignId+SpendDate+Amount icin
-    /// cift kayit engeli YOKTUR; manuel tekrar girilebilir (ilk surum).
+    /// Kampanya harcaması kaydeder. Aynı CampaignId+SpendDate+Amount için
+    /// çift kayıt engeli YOKTUR; manuel tekrar girilebilir (ilk sürüm).
     /// </summary>
     public class RecordCampaignSpendCommand : IRequest<Result<Guid>>
     {
@@ -13,10 +13,10 @@ namespace Rezervise.Application.Features.Marketing.Commands.RecordCampaignSpend
         public DateTime SpendDate { get; set; }
         public decimal Amount { get; set; }
 
-        /// <summary>Varsayilan "TRY".</summary>
+        /// <summary>Varsayılan "TRY".</summary>
         public string Currency { get; set; } = "TRY";
 
-        /// <summary>Varsayilan "manual"; "api" platform senkronlarini belirtir.</summary>
+        /// <summary>Varsayılan "manual"; "api" platform senkronlarını belirtir.</summary>
         public string DataSource { get; set; } = "manual";
     }
 }

@@ -8,21 +8,21 @@ namespace Rezervise.Application.Features.Users.Commands.ChangePassword
         {
             RuleFor(x => x.UserId)
                 .NotEmpty()
-                .WithMessage("Kullanici ID bos olamaz.");
+                .WithMessage("Kullanıcı ID boş olamaz.");
 
             RuleFor(x => x.CurrentPassword)
                 .NotEmpty()
-                .WithMessage("Mevcut sifre bos olamaz.");
+                .WithMessage("Mevcut şifre boş olamaz.");
 
             RuleFor(x => x.NewPassword)
                 .NotEmpty()
-                .WithMessage("Yeni sifre bos olamaz.")
+                .WithMessage("Yeni şifre boş olamaz.")
                 .MinimumLength(6)
-                .WithMessage("Yeni sifre en az 6 karakter olmalidir.")
+                .WithMessage("Yeni şifre en az 6 karakter olmalıdır.")
                 .MaximumLength(50)
-                .WithMessage("Yeni sifre en fazla 50 karakter olmalidir.")
+                .WithMessage("Yeni şifre en fazla 50 karakter olmalıdır.")
                 .NotEqual(x => x.CurrentPassword)
-                .WithMessage("Yeni sifre mevcut sifre ile ayni olamaz.");
+                .WithMessage("Yeni şifre mevcut şifre ile aynı olamaz.");
         }
     }
 }

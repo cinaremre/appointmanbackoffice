@@ -4,10 +4,10 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Odeme kaydi. Iadeler negatif tutarli kayit yerine ayri bir ters
-    /// kayit olarak tutulur (ters kayit ilkesi): iade kaydinda IsRefund=true
-    /// olur ve RefersToPaymentId ile orijinal odemeye baglanir.
-    /// Durum alani EnumSaleStatus degerlerini paylasir.
+    /// Ödeme kaydı. İadeler negatif tutarlı kayıt yerine ayrı bir ters
+    /// kayıt olarak tutulur (ters kayıt ilkesi): iade kaydında IsRefund=true
+    /// olur ve RefersToPaymentId ile orijinal ödemeye bağlanır.
+    /// Durum alani EnumSaleStatus değerlerini paylaşır.
     /// </summary>
     public class Payment : BaseEntity
     {
@@ -21,10 +21,10 @@ namespace Rezervise.Domain.Entities
         public EnumSaleStatus Status { get; private set; }
         public string? ExternalTransactionId { get; private set; }
 
-        /// <summary>Bu kayit bir iade (ters) kaydi mi?</summary>
+        /// <summary>Bu kayıt bir iade (ters) kaydı mi?</summary>
         public bool IsRefund { get; private set; }
 
-        /// <summary>Ters kayit ise bagli oldugu orijinal odeme ID.</summary>
+        /// <summary>Ters kayıt ise bağlı öldüğü orijinal ödeme ID.</summary>
         public Guid? RefersToPaymentId { get; private set; }
 
         private Payment() { }
@@ -45,16 +45,16 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (saleId == Guid.Empty)
-                throw new ArgumentException("Satis ID bos olamaz.", nameof(saleId));
+                throw new ArgumentException("Satış ID boş olamaz.", nameof(saleId));
 
             if (amount <= 0)
-                throw new DomainException("Odeme tutari sifirdan buyuk olmalidir.");
+                throw new DomainException("Ödeme tutarı sıfırdan büyük olmalıdır.");
 
             if (externalTransactionId is not null && externalTransactionId.Length > 100)
-                throw new DomainException("Dis islem kimligi 100 karakterden uzun olamaz.");
+                throw new DomainException("Dış işlem kimliği 100 karakterden uzun olamaz.");
 
             SetCurrency(currency);
             BusinessId = businessId;
@@ -68,13 +68,13 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Orijinal odemeye bagli bir iade (ters) kaydi olusturur.
-        /// Tutar pozitif saklanir; yonu IsRefund bayragi ile anlasilir.
+        /// Orijinal ödemeye bağlı bir iade (ters) kaydı oluşturur.
+        /// Tutar pozitif saklanır; yönü IsRefund bayrağı ile anlaşılır.
         /// </summary>
-        /// <param name="original">Iade edilen orijinal odeme.</param>
-        /// <param name="amount">Iade tutari (pozitif).</param>
-        /// <param name="paidAt">Islem zamani (UTC).</param>
-        /// <param name="cashSessionId">Nakit iadelerde acik kasa oturumu.</param>
+        /// <param name="original">İade edilen orijinal ödeme.</param>
+        /// <param name="amount">İade tutarı (pozitif).</param>
+        /// <param name="paidAt">İşlem zamanı (UTC).</param>
+        /// <param name="cashSessionId">Nakit iadelerde açık kasa oturumu.</param>
         public static Payment CreateRefund(Payment original, decimal amount,
             DateTime paidAt, Guid? cashSessionId = null)
         {
@@ -82,13 +82,13 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(original));
 
             if (original.IsRefund)
-                throw new DomainException("Iade kaydi tekrar iade edilemez.");
+                throw new DomainException("İade kaydı tekrar iade edilemez.");
 
             if (amount <= 0)
-                throw new DomainException("Iade tutari sifirdan buyuk olmalidir.");
+                throw new DomainException("İade tutarı sıfırdan büyük olmalıdır.");
 
             if (amount > original.Amount)
-                throw new DomainException("Iade tutari orijinal odemeyi gecemez.");
+                throw new DomainException("İade tutarı orijinal ödemeyi geçemez.");
 
             return new Payment(
                 original.BusinessId,
@@ -107,18 +107,18 @@ namespace Rezervise.Domain.Entities
         public void SetCurrency(string currency)
         {
             if (string.IsNullOrWhiteSpace(currency))
-                throw new DomainException("Para birimi bos olamaz.");
+                throw new DomainException("Para birimi boş olamaz.");
 
             if (currency.Length != 3)
-                throw new DomainException("Para birimi 3 karakter olmalidir.");
+                throw new DomainException("Para birimi 3 karakter olmalıdır.");
 
             Currency = currency.ToUpperInvariant();
             UpdatedAt = DateTime.UtcNow;
         }
 
         /// <summary>
-        /// Odemeyi tamamen iade edilmis olarak isaretler.
-        /// Yalnizca tamamlanmis odemeler isaretlenebilir.
+        /// Ödemeyi tamamen iade edilmiş olarak işaretler.
+        /// Yalnızca tamamlanmış ödemeler işaretlenebilir.
         /// </summary>
         public void MarkRefunded(DateTime? now = null)
         {

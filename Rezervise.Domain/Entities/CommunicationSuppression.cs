@@ -3,9 +3,9 @@ using Rezervise.Domain.Enums;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Kanal bazli tam gonderim engeli (dokuman Modul 16).
-    /// Pazarlama amaciyla izin geri cekildiginde olusur; amac fark etmeksizin
-    /// o kanaldan hicbir mesaj gonderilemez. Yeni izin verildiginde silinir.
+    /// Kanal bazlı tam gönderim engeli (doküman Modül 16).
+    /// Pazarlama amacıyla izin geri çekildiğinde oluşur; amaç fark etmeksizin
+    /// o kanaldan hiçbir mesaj gönderilemez. Yeni izin verildiğinde silinir.
     /// </summary>
     public class CommunicationSuppression : BaseEntity
     {
@@ -13,7 +13,7 @@ namespace Rezervise.Domain.Entities
         public Guid CustomerId { get; private set; }
         public EnumConsentChannel Channel { get; private set; }
 
-        /// <summary>Engelin gerekcesi (orn. "Consent withdrawn").</summary>
+        /// <summary>Engelin gerekçesi (orn. "Consent withdrawn").</summary>
         public string? Reason { get; private set; }
 
         // Navigation Properties
@@ -30,13 +30,13 @@ namespace Rezervise.Domain.Entities
             : base(Guid.NewGuid())
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (customerId == Guid.Empty)
-                throw new ArgumentException("Musteri ID bos olamaz.", nameof(customerId));
+                throw new ArgumentException("Müşteri ID boş olamaz.", nameof(customerId));
 
             if (reason != null && reason.Length > 200)
-                throw new ArgumentException("Engel gerekcesi 200 karakterden uzun olamaz.", nameof(reason));
+                throw new ArgumentException("Engel gerekçesi 200 karakterden uzun olamaz.", nameof(reason));
 
             BusinessId = businessId;
             CustomerId = customerId;

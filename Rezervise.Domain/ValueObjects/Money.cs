@@ -8,7 +8,7 @@ namespace Rezervise.Domain.ValueObjects
         public decimal Amount { get; private set; }
         public string Currency { get; private set; }
 
-        private Money() { } // EF Core icin
+        private Money() { } // EF Core için
 
         public Money(decimal amount, string currency = "TRY")
         {

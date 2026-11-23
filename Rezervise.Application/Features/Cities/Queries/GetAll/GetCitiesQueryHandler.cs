@@ -19,7 +19,7 @@ namespace Rezervise.Application.Features.Cities.Queries.GetAll
         {
             try
             {
-                // 1. Tum illeri getir
+                // 1. Tüm illeri getir
                 var cities = await _cityRepository.GetAllAsync(cancellationToken);
 
                 // 2. Aktif filtreleme
@@ -29,7 +29,7 @@ namespace Rezervise.Application.Features.Cities.Queries.GetAll
                     filtered = filtered.Where(c => c.IsActive);
                 }
 
-                // 3. DTO'ya donustur
+                // 3. DTO'ya dönüştür
                 var dtos = filtered
                     .OrderBy(c => c.Name)
                     .Select(c => new CityDto
@@ -46,7 +46,7 @@ namespace Rezervise.Application.Features.Cities.Queries.GetAll
             catch (Exception ex)
             {
                 return Result<List<CityDto>>.Failure(
-                    Error.Internal("Iller getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Iller getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

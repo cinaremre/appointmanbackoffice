@@ -3,7 +3,7 @@ using Rezervise.Domain.Events;
 namespace Rezervise.Domain.Interfaces
 {
     /// <summary>
-    /// Kalici kayit sonrasi domain event'lerini dis dunyaya tasir.
+    /// Kalıcı kayıt sonrası domain event'lerini dış dünyaya taşır.
     /// </summary>
     public interface IDomainEventDispatcher
     {

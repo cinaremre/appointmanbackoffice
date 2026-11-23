@@ -1,130 +1,130 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Hizmet kategorileri - 10xx bazinda gruplandirilmis
-    /// 10xx: Berber & Kuaf�r
-    /// 11xx: Dis Hekimligi
-    /// 12xx: D�vme & V�cut Sanati
-    /// 13xx: Cilt & G�zellik
+    /// Hizmet kategorileri - 10xx bazında gruplandırılmış
+    /// 10xx: Berber & Kuaför
+    /// 11xx: Dış Hekimliği
+    /// 12xx: Dövme & Vücut Sanatı
+    /// 13xx: Cilt & Güzellik
     /// 14xx: Masaj & Spa
-    /// 15xx: Tirnak & El Bakimi
+    /// 15xx: Tırnak & El Bakımı
     /// 16xx: Makyaj & Kas
-    /// 17xx: �zel Hizmetler (Epilasyon, Kisisel Bakim)
-    /// 18xx: Saglik & Terapi
-    /// 19xx: Diger
+    /// 17xx: Özel Hizmetler (Epilasyon, Kişisel Bakım)
+    /// 18xx: Sağlık & Terapi
+    /// 19xx: Diğer
     /// </summary>
     public enum EnumServiceCategory
     {
-        // ============= 10xx: BERBER VE KUAF�R HIZMETLERI =============
-        Haircut = 1000,                 // Sa� Kesimi
-        Shave = 1001,                   // Tiras / Sakal Kesimi
-        Coloring = 1002,                // Sa� Boyama
-        Styling = 1003,                 // Sa� Sekillendirme / F�n
-        BeardTrimming = 1004,           // Sakal D�zeltme / Sekillendirme
-        HairTransplant = 1005,          // Sa� Ekimi
-        HairTreatment = 1006,           // Sa� Bakimi / Tedavisi
+        // ============= 10xx: BERBER VE KUAFÖR HIZMETLERI =============
+        Haircut = 1000,                 // Saç Kesimi
+        Shave = 1001,                   // Tıraş / Sakal Kesimi
+        Coloring = 1002,                // Saç Boyama
+        Styling = 1003,                 // Saç Şekillendirme / Fön
+        BeardTrimming = 1004,           // Sakal Düzeltme / Şekillendirme
+        HairTransplant = 1005,          // Saç Ekimi
+        HairTreatment = 1006,           // Saç Bakımı / Tedavisi
         Perm = 1007,                    // Perma / Dalga
-        HairStraightening = 1008,       // Sa� D�zlestirme
-        HairExtension = 1009,           // Sa� Uzatma / Ekstansiyon
-        KidsHaircut = 1010,             // �ocuk Sa� Kesimi
-        BridalHair = 1011,              // Gelin Sa�i
-        HairRemoval = 1012,             // Epilasyon / Agda (Baslik)
+        HairStraightening = 1008,       // Saç Düzlestirme
+        HairExtension = 1009,           // Saç Uzatma / Ekstansiyon
+        KidsHaircut = 1010,             // Çocuk Saç Kesimi
+        BridalHair = 1011,              // Gelin Saçi
+        HairRemoval = 1012,             // Epilasyon / Ağda (Başlık)
 
         // ============= 11xx: DIS HIZMETLERI =============
-        DentalCleaning = 1100,          // Dis Temizligi
+        DentalCleaning = 1100,          // Dış Temizliği
         Filling = 1101,                 // Dolgu
-        Extraction = 1102,              // Dis �ekimi
-        Whitening = 1103,               // Dis Beyazlatma
+        Extraction = 1102,              // Dış Çekimi
+        Whitening = 1103,               // Dış Beyazlatma
         RootCanal = 1104,               // Kanal Tedavisi
         Crown = 1105,                   // Kuron / Kaplama
-        Bridge = 1106,                  // K�pr�
+        Bridge = 1106,                  // Köprü
         Implant = 1107,                 // Implant
-        Orthodontics = 1108,            // Ortodonti / Dis Teli
+        Orthodontics = 1108,            // Ortodonti / Dış Teli
         Veneer = 1109,                  // Lamina / Porselen Kaplama
-        GumTreatment = 1110,            // Dis Eti Tedavisi
-        PediatricDentistry = 1111,      // �ocuk Dis Hekimligi
-        JawSurgery = 1112,              // �ene Cerrahisi
+        GumTreatment = 1110,            // Dış Eti Tedavisi
+        PediatricDentistry = 1111,      // Çocuk Dış Hekimliği
+        JawSurgery = 1112,              // Çene Cerrahisi
         Prosthesis = 1113,              // Protez
-        DentalCheckup = 1114,           // Genel Dis Muayenesi
+        DentalCheckup = 1114,           // Genel Dış Muayenesi
 
-        // ============= 12xx: D�VME VE V�CUT SANATI =============
-        Tattoo = 1200,                  // D�vme
+        // ============= 12xx: DÖVME VE VÜCUT SANATI =============
+        Tattoo = 1200,                  // Dövme
         Piercing = 1201,                // Piercing
-        TattooRemoval = 1202,           // D�vme Silme
-        TattooCoverUp = 1203,           // D�vme Kapatma
-        Microblading = 1204,            // Mikroblading / Kas
-        PermanentMakeup = 1205,         // Kalici Makyaj
-        BodyArt = 1206,                 // V�cut Sanati
-        Scarification = 1207,           // Scarification (Cilt Kazima)
+        TattooRemoval = 1202,           // Dövme Silme
+        TattooCoverUp = 1203,           // Dövme Kapatma
+        Microblading = 1204,            // Mikrobladıng / Kas
+        PermanentMakeup = 1205,         // Kalıcı Makyaj
+        BodyArt = 1206,                 // Vücut Sanatı
+        Scarification = 1207,           // Scarification (Cilt Kazıma)
 
-        // ============= 13xx: CILT VE G�ZELLIK =============
-        Facial = 1300,                  // Y�z Bakimi
+        // ============= 13xx: CILT VE GÜZELLIK =============
+        Facial = 1300,                  // Yüz Bakımı
         ChemicalPeel = 1301,            // Kimyasal Peeling
         Microdermabrasion = 1302,       // Mikrodermabrazyon
         AcneTreatment = 1303,           // Akne Tedavisi
-        AntiAging = 1304,               // Anti-Aging / Yaslanma Karsiti
+        AntiAging = 1304,               // Anti-Aging / Yaşlanma Karşıtı
         SkinAnalysis = 1305,            // Cilt Analizi
         Mesotherapy = 1306,             // Mezoterapi
         PRP = 1307,                     // PRP (Platelet Rich Plasma)
         LaserTreatment = 1308,          // Lazer Tedavisi
         HairRemovalLaser = 1309,        // Lazer Epilasyon
-        IPL = 1310,                     // IPL (Yogun Atimli Isik)
+        IPL = 1310,                     // IPL (Yoğun Atımlı Isik)
 
         // ============= 14xx: MASAJ VE SPA =============
         Massage = 1400,                 // Masaj
-        DeepTissueMassage = 1401,       // Derin Doku Masaji
-        SportsMassage = 1402,           // Spor Masaji
+        DeepTissueMassage = 1401,       // Derin Doku Masajı
+        SportsMassage = 1402,           // Spor Masajı
         Reflexology = 1403,             // Refleksoloji
-        ThaiMassage = 1404,             // Tay Masaji
-        SwedishMassage = 1405,          // Isve� Masaji
-        HotStoneMassage = 1406,         // Sicak Tas Masaji
+        ThaiMassage = 1404,             // Tay Masajı
+        SwedishMassage = 1405,          // Isveç Masajı
+        HotStoneMassage = 1406,         // Sıcak Tas Masajı
         Aromatherapy = 1407,            // Aromaterapi
-        Shiatsu = 1408,                 // Shiatsu Masaji
-        LymphaticDrainage = 1409,       // Lenf Drenaji
+        Shiatsu = 1408,                 // Shiatsu Masajı
+        LymphaticDrainage = 1409,       // Lenf Drenajı
 
         // ============= 15xx: TIRNAK VE EL BAKIMI =============
-        Manicure = 1500,                // Manik�r
-        Pedicure = 1501,                // Pedik�r
-        NailArt = 1502,                 // Tirnak Sanati / S�sleme
-        NailExtension = 1503,           // Tirnak Uzatma (Jel/Akrilik)
+        Manicure = 1500,                // Manikür
+        Pedicure = 1501,                // Pedikür
+        NailArt = 1502,                 // Tırnak Sanatı / Süsleme
+        NailExtension = 1503,           // Tırnak Uzatma (Jel/Akrilik)
         GelPolish = 1504,               // Jel Oje
-        AcrylicNails = 1505,            // Akrilik Tirnak
-        NailRepair = 1506,              // Tirnak Onarimi
-        ParaffinTreatment = 1507,        // Parafin Bakimi
+        AcrylicNails = 1505,            // Akrilik Tırnak
+        NailRepair = 1506,              // Tırnak Onarımı
+        ParaffinTreatment = 1507,        // Parafın Bakımı
 
         // ============= 16xx: MAKYAJ VE KAS =============
         Makeup = 1600,                  // Makyaj
-        BridalMakeup = 1601,            // Gelin Makyaji
-        EveningMakeup = 1602,           // Gece Makyaji
-        PhotoshootMakeup = 1603,        // Fotograf �ekimi Makyaji
+        BridalMakeup = 1601,            // Gelin Makyajı
+        EveningMakeup = 1602,           // Gece Makyajı
+        PhotoshootMakeup = 1603,        // Fotoğraf Çekimi Makyajı
         AirbrushMakeup = 1604,          // Airbrush Makyaj
-        EyebrowDesign = 1605,           // Kas Tasarimi
+        EyebrowDesign = 1605,           // Kas Tasarımı
         EyelashExtension = 1606,        // Kirpik Uzatma
         EyelashLift = 1607,             // Kirpik Lifting
 
-        // ============= 17xx: �ZEL HIZMETLER =============
-        Waxing = 1700,                  // Agda / Epilasyon
-        Sugaring = 1701,                // Seker Agdasi
-        Threading = 1702,               // Iplik Epilasyon
-        Electrolysis = 1703,            // Elektroliz (Kalici Epilasyon)
-        NutritionConsulting = 1704,     // Beslenme Danismanligi
-        PersonalTraining = 1705,        // Kisisel Antren�r
+        // ============= 17xx: ÖZEL HIZMETLER =============
+        Waxing = 1700,                  // Ağda / Epilasyon
+        Sugaring = 1701,                // Şeker Ağdaşı
+        Threading = 1702,               // İplik Epilasyon
+        Electrolysis = 1703,            // Elektroliz (Kalıcı Epilasyon)
+        NutritionConsulting = 1704,     // Beslenme Danışmanlığı
+        PersonalTraining = 1705,        // Kişisel Antrenör
         Yoga = 1706,                    // Yoga
         Pilates = 1707,                 // Pilates
 
         // ============= 18xx: SAGLIK VE TERAPI =============
-        HealthCheckup = 1800,           // Saglik Kontrol�
-        Vaccination = 1801,             // Asi
+        HealthCheckup = 1800,           // Sağlık Kontrolü
+        Vaccination = 1801,             // Ası
         BloodTest = 1802,               // Kan Testi
         PhysicalTherapy = 1803,         // Fizik Tedavi
         Acupuncture = 1804,             // Akupunktur
-        Chiropractic = 1805,            // Kayropraktik
-        Osteopathy = 1806,              // Osteopati
+        Chiropractic = 1805,            // Kayropraktık
+        Osteopathy = 1806,              // Osteopatı
         Psychotherapy = 1807,           // Psikoterapi
-        Counseling = 1808,              // Danismanlik
+        Counseling = 1808,              // Danışmanlık
 
         // ============= 19xx: DIGER =============
-        Consultation = 1900,            // Danisma / Kons�ltasyon
-        Other = 1999                    // Diger Hizmetler
+        Consultation = 1900,            // Danışma / Konsültasyon
+        Other = 1999                    // Diğer Hizmetler
     }
 }

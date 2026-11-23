@@ -38,22 +38,22 @@ namespace Rezervise.Application.Features.Inventory.Commands.RecordStockMovement
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde OwnerId'si değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Forbidden("Bu isletmeye stok hareketi kaydetme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu işletmeye stok hareketi kaydetme yetkiniz yok."));
 
-                // 3. Urun kontrolu: urun isletmeye ait olmali.
+                // 3. Ürün kontrolü: ürün işletmeye ait olmalı.
                 var product = await _productRepository.GetByIdAsync(request.ProductId, cancellationToken);
                 if (product is null || product.BusinessId != request.BusinessId)
-                    return Result<Guid>.Failure(Error.NotFound("Urun", request.ProductId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Ürün", request.ProductId.ToString()));
 
-                // 4. Cift isleme engeli: ayni (ReferenceType, ReferenceId)
-                //    referansiyla urun bazinda hareket zaten islenmisse reddet.
+                // 4. Çift işleme engeli: aynı (ReferenceType, ReferenceId)
+                //    referansıyla ürün bazında hareket zaten işlenmişse reddet.
                 if (!string.IsNullOrWhiteSpace(request.ReferenceType) && request.ReferenceId.HasValue)
                 {
                     var duplicate = await _stockMovementRepository.FindAsync(
@@ -65,11 +65,11 @@ namespace Rezervise.Application.Features.Inventory.Commands.RecordStockMovement
 
                     if (duplicate.Any())
                         return Result<Guid>.Failure(Error.Conflict(
-                            "Bu referans icin stok hareketi zaten islenmistir. Ayni hareket iki kez kaydedilemez."));
+                            "Bu referans için stok hareketi zaten işlenmiştir. Aynı hareket iki kez kaydedilemez."));
                 }
 
-                // 5. Negatif stok politikasi: mevcut bakiye hareket toplamidir;
-                //    cikis hareketi bakiyeyi eksiye dusuruyorsa reddet.
+                // 5. Negatif stok politikası: mevcut bakiye hareket toplamıdır;
+                //    çıkış hareketi bakiyeyi eksiye düşürüyorsa reddet.
                 var movements = await _stockMovementRepository.FindAsync(
                     m => m.BusinessId == request.BusinessId && m.ProductId == request.ProductId && !m.IsDeleted,
                     cancellationToken);
@@ -79,10 +79,10 @@ namespace Rezervise.Application.Features.Inventory.Commands.RecordStockMovement
 
                 if (balance + signedQuantity < 0)
                     return Result<Guid>.Failure(Error.Conflict(
-                        $"Stok bakiyesi yetersiz. Mevcut bakiye: {balance}, talep edilen cikis: {request.Quantity}.",
+                        $"Stok bakiyesi yetersiz. Mevcut bakiye: {balance}, talep edilen çıkış: {request.Quantity}.",
                         $"UrunId: {request.ProductId}"));
 
-                // 6. Hareketi olustur (isareti entity belirler)
+                // 6. Hareketi oluştur (işareti entity belirler)
                 var movement = new StockMovement(
                     request.BusinessId,
                     request.ProductId,
@@ -101,9 +101,9 @@ namespace Rezervise.Application.Features.Inventory.Commands.RecordStockMovement
             }
             catch (DuplicateKeyException)
             {
-                // Es zamanli iki isleme denemesi: referans unique index'i ikincisini reddeder.
+                // Es zamanlı iki işleme denemesi: referans unique index'i ikincisini reddeder.
                 return Result<Guid>.Failure(Error.Conflict(
-                    "Bu referans icin stok hareketi zaten islenmistir. Ayni hareket iki kez kaydedilemez."));
+                    "Bu referans için stok hareketi zaten işlenmiştir. Aynı hareket iki kez kaydedilemez."));
             }
             catch (DomainException ex)
             {
@@ -111,11 +111,11 @@ namespace Rezervise.Application.Features.Inventory.Commands.RecordStockMovement
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Stok hareketi kaydedilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Stok hareketi kaydedilirken bir hata oluştu.", ex.Message));
             }
         }
 
-        /// <summary>Giris hareketleri bakiyeyi artirir; isaret entity ile ayni kurala gore.</summary>
+        /// <summary>Giriş hareketleri bakiyeyi artırır; işaret entity ile aynı kurala göre.</summary>
         private static bool IsIncoming(EnumStockMovementType movementType)
             => movementType is EnumStockMovementType.PurchaseIn
                 or EnumStockMovementType.CustomerReturn;

@@ -7,14 +7,14 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Operations.Queries.GetAdminJobDetail
 {
     /// <summary>
-    /// Aktarim isinin detayini dondurur. Satir sonuclari ilk 200 ile
-    /// sinirlandirilir; rapor buyuk dosyalarda yoruma acik kalsin diye
-    /// tum satirlar tasinmaz.
+    /// Aktarım işinin detayını döndürür. Satır sonuçları ilk 200 ile
+    /// sınırlandırılır; rapor büyük dosyalarda yoruma açık kalsın diye
+    /// tüm satırlar taşınmaz.
     /// </summary>
     public class GetAdminJobDetailQueryHandler
         : IRequestHandler<GetAdminJobDetailQuery, Result<AdminJobDetailDto>>
     {
-        /// <summary>Detayda tasinacak azami satir sayisi.</summary>
+        /// <summary>Detayda taşınacak azami satır sayısı.</summary>
         private const int MaxRows = 200;
 
         private readonly IRepository<ImportJob> _jobRepository;
@@ -34,13 +34,13 @@ namespace Rezervise.Application.Features.Admin.Operations.Queries.GetAdminJobDet
         {
             try
             {
-                // 1. Is kontrolu.
+                // 1. İs kontrolü.
                 var job = await _jobRepository.GetByIdAsync(request.ImportJobId, cancellationToken);
                 if (job is null)
                     return Result<AdminJobDetailDto>.Failure(
-                        Error.NotFoundById("Aktarim isi", request.ImportJobId));
+                        Error.NotFoundById("Aktarım isi", request.ImportJobId));
 
-                // 2. Satir sonuclari: satir numarasina gore sirali, ilk 200.
+                // 2. Satır sonuçları: satır numarasına göre sıralı, ilk 200.
                 var rows = await _rowRepository.FindAsync(
                     r => r.ImportJobId == job.Id && !r.IsDeleted,
                     cancellationToken);
@@ -67,7 +67,7 @@ namespace Rezervise.Application.Features.Admin.Operations.Queries.GetAdminJobDet
             catch (Exception ex)
             {
                 return Result<AdminJobDetailDto>.Failure(
-                    Error.Internal("Aktarim isi detayi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Aktarım isi detayı getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

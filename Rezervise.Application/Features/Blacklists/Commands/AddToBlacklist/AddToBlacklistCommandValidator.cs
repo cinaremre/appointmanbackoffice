@@ -7,13 +7,13 @@ namespace Rezervise.Application.Features.Blacklists.Commands.AddToBlacklist
         public AddToBlacklistCommandValidator()
         {
             RuleFor(x => x.RequesterId)
-                .NotEmpty().WithMessage("Istek yapan kullanici ID bos olamaz.");
+                .NotEmpty().WithMessage("İstek yapan kullanıcı ID boş olamaz.");
 
             RuleFor(x => x.UserId)
-                .NotEmpty().WithMessage("Kullanici ID bos olamaz.");
+                .NotEmpty().WithMessage("Kullanıcı ID boş olamaz.");
 
             RuleFor(x => x.BusinessId)
-                .NotEmpty().WithMessage("Isletme ID bos olamaz.");
+                .NotEmpty().WithMessage("İşletme ID boş olamaz.");
 
             RuleFor(x => x.Reason)
                 .MaximumLength(500).WithMessage("Sebep 500 karakterden uzun olamaz.");

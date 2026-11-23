@@ -11,7 +11,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
         {
             if (await context.EmployeeServices.AnyAsync())
             {
-                logger.LogInformation("EmployeeServices zaten mevcut, atlaniyor.");
+                logger.LogInformation("EmployeeServices zaten mevcut, atlanıyor.");
                 return;
             }
 
@@ -22,16 +22,16 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
                 (EmployeeSeed.Emp1Id, ServiceSeed.Svc2Id),
                 (EmployeeSeed.Emp1Id, ServiceSeed.Svc3Id),
 
-                // Emre Genc (Emp2)
+                // Emre Genç (Emp2)
                 (EmployeeSeed.Emp2Id, ServiceSeed.Svc1Id),
                 (EmployeeSeed.Emp2Id, ServiceSeed.Svc4Id),
 
-                // Murat Kidemli (Emp3)
+                // Murat Kıdemli (Emp3)
                 (EmployeeSeed.Emp3Id, ServiceSeed.Svc1Id),
                 (EmployeeSeed.Emp3Id, ServiceSeed.Svc2Id),
                 (EmployeeSeed.Emp3Id, ServiceSeed.Svc4Id),
 
-                // Selin Sac (Emp4)
+                // Selin Saç (Emp4)
                 (EmployeeSeed.Emp4Id, ServiceSeed.Svc5Id),
                 (EmployeeSeed.Emp4Id, ServiceSeed.Svc6Id),
                 (EmployeeSeed.Emp4Id, ServiceSeed.Svc7Id),
@@ -42,7 +42,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
                 (EmployeeSeed.Emp5Id, ServiceSeed.Svc7Id),
                 (EmployeeSeed.Emp5Id, ServiceSeed.Svc8Id),
 
-                // Kaan Dovmeci (Emp6)
+                // Kaan Dövmeci (Emp6)
                 (EmployeeSeed.Emp6Id, ServiceSeed.Svc9Id),
                 (EmployeeSeed.Emp6Id, ServiceSeed.Svc10Id),
                 (EmployeeSeed.Emp6Id, ServiceSeed.Svc11Id),
@@ -51,11 +51,11 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
                 (EmployeeSeed.Emp7Id, ServiceSeed.Svc9Id),
                 (EmployeeSeed.Emp7Id, ServiceSeed.Svc12Id),
 
-                // Ibrahim Usta (Emp9)
+                // İbrahim Usta (Emp9)
                 (EmployeeSeed.Emp9Id, ServiceSeed.Svc13Id),
                 (EmployeeSeed.Emp9Id, ServiceSeed.Svc14Id),
 
-                // Dr. Aylin (Emp10)
+                // Dr. Aylın (Emp10)
                 (EmployeeSeed.Emp10Id, ServiceSeed.Svc15Id),
                 (EmployeeSeed.Emp10Id, ServiceSeed.Svc16Id),
                 (EmployeeSeed.Emp10Id, ServiceSeed.Svc18Id),

@@ -5,9 +5,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Marketing.Commands.AttributeAppointment
 {
     /// <summary>
-    /// Randevuyu pazarlama kaynagina atfeder. Bir randevu icin tek aktif
-    /// atif kaydi vardir; ayni randevuya ikinci atif Conflict doner
-    /// (DuplicateKey korumasi handler'dadir).
+    /// Randevuyu pazarlama kaynağına atfeder. Bir randevu için tek aktif
+    /// atıf kaydı vardır; aynı randevuya ikinci atıf Conflict döner
+    /// (DuplicateKey koruması handler'dadır).
     /// </summary>
     public class AttributeAppointmentCommand : IRequest<Result<Guid>>
     {

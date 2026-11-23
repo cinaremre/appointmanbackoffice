@@ -41,12 +41,12 @@ namespace Rezervise.Application.Features.Blacklists.Commands.AddToBlacklist
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu - isletme sahibi veya isletmede gorevli calisan.
+                // 2. Yetki kontrolü - işletme sahibi veya işletmede görevli çalışan.
                 var isOwner = business.OwnerId == request.RequesterId;
 
                 if (!isOwner)
@@ -59,16 +59,16 @@ namespace Rezervise.Application.Features.Blacklists.Commands.AddToBlacklist
 
                     if (!isEmployee)
                         return Result<Guid>.Failure(Error.Unauthorized(
-                            "Bu islemi sadece isletme sahibi veya isletme calisani yapabilir."));
+                            "Bu işlemi sadece işletme sahibi veya işletme çalışanı yapabilir."));
                 }
 
-                // 3. Kullanici kontrolu
+                // 3. Kullanıcı kontrolü
                 var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
                 if (user is null)
-                    return Result<Guid>.Failure(Error.NotFound("Kullanici", request.UserId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Kullanıcı", request.UserId.ToString()));
 
-                // 4. Musterinin bu isletmedeki acik randevulari: kara listeye ekleme
-                //    aninda tamami iptal edilir (kullanici karari).
+                // 4. Müşterinin bu işletmedeki açık randevuları: kara listeye ekleme
+                //    anında tamamı iptal edilir (kullanıcı kararı).
                 var now = _dateTimeService.UtcNow;
 
                 var openAppointments = await _appointmentRepository.FindAsync(
@@ -80,9 +80,9 @@ namespace Rezervise.Application.Features.Blacklists.Commands.AddToBlacklist
                           a.Status == EnumAppointmentStatus.Confirmed),
                     cancellationToken);
 
-                // 5. On kontrol YAPILMAZ: (BusinessId, UserId) uzerindeki unique index
-                //    tek dogruluk kaynagidir. Es zamanli iki ekleme denemesinde
-                //    ikincisi DuplicateKeyException alir ve 409 Conflict doner.
+                // 5. On kontrol YAPILMAZ: (BusinessId, UserId) üzerindeki unique index
+                //    tek doğruluk kaynağıdır. Es zamanlı iki ekleme denemesinde
+                //    ikincisi DuplicateKeyException alır ve 409 Conflict döner.
                 var entry = new BlacklistEntry(
                     request.UserId,
                     request.BusinessId,
@@ -91,15 +91,15 @@ namespace Rezervise.Application.Features.Blacklists.Commands.AddToBlacklist
 
                 await _blacklistRepository.AddAsync(entry, cancellationToken);
 
-                // 6. Acik randevular tek SaveChanges icinde iptal edilir; boylece
-                //    kara liste kaydi ile iptaller ayni transaction'da kalir.
+                // 6. Açık randevular tek SaveChanges içinde iptal edilir; böylece
+                //    kara liste kaydı ile iptaller aynı transaction'da kalır.
                 foreach (var appointment in openAppointments)
-                    appointment.Cancel("Kara listeye alindi", "Blacklist", now);
+                    appointment.Cancel("Kara listeye alındı", "Blacklist", now);
 
-                // 7. Kaydet (unique index ihlali burada yakalanir)
+                // 7. Kaydet (unique index ihlali burada yakalanır)
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // 8. Kullanici 3 farkli isletmede kara listede mi?
+                // 8. Kullanıcı 3 farklı işletmede kara listede mi?
                 await CheckAndLockUserIfNeededAsync(request.UserId, cancellationToken);
 
                 return Result<Guid>.Success(entry.Id);
@@ -118,7 +118,7 @@ namespace Rezervise.Application.Features.Blacklists.Commands.AddToBlacklist
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Kara listeye eklenirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Kara listeye eklenirken bir hata oluştu.", ex.Message));
             }
         }
 
@@ -138,7 +138,7 @@ namespace Rezervise.Application.Features.Blacklists.Commands.AddToBlacklist
                 var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
                 if (user is not null && user.AccountStatus != EnumAccountStatus.Locked)
                 {
-                    user.LockAccount("3 farkli isletmede kara listeye girildi", "System");
+                    user.LockAccount("3 farklı işletmede kara listeye girildi", "System");
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
                 }
             }

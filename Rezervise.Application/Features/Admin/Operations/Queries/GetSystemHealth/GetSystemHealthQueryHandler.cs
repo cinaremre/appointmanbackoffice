@@ -7,19 +7,19 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Operations.Queries.GetSystemHealth
 {
     /// <summary>
-    /// Sistem saglik raporu (dokuman Modul 20).
+    /// Sistem sağlık raporu (doküman Modül 20).
     ///
-    /// BASITLESTIRME (ilk surum): DbReachable gibi gercek baglanti testleri
-    /// yerine uygulamanin ayakta oldugu bilgisi + aktarim is durum sayilari
-    /// raporlanir. Saglik kontrolleri sonraki surumlerde Redis, mesaj brokeri
-    /// ve bildirim saglayicisi gibi bilesimler icin genisletilecektir.
+    /// BASITLESTIRME (ilk sürüm): DbReachable gibi gerçek bağlantı testleri
+    /// yerine uygulamanın ayakta öldüğü bilgisi + aktarım is durum sayıları
+    /// raporlanır. Sağlık kontrolleri sonraki sürümlerde Redis, mesaj brokeri
+    /// ve bildirim sağlayıcısı gibi bileşimler için genişletilecektir.
     /// </summary>
     public class GetSystemHealthQueryHandler
         : IRequestHandler<GetSystemHealthQuery, Result<SystemHealthDto>>
     {
-        /// <summary>Saglik kapsami aciklamasi.</summary>
+        /// <summary>Sağlık kapsamı açıklaması.</summary>
         private const string HealthNote =
-            "Ilk surum saglik raporu: uygulamanin ayakta oldugu ve aktarim islerinin durum sayilari raporlanir. Veritabani, Redis, mesaj brokeri ve saglayici saglik kontrolleri sonraki surumlerde eklenecek.";
+            "İlk sürüm sağlık raporu: uygulamanın ayakta öldüğü ve aktarım işlerinin durum sayıları raporlanır. Veritabanı, Redis, mesaj brokeri ve sağlayıcı sağlık kontrolleri sonraki sürümlerde eklenecek.";
 
         private readonly IRepository<ImportJob> _jobRepository;
 
@@ -34,7 +34,7 @@ namespace Rezervise.Application.Features.Admin.Operations.Queries.GetSystemHealt
         {
             try
             {
-                // Sorgu dongusunu tamamliyorsa uygulama ve veri katmani ayaktadir.
+                // Sorgu döngüsünü tamamlıyorsa uygulama ve veri katmanı ayaktadır.
                 var jobs = await _jobRepository.FindAsync(
                     j => !j.IsDeleted,
                     cancellationToken);
@@ -54,7 +54,7 @@ namespace Rezervise.Application.Features.Admin.Operations.Queries.GetSystemHealt
             catch (Exception ex)
             {
                 return Result<SystemHealthDto>.Failure(
-                    Error.Internal("Sistem saglik raporu hazirlanirken bir hata olustu.", ex.Message));
+                    Error.Internal("Sistem sağlık raporu hazırlanırken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -1,9 +1,9 @@
 namespace Rezervise.Application.Common.Results
 {
     /// <summary>
-    /// Islem sonucu hatasi. <see cref="Key"/> doluysa Api katmani bu anahtari
-    /// aktif kulturde cozer; anahtar hicbir katalogda yoksa <see cref="Message"/>
-    /// degeri kullanilir. Boylece gecis surecinde mevcut cagrilar bozulmaz.
+    /// İşlem sonucu hatası. <see cref="Key"/> doluysa Api katmanı bu anahtarı
+    /// aktif kültürde çözer; anahtar hiçbir katalogda yoksa <see cref="Message"/>
+    /// değeri kullanılır. Böylece geçiş sürecinde mevcut çağrılar bozulmaz.
     /// </summary>
     public class Error
     {
@@ -11,10 +11,10 @@ namespace Rezervise.Application.Common.Results
         public string Message { get; set; }
         public string? Detail { get; set; }
 
-        /// <summary>Cozumlenecek lokalizasyon anahtari (orn. "Error.NotFound").</summary>
+        /// <summary>Çözümlenecek lokalizasyon anahtarı (orn. "Error.NotFound").</summary>
         public string? Key { get; set; }
 
-        /// <summary>Anahtar cozulurken kullanilacak bicimlendirme argumanlari.</summary>
+        /// <summary>Anahtar çözülürken kullanılacak biçimlendirme argümanları.</summary>
         public object[]? KeyArgs { get; set; }
 
         public Error(string code, string message, string? detail = null)
@@ -25,11 +25,11 @@ namespace Rezervise.Application.Common.Results
         }
 
         /// <summary>
-        /// Ayni kod, detay ve lokalizasyon anahtarini koruyarak mesaji
-        /// degistirilmis yeni bir hata uretir.
+        /// Aynı kod, detay ve lokalizasyon anahtarını koruyarak mesajı
+        /// değiştirilmiş yeni bir hata üretir.
         /// </summary>
         /// <param name="message">Yeni mesaj metni.</param>
-        /// <returns>Mesaji degistirilmis yeni <see cref="Error"/> ornegi.</returns>
+        /// <returns>Mesajı değiştirilmiş yeni <see cref="Error"/> örneği.</returns>
         public Error WithMessage(string message)
         {
             return new Error(Code, message, Detail)
@@ -40,7 +40,7 @@ namespace Rezervise.Application.Common.Results
         }
 
         public static Error NotFound(string entity, string id)
-            => new Error("NOT_FOUND", $"{entity} bulunamadi.", $"Id: {id}")
+            => new Error("NOT_FOUND", $"{entity} bulunamadı.", $"Id: {id}")
             {
                 Key = "Error.NotFound",
                 KeyArgs = new object[] { entity }
@@ -56,13 +56,13 @@ namespace Rezervise.Application.Common.Results
             => new Error("CONFLICT", message, detail) { Key = message };
 
         public static Error Unauthorized(string? message = null)
-            => new Error("UNAUTHORIZED", message ?? "Yetkisiz erisim.")
+            => new Error("UNAUTHORIZED", message ?? "Yetkisiz erişim.")
             {
                 Key = message ?? "Error.Unauthorized"
             };
 
         public static Error Forbidden(string? message = null)
-            => new Error("FORBIDDEN", message ?? "Bu islem icin yetkiniz yok.")
+            => new Error("FORBIDDEN", message ?? "Bu işlem için yetkiniz yok.")
             {
                 Key = message ?? "Error.Forbidden"
             };

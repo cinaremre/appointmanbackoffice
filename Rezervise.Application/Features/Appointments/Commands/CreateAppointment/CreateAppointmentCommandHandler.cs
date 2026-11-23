@@ -15,7 +15,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
 {
     public class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointmentCommand, Result<Guid>>
     {
-        private const string BlacklistMessage = "Randevunuz olusturulamiyor, l�tfen isletme ile iletisime ge�iniz.";
+        private const string BlacklistMessage = "Randevunuz oluşturulamıyor, lütfen işletme ile iletişime geçiniz.";
 
         private readonly IRepository<Appointment> _appointmentRepository;
         private readonly IRepository<Business> _businessRepository;
@@ -65,15 +65,15 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
                 if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
                     return Result<Guid>.Failure(Error.Unauthorized("Auth.Unauthorized"));
 
-                // Govdeye guevenilmez; istegi yapan kisi ambient kimlikten belirlenir.
+                // Gövdeye guevenilmez; isteği yapan kişi ambient kimlikten belirlenir.
                 var requesterId = _currentUser.UserId.Value;
                 request.RequesterId = requesterId;
                 var now = _dateTimeService.UtcNow;
 
-                // Butun kontroller ve yazmalar ayni SERIALIZABLE transaction icinde.
+                // Bütün kontroller ve yazmalar aynı SERIALIZABLE transaction içinde.
                 var result = await _unitOfWork.ExecuteInTransactionAsync(async token =>
                 {
-                    // 0. Idempotency: anahtar istegi yapan kisiyle birlikte scope'lanir.
+                    // 0. Idempotency: anahtar isteği yapan kişiyle birlikte scope'lanır.
                     if (!string.IsNullOrWhiteSpace(request.IdempotencyKey))
                     {
                         var existingRecords = await _idempotencyRepository.FindAsync(
@@ -85,34 +85,34 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
                             return Result<Guid>.Success(existingRecord.AppointmentId);
                     }
 
-                    // 1. Requester kontrolu
+                    // 1. Requester kontrolü
                     if (await _userRepository.GetByIdAsync(request.RequesterId, token) is null)
-                        return Result<Guid>.Failure(Error.NotFound("Kullanici", request.RequesterId.ToString()));
+                        return Result<Guid>.Failure(Error.NotFound("Kullanıcı", request.RequesterId.ToString()));
 
-                    // 2. Isletme kontrolu
+                    // 2. İşletme kontrolü
                     var business = await _businessRepository.GetByIdWithIncludesAsync(
                         request.BusinessId,
                         token,
                         b => b.WorkingHours);
 
                     if (business is null)
-                        return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                        return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
                     if (!business.IsActive)
-                        return Result<Guid>.Failure(Error.BusinessRule("Isletme aktif degil."));
+                        return Result<Guid>.Failure(Error.BusinessRule("İşletme aktif değil."));
 
-                    // 3. Hizmet kontrolu
+                    // 3. Hizmet kontrolü
                     var service = await _serviceRepository.GetByIdAsync(request.ServiceId, token);
                     if (service is null)
                         return Result<Guid>.Failure(Error.NotFound("Hizmet", request.ServiceId.ToString()));
 
                     if (!service.IsActive)
-                        return Result<Guid>.Failure(Error.BusinessRule("Hizmet aktif degil."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Hizmet aktif değil."));
 
                     if (service.BusinessId != request.BusinessId)
-                        return Result<Guid>.Failure(Error.BusinessRule("Hizmet bu isletmeye ait degil."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Hizmet bu işletmeye ait değil."));
 
-                    // 4. Calisan kontrolu
+                    // 4. Çalışan kontrolü
                     var employee = await _employeeRepository.GetByIdWithIncludesAsync(
                         request.EmployeeId,
                         token,
@@ -121,28 +121,28 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
                         e => e.TimeOffs);
 
                     if (employee is null)
-                        return Result<Guid>.Failure(Error.NotFound("Calisan", request.EmployeeId.ToString()));
+                        return Result<Guid>.Failure(Error.NotFound("Çalışan", request.EmployeeId.ToString()));
 
                     if (!employee.IsActive)
-                        return Result<Guid>.Failure(Error.BusinessRule("Calisan aktif degil."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Çalışan aktif değil."));
 
                     if (!employee.IsAvailableForBooking)
-                        return Result<Guid>.Failure(Error.BusinessRule("Calisan su anda randevu kabul etmiyor."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Çalışan su anda randevu kabul etmiyor."));
 
                     if (employee.BusinessId != request.BusinessId)
-                        return Result<Guid>.Failure(Error.BusinessRule("Calisan bu isletmeye ait degil."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Çalışan bu işletmeye ait değil."));
 
-                    // 5. Calisan bu hizmeti verebiliyor mu?
+                    // 5. Çalışan bu hizmeti verebiliyor mü?
                     if (!employee.CanProvideService(request.ServiceId))
-                        return Result<Guid>.Failure(Error.BusinessRule("Calisan bu hizmeti veremiyor."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Çalışan bu hizmeti veremiyor."));
 
-                    // 6. Yetki kontrolu - kimlik JWT uzerinden cozulur.
+                    // 6. Yetki kontrolü - kimlik JWT üzerinden çözülür.
                     var authorizationResult = CheckAuthorization(request, business);
                     if (authorizationResult.IsFailure)
                         return Result<Guid>.Failure(authorizationResult.Error!);
 
-                    // 7. Calisma saati kontrolu. Istek UTC anidir; mesai saatleri isletme
-                    //    yerel duvar saatinde tutulur. Tum aralik yerel zamanda kontrol edilir.
+                    // 7. Çalışma saati kontrolü. İstek UTC anıdır; mesai saatleri işletme
+                    //    yerel duvar saatinde tutulur. Tüm aralık yerel zamanda kontrol edilir.
                     var start = request.AppointmentDate;
                     var durationMinutes = service.DurationInMinutes;
                     var end = start.AddMinutes(durationMinutes);
@@ -150,24 +150,24 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
                     var localEnd = localStart.AddMinutes(durationMinutes);
 
                     if (!business.IsOpenDuring(localStart, localEnd))
-                        return Result<Guid>.Failure(Error.BusinessRule("Isletme bu saatte calismiyor."));
+                        return Result<Guid>.Failure(Error.BusinessRule("İşletme bu saatte çalışmıyor."));
 
                     if (!employee.IsWorkingDuring(localStart, localEnd))
-                        return Result<Guid>.Failure(Error.BusinessRule("Calisan bu saatte calismiyor."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Çalışan bu saatte çalışmıyor."));
 
                     if (employee.IsOnApprovedTimeOff(localStart, localEnd))
-                        return Result<Guid>.Failure(Error.BusinessRule("Calisan bu tarihte izinde."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Çalışan bu tarihte izinde."));
 
-                    // 8. Kara liste kontrolu
+                    // 8. Kara liste kontrolü
                     if (await IsBlacklistedAsync(request.UserId, request.BusinessId, token))
                         return Result<Guid>.Failure(Error.BusinessRule(BlacklistMessage));
 
-                    // 9. 3. aktif randevu kontrolu (kayit yazmasi cakisma sonrasina birakilir)
+                    // 9. 3. aktif randevu kontrolü (kayıt yazması çakışma sonrasına bırakılır)
                     var activeAppointmentCount = await CountActiveAppointmentsAsync(
                         request.UserId, request.BusinessId, now, token);
                     var activeLimitReached = activeAppointmentCount >= 2;
 
-                    // 10. Cakisma kontrolu: SERIALIZABLE + aralik kilidi ile tek transaction.
+                    // 10. Çakışma kontrolü: SERIALIZABLE + aralık kilidi ile tek transaction.
                     var hasConflict = await _bookingGuard.HasConflictAsync(
                         request.EmployeeId,
                         start,
@@ -179,18 +179,18 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
                     if (hasConflict)
                         return Result<Guid>.Failure(ConcurrencyErrors.BookingConflict());
 
-                    // 11. Cakisma sonrasi kara liste tekrar kontrolu.
+                    // 11. Çakışma sonrası kara liste tekrar kontrolü.
                     if (await IsBlacklistedAsync(request.UserId, request.BusinessId, token))
                         return Result<Guid>.Failure(Error.BusinessRule(BlacklistMessage));
 
-                    // 12. Limit asildiysa kara listeye yazma ve kullanici kilidi ayni transaction'da.
+                    // 12. Limit asıldıysa kara listeye yazma ve kullanıcı kilidi aynı transaction'da.
                     if (activeLimitReached)
                     {
                         var blacklistEntry = new BlacklistEntry(
                             request.UserId,
                             request.BusinessId,
                             activeAppointmentCount + 1,
-                            "Pes pese 3 aktif randevu");
+                            "Peş peşe 3 aktif randevu");
 
                         await _blacklistRepository.AddAsync(blacklistEntry, token);
                         await CheckAndLockUserIfNeededAsync(request.UserId, token);
@@ -198,7 +198,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
                         return Result<Guid>.Failure(Error.BusinessRule(BlacklistMessage));
                     }
 
-                    // 13. Randevu + idempotency kaydi
+                    // 13. Randevu + idempotency kaydı
                     var appointment = new Appointment(
                         request.UserId,
                         request.BusinessId,
@@ -207,10 +207,10 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
                         start,
                         request.Notes);
 
-                    // Bitis saati her zaman yazilir; cakisma penceresi DB ile ayni olur.
+                    // Bitiş saati her zaman yazılır; çakışma penceresi DB ile aynı olur.
                     appointment.SetEndTime(end);
 
-                    // Domain tarafindaki gecmis tarih kontrolu ayni referans zamani kullanir.
+                    // Domain tarafındaki geçmiş tarih kontrolü aynı referans zamanı kullanır.
                     appointment.SetAppointmentDate(start, now);
 
                     await _appointmentRepository.AddAsync(appointment, token);
@@ -226,7 +226,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
                     return Result<Guid>.Success(appointment.Id);
                 }, IsolationLevel.Serializable, cancellationToken);
 
-                // Olcum yalnizca gercekten yeni randevu olusursa artar.
+                // Ölçüm yalnızca gerçekten yeni randevu oluşursa artar.
                 if (result.IsSuccess)
                     _metrics.RecordAppointmentCreated();
 
@@ -238,7 +238,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
             }
             catch (Exception)
             {
-                return Result<Guid>.Failure(Error.Internal("Randevu olusturulurken bir hata olustu."));
+                return Result<Guid>.Failure(Error.Internal("Randevu oluşturulurken bir hata oluştu."));
             }
         }
 
@@ -247,17 +247,17 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
             CreateAppointmentCommand request,
             Business business)
         {
-            // KURAL 1: Caller kendisi icin randevu olusturuyor veya yonetici.
+            // KURAL 1: Caller kendisi için randevu oluşturuyor veya yönetici.
             if (CallerAuthorization.CanActAsUser(_currentUser, request.UserId))
                 return Result.Success();
 
-            // KURAL 2: Isletme sahibi calisanina randevu olusturuyor.
+            // KURAL 2: İşletme sahibi çalışanına randevu oluşturuyor.
             if (CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
                 return Result.Success();
 
-            // KURAL 3: Baska birine randevu olusturma yetkisi yok.
+            // KURAL 3: Başka birine randevu oluşturma yetkisi yok.
             return Result.Failure(
-                Error.Forbidden("Baska bir kullanici adina randevu olusturma yetkiniz yok."));
+                Error.Forbidden("Başka bir kullanıcı adına randevu oluşturma yetkiniz yok."));
         }
 
         // ===== KARA LISTE KONTROLU =====
@@ -280,7 +280,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
             DateTime now,
             CancellationToken cancellationToken)
         {
-            // Aktif = tarihi gelmemis, iptal edilmemis, tamamlanmamis
+            // Aktif = tarihi gelmemiş, iptal edilmemiş, tamamlanmamış
             var appointments = await _appointmentRepository.FindAsync(
                 a => a.UserId == userId &&
                      a.BusinessId == businessId &&
@@ -298,7 +298,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
             Guid userId,
             CancellationToken cancellationToken)
         {
-            // Bu kullanicinin kara listede oldugu farkli isletme sayisi
+            // Bu kullanıcının kara listede öldüğü farklı işletme sayısı
             var blacklistEntries = await _blacklistRepository.FindAsync(
                 b => b.UserId == userId && !b.IsDeleted,
                 cancellationToken);
@@ -313,7 +313,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
                 var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
                 if (user is not null && user.AccountStatus != EnumAccountStatus.Locked)
                 {
-                    user.LockAccount("3 farkli isletmede kara listeye girildi", "System");
+                    user.LockAccount("3 farklı işletmede kara listeye girildi", "System");
                 }
             }
         }

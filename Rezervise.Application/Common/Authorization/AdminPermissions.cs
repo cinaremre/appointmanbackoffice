@@ -1,12 +1,12 @@
 namespace Rezervise.Application.Common.Authorization
 {
     /// <summary>
-    /// Backoffice permission kodlari (dokuman 5.3). Roller sabit kod
-    /// kontrollerine bagli degildir: her policy bu matristen uretilir.
+    /// Backoffice permission kodları (doküman 5.3). Roller sabit kod
+    /// kontrollerine bağlı değildir: her policy bu matristen üretilir.
     /// </summary>
     public static class AdminPermissions
     {
-        // ===== Permission kodlari =====
+        // ===== Permission kodları =====
         public const string BusinessRead = "business.read";
         public const string BusinessCreate = "business.create";
         public const string BusinessUpdate = "business.update";
@@ -52,8 +52,8 @@ namespace Rezervise.Application.Common.Authorization
         public const string OperationsManage = "operations.manage";
 
         /// <summary>
-        /// Rol -> permission eslemesi. SuperAdmin bilincli olarak matriste
-        /// tutulmaz: policy cozumleyici SuperAdmin'i her zaman gecerli sayar.
+        /// Rol -> permission eşlemesi. SuperAdmin bilinçli olarak matriste
+        /// tutulmaz: policy çözümleyici SuperAdmin'i her zaman geçerli sayar.
         /// </summary>
         public static readonly IReadOnlyDictionary<string, IReadOnlyList<string>> RolePermissions =
             new Dictionary<string, IReadOnlyList<string>>(StringComparer.OrdinalIgnoreCase)
@@ -100,8 +100,8 @@ namespace Rezervise.Application.Common.Authorization
                 },
                 ["Admin"] = new[]
                 {
-                    // Mevcut Admin rolu geriye donuk uyumluluk icin tum okuma
-                    // ve sinirli yazma permission'larini tasir.
+                    // Mevcut Admin rolü geriye dönük uyumluluk için tüm okuma
+                    // ve sınırlı yazma permission'larını taşır.
                     BusinessRead, BusinessUpdate, BusinessSuspend,
                     CategoryRead, CategoryUpdate, ServiceRead, ServiceUpdate,
                     AppointmentRead, AppointmentCancel, UserRead, UserManage,
@@ -112,10 +112,10 @@ namespace Rezervise.Application.Common.Authorization
             };
 
         /// <summary>
-        /// Verilen rolun belirtilen permission'a sahip olup olmadigini cozer.
+        /// Verilen rolün belirtilen permission'a sahip olup olmadığını çözer.
         /// SuperAdmin her permission'a sahiptir.
         /// </summary>
-        /// <param name="role">JWT rol adi (case-insensitive).</param>
+        /// <param name="role">JWT rol adı (case-insensitive).</param>
         /// <param name="permission">Permission kodu.</param>
         /// <returns>Rol izinliyse true.</returns>
         public static bool HasPermission(string role, string permission)

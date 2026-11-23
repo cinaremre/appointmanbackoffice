@@ -25,10 +25,10 @@ namespace Rezervise.Domain.Entities
     : base(id)
         {
             if (employeeId == Guid.Empty)
-                throw new ArgumentException("Calisan ID bos olamaz.", nameof(employeeId));
+                throw new ArgumentException("Çalışan ID boş olamaz.", nameof(employeeId));
 
             if (serviceId == Guid.Empty)
-                throw new ArgumentException("Hizmet ID bos olamaz.", nameof(serviceId));
+                throw new ArgumentException("Hizmet ID boş olamaz.", nameof(serviceId));
 
             EmployeeId = employeeId;
             ServiceId = serviceId;
@@ -37,10 +37,10 @@ namespace Rezervise.Domain.Entities
         public void SetCustomPrice(decimal? price)
         {
             if (price.HasValue && price.Value < 0)
-                throw new DomainException("Ozel fiyat negatif olamaz.");
+                throw new DomainException("Özel fiyat negatif olamaz.");
 
             if (price.HasValue && price.Value > 99999999.99m)
-                throw new DomainException("Ozel fiyat cok yuksek.");
+                throw new DomainException("Özel fiyat çok yüksek.");
 
             CustomPrice = price.HasValue ? Math.Round(price.Value, 2) : null;
             UpdatedAt = DateTime.UtcNow;
@@ -51,10 +51,10 @@ namespace Rezervise.Domain.Entities
             if (durationInMinutes.HasValue)
             {
                 if (durationInMinutes.Value < 5 || durationInMinutes.Value > 480)
-                    throw new DomainException("Sure 5-480 dakika arasinda olmalidir.");
+                    throw new DomainException("Süre 5-480 dakika arasında olmalıdır.");
 
                 if (durationInMinutes.Value % 5 != 0)
-                    throw new DomainException("Sure 5 dakikanin kati olmalidir.");
+                    throw new DomainException("Süre 5 dakikanın katı olmalıdır.");
             }
 
             CustomDurationInMinutes = durationInMinutes;

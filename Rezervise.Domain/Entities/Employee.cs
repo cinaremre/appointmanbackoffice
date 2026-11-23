@@ -7,22 +7,22 @@ namespace Rezervise.Domain.Entities
 {
     public class Employee : BaseEntity
     {
-        // Kisisel bilgiler
+        // Kişisel bilgiler
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
         public string? Title { get; private set; }
         public string? Bio { get; private set; }
         public string? ProfilePictureUrl { get; private set; }
 
-        // Iletisim
+        // İletişim
         public PhoneNumber PhoneNumber { get; private set; }
         public Email? Email { get; private set; }
 
-        // Isletme iliskisi
+        // İşletme ilişkisi
         public Guid BusinessId { get; private set; }
         public Business Business { get; private set; }
 
-        // Kullanici iliskisi (opsiyonel)
+        // Kullanıcı ilişkisi (opsiyonel)
         public Guid? UserId { get; private set; }
         public User? User { get; private set; }
 
@@ -55,13 +55,13 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (string.IsNullOrWhiteSpace(firstName))
-                throw new DomainException("Calisan adi bos olamaz.");
+                throw new DomainException("Çalışan adı boş olamaz.");
 
             if (string.IsNullOrWhiteSpace(lastName))
-                throw new DomainException("Calisan soyadi bos olamaz.");
+                throw new DomainException("Çalışan soyadı boş olamaz.");
 
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             SetFirstName(firstName);
             SetLastName(lastName);
@@ -77,10 +77,10 @@ namespace Rezervise.Domain.Entities
         public void SetFirstName(string firstName)
         {
             if (string.IsNullOrWhiteSpace(firstName))
-                throw new DomainException("Calisan adi bos olamaz.");
+                throw new DomainException("Çalışan adı boş olamaz.");
 
             if (firstName.Length < 2 || firstName.Length > 50)
-                throw new DomainException("Calisan adi 2-50 karakter arasinda olmalidir.");
+                throw new DomainException("Çalışan adı 2-50 karakter arasında olmalıdır.");
 
             FirstName = firstName.Trim();
             UpdatedAt = DateTime.UtcNow;
@@ -89,10 +89,10 @@ namespace Rezervise.Domain.Entities
         public void SetLastName(string lastName)
         {
             if (string.IsNullOrWhiteSpace(lastName))
-                throw new DomainException("Calisan soyadi bos olamaz.");
+                throw new DomainException("Çalışan soyadı boş olamaz.");
 
             if (lastName.Length < 2 || lastName.Length > 50)
-                throw new DomainException("Calisan soyadi 2-50 karakter arasinda olmalidir.");
+                throw new DomainException("Çalışan soyadı 2-50 karakter arasında olmalıdır.");
 
             LastName = lastName.Trim();
             UpdatedAt = DateTime.UtcNow;
@@ -137,7 +137,7 @@ namespace Rezervise.Domain.Entities
         public void SetDisplayOrder(int order)
         {
             if (order < 0)
-                throw new DomainException("Siralama numarasi negatif olamaz.");
+                throw new DomainException("Sıralama numarası negatif olamaz.");
 
             DisplayOrder = order;
             UpdatedAt = DateTime.UtcNow;
@@ -169,7 +169,7 @@ namespace Rezervise.Domain.Entities
         public void MakeAvailableForBooking()
         {
             if (!IsActive)
-                throw new DomainException("Pasif calisan randevu alamaz.");
+                throw new DomainException("Pasif çalışan randevu alamaz.");
 
             IsAvailableForBooking = true;
             UpdatedAt = DateTime.UtcNow;
@@ -229,10 +229,10 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(employeeService));
 
             if (employeeService.EmployeeId != Id)
-                throw new DomainException("Hizmet bu calisana ait degil.");
+                throw new DomainException("Hizmet bu çalışana ait değil.");
 
             if (_employeeServices.Any(es => es.ServiceId == employeeService.ServiceId && !es.IsDeleted))
-                throw new DomainException("Bu hizmet zaten calisana atanmis.");
+                throw new DomainException("Bu hizmet zaten çalışana atanmış.");
 
             _employeeServices.Add(employeeService);
             UpdatedAt = DateTime.UtcNow;
@@ -244,7 +244,7 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(employeeService));
 
             if (!_employeeServices.Contains(employeeService))
-                throw new DomainException("Bu hizmet calisanda bulunamadi.");
+                throw new DomainException("Bu hizmet çalışanda bulunamadı.");
 
             _employeeServices.Remove(employeeService);
             UpdatedAt = DateTime.UtcNow;
@@ -263,10 +263,10 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(workingHour));
 
             if (workingHour.EmployeeId != Id)
-                throw new DomainException("Calisma saati bu calisana ait degil.");
+                throw new DomainException("Çalışma saati bu çalışana ait değil.");
 
             if (_workingHours.Any(w => w.DayOfWeek == workingHour.DayOfWeek && !w.IsDeleted))
-                throw new DomainException($"{workingHour.DayOfWeek} gunu icin zaten calisma saati tanimli.");
+                throw new DomainException($"{workingHour.DayOfWeek} günü için zaten çalışma saati tanımlı.");
 
             _workingHours.Add(workingHour);
             UpdatedAt = DateTime.UtcNow;
@@ -278,7 +278,7 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(workingHour));
 
             if (!_workingHours.Contains(workingHour))
-                throw new DomainException("Bu calisma saati calisanda bulunamadi.");
+                throw new DomainException("Bu çalışma saati çalışanda bulunamadı.");
 
             _workingHours.Remove(workingHour);
             UpdatedAt = DateTime.UtcNow;
@@ -295,14 +295,14 @@ namespace Rezervise.Domain.Entities
             if (workingHour == null || workingHour.IsClosed)
                 return false;
 
-            // Mola ve onayli izin kontrolleri aralik bazli metodlarda yapilir.
+            // Mola ve onaylı izin kontrolleri aralık bazlı metodlarda yapılır.
             return workingHour.IsWithinWorkingHours(dateTime) &&
                    !workingHour.IsWithinBreakTime(dateTime);
         }
 
         /// <summary>
-        /// Araligin tamaminin calisanin mesai saatlerinde ve mola disinda oldugunu kontrol eder.
-        /// Onayli izin kontrolu ayri bir metottur (IsOnApprovedTimeOff).
+        /// Aralığın tamamının çalışanın mesai saatlerinde ve mola dışında öldüğünü kontrol eder.
+        /// Onaylı izin kontrolü ayrı bir metottur (IsOnApprovedTimeOff).
         /// </summary>
         public bool IsWorkingDuring(DateTime start, DateTime end)
         {
@@ -322,10 +322,10 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(timeOff));
 
             if (timeOff.EmployeeId != Id)
-                throw new DomainException("Izin bu calisana ait degil.");
+                throw new DomainException("İzin bu çalışana ait değil.");
 
             if (_timeOffs.Any(t => t.StartDate < timeOff.EndDate && t.EndDate > timeOff.StartDate && !t.IsDeleted))
-                throw new DomainException("Bu tarih araliginda zaten izin var.");
+                throw new DomainException("Bu tarih aralığında zaten izin var.");
 
             _timeOffs.Add(timeOff);
             UpdatedAt = DateTime.UtcNow;
@@ -337,7 +337,7 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(timeOff));
 
             if (!_timeOffs.Contains(timeOff))
-                throw new DomainException("Bu izin calisanda bulunamadi.");
+                throw new DomainException("Bu izin çalışanda bulunamadı.");
 
             _timeOffs.Remove(timeOff);
             UpdatedAt = DateTime.UtcNow;
@@ -345,13 +345,13 @@ namespace Rezervise.Domain.Entities
 
         public bool IsOnTimeOff(DateTime dateTime)
         {
-            // Onaylanmamis (bekleyen/reddedilmis) izinler calisani mesaiten dusurmez.
+            // Onaylanmamış (bekleyen/reddedilmiş) izinler çalışanı mesaiten düşürmez.
             return _timeOffs.Any(t => t.IsApproved && !t.IsDeleted && t.IsDateWithinTimeOff(dateTime));
         }
 
         /// <summary>
-        /// Onayli ve silinmemis izinlerin verilen aralikla kesisip kesmedigini kontrol eder.
-        /// Aralik yerel duvar saatinde verilir.
+        /// Onaylı ve silinmemiş izinlerin verilen aralıkla kesişip kesmediğini kontrol eder.
+        /// Aralık yerel duvar saatinde verilir.
         /// </summary>
         public bool IsOnApprovedTimeOff(DateTime start, DateTime end)
         {

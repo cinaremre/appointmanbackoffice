@@ -1,9 +1,9 @@
 /**
- * Kullanici tipleri (dokuman 12). Sifre/hash alanlari sunucu tarafindan
- * HICBIR ZAMAN donmez; UI'da da gosterilmez.
+ * Kullanıcı tipleri (doküman 12). Şifre/hash alanları sunucu tarafından
+ * HICBIR ZAMAN dönmez; UI'da da gösterilmez.
  */
 
-/** GET /users liste ogesi. lastLoginDate opsiyoneldir; yoksa "-" gosterilir. */
+/** GET /users liste öğesi. lastLoginDate opsiyoneldir; yoksa "-" gösterilir. */
 export interface UserListItem {
   id: string;
   firstName: string;
@@ -26,7 +26,7 @@ export interface UserEmployeePosition {
   businessId: string;
 }
 
-/** GET /users/{id} detay yaniti: profil + uyelikler. */
+/** GET /users/{id} detay yanıtı: profil + üyelikler. */
 export interface UserDetail {
   id: string;
   firstName: string;
@@ -51,7 +51,7 @@ export interface UserListQuery {
 }
 
 /**
- * Gerekceli yonetim aksiyonlari (admin.user.manage):
+ * Gerekceli yönetim aksiyonları (admin.user.manage):
  * lock/unlock/revoke-sessions — hepsi body {reason} zorunlu.
  */
 export type UserManageAction = "lock" | "unlock" | "revoke-sessions";

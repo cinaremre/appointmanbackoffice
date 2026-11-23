@@ -13,8 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Seans paketi islemleri (dokuman Modul 5): paket tanimi, satis,
-    /// hak rezervasyonu/tuketimi/serbest birakma ve bakiye sorgusu.
+    /// Seans paketi işlemleri (doküman Modül 5): paket tanımı, satış,
+    /// hak rezervasyonu/tüketimi/serbest bırakma ve bakiye sorgusu.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -31,7 +31,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Caller kimligi her zaman JWT'den cozulur; govde degerleri yetki kaynagi degildir.
+        /// Caller kimliği her zaman JWT'den çözülür; gövde değerleri yetki kaynağı değildir.
         /// </summary>
         private IActionResult? ResolveCurrentUserId(out Guid userId)
         {
@@ -46,16 +46,16 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Yeni seans paketi tanimi olusturur. Yetki: isletme sahibi.
+        /// Yeni seans paketi tanımı oluşturur. Yetki: işletme sahibi.
         /// </summary>
         /// <param name="command">Paket bilgileri ve hizmet kalemleri</param>
-        /// <returns>Olusturulan paketin ID'si</returns>
+        /// <returns>Oluşturulan paketin ID'si</returns>
         [HttpPost("create")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] CreateServicePackageCommand command)
         {
-            // Kimlik JWT'den cozulur; handler ayni kaynagi kullanir.
+            // Kimlik JWT'den çözülür; handler aynı kaynağı kullanır.
             if (ResolveCurrentUserId(out _) is { } unauthorized)
                 return unauthorized;
 
@@ -68,10 +68,10 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Musteriye paket satisi kaydeder. Yetki: isletme sahibi.
+        /// Müşteriye paket satışı kaydeder. Yetki: işletme sahibi.
         /// </summary>
-        /// <param name="command">Paket ve musteri bilgileri</param>
-        /// <returns>Olusturulan musteri paketinin ID'si</returns>
+        /// <param name="command">Paket ve müşteri bilgileri</param>
+        /// <returns>Oluşturulan müşteri paketinin ID'si</returns>
         [HttpPost("purchase")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
@@ -89,10 +89,10 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Randevu icin paketten seans hakki ayirir.
+        /// Randevu için paketten seans hakkı ayırır.
         /// </summary>
         /// <param name="command">Paket, hizmet ve randevu bilgileri</param>
-        /// <returns>Olusturulan rezervasyon hareketinin ID'si</returns>
+        /// <returns>Oluşturulan rezervasyon hareketinin ID'si</returns>
         [HttpPost("reserve")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
@@ -110,10 +110,10 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Tamamlanan randevunun paket rezervasyonunu tuketime cevirir.
+        /// Tamamlanan randevunun paket rezervasyonunu tüketime çevirir.
         /// </summary>
         /// <param name="command">Paket, hizmet ve randevu bilgileri</param>
-        /// <returns>Olusturulan tuketim hareketinin ID'si</returns>
+        /// <returns>Oluşturulan tüketim hareketinin ID'si</returns>
         [HttpPost("consume")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
@@ -131,10 +131,10 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Iptal edilen randevunun paket rezervasyonunu serbest birakir.
+        /// İptal edilen randevunun paket rezervasyonunu serbest bırakır.
         /// </summary>
         /// <param name="command">Randevu bilgisi</param>
-        /// <returns>Serbest birakilan rezervasyon hareketinin ID'si</returns>
+        /// <returns>Serbest bırakılan rezervasyon hareketinin ID'si</returns>
         [HttpPost("release")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
@@ -152,10 +152,10 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Musteri paketinin hak bakiyesini getirir.
+        /// Müşteri paketinin hak bakiyesini getirir.
         /// </summary>
-        /// <param name="customerPackageId">Musteri paketi ID'si</param>
-        /// <returns>Satin alinan toplam, aktif rezervasyon, tuketilen ve kalan hak</returns>
+        /// <param name="customerPackageId">Müşteri paketi ID'si</param>
+        /// <returns>Satın alınan toplam, aktif rezervasyon, tüketilen ve kalan hak</returns>
         [HttpGet("{customerPackageId}/balance")]
         [ProducesResponseType(typeof(Result<CustomerPackageBalanceDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<CustomerPackageBalanceDto>), StatusCodes.Status404NotFound)]

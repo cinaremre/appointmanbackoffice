@@ -31,26 +31,26 @@ namespace Rezervise.Application.Features.Businesses.Commands.CreateBusiness
         {
             try
             {
-                // 0. Isletme yalnizca kendisi veya yonetici adina olusturulabilir.
-                //    Sahip ID'si govdeden degil, JWT kimliginden dogrulanir.
+                // 0. İşletme yalnızca kendisi veya yönetici adına oluşturulabilir.
+                //    Sahip ID'si gövdeden değil, JWT kimliğinden doğrulanır.
                 if (!CallerAuthorization.CanActAsUser(_currentUser, request.OwnerId))
                     return Result<Guid>.Failure(
-                        Error.Unauthorized("Baska kullanici adina isletme olusturma yetkiniz yok."));
+                        Error.Unauthorized("Başka kullanıcı adına işletme oluşturma yetkiniz yok."));
 
-                // 1. Kullanici kontrolu
+                // 1. Kullanıcı kontrolü
                 var user = await _userRepository.GetByIdAsync(request.OwnerId, cancellationToken);
                 if (user is null)
-                    return Result<Guid>.Failure(Error.NotFound("Kullanici", request.OwnerId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Kullanıcı", request.OwnerId.ToString()));
 
-                // 2. Ayni isimde isletme var mi?
+                // 2. Aynı isimde işletme var mi?
                 var existingBusinesses = await _businessRepository.FindAsync(
                     b => b.Name == request.Name && !b.IsDeleted,
                     cancellationToken);
 
                 if (existingBusinesses.Any())
-                    return Result<Guid>.Failure(Error.Conflict("Bu isimde bir isletme zaten mevcut."));
+                    return Result<Guid>.Failure(Error.Conflict("Bu isimde bir işletme zaten mevcut."));
 
-                // 3. Domain entity olustur
+                // 3. Domain entity oluştur
                 var business = new Business(
                     request.Name,
                     request.BusinessType,
@@ -59,7 +59,7 @@ namespace Rezervise.Application.Features.Businesses.Commands.CreateBusiness
                     request.Email,
                     request.OwnerId);
 
-                // 4. Opsiyonel alanlari doldur
+                // 4. Opsiyonel alanları doldur
                 if (!string.IsNullOrEmpty(request.Description))
                     business.SetDescription(request.Description);
 
@@ -69,7 +69,7 @@ namespace Rezervise.Application.Features.Businesses.Commands.CreateBusiness
                 if (!string.IsNullOrEmpty(request.LogoUrl))
                     business.UpdateLogo(request.LogoUrl);
 
-                // 5. Veritabanina kaydet
+                // 5. Veritabanına kaydet
                 await _businessRepository.AddAsync(business, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -81,7 +81,7 @@ namespace Rezervise.Application.Features.Businesses.Commands.CreateBusiness
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Isletme olusturulurken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("İşletme oluşturulurken bir hata oluştu.", ex.Message));
             }
         }
     }

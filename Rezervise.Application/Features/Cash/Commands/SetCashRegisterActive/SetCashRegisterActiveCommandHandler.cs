@@ -31,20 +31,20 @@ namespace Rezervise.Application.Features.Cash.Commands.SetCashRegisterActive
         {
             try
             {
-                // 1. Kasa kontrolu
+                // 1. Kasa kontrolü
                 var register = await _cashRegisterRepository.GetByIdAsync(request.CashRegisterId, cancellationToken);
                 if (register is null)
                     return Result<Guid>.Failure(Error.NotFoundById("Kasa", request.CashRegisterId));
 
-                // 2. Yetki kontrolu: kasanin isletmesi uzerinden business.OwnerId esas alinir.
+                // 2. Yetki kontrolü: kasanın işletmesi üzerinden business.OwnerId esas alınır.
                 var business = await _businessRepository.GetByIdAsync(register.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFoundById("Isletme", register.BusinessId));
+                    return Result<Guid>.Failure(Error.NotFoundById("İşletme", register.BusinessId));
 
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Forbidden("Bu kasayi degistirme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu kasayı değiştirme yetkiniz yok."));
 
-                // 3. Toggle: hedef duruma gec (ayni durumdaysa dokunma).
+                // 3. Toggle: hedef duruma geç (aynı durumdaysa dokunma).
                 if (request.IsActive)
                     register.Reactivate();
                 else
@@ -57,7 +57,7 @@ namespace Rezervise.Application.Features.Cash.Commands.SetCashRegisterActive
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Kasa durumu degistirilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Kasa durumu değiştirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -13,42 +13,42 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
 
             RuleFor(x => x.UserId)
                 .NotEmpty()
-                .WithMessage("Kullanici ID bos olamaz.");
+                .WithMessage("Kullanıcı ID boş olamaz.");
 
             RuleFor(x => x.BusinessId)
                 .NotEmpty()
-                .WithMessage("Isletme ID bos olamaz.");
+                .WithMessage("İşletme ID boş olamaz.");
 
             RuleFor(x => x.ServiceId)
                 .NotEmpty()
-                .WithMessage("Hizmet ID bos olamaz.");
+                .WithMessage("Hizmet ID boş olamaz.");
 
             RuleFor(x => x.EmployeeId)
                 .NotEmpty()
-                .WithMessage("Calisan ID bos olamaz.");
+                .WithMessage("Çalışan ID boş olamaz.");
 
             RuleFor(x => x.AppointmentDate)
                 .NotEmpty()
-                .WithMessage("Randevu tarihi bos olamaz.");
+                .WithMessage("Randevu tarihi boş olamaz.");
 
             RuleFor(x => x.AppointmentDate)
                 .Must(BeInFuture)
-                .WithMessage("Randevu tarihi gecmis olamaz.");
+                .WithMessage("Randevu tarihi geçmiş olamaz.");
 
             RuleFor(x => x.AppointmentDate)
                 .Must(BeValidLocalHour)
-                .WithMessage("Randevu saati 06:00-23:59 arasinda olmalidir.");
+                .WithMessage("Randevu saati 06:00-23:59 arasında olmalıdır.");
 
             RuleFor(x => x.AppointmentDate)
                 .Must(BeMultipleOfFiveLocalMinutes)
-                .WithMessage("Randevu saati 5 dakikanin kati olmalidir.");
+                .WithMessage("Randevu saati 5 dakikanın katı olmalıdır.");
 
             RuleFor(x => x.Notes)
                 .MaximumLength(500)
                 .WithMessage("Notlar 500 karakterden uzun olamaz.");
         }
 
-        // Istek tarihi UTC anidir; mesai saatleri ise isletmenin yerel duvar saatidir.
+        // İstek tarihi UTC anıdır; mesai saatleri ise işletmenin yerel duvar saatidir.
         private bool BeInFuture(DateTime date) => date > _dateTimeService.UtcNow;
 
         private bool BeValidLocalHour(DateTime date)

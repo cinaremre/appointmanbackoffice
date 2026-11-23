@@ -8,12 +8,12 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Appointments.Commands.CancelAppointmentByAdmin
 {
     /// <summary>
-    /// Yonetici randevu iptali (dokuman Modul 12.2). Bu handler kendi iptal
-    /// algoritmasini yazmaz: randevuyu yukler, gerekceyi dogrular ve islemi
-    /// mevcut <see cref="CancelAppointmentCommand"/> ile IMediator uzerinden
-    /// gercek handler'a delege eder. Domain gecerli durum gecisi ve politika
-    /// kontrolleri boylece tek kaynaktan yurutulur. Domain iptali basarisizsa
-    /// ayni hata degismeden dondurulur; basari sonrasi denetim kaydi yazilir
+    /// Yönetici randevu iptali (doküman Modül 12.2). Bu handler kendi iptal
+    /// algorıtmasını yazmaz: randevuyu yükler, gerekçeyi doğrular ve işlemi
+    /// mevcut <see cref="CancelAppointmentCommand"/> ile IMediator üzerinden
+    /// gerçek handler'a delege eder. Domain geçerli durum geçişi ve politika
+    /// kontrolleri böylece tek kaynaktan yürütülür. Domain iptali başarısızsa
+    /// aynı hata değişmeden dondurulur; başarı sonrası denetim kaydı yazılır
     /// (Action=CancelAppointment).
     /// </summary>
     public class CancelAppointmentByAdminCommandHandler : IRequestHandler<CancelAppointmentByAdminCommand, Result<Guid>>
@@ -42,7 +42,7 @@ namespace Rezervise.Application.Features.Admin.Appointments.Commands.CancelAppoi
         {
             try
             {
-                // 1. Yonetici kimligi JWT'den cozulur; iptal yetkisi policy
+                // 1. Yönetici kimliği JWT'den çözülür; iptal yetkisi policy
                 //    seviyesinde (appointment.cancel) kontrol edilir.
                 if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
                     return Result<Guid>.Failure(Error.Unauthorized("Auth.Unauthorized"));
@@ -50,22 +50,22 @@ namespace Rezervise.Application.Features.Admin.Appointments.Commands.CancelAppoi
                 var actorId = _currentUser.UserId.Value;
                 var actorRole = _currentUser.Roles.FirstOrDefault() ?? "Unknown";
 
-                // 2. Gerekce zorunludur: denetim kaydi gerekcesiz yapilamaz.
+                // 2. Gerekçe zorunludur: denetim kaydı gerekçesiz yapılamaz.
                 var reason = request.Reason?.Trim();
                 if (string.IsNullOrEmpty(reason))
-                    return Result<Guid>.Failure(Error.Validation("Iptal gerekcesi zorunludur."));
+                    return Result<Guid>.Failure(Error.Validation("İptal gerekçesi zorunludur."));
 
-                // 3. Randevuyu onceden yukle: varlik kontrolu ve denetim kaydi
-                //    icin isletme kimligi buradan alinir.
+                // 3. Randevuyu önceden yükle: varlık kontrolü ve denetim kaydı
+                //    için işletme kimliği buradan alınır.
                 var appointment = await _appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken);
                 if (appointment is null)
                     return Result<Guid>.Failure(Error.NotFoundById("Randevu", request.AppointmentId));
 
                 var oldStatus = appointment.Status;
 
-                // 4. Domain iptali: mevcut CancelAppointmentCommand ile gercek
+                // 4. Domain iptali: mevcut CancelAppointmentCommand ile gerçek
                 //    handler'a delege edilir. State transition, politika ve
-                //    yetki kontrolleri tek kaynaktan yurutulur (dokuman 12.2).
+                //    yetki kontrolleri tek kaynaktan yürütülür (doküman 12.2).
                 var domainReason = string.IsNullOrWhiteSpace(request.CancellationReason)
                     ? reason
                     : request.CancellationReason.Trim();
@@ -80,13 +80,13 @@ namespace Rezervise.Application.Features.Admin.Appointments.Commands.CancelAppoi
                     },
                     cancellationToken);
 
-                // 5. Domain iptali basarisizsa ayni hatayi dondur; denetim kaydi
-                //    yazilmaz.
+                // 5. Domain iptali başarısızsa aynı hatayı döndür; denetim kaydı
+                //    yazılmaz.
                 if (cancelResult.IsFailure)
                     return cancelResult;
 
-                // 6. Basari sonrasi denetim kaydi: durum degisikligi old/new
-                //    degerleriyle kayda gecer.
+                // 6. Başarı sonrası denetim kaydı: durum değişikliği old/new
+                //    değerleriyle kayda geçer.
                 await _auditSink.RecordAsync(
                     actorId,
                     actorRole,
@@ -106,7 +106,7 @@ namespace Rezervise.Application.Features.Admin.Appointments.Commands.CancelAppoi
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(Error.Internal(
-                    "Randevu yonetici iptali sirasinda bir hata olustu.", ex.Message));
+                    "Randevu yönetici iptali sırasında bir hata oluştu.", ex.Message));
             }
         }
     }

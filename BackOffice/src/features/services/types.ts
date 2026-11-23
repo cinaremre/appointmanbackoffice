@@ -1,9 +1,9 @@
 /**
- * Servis tipleri (dokuman 11). Liste sunucu tarafinda sayfalanir;
- * toplu islemler dryRun + execute iki fazli calisir.
+ * Servis tipleri (doküman 11). Liste sunucu tarafında sayfalanır;
+ * toplu işlemler dryRun + execute iki fazlı çalışır.
  */
 
-/** GET /services liste ogeleri. */
+/** GET /services liste öğeleri. */
 export interface ServiceDto {
   id: string;
   businessId: string;
@@ -14,17 +14,17 @@ export interface ServiceDto {
   isActive: boolean;
 }
 
-/** PATCH /services/{id} govdesi (kismi guncelleme). */
+/** PATCH /services/{id} gövdesi (kısmi güncelleme). */
 export interface ServiceUpdateRequest {
   name?: string;
   price?: number;
   durationMinutes?: number;
 }
 
-/** Desteklenen toplu islem turleri. */
+/** Desteklenen toplu işlem türleri. */
 export type BulkOperationType = "DeactivateServices" | "ActivateServices" | "ChangeServiceCategory";
 
-/** POST /services/bulk-operations (dryRun: true) yaniti. */
+/** POST /services/bulk-operations (dryRun: true) yanıtı. */
 export interface BulkOperationPreviewDto {
   id: string;
   operationType: string;
@@ -34,7 +34,7 @@ export interface BulkOperationPreviewDto {
   invalidIds: string[];
 }
 
-/** POST /services/bulk-operations/{id}/execute yaniti. */
+/** POST /services/bulk-operations/{id}/execute yanıtı. */
 export interface BulkOperationResultDto {
   id: string;
   status: string;
@@ -43,7 +43,7 @@ export interface BulkOperationResultDto {
   errorReport?: string | null;
 }
 
-/** POST /services/bulk-operations govdesi. */
+/** POST /services/bulk-operations gövdesi. */
 export interface BulkOperationCreateRequest {
   operation: BulkOperationType;
   serviceIds: string[];

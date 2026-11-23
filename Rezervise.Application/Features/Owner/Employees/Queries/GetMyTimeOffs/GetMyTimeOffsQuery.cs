@@ -5,42 +5,42 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Employees.Queries.GetMyTimeOffs
 {
     /// <summary>
-    /// Isletme sahibinin kendi calisanlarinin izinleri. EmployeeTimeOff
-    /// entity'sinde BusinessId alani bulunmadigindan kapsam, isletmenin
-    /// calisanlari uzerinden kurulur.
+    /// İşletme sahibinin kendi çalışanlarının izinleri. EmployeeTimeOff
+    /// entity'sinde BusinessId alani bulunmadığından kapsam, işletmenin
+    /// çalışanları üzerinden kurulur.
     /// </summary>
     public class GetMyTimeOffsQuery : IRequest<Result<AdminPagedResult<OwnerTimeOffListItemDto>>>
     {
         public Guid BusinessId { get; set; }
 
-        /// <summary>Durum filtresi; bos ise tum izinler.</summary>
+        /// <summary>Durum filtresi; boş ise tüm izinler.</summary>
         public OwnerTimeOffStatus? Status { get; set; }
 
-        /// <summary>1 tabanli sayfa numarasi.</summary>
+        /// <summary>1 tabanlı sayfa numarası.</summary>
         public int Page { get; set; } = 1;
 
-        /// <summary>Sayfa boyutu; handler en fazla 200'e sinirlar.</summary>
+        /// <summary>Sayfa boyutu; handler en fazla 200'e sınırlar.</summary>
         public int PageSize { get; set; } = 50;
     }
 
     /// <summary>
-    /// Owner izin durum sayisal degerleri. Entity'de ayri durum alani
-    /// yoktur: onay bayragi ve soft-delete uzerinden turetilir
+    /// Owner izin durum sayısal değerleri. Entity'de ayrı durum alani
+    /// yoktur: onay bayrağı ve soft-delete üzerinden türetilir
     /// (Reject = soft delete).
     /// </summary>
     public enum OwnerTimeOffStatus
     {
-        /// <summary>Henuz karar verilmemis izin.</summary>
+        /// <summary>Henüz karar verilmemiş izin.</summary>
         Pending = 0,
 
-        /// <summary>Sahip tarafindan onaylanmis izin.</summary>
+        /// <summary>Sahip tarafından onaylanmış izin.</summary>
         Approved = 1,
 
-        /// <summary>Reddedilmis izin (soft-delete kaydi).</summary>
+        /// <summary>Reddedilmiş izin (soft-delete kaydı).</summary>
         Rejected = 2
     }
 
-    /// <summary>Owner izin liste satiri.</summary>
+    /// <summary>Owner izin liste satırı.</summary>
     public class OwnerTimeOffListItemDto
     {
         public Guid Id { get; init; }
@@ -51,7 +51,7 @@ namespace Rezervise.Application.Features.Owner.Employees.Queries.GetMyTimeOffs
 
         public DateTime EndDate { get; init; }
 
-        /// <summary>Durum sayisal deger olarak doner (OwnerTimeOffStatus).</summary>
+        /// <summary>Durum sayısal değer olarak döner (OwnerTimeOffStatus).</summary>
         public OwnerTimeOffStatus Status { get; init; }
 
         public string? Reason { get; init; }

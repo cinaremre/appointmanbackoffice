@@ -53,8 +53,8 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.HasIndex(x => x.BusinessId);
             builder.HasIndex(x => x.BlacklistedAt);
 
-            // Ayni kullanici ayni isletmede iki kez kara listede olamaz.
-            // Es zamanli iki ekleme denemesinde ikincisi DB tarafindan reddedilir.
+            // Aynı kullanıcı aynı işletmede iki kez kara listede olamaz.
+            // Es zamanlı iki ekleme denemesinde ikincisi DB tarafından reddedilir.
             builder.HasIndex(x => new { x.BusinessId, x.UserId })
                 .IsUnique()
                 .HasDatabaseName("UX_BlacklistEntries_BusinessId_UserId");

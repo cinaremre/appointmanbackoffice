@@ -31,16 +31,16 @@ namespace Rezervise.Application.Features.Consents.Queries.CanContact
         {
             try
             {
-                // 1. Isletme kontrolu.
+                // 1. İşletme kontrolü.
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<bool>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<bool>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki: gonderim karari isletme sahibi veya platform yoneticisine aittir.
+                // 2. Yetki: gönderim kararı işletme sahibi veya platform yöneticisine aittir.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<bool>.Failure(Error.Unauthorized("Bu isletmenin iletisim izinlerini sorgulama yetkiniz yok."));
+                    return Result<bool>.Failure(Error.Unauthorized("Bu işletmenin iletişim izinlerini sorgulama yetkiniz yok."));
 
-                // 3. Kanal tamamen kapali mi? Suppression amac fark etmeksizin gecerlidir.
+                // 3. Kanal tamamen kapalı mi? Suppression amaç fark etmeksizin geçerlidir.
                 var suppressed = await _suppressionRepository.ExistsAsync(
                     s => s.BusinessId == request.BusinessId
                         && s.CustomerId == request.CustomerId
@@ -51,7 +51,7 @@ namespace Rezervise.Application.Features.Consents.Queries.CanContact
                 if (suppressed)
                     return Result<bool>.Success(false);
 
-                // 4. Kayitli tercih varsa onu esas al.
+                // 4. Kayıtlı tercih varsa onu esas al.
                 var preference = (await _preferenceRepository.FindAsync(
                     p => p.BusinessId == request.BusinessId
                         && p.CustomerId == request.CustomerId
@@ -63,15 +63,15 @@ namespace Rezervise.Application.Features.Consents.Queries.CanContact
                 if (preference is not null)
                     return Result<bool>.Success(preference.IsAllowed);
 
-                // 5. Tercih yoksa amac bazli varsayilan (dokuman Modul 16):
-                //    islemsel mesajlar (randevu bildirimi vb.) onay varsayilir,
-                //    pazarlama mesajlari icin acik riza beklenir.
+                // 5. Tercih yoksa amaç bazlı varsayılan (doküman Modül 16):
+                //    işlemsel mesajlar (randevu bildirimi vb.) onay varsayılır,
+                //    pazarlama mesajları için açık rıza beklenir.
                 var isAllowedByDefault = request.Purpose == EnumConsentPurpose.Transactional;
                 return Result<bool>.Success(isAllowedByDefault);
             }
             catch (Exception ex)
             {
-                return Result<bool>.Failure(Error.Internal("Iletisim izni sorgulanirken bir hata olustu.", ex.Message));
+                return Result<bool>.Failure(Error.Internal("İletişim izni sorgulanırken bir hata oluştu.", ex.Message));
             }
         }
     }

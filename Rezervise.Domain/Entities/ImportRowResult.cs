@@ -4,24 +4,24 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Veri aktarim isindeki tek bir satirin islem sonucu.
+    /// Veri aktarım işindeki tek bir satırın işlem sonucu.
     /// SourceRecordKey, telefonun PhoneNumber value object ile
-    /// normalize edilmis degeridir; deterministik mukerrer kontrolu saglar.
-    /// Bu surumde satir bazinda musteri kaydi olusturulmaz (register akisina baglanacak).
+    /// normalize edilmiş değeridir; deterministik mükerrer kontrolü sağlar.
+    /// Bu sürümde satır bazında müşteri kaydı oluşturulmaz (register akışına bağlanacak).
     /// </summary>
     public class ImportRowResult : BaseEntity
     {
         public Guid ImportJobId { get; private set; }
 
-        /// <summary>CSV icindeki 1 tabanli satir numarasi.</summary>
+        /// <summary>CSV içindeki 1 tabanlı satır numarası.</summary>
         public int RowNumber { get; private set; }
 
-        /// <summary>Normalize edilmis telefon (deterministik eslestirme anahtari).</summary>
+        /// <summary>Normalize edilmiş telefon (deterministik eşleştirme anahtarı).</summary>
         public string? SourceRecordKey { get; private set; }
 
         public EnumImportRowStatus Status { get; private set; }
 
-        /// <summary>Failed durumunda hatanin kisa aciklamasi.</summary>
+        /// <summary>Failed durumunda hatanın kısa açıklaması.</summary>
         public string? ErrorDetails { get; private set; }
 
         private ImportRowResult() { }
@@ -34,13 +34,13 @@ namespace Rezervise.Domain.Entities
             string? errorDetails = null)
         {
             if (importJobId == Guid.Empty)
-                throw new ArgumentException("Aktarim isi ID bos olamaz.", nameof(importJobId));
+                throw new ArgumentException("Aktarım isi ID boş olamaz.", nameof(importJobId));
 
             if (rowNumber < 1)
-                throw new DomainException("ImportRow.RowNumberInvalid", "Satir numarasi 1'den kucuk olamaz.");
+                throw new DomainException("ImportRow.RowNumberInvalid", "Satır numarası 1'den küçük olamaz.");
 
             if (errorDetails != null && errorDetails.Length > 500)
-                throw new DomainException("ImportRow.ErrorTooLong", "Hata detayi en fazla 500 karakter olabilir.");
+                throw new DomainException("ImportRow.ErrorTooLong", "Hata detayı en fazla 500 karakter olabilir.");
 
             ImportJobId = importJobId;
             RowNumber = rowNumber;

@@ -28,10 +28,10 @@ namespace Rezervise.Domain.Entities
     : base(id)
         {
             if (employeeId == Guid.Empty)
-                throw new ArgumentException("Calisan ID bos olamaz.", nameof(employeeId));
+                throw new ArgumentException("Çalışan ID boş olamaz.", nameof(employeeId));
 
             if (startDate >= endDate)
-                throw new DomainException("Baslangic tarihi bitis tarihinden once olmalidir.");
+                throw new DomainException("Başlangıç tarihi bitiş tarihinden önce olmalıdır.");
 
             EmployeeId = employeeId;
             StartDate = startDate;
@@ -43,7 +43,7 @@ namespace Rezervise.Domain.Entities
         public void Approve(string approvedBy)
         {
             if (IsApproved)
-                throw new DomainException("Izin zaten onaylanmis.");
+                throw new DomainException("İzin zaten onaylanmış.");
 
             IsApproved = true;
             ApprovedBy = approvedBy;
@@ -53,7 +53,7 @@ namespace Rezervise.Domain.Entities
         public void Reject()
         {
             if (IsApproved)
-                throw new DomainException("Onaylanmis izin reddedilemez.");
+                throw new DomainException("Onaylanmış izin reddedilemez.");
 
             SoftDelete();
         }

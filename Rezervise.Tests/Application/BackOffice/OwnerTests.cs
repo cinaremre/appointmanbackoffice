@@ -287,7 +287,7 @@ public class OwnerTests
 
         Assert.True(result.IsFailure);
         Assert.Equal("FORBIDDEN", result.Error!.Code);
-        Assert.Equal("Bu isletme size ait degil.", result.Error.Message);
+        Assert.Equal("Bu işletme size ait değil.", result.Error.Message);
     }
 
     [Fact]

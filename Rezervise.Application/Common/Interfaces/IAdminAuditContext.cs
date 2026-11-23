@@ -1,15 +1,15 @@
 namespace Rezervise.Application.Common.Interfaces
 {
     /// <summary>
-    /// Backoffice istek baglamindan tasinan denetim bilgisi.
-    /// Handler'lar audit kaydina correlation ve adres bilgisini buradan alir.
+    /// Backoffice istek bağlamından taşınan denetim bilgisi.
+    /// Handler'lar audit kaydına correlation ve adres bilgisini buradan alır.
     /// </summary>
     public interface IAdminAuditContext
     {
-        /// <summary>Log korelasyon kimligi; yoksa bos metin.</summary>
+        /// <summary>Log korelasyon kimliği; yoksa boş metin.</summary>
         string CorrelationId { get; }
 
-        /// <summary>Istegi yapan istemci IP adresi; yoksa bos metin.</summary>
+        /// <summary>İsteği yapan istemci IP adresi; yoksa boş metin.</summary>
         string IpAddress { get; }
     }
 }

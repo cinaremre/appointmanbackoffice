@@ -19,7 +19,7 @@ namespace Rezervise.Api.Metrics
 
         /// <summary>
         /// Registers OpenTelemetry metrics with the Prometheus exporter.
-        /// Registration is fully guarded: a failure is reported once on standard error and the
+        /// Registration is fully guarded: a failure is reported önce on standard error and the
         /// application keeps running without metrics instead of failing to start.
         /// </summary>
         /// <param name="services">Target service collection.</param>

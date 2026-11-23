@@ -9,9 +9,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Businesses.Commands.SuspendBusinessByAdmin
 {
     /// <summary>
-    /// Isletme askiya alma handler'i (dokuman Modul 8). Durum degisikligi
-    /// Business.Suspend metoduyla yapilir; "Suspend" aksiyonu denetim
-    /// kaydina onceki durum bilgisiyle yazilir.
+    /// İşletme askıya alma handler'i (doküman Modül 8). Durum değişikliği
+    /// Business.Suspend metoduyla yapılır; "Suspend" aksiyonu denetim
+    /// kaydına önceki durum bilgisiyle yazılır.
     /// </summary>
     public class SuspendBusinessByAdminCommandHandler : IRequestHandler<SuspendBusinessByAdminCommand, Result<Guid>>
     {
@@ -39,35 +39,35 @@ namespace Rezervise.Application.Features.Admin.Businesses.Commands.SuspendBusine
         {
             try
             {
-                // 1. Gerekce zorunludur; denetim kaydini anlamsiz kilmamak icin
-                //    bos gonderim dogrulama hatasiyla reddedilir.
+                // 1. Gerekçe zorunludur; denetim kaydını anlamsız kılmamak için
+                //    boş gönderim doğrulama hatasıyla reddedilir.
                 if (string.IsNullOrWhiteSpace(request.Reason))
                     return Result<Guid>.Failure(
-                        Error.Validation("Askida alma gerekcesi (Reason) zorunludur."));
+                        Error.Validation("Askıda alma gerekçesi (Reason) zorunludur."));
 
-                // 2. Yonetici kimligi denetim kaydi icin zorunludur.
+                // 2. Yönetici kimliği denetim kaydı için zorunludur.
                 if (_currentUser.UserId is null)
                     return Result<Guid>.Failure(Error.Unauthorized());
 
-                // 3. Isletme kontrolu.
+                // 3. İşletme kontrolü.
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
 
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 4. Zaten askida olan isletme tekrar askiya alinamaz.
+                // 4. Zaten askıda olan işletme tekrar askıya alınamaz.
                 if (!business.IsActive)
-                    return Result<Guid>.Failure(Error.Conflict("Isletme zaten askida."));
+                    return Result<Guid>.Failure(Error.Conflict("İşletme zaten askıda."));
 
-                // 5. Onceki durum denetim kaydi icin yakalanir.
+                // 5. Önceki durum denetim kaydı için yakalanır.
                 var oldValues = JsonSerializer.Serialize(new { Status = "Active" });
 
-                // 6. Entity'nin kendi durum degisim akisi kullanilir.
+                // 6. Entity'nin kendi durum değişim akışı kullanılır.
                 business.Suspend(_currentUser.UserId.Value.ToString(), request.Reason);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // 7. Denetim kaydi: Action=Suspend, onceki durum bilgisiyle.
+                // 7. Denetim kaydı: Action=Suspend, önceki durum bilgisiyle.
                 await _auditSink.RecordAsync(
                     _currentUser.UserId.Value,
                     ResolveActorRole(),
@@ -91,13 +91,13 @@ namespace Rezervise.Application.Features.Admin.Businesses.Commands.SuspendBusine
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(
-                    Error.Internal("Isletme askiya alinirken bir hata olustu.", ex.Message));
+                    Error.Internal("İşletme askıya alınırken bir hata oluştu.", ex.Message));
             }
         }
 
         /// <summary>
-        /// Denetim kaydina yazilacak rol: bilinen ilk rol; roller cozulemiyorsa
-        /// geriye donuk uyumluluk icin "Admin" sabiti.
+        /// Denetim kaydına yazılacak rol: bilinen ilk rol; roller çözülemiyorsa
+        /// geriye dönük uyumluluk için "Admin" sabiti.
         /// </summary>
         private string ResolveActorRole()
             => _currentUser.Roles.FirstOrDefault() ?? "Admin";

@@ -32,16 +32,16 @@ namespace Rezervise.Application.Features.Tracking.Queries.GetTrackingLinkStats
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<List<TrackingLinkStatsDto>>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<List<TrackingLinkStatsDto>>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: olcum verisi isletme sahibine ozeldir.
+                // 2. Yetki kontrolü: ölçüm verişi işletme sahibine özeldir.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<List<TrackingLinkStatsDto>>.Failure(Error.Unauthorized("Bu isletmenin takip istatistiklerini goruntuleme yetkiniz yok."));
+                    return Result<List<TrackingLinkStatsDto>>.Failure(Error.Unauthorized("Bu işletmenin takip istatistiklerini görüntüleme yetkiniz yok."));
 
-                // 3. Linkler ve olaylar (olaylar link basinda gruplanacak)
+                // 3. Linkler ve olaylar (olaylar link başında gruplanacak)
                 var links = await _trackingLinkRepository.FindAsync(
                     l => l.BusinessId == request.BusinessId && !l.IsDeleted,
                     cancellationToken);
@@ -50,7 +50,7 @@ namespace Rezervise.Application.Features.Tracking.Queries.GetTrackingLinkStats
                     e => e.BusinessId == request.BusinessId && !e.IsDeleted,
                     cancellationToken);
 
-                // 4. Link basina toplula: acilis sayisi, benzersiz oturum, olay kirilimi.
+                // 4. Link basına toplula: açılış sayısı, benzersiz oturum, olay kırılımı.
                 var dtos = links
                     .OrderBy(l => l.CreatedAt)
                     .Select(l =>
@@ -83,7 +83,7 @@ namespace Rezervise.Application.Features.Tracking.Queries.GetTrackingLinkStats
             catch (Exception ex)
             {
                 return Result<List<TrackingLinkStatsDto>>.Failure(
-                    Error.Internal("Takip istatistikleri getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Takip istatistikleri getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

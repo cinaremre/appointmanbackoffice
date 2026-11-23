@@ -3,22 +3,22 @@ using System;
 namespace Rezervise.Domain.Exceptions
 {
     /// <summary>
-    /// Is kurali ihlali. Lokalize metin tasimaz; anahtar tasir ve metne cevirme
-    /// Api sinirinda (GlobalExceptionMiddleware) yapilir. Boylece Domain katmani
-    /// paketsiz ve lokalizasyon altyapisindan bagimsiz kalir.
+    /// İs kuralı ihlali. Lokalize metin taşımaz; anahtar taşır ve metne çevirme
+    /// Api sınırında (GlobalExceptionMiddleware) yapılır. Böylece Domain katmanı
+    /// paketsiz ve lokalizasyon altyapısından bağımsız kalır.
     /// </summary>
     public class DomainException : Exception
     {
         /// <summary>
-        /// Cozumlenecek lokalizasyon anahtari (orn. "Appointment.DateInPast").
-        /// Anahtar katalogda yoksa yedek metin veya anahtarin kendisi doner.
+        /// Çözümlenecek lokalizasyon anahtarı (orn. "Appointment.DateInPast").
+        /// Anahtar katalogda yoksa yedek metin veya anahtarın kendisi döner.
         /// </summary>
         public string Key { get; }
 
         /// <summary>
-        /// Yalnizca lokalizasyon anahtari ile istisna olusturur.
+        /// Yalnızca lokalizasyon anahtarı ile istisna oluşturur.
         /// </summary>
-        /// <param name="key">Lokalizasyon anahtari.</param>
+        /// <param name="key">Lokalizasyon anahtarı.</param>
         public DomainException(string key)
             : base(key)
         {
@@ -26,10 +26,10 @@ namespace Rezervise.Domain.Exceptions
         }
 
         /// <summary>
-        /// Anahtar ve yedek metin ile istisna olusturur.
+        /// Anahtar ve yedek metin ile istisna oluşturur.
         /// </summary>
-        /// <param name="key">Lokalizasyon anahtari.</param>
-        /// <param name="message">Anahtar cozulemezse kullanilacak yedek metin.</param>
+        /// <param name="key">Lokalizasyon anahtarı.</param>
+        /// <param name="message">Anahtar çözülemezse kullanılacak yedek metin.</param>
         public DomainException(string key, string message)
             : base(message)
         {
@@ -37,10 +37,10 @@ namespace Rezervise.Domain.Exceptions
         }
 
         /// <summary>
-        /// Anahtar ve ic istisna ile istisna olusturur.
+        /// Anahtar ve iç istisna ile istisna oluşturur.
         /// </summary>
-        /// <param name="key">Lokalizasyon anahtari.</param>
-        /// <param name="innerException">Asil istisna.</param>
+        /// <param name="key">Lokalizasyon anahtarı.</param>
+        /// <param name="innerException">Asıl istisna.</param>
         public DomainException(string key, Exception? innerException)
             : base(key, innerException)
         {
@@ -48,11 +48,11 @@ namespace Rezervise.Domain.Exceptions
         }
 
         /// <summary>
-        /// Anahtar, yedek metin ve ic istisna ile istisna olusturur.
+        /// Anahtar, yedek metin ve iç istisna ile istisna oluşturur.
         /// </summary>
-        /// <param name="key">Lokalizasyon anahtari.</param>
-        /// <param name="message">Anahtar cozulemezse kullanilacak yedek metin.</param>
-        /// <param name="innerException">Asil istisna.</param>
+        /// <param name="key">Lokalizasyon anahtarı.</param>
+        /// <param name="message">Anahtar çözülemezse kullanılacak yedek metin.</param>
+        /// <param name="innerException">Asıl istisna.</param>
         public DomainException(string key, string message, Exception? innerException)
             : base(message, innerException)
         {

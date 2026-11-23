@@ -60,7 +60,7 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
                 .HasForeignKey(x => x.SaleId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Bir odemenin kayitlari ters kayit baglantisiyla takip edilir.
+            // Bir ödemenin kayıtları ters kayıt bağlantısıyla takip edilir.
             builder.HasIndex(x => x.SaleId)
                 .HasDatabaseName("IX_Payments_SaleId");
             builder.HasIndex(x => x.BusinessId);

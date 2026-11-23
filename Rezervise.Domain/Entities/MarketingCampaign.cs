@@ -4,8 +4,8 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Pazarlama kampanyasi (Instagram, Meta Ads, Google Ads vb.).
-    /// Harcama ve randevu atfi kayitlari bu kampanyaya baglanir.
+    /// Pazarlama kampanyası (Instagram, Meta Ads, Google Ads vb.).
+    /// Harcama ve randevu atfi kayıtları bu kampanyaya bağlanır.
     /// </summary>
     public class MarketingCampaign : BaseEntity
     {
@@ -31,7 +31,7 @@ namespace Rezervise.Domain.Entities
             DateTime? endAt = null)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             BusinessId = businessId;
             SetName(name);
@@ -44,10 +44,10 @@ namespace Rezervise.Domain.Entities
         public void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new DomainException("Campaign.NameRequired", "Kampanya adi bos olamaz.");
+                throw new DomainException("Campaign.NameRequired", "Kampanya adı boş olamaz.");
 
             if (name.Length < 2 || name.Length > 100)
-                throw new DomainException("Campaign.NameLength", "Kampanya adi 2-100 karakter arasinda olmalidir.");
+                throw new DomainException("Campaign.NameLength", "Kampanya adı 2-100 karakter arasında olmalıdır.");
 
             Name = name.Trim();
             UpdatedAt = DateTime.UtcNow;
@@ -66,14 +66,14 @@ namespace Rezervise.Domain.Entities
         public void SetPeriod(DateTime? startAt, DateTime? endAt)
         {
             if (startAt.HasValue && endAt.HasValue && endAt.Value <= startAt.Value)
-                throw new DomainException("Campaign.PeriodInvalid", "Kampanya bitis tarihi baslangictan sonra olmalidir.");
+                throw new DomainException("Campaign.PeriodInvalid", "Kampanya bitiş tarihi başlangıçtan sonra olmalıdır.");
 
             StartAt = startAt;
             EndAt = endAt;
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Kampanyayi pasiflestirir; yeni harcama/atif almaz.</summary>
+        /// <summary>Kampanyayı pasifleştirir; yeni harcama/atıf almaz.</summary>
         public void Deactivate()
         {
             if (!IsActive)
@@ -83,7 +83,7 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Kampanyayi yeniden aktiflestirir.</summary>
+        /// <summary>Kampanyayı yeniden aktifleştirir.</summary>
         public void Activate()
         {
             if (IsActive)

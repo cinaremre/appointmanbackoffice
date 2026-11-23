@@ -1,9 +1,9 @@
 /**
- * Pazarlama modulu tipleri (dokuman Modul 15). Backend enum'lari sayi olarak
- * serilestirilir; sayisal degerler Domain enum'lariyla birebir eslesir.
+ * Pazarlama modülü tipleri (doküman Modül 15). Backend enum'ları sayı olarak
+ * serileştirilir; sayısal değerler Domain enum'larıyla birebir eşleşir.
  */
 
-/** EnumCampaignChannel: kampanyanin yurutuldugu kanal. */
+/** EnumCampaignChannel: kampanyanın yurutuldugu kanal. */
 export type CampaignChannel = 0 | 1 | 2 | 3 | 4 | 5;
 
 export const CAMPAIGN_CHANNEL_LABELS: Record<number, string> = {
@@ -15,7 +15,7 @@ export const CAMPAIGN_CHANNEL_LABELS: Record<number, string> = {
   5: "Diger",
 };
 
-/** Kampanya listesi ogesi (AdminCampaignDto). */
+/** Kampanya listesi öğesi (AdminCampaignDto). */
 export interface CampaignListItem {
   id: string;
   businessId: string;
@@ -26,14 +26,14 @@ export interface CampaignListItem {
   endAt?: string | null;
   isActive: boolean;
 
-  /** Kampanyaya yapilan toplam harcama tutari. */
+  /** Kampanyaya yapılan toplam harcama tutarı. */
   totalSpend: number;
 
-  /** Kampanyaya atfedilen randevu sayisi. */
+  /** Kampanyaya atfedilen randevu sayısı. */
   attributedAppointments: number;
 }
 
-/** Kampanya performans ozeti (AdminCampaignPerformanceDto). */
+/** Kampanya performans özeti (AdminCampaignPerformanceDto). */
 export interface CampaignPerformance {
   campaignId: string;
   businessId: string;
@@ -44,18 +44,18 @@ export interface CampaignPerformance {
   roasDesc: string;
 }
 
-/** EnumReengagementStatus: geri cagirma denemesinin durumu. */
+/** EnumReengagementStatus: geri çağırma denemesinin durumu. */
 export type ReengagementStatus = 0 | 1 | 2 | 3 | 4;
 
 export const REENGAGEMENT_STATUS_LABELS: Record<number, string> = {
   0: "Uygun",
   1: "Bildirim Gonderildi",
-  2: "Donustu",
+  2: "Dönüştü",
   3: "Engellendi",
   4: "Bekleme Suresinde",
 };
 
-/** Geri cagirma denemesi (AdminReengagementAttemptDto). */
+/** Geri çağırma denemesi (AdminReengagementAttemptDto). */
 export interface ReengagementAttempt {
   id: string;
   businessId: string;
@@ -68,16 +68,16 @@ export interface ReengagementAttempt {
   convertedAppointmentId?: string | null;
 }
 
-/** EnumRecoveredSlotStatus: iptal edilen randevudan aciga cikan slotun durumu. */
+/** EnumRecoveredSlotStatus: iptal edilen randevudan açığa çıkan slotun durumu. */
 export type RecoveredSlotStatus = 0 | 1 | 2;
 
 export const RECOVERED_SLOT_STATUS_LABELS: Record<number, string> = {
-  0: "Acik",
+  0: "Açık",
   1: "Yeniden Dolduruldu",
   2: "Kaybedildi",
 };
 
-/** Aciga cikan slot (AdminRecoveredSlotDto). */
+/** Açığa çıkan slot (AdminRecoveredSlotDto). */
 export interface RecoveredSlot {
   id: string;
   businessId: string;
@@ -88,13 +88,13 @@ export interface RecoveredSlot {
   status: number;
 }
 
-/** Kurtarilan kapasite raporu (AdminRecoveredSlotReportDto). */
+/** Kurtarılan kapasite raporu (AdminRecoveredSlotReportDto). */
 export interface RecoveredSlotReport {
   items: RecoveredSlot[];
   totalRebooked: number;
 }
 
-/** Bekleme listesi ozet sayilari (AdminWaitlistOverviewDto). */
+/** Bekleme listesi özet sayıları (AdminWaitlistOverviewDto). */
 export interface WaitlistOverview {
   businessId?: string | null;
   activeEntries: number;

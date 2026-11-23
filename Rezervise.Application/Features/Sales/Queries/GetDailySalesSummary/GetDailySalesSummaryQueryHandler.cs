@@ -39,21 +39,21 @@ namespace Rezervise.Application.Features.Sales.Queries.GetDailySalesSummary
         {
             try
             {
-                // 1. Isletme ve yetki kontrolu
+                // 1. İşletme ve yetki kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
                     return Result<DailySalesSummaryDto>.Failure(
-                        Error.NotFoundById("Isletme", request.BusinessId));
+                        Error.NotFoundById("İşletme", request.BusinessId));
 
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
                     return Result<DailySalesSummaryDto>.Failure(
-                        Error.Forbidden("Bu isletmenin gunluk ozetini goruntuleme yetkiniz yok."));
+                        Error.Forbidden("Bu işletmenin günlük özetini görüntüleme yetkiniz yok."));
 
-                // 2. UTC gun araligi
+                // 2. UTC gün aralığı
                 var dayStart = request.Date.Date;
                 var dayEnd = dayStart.AddDays(1);
 
-                // 3. Gunun tamamlanan satislari
+                // 3. Günün tamamlanan satışları
                 var sales = await _saleRepository.FindAsync(
                     s => s.BusinessId == request.BusinessId &&
                          !s.IsDeleted &&
@@ -61,7 +61,7 @@ namespace Rezervise.Application.Features.Sales.Queries.GetDailySalesSummary
                          s.Status == EnumSaleStatus.Completed,
                     cancellationToken);
 
-                // 4. Bu satislara bagli odemeler (net tahsilat icin)
+                // 4. Bu satışlara bağlı ödemeler (net tahsilat için)
                 var saleIds = sales.Select(s => s.Id).ToList();
 
                 var payments = saleIds.Count == 0
@@ -80,14 +80,14 @@ namespace Rezervise.Application.Features.Sales.Queries.GetDailySalesSummary
                     payments.Where(p => !p.IsRefund && p.PaymentMethod == EnumPaymentMethod.BankCard).Sum(p => p.Amount) -
                     payments.Where(p => p.IsRefund && p.PaymentMethod == EnumPaymentMethod.BankCard).Sum(p => p.Amount), 2);
 
-                // 5. Gunun giderleri
+                // 5. Günün giderleri
                 var expenses = await _expenseRepository.FindAsync(
                     e => e.BusinessId == request.BusinessId &&
                          !e.IsDeleted &&
                          e.ExpenseDate >= dayStart && e.ExpenseDate < dayEnd,
                     cancellationToken);
 
-                // 6. Bekleyen alacak: GrandTotal - odenen (yalnizca pozitif farklar)
+                // 6. Bekleyen alacak: GrandTotal - ödenen (yalnızca pozitif farklar)
                 var paidBySale = payments
                     .Where(p => !p.IsRefund)
                     .GroupBy(p => p.SaleId)
@@ -101,7 +101,7 @@ namespace Rezervise.Application.Features.Sales.Queries.GetDailySalesSummary
                         outstanding += sale.GrandTotal - paid;
                 }
 
-                // 7. Kasa acik mi?
+                // 7. Kasa açık mi?
                 var isCashOpen = await _cashSessionRepository.ExistsAsync(
                     s => s.BusinessId == request.BusinessId &&
                          s.Status == EnumCashSessionStatus.Open &&
@@ -126,7 +126,7 @@ namespace Rezervise.Application.Features.Sales.Queries.GetDailySalesSummary
             catch (Exception ex)
             {
                 return Result<DailySalesSummaryDto>.Failure(
-                    Error.Internal("Gunluk satis ozeti getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Günlük satış özeti getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

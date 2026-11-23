@@ -5,15 +5,15 @@ using MediatR;
 namespace Rezervise.Application.Features.Marketing.Queries.GetCampaignRoi
 {
     /// <summary>
-    /// Kampanya donem ozeti: toplam harcama, atfedilen randevu sayisi,
-    /// atfedilen gerceklesen randevu sayisi. Ilk surumde klasik ROAS
-    /// hesaplanmaz; detay DTO icindeki RoasDesc alaninda aciklanir.
+    /// Kampanya dönem özeti: toplam harcama, atfedilen randevu sayısı,
+    /// atfedilen gerçekleşen randevu sayısı. İlk sürümde klasik ROAS
+    /// hesaplanmaz; detay DTO içindeki RoasDesc alanında açıklanır.
     /// </summary>
     public class GetCampaignRoiQuery : IRequest<Result<CampaignRoiDto>>
     {
         public Guid CampaignId { get; set; }
 
-        /// <summary>Opsiyonel donem filtresi (harcama tarihi ve atif zamani).</summary>
+        /// <summary>Opsiyonel dönem filtresi (harcama tarihi ve atıf zamanı).</summary>
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
     }

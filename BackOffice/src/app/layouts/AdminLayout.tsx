@@ -38,7 +38,7 @@ interface MenuGroup {
   items: MenuItem[];
 }
 
-/** Admin menu (dokuman 6): ogeler permission'a gore gizlenir. */
+/** Admin menü (doküman 6): öğeler permission'a göre gizlenir. */
 const ADMIN_MENU: MenuGroup[] = [
   {
     title: "Genel",
@@ -47,12 +47,12 @@ const ADMIN_MENU: MenuGroup[] = [
     ],
   },
   {
-    title: "Yonetim",
+    title: "Yönetim",
     items: [
-      { label: "Isletmeler", path: "/businesses", permission: PERMISSIONS.businessRead, icon: <BusinessIcon /> },
+      { label: "İşletmeler", path: "/businesses", permission: PERMISSIONS.businessRead, icon: <BusinessIcon /> },
       { label: "Kategoriler", path: "/categories", permission: PERMISSIONS.categoryRead, icon: <CategoryIcon /> },
       { label: "Hizmetler", path: "/services", permission: PERMISSIONS.serviceRead, icon: <AppRegistrationIcon /> },
-      { label: "Kullanicilar", path: "/users", permission: PERMISSIONS.userRead, icon: <GroupIcon /> },
+      { label: "Kullanıcılar", path: "/users", permission: PERMISSIONS.userRead, icon: <GroupIcon /> },
       { label: "Randevular", path: "/appointments", permission: PERMISSIONS.appointmentRead, icon: <EventNoteIcon /> },
     ],
   },
@@ -69,21 +69,21 @@ const ADMIN_MENU: MenuGroup[] = [
     items: [
       { label: "Bildirimler", path: "/notifications", permission: PERMISSIONS.notificationRead, icon: <NotificationsActiveIcon /> },
       { label: "Pazarlama", path: "/marketing", permission: PERMISSIONS.marketingRead, icon: <CampaignIcon /> },
-      { label: "Isler", path: "/operations", permission: PERMISSIONS.operationsRead, icon: <AssessmentIcon /> },
+      { label: "İşler", path: "/operations", permission: PERMISSIONS.operationsRead, icon: <AssessmentIcon /> },
       { label: "Audit Log", path: "/audit", permission: PERMISSIONS.auditRead, icon: <HistoryIcon /> },
     ],
   },
 ];
 
-/** Isletme sahibi menu: yalnizca kendi isletmesi kapsami. */
+/** İşletme sahibi menü: yalnızca kendi işletmesi kapsamı. */
 const OWNER_MENU: MenuGroup[] = [
   {
-    title: "Isletmem",
+    title: "İşletmem",
     items: [
       { label: "Dashboard", path: "/owner", permission: OWNER_PERMISSIONS.dashboard, icon: <DashboardIcon /> },
-      { label: "Isletme Bilgileri", path: "/owner/business", permission: OWNER_PERMISSIONS.business, icon: <StorefrontIcon /> },
+      { label: "İşletme Bilgileri", path: "/owner/business", permission: OWNER_PERMISSIONS.business, icon: <StorefrontIcon /> },
       { label: "Hizmetler", path: "/owner/services", permission: OWNER_PERMISSIONS.services, icon: <AppRegistrationIcon /> },
-      { label: "Calisanlar", path: "/owner/employees", permission: OWNER_PERMISSIONS.employees, icon: <GroupIcon /> },
+      { label: "Çalışanlar", path: "/owner/employees", permission: OWNER_PERMISSIONS.employees, icon: <GroupIcon /> },
       { label: "Randevular", path: "/owner/appointments", permission: OWNER_PERMISSIONS.appointments, icon: <EventNoteIcon /> },
     ],
   },
@@ -103,10 +103,10 @@ export function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
-  // Mobil: cekmece gecici (temporary) — icerik uzerine biner.
+  // Mobil: çekmece geçici (temporary) — içerik üzerine biner.
   const is_mobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  // Mobilde yonlendirme sonrasi menu kendiliginden kapanir.
+  // Mobilde yönlendirme sonrası menü kendiliğinden kapanır.
   useEffect(() => {
     if (is_mobile) setOpen(false);
   }, [is_mobile, location.pathname]);
@@ -162,24 +162,24 @@ export function AdminLayout() {
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       <AppBar position="fixed" sx={{ zIndex: (t) => t.zIndex.drawer + 1 }}>
         <Toolbar>
-          <IconButton color="inherit" edge="start" onClick={() => setOpen(!open)} aria-label="menu ac/kapat">
+          <IconButton color="inherit" edge="start" onClick={() => setOpen(!open)} aria-label="menü aç/kapat">
             {open ? <ChevronLeftIcon /> : <MenuIcon />}
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontSize: { xs: "1rem", sm: "1.25rem" }, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            Rezervise {is_owner ? "Isletme Paneli" : "Backoffice"}
+            Rezervise {is_owner ? "İşletme Paneli" : "Backoffice"}
           </Typography>
           <AccessibilityNewIcon fontSize="small" sx={{ mr: 1, display: "none" }} />
           <Typography variant="body2" sx={{ mr: 2, display: { xs: "none", sm: "block" }, overflow: "hidden", textOverflow: "ellipsis", maxWidth: 260 }}>
             {auth?.email} ({auth?.role})
           </Typography>
-          <IconButton color="inherit" onClick={handle_logout} aria-label="cikis yap">
+          <IconButton color="inherit" onClick={handle_logout} aria-label="çıkış yap">
             <LogoutIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
 
       {is_mobile ? (
-        // Mobil: icerik uzerine binen gecici cekmece.
+        // Mobil: içerik üzerine binen geçici çekmece.
         <Drawer
           variant="temporary"
           open={open}
@@ -210,7 +210,7 @@ export function AdminLayout() {
         component="main"
         sx={{
           flexGrow: 1,
-          // Mobilde cekmece kalici olmadigindan bosluk yok; masaustunde acik cekmece kaydirir.
+          // Mobilde çekmece kalici olmadigindan boşluk yok; masaüstünde açık çekmece kaydırır.
           p: { xs: 1.5, sm: 2, md: 3 },
           ml: { md: open ? `${DRAWER_WIDTH}px` : 0 },
           width: { xs: "100%", md: "auto" },

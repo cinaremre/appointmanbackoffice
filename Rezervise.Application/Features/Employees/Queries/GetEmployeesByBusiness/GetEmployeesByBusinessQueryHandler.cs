@@ -28,7 +28,7 @@ namespace Rezervise.Application.Features.Employees.Queries.GetEmployeesByBusines
                     predicate = predicate.AndAlso(e => e.IsActive == request.IsActive.Value);
                 }
 
-                // Business navigasyonu yuklenmezse DTO'daki BusinessName her zaman null kalir.
+                // Business navigasyonu yüklenmezse DTO'daki BusinessName her zaman null kalır.
                 var employees = await _employeeRepository.FindWithIncludesAsync(
                     predicate,
                     new[] { nameof(Employee.Business) },
@@ -66,7 +66,7 @@ namespace Rezervise.Application.Features.Employees.Queries.GetEmployeesByBusines
             catch (Exception ex)
             {
                 return Result<List<EmployeeDto>>.Failure(
-                    Error.Internal("Calisanlar getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Çalışanlar getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

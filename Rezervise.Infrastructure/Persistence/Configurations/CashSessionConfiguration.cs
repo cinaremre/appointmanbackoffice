@@ -61,10 +61,10 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.HasIndex(x => x.BusinessId);
             builder.HasIndex(x => x.Status);
 
-            // Ayni kasada ayni anda tek acik oturum olabilir.
-            // Yalnizca acik (0) ve silinmemis satirlar filtreye girer;
-            // es zamanli iki acis denemesinde ikincisi unique index
-            // ihlali alir ve handler 409 Conflict doner.
+            // Aynı kasada aynı anda tek açık oturum olabilir.
+            // Yalnızca açık (0) ve silinmemiş satırlar filtreye girer;
+            // es zamanlı iki açış denemesinde ikincisi unique index
+            // ihlali alır ve handler 409 Conflict döner.
             builder.HasIndex(x => x.CashRegisterId)
                 .IsUnique()
                 .HasFilter("[Status] = 0 AND [IsDeleted] = 0")

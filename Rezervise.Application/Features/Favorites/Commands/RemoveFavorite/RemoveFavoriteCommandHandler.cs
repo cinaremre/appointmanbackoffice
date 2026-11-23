@@ -27,13 +27,13 @@ namespace Rezervise.Application.Features.Favorites.Commands.RemoveFavorite
         {
             try
             {
-                // 0. Favori yalnizca kendi sahibi tarafindan silinebilir.
-                //    Govde UserId'si yetki kaynagi degildir.
+                // 0. Favori yalnızca kendi sahibi tarafından silinebilir.
+                //    Gövde UserId'si yetki kaynağı değildir.
                 if (!_currentUser.IsAuthenticated ||
                     _currentUser.UserId is null ||
                     _currentUser.UserId.Value != request.UserId)
                     return Result<Guid>.Failure(
-                        Error.Unauthorized("Baska kullaniciya ait favoriyi silme yetkiniz yok."));
+                        Error.Unauthorized("Başka kullanıcıya ait favoriyi silme yetkiniz yok."));
 
                 // 1. Favoriyi bul
                 var favorites = await _favoriteRepository.FindAsync(
@@ -59,7 +59,7 @@ namespace Rezervise.Application.Features.Favorites.Commands.RemoveFavorite
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Favori silinirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Favori silinirken bir hata oluştu.", ex.Message));
             }
         }
     }

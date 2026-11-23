@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Kullanici favorileri ile ilgili islemleri yonetir.
+    /// Kullanıcı favorileri ile ilgili işlemleri yönetir.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -29,7 +29,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kullanici ID'si her zaman JWT'den cozulur; govde UserId degeri yetki kaynagi degildir.
+        /// Kullanıcı ID'si her zaman JWT'den çözülür; gövde UserId değeri yetki kaynağı değildir.
         /// </summary>
         private IActionResult? ResolveCurrentUserId(out Guid userId)
         {
@@ -44,11 +44,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kullanicinin favorilerini getirir.
+        /// Kullanıcının favorilerini getirir.
         /// </summary>
-        /// <param name="userId">Kullanici ID'si</param>
-        /// <param name="pageNumber">Sayfa numarasi (varsayilan: 1)</param>
-        /// <param name="pageSize">Sayfa boyutu (varsayilan: 10)</param>
+        /// <param name="userId">Kullanıcı ID'si</param>
+        /// <param name="pageNumber">Sayfa numarası (varsayılan: 1)</param>
+        /// <param name="pageSize">Sayfa boyutu (varsayılan: 10)</param>
         /// <returns>Favori listesi</returns>
         [HttpGet("user/{userId}")]
         [ProducesResponseType(typeof(Result<List<FavoriteDto>>), StatusCodes.Status200OK)]
@@ -58,7 +58,7 @@ namespace Rezervise.Api.Controllers
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetFavoritesByUserQuery
             {
                 UserId = userId,
@@ -66,10 +66,10 @@ namespace Rezervise.Api.Controllers
                 PageSize = pageSize
             };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -77,23 +77,23 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Bir isletmenin favori olup olmadigini kontrol eder.
+        /// Bir işletmenin favori olup olmadığını kontrol eder.
         /// </summary>
-        /// <param name="userId">Kullanici ID'si</param>
-        /// <param name="businessId">Isletme ID'si</param>
+        /// <param name="userId">Kullanıcı ID'si</param>
+        /// <param name="businessId">İşletme ID'si</param>
         /// <returns>Favori durumu (true/false)</returns>
         [HttpGet("check")]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Check([FromQuery] Guid userId, [FromQuery] Guid businessId)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new CheckFavoriteQuery { UserId = userId, BusinessId = businessId };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -104,22 +104,22 @@ namespace Rezervise.Api.Controllers
         /// Favoriye ekler.
         /// </summary>
         /// <param name="command">Favori bilgileri</param>
-        /// <returns>Olusturulan favorinin ID'si</returns>
+        /// <returns>Oluşturulan favorinin ID'si</returns>
         [HttpPost]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Add([FromBody] AddFavoriteCommand command)
         {
-            // 1. UserId JWT'den gelir; govde degerine guvenilmez.
+            // 1. UserId JWT'den gelir; gövde değerine güvenilmez.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
             command.UserId = userId;
 
-            // 2. Command'i mediator ile gonder
+            // 2. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -127,25 +127,25 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Favoriden cikarir.
+        /// Favoriden çıkarır.
         /// </summary>
-        /// <param name="command">Cikarma bilgileri</param>
+        /// <param name="command">Çıkarma bilgileri</param>
         /// <returns>Silinen favorinin ID'si</returns>
         [HttpDelete]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Remove([FromBody] RemoveFavoriteCommand command)
         {
-            // 1. UserId JWT'den gelir; govde degerine guvenilmez.
+            // 1. UserId JWT'den gelir; gövde değerine güvenilmez.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
             command.UserId = userId;
 
-            // 2. Command'i mediator ile gonder
+            // 2. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 

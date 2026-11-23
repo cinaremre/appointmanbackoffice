@@ -35,16 +35,16 @@ namespace Rezervise.Application.Features.Services.Commands.CreateService
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde OwnerId'si değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Unauthorized("Bu isletmeye hizmet ekleme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Unauthorized("Bu işletmeye hizmet ekleme yetkiniz yok."));
 
-                // 3. Kategori kontrolu
+                // 3. Kategori kontrolü
                 var serviceCategory = await _serviceCategoryRepository.GetByIdAsync(request.ServiceCategoryId, cancellationToken);
                 if (serviceCategory is null)
                     return Result<Guid>.Failure(Error.NotFound("Kategori", request.ServiceCategoryId.ToString()));
@@ -52,12 +52,12 @@ namespace Rezervise.Application.Features.Services.Commands.CreateService
                 if (!serviceCategory.IsLeaf())
                     return Result<Guid>.Failure(Error.BusinessRule("Hizmet sadece leaf kategoriye atanabilir."));
 
-                // 4. Kategori isletmede var mi?
+                // 4. Kategori işletmede var mi?
                 var rootCategory = serviceCategory.GetRootCategory();
                 if (rootCategory is not null && !business.HasServiceCategory(rootCategory.Id))
-                    return Result<Guid>.Failure(Error.BusinessRule("Bu kategori isletmeye ekli degil."));
+                    return Result<Guid>.Failure(Error.BusinessRule("Bu kategori işletmeye ekli değil."));
 
-                // 5. Ayni isimde hizmet var mi?
+                // 5. Aynı isimde hizmet var mi?
                 var existingServices = await _serviceRepository.FindAsync(
                     s => s.Name == request.Name && s.BusinessId == request.BusinessId && !s.IsDeleted,
                     cancellationToken);
@@ -65,7 +65,7 @@ namespace Rezervise.Application.Features.Services.Commands.CreateService
                 if (existingServices.Any())
                     return Result<Guid>.Failure(Error.Conflict("Bu isimde bir hizmet zaten mevcut."));
 
-                // 6. Hizmet olustur
+                // 6. Hizmet oluştur
                 var money = new Money(request.Price, request.Currency);
                 var service = new Service(
                     request.Name,
@@ -89,7 +89,7 @@ namespace Rezervise.Application.Features.Services.Commands.CreateService
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Hizmet olusturulurken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Hizmet oluşturulurken bir hata oluştu.", ex.Message));
             }
         }
     }

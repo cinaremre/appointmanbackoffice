@@ -5,8 +5,8 @@ import { useAuth } from "../providers/AuthContext";
 import type { OwnerPermission, Permission } from "../../shared/constants/permissions";
 
 /**
- * Route guard'lari (dokuman 7.2): oturum + permission kontrolu.
- * Yetkisiz erisimde 403 ekrani; oturumsuzda login'e yonlendirme.
+ * Route guard'ları (doküman 7.2): oturum + permission kontrolü.
+ * Yetkisiz erişimde 403 ekranı; oturumsuzda login'e yönlendirme.
  */
 
 export function RequireAuth({ children }: { children: ReactNode }) {
@@ -27,10 +27,10 @@ export function RequirePermission({ permission, children }: { permission: Permis
     return (
       <Box sx={{ py: 8, textAlign: "center" }}>
         <Typography variant="h6" gutterBottom>
-          Bu sayfaya erisim yetkiniz yok.
+          Bu sayfaya erişim yetkiniz yok.
         </Typography>
         <Typography color="text.secondary">
-          Gerekli izin: {permission}. Nihai yetki kontrolu sunucuda yapilir.
+          Gerekli izin: {permission}. Nihai yetki kontrolü sunucuda yapılır.
         </Typography>
       </Box>
     );

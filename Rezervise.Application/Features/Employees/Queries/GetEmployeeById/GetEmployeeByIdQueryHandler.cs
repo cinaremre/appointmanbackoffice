@@ -19,8 +19,8 @@ namespace Rezervise.Application.Features.Employees.Queries.GetEmployeeById
         {
             try
             {
-                // 1. Calisani ID'ye gore getir.
-                //    Business navigasyonu yuklenmezse DTO'daki BusinessName her zaman null kalir.
+                // 1. Çalışanı ID'ye göre getir.
+                //    Business navigasyonu yüklenmezse DTO'daki BusinessName her zaman null kalır.
                 var matches = await _employeeRepository.FindWithIncludesAsync(
                     e => e.Id == request.EmployeeId && !e.IsDeleted,
                     new[] { nameof(Employee.Business) },
@@ -28,11 +28,11 @@ namespace Rezervise.Application.Features.Employees.Queries.GetEmployeeById
 
                 var employee = matches.FirstOrDefault();
 
-                // 2. Calisan bulunamadiysa hata dondur
+                // 2. Çalışan bulunamadıysa hata döndür
                 if (employee is null)
-                    return Result<EmployeeDto>.Failure(Error.NotFound("Calisan", request.EmployeeId.ToString()));
+                    return Result<EmployeeDto>.Failure(Error.NotFound("Çalışan", request.EmployeeId.ToString()));
 
-                // 3. DTO'ya donustur
+                // 3. DTO'ya dönüştür
                 var dto = new EmployeeDto
                 {
                     Id = employee.Id,
@@ -57,7 +57,7 @@ namespace Rezervise.Application.Features.Employees.Queries.GetEmployeeById
             }
             catch (Exception ex)
             {
-                return Result<EmployeeDto>.Failure(Error.Internal("Calisan bilgileri getirilirken bir hata olustu.", ex.Message));
+                return Result<EmployeeDto>.Failure(Error.Internal("Çalışan bilgileri getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

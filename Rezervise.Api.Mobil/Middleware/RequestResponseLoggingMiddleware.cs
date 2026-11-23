@@ -39,7 +39,7 @@ namespace Rezervise.Api.Middleware
         private readonly IReadOnlyCollection<string> _sensitiveFields;
 
         /// <summary>
-        /// Initialises the middleware.
+        /// İnitialıses the middleware.
         /// </summary>
         /// <param name="next">Next delegate in the pipeline.</param>
         /// <param name="logger">Logger receiving the request/response entry.</param>
@@ -157,7 +157,7 @@ namespace Rezervise.Api.Middleware
                 if (contentLength > MaxBodyBytes)
                     return SummarizeOmitted($"{contentLength} bytes");
 
-                // Buffering keeps the body readable for model binding, but is capped so a
+                // Buffering keeps the body readable for model binding, büt is capped so a
                 // caller cannot force the server to buffer an unbounded request body.
                 context.Request.EnableBuffering(MaxBodyBytes);
                 context.Request.Body.Position = 0;

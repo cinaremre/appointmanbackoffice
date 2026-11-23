@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Isletme kategorileri ile ilgili islemleri yonetir.
+    /// İşletme kategorileri ile ilgili işlemleri yönetir.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -28,7 +28,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Tum kategorileri getirir.
+        /// Tüm kategorileri getirir.
         /// </summary>
         /// <param name="onlyActive">Sadece aktif kategoriler mi? (opsiyonel)</param>
         /// <returns>Kategori listesi</returns>
@@ -37,13 +37,13 @@ namespace Rezervise.Api.Controllers
         [ProducesResponseType(typeof(Result<List<BusinessCategoryDto>>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAll([FromQuery] bool? onlyActive = null)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetAllCategoriesQuery { OnlyActive = onlyActive };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -51,22 +51,22 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kategori detayini getirir.
+        /// Kategori detayını getirir.
         /// </summary>
         /// <param name="id">Kategori ID'si</param>
-        /// <returns>Kategori detayi</returns>
+        /// <returns>Kategori detayı</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Result<BusinessCategoryDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<BusinessCategoryDto>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(Guid id)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetCategoryByIdQuery { CategoryId = id };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -76,20 +76,20 @@ namespace Rezervise.Api.Controllers
         /// <summary>
         /// Bir kategorinin alt kategorilerini getirir.
         /// </summary>
-        /// <param name="id">Ust kategori ID'si</param>
+        /// <param name="id">Üst kategori ID'si</param>
         /// <returns>Alt kategori listesi</returns>
         [HttpGet("{id}/subcategories")]
         [ProducesResponseType(typeof(Result<List<BusinessCategoryDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<List<BusinessCategoryDto>>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetSubCategories(Guid id)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetSubCategoriesQuery { CategoryId = id };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -97,20 +97,20 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Yeni kategori olusturur. (Sadece Admin)
+        /// Yeni kategori oluşturur. (Sadece Admin)
         /// </summary>
         /// <param name="command">Kategori bilgileri</param>
-        /// <returns>Olusturulan kategorinin ID'si</returns>
+        /// <returns>Oluşturulan kategorinin ID'si</returns>
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicies.AdministratorOnly)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] CreateCategoryCommand command)
         {
-            // 1. Command'i mediator ile gonder
+            // 1. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -118,20 +118,20 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kategoriyi gunceller. (Sadece Admin)
+        /// Kategoriyi günceller. (Sadece Admin)
         /// </summary>
-        /// <param name="command">Guncelleme bilgileri</param>
-        /// <returns>Guncellenen kategorinin ID'si</returns>
+        /// <param name="command">Güncelleme bilgileri</param>
+        /// <returns>Güncellenen kategorinin ID'si</returns>
         [HttpPut]
         [Authorize(Policy = AuthorizationPolicies.AdministratorOnly)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update([FromBody] UpdateCategoryCommand command)
         {
-            // 1. Command'i mediator ile gonder
+            // 1. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -153,10 +153,10 @@ namespace Rezervise.Api.Controllers
             // 1. Command'e ID'yi ata
             command.CategoryId = id;
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 

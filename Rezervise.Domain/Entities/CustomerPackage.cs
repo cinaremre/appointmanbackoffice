@@ -4,9 +4,9 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Musterinin satin aldigi paket ornegi (dokuman Modul 5).
+    /// Müşterinin satın aldığı paket örneği (doküman Modül 5).
     /// Kalan hak entity'de TUTULMAZ; Reserve/Consume/Release hareketleri
-    /// (<see cref="PackageUsage"/>) uzerinden handler'da toplanarak hesaplanir.
+    /// (<see cref="PackageUsage"/>) üzerinden handler'da toplanarak hesaplanır.
     /// </summary>
     public class CustomerPackage : BaseEntity
     {
@@ -24,14 +24,14 @@ namespace Rezervise.Domain.Entities
         private CustomerPackage() { } // EF Core
 
         /// <summary>
-        /// Yeni paket satisi. Gecerlilik bitisi satin alma anindan
-        /// <paramref name="validityDays"/> gun sonra hesaplanir.
+        /// Yeni paket satışı. Geçerlilik bitişi satın alma anından
+        /// <paramref name="validityDays"/> gün sonra hesaplanır.
         /// </summary>
-        /// <param name="businessId">Isletme ID.</param>
-        /// <param name="customerId">Musteri (User) ID.</param>
-        /// <param name="servicePackageId">Satin alinan paket tanimi ID.</param>
-        /// <param name="validityDays">Paketin gecerlilik suresi (gun).</param>
-        /// <param name="now">Islem zamani (UTC).</param>
+        /// <param name="businessId">İşletme ID.</param>
+        /// <param name="customerId">Müşteri (User) ID.</param>
+        /// <param name="servicePackageId">Satın alınan paket tanımı ID.</param>
+        /// <param name="validityDays">Paketin geçerlilik süresi (gün).</param>
+        /// <param name="now">İşlem zamanı (UTC).</param>
         public CustomerPackage(
             Guid businessId,
             Guid customerId,
@@ -41,13 +41,13 @@ namespace Rezervise.Domain.Entities
             : base(Guid.NewGuid())
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (customerId == Guid.Empty)
-                throw new ArgumentException("Musteri ID bos olamaz.", nameof(customerId));
+                throw new ArgumentException("Müşteri ID boş olamaz.", nameof(customerId));
 
             if (servicePackageId == Guid.Empty)
-                throw new ArgumentException("Paket tanimi ID bos olamaz.", nameof(servicePackageId));
+                throw new ArgumentException("Paket tanımı ID boş olamaz.", nameof(servicePackageId));
 
             if (validityDays < 1)
                 throw new DomainException("CustomerPackage.ValidityDaysPositive");
@@ -64,8 +64,8 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Paket uzerinde hak kullanilabilir mi? Durum Active olmali ve
-        /// gecerlilik suresi henuz dolmamis olmali.
+        /// Paket üzerinde hak kullanılabilir mi? Durum Active olmalı ve
+        /// geçerlilik süresi henüz dolmamış olmalı.
         /// </summary>
         /// <param name="now">Referans UTC zaman.</param>
         public bool IsUsable(DateTime now)
@@ -74,8 +74,8 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Gecerlilik suresi dolmussa paketi Expired isaretler.
-        /// Henuz dolmamsa veya durum zaten Active degilse hicbir sey yapmaz.
+        /// Geçerlilik süresi dolmuşsa paketi Expired işaretler.
+        /// Henüz dolmamsa veya durum zaten Active değilse hiçbir şey yapmaz.
         /// </summary>
         /// <param name="now">Referans UTC zaman.</param>
         public void ExpireIfDue(DateTime now)
@@ -87,8 +87,8 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = now;
         }
 
-        /// <summary>Paketi iptal eder. Yalnizca Active paketler iptal edilebilir.</summary>
-        /// <param name="now">Islem zamani (UTC).</param>
+        /// <summary>Paketi iptal eder. Yalnızca Active paketler iptal edilebilir.</summary>
+        /// <param name="now">İşlem zamanı (UTC).</param>
         public void Cancel(DateTime now)
         {
             if (Status != EnumCustomerPackageStatus.Active)

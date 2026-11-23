@@ -4,9 +4,9 @@ using Rezervise.Application.Common.Interfaces;
 namespace Rezervise.BackOffice.Api.Middleware
 {
     /// <summary>
-    /// Backoffice istekleri icin denetim baglami ve korelasyon kimligi.
-    /// RFC 9457 uyumlu ProblemDetails uretir; ic hata detaylari istemciye
-    /// sizmaz (dokuman 7.3).
+    /// Backoffice istekleri için denetim bağlamı ve korelasyon kimliği.
+    /// RFC 9457 uyumlu ProblemDetails üretir; iç hata detayları istemciye
+    /// sızmaz (doküman 7.3).
     /// </summary>
     public sealed class BackOfficeExceptionMiddleware
     {
@@ -21,7 +21,7 @@ namespace Rezervise.BackOffice.Api.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // Denetim baglami: correlation + IP handler'lara akar.
+            // Denetim bağlamı: correlation + IP handler'lara akar.
             var correlationId = context.Request.Headers.TryGetValue("X-Correlation-ID", out var value)
                 ? value.ToString()
                 : Guid.NewGuid().ToString("N");
@@ -37,7 +37,7 @@ namespace Rezervise.BackOffice.Api.Middleware
             {
                 _logger.LogError(
                     ex,
-                    "Backoffice islenmemis hata. Path={Path} CorrelationId={CorrelationId}",
+                    "Backoffice işlenmemiş hata. Path={Path} CorrelationId={CorrelationId}",
                     context.Request.Path,
                     correlationId);
 
@@ -47,9 +47,9 @@ namespace Rezervise.BackOffice.Api.Middleware
                 var problem = new
                 {
                     type = "https://api.rezervise.com/problems/internal-error",
-                    title = "Islem tamamlanamadi.",
+                    title = "İşlem tamamlanamadı.",
                     status = 500,
-                    detail = "Istek islenirken beklenmeyen bir hata olustu. Destek icin correlationId'yi iletin.",
+                    detail = "İstek işlenirken beklenmeyen bir hata oluştu. Destek için correlationId'yi iletin.",
                     traceId = correlationId
                 };
 
@@ -59,8 +59,8 @@ namespace Rezervise.BackOffice.Api.Middleware
     }
 
     /// <summary>
-    /// HttpContext'ten denetim bilgisi okuyan baglam erisimcisi.
-    /// Program.cs tarafindan IAdminAuditContext olarak kaydedilir.
+    /// HttpContext'ten denetim bilgisi okuyan bağlam erişimcisi.
+    /// Program.cs tarafından IAdminAuditContext olarak kaydedilir.
     /// </summary>
     public sealed class AdminAuditContextAccessor : IAdminAuditContext
     {

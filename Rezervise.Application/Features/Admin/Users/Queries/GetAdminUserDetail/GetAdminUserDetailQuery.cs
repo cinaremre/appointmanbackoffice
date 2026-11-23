@@ -4,8 +4,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Users.Queries.GetAdminUserDetail
 {
     /// <summary>
-    /// Tek bir kullaniciyi isletme uyelikleri ve son giris bilgisiyle getirir
-    /// (dokuman Modul 11). Sifre/hash alanlari donmez.
+    /// Tek bir kullanıcıyı işletme üyelikleri ve son giriş bilgisiyle getirir
+    /// (doküman Modül 11). Şifre/hash alanları dönmez.
     /// </summary>
     public class GetAdminUserDetailQuery : IRequest<Result<AdminUserDetailDto>>
     {

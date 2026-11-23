@@ -4,7 +4,7 @@ import { AdminLayout } from "../layouts/AdminLayout";
 import { RequireAuth, RequirePermission } from "../guards/RouteGuards";
 import { PERMISSIONS, OWNER_PERMISSIONS } from "../../shared/constants/permissions";
 
-/** Lazy yuklenen feature modülleri (dokuman 26.1 code splitting). */
+/** Lazy yüklenen feature modülleri (doküman 26.1 code splitting). */
 const LoginPage = lazy(() => import("../../features/auth/pages/LoginPage").then((m) => ({ default: m.LoginPage })));
 const DashboardPage = lazy(() => import("../../features/dashboard/DashboardPage").then((m) => ({ default: m.DashboardPage })));
 const OwnerDashboardPage = lazy(() => import("../../features/owner/pages/OwnerDashboardPage").then((m) => ({ default: m.OwnerDashboardPage })));

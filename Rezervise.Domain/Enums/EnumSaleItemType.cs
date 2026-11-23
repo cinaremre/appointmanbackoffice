@@ -1,14 +1,14 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Satis satirindaki kalemin turu
+    /// Satış satırındaki kalemin turu
     /// </summary>
     public enum EnumSaleItemType
     {
         /// <summary>Hizmet kalemi</summary>
         Service = 0,
 
-        /// <summary>Urun kalemi</summary>
+        /// <summary>Ürün kalemi</summary>
         Product = 1
     }
 }

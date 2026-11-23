@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Randevu gecmisi ile ilgili islemleri yonetir.
+    /// Randevu geçmişi ile ilgili işlemleri yönetir.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -24,20 +24,20 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Belirli bir randevunun tum durum degisiklik gecmisini getirir.
+        /// Belirli bir randevunun tüm durum değişiklik geçmişini getirir.
         /// </summary>
-        /// <param name="appointmentId">Gecmisi getirilecek randevunun ID'si</param>
-        /// <returns>Randevu gecmis kayitlarinin listesi</returns>
+        /// <param name="appointmentId">Geçmişi getirilecek randevunun ID'si</param>
+        /// <returns>Randevu geçmiş kayıtlarının listesi</returns>
         [HttpGet("appointment/{appointmentId}")]
         [ProducesResponseType(typeof(Result<List<AppointmentHistoryDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<List<AppointmentHistoryDto>>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByAppointment(Guid appointmentId)
         {
-            // 1. Query'yi olustur ve mediator ile gonder
+            // 1. Query'yi oluştur ve mediator ile gönder
             var query = new GetAppointmentHistoryByAppointmentQuery { AppointmentId = appointmentId };
             var result = await _mediator.Send(query);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -45,14 +45,14 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Belirli bir isletmenin tum randevularinin durum degisiklik gecmisini getirir.
+        /// Belirli bir işletmenin tüm randevularının durum değişiklik geçmişini getirir.
         /// </summary>
-        /// <param name="businessId">Isletmenin ID'si</param>
-        /// <param name="startDate">Baslangic tarihi (opsiyonel)</param>
-        /// <param name="endDate">Bitis tarihi (opsiyonel)</param>
-        /// <param name="pageNumber">Sayfa numarasi (varsayilan: 1)</param>
-        /// <param name="pageSize">Sayfa boyutu (varsayilan: 10)</param>
-        /// <returns>Randevu gecmis kayitlarinin sayfalanmis listesi</returns>
+        /// <param name="businessId">İşletmenin ID'si</param>
+        /// <param name="startDate">Başlangıç tarihi (opsiyonel)</param>
+        /// <param name="endDate">Bitiş tarihi (opsiyonel)</param>
+        /// <param name="pageNumber">Sayfa numarası (varsayılan: 1)</param>
+        /// <param name="pageSize">Sayfa boyutu (varsayılan: 10)</param>
+        /// <returns>Randevu geçmiş kayıtlarının sayfalanmış listesi</returns>
         [HttpGet("business/{businessId}")]
         [Authorize(Roles = "BusinessOwner,Admin,SuperAdmin")]
         [ProducesResponseType(typeof(Result<List<AppointmentHistoryDto>>), StatusCodes.Status200OK)]
@@ -64,7 +64,7 @@ namespace Rezervise.Api.Controllers
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetAppointmentHistoryByBusinessQuery
             {
                 BusinessId = businessId,
@@ -74,10 +74,10 @@ namespace Rezervise.Api.Controllers
                 PageSize = pageSize
             };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 

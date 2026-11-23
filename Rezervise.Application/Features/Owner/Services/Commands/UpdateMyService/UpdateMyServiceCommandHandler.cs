@@ -10,9 +10,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Services.Commands.UpdateMyService
 {
     /// <summary>
-    /// Isletme sahibinin hizmet guncellemesi. Alan degisikligi Service
-    /// entity'nin SetName/UpdatePrice/SetDuration metotlariyla yapilir;
-    /// basari sonrasi denetim kaydina "OwnerUpdateService" yazilir.
+    /// İşletme sahibinin hizmet güncellemesi. Alan değişikliği Service
+    /// entity'nin SetName/UpdatePrice/SetDuration metotlarıyla yapılır;
+    /// başarı sonrası denetim kaydına "OwnerUpdateService" yazılır.
     /// </summary>
     public class UpdateMyServiceCommandHandler : IRequestHandler<UpdateMyServiceCommand, Result<Guid>>
     {
@@ -45,37 +45,37 @@ namespace Rezervise.Application.Features.Owner.Services.Commands.UpdateMyService
         {
             try
             {
-                // 1. En az bir alan gonderilmeli (PATCH semasi).
+                // 1. En az bir alan gönderilmeli (PATCH şeması).
                 var hasName = !string.IsNullOrWhiteSpace(request.Name);
                 var hasPrice = request.Price.HasValue;
                 var hasDuration = request.DurationMinutes.HasValue;
 
                 if (!hasName && !hasPrice && !hasDuration)
                     return Result<Guid>.Failure(
-                        Error.Validation("Guncellenecek en az bir alan (Name, Price veya DurationMinutes) gereklidir."));
+                        Error.Validation("Güncellenecek en az bir alan (Name, Price veya DurationMinutes) gereklidir."));
 
-                // 2. Isletme sahipligi: owner kapsaminin tek kapisi.
+                // 2. İşletme sahipliği: owner kapsamının tek kapısı.
                 var owned = await OwnerScope.FindOwnedBusinessAsync(
                     _businessRepository, _currentUser, request.BusinessId, cancellationToken);
 
                 if (owned.IsFailure)
                     return Result<Guid>.Failure(owned.Error!);
 
-                // 3. Hizmet kaydi ve isletme uyumlulugu: hizmet istenen
-                //    isletmeye ait olmali; sahiplik zaten isletmeden
-                //    gectigi icin bu kontrol yeterlidir.
+                // 3. Hizmet kaydı ve işletme uyumluluğu: hizmet istenen
+                //    işletmeye ait olmalı; sahiplik zaten işletmeden
+                //    geçtiği için bu kontrol yeterlidir.
                 var service = await _serviceRepository.GetByIdAsync(request.ServiceId, cancellationToken);
 
                 if (service is null)
                     return Result<Guid>.Failure(Error.NotFoundById("Hizmet", request.ServiceId));
 
                 if (service.BusinessId != request.BusinessId)
-                    return Result<Guid>.Failure(Error.Forbidden("Hizmet bu isletmeye ait degil."));
+                    return Result<Guid>.Failure(Error.Forbidden("Hizmet bu işletmeye ait değil."));
 
-                // 4. Onceki degerler denetim kaydi icin yakalanir.
+                // 4. Önceki değerler denetim kaydı için yakalanır.
                 var oldValues = $"{{\"name\":\"{service.Name}\",\"price\":{service.Price?.Amount},\"durationMinutes\":{service.DurationInMinutes}}}";
 
-                // 5. Entity'nin kendi guncelleme metotlari kullanilir.
+                // 5. Entity'nin kendi güncelleme metotları kullanılır.
                 if (hasName)
                     service.SetName(request.Name!.Trim());
 
@@ -89,7 +89,7 @@ namespace Rezervise.Application.Features.Owner.Services.Commands.UpdateMyService
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // 6. Denetim kaydi: actor JWT kimliginden cozulur.
+                // 6. Denetim kaydı: actor JWT kimliğinden çözülür.
                 var newValues = $"{{\"name\":\"{service.Name}\",\"price\":{service.Price?.Amount},\"durationMinutes\":{service.DurationInMinutes}}}";
 
                 await _auditSink.RecordAsync(
@@ -115,13 +115,13 @@ namespace Rezervise.Application.Features.Owner.Services.Commands.UpdateMyService
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(
-                    Error.Internal("Hizmet guncellenirken bir hata olustu.", ex.Message));
+                    Error.Internal("Hizmet güncellenirken bir hata oluştu.", ex.Message));
             }
         }
 
         /// <summary>
-        /// Denetim kaydina yazilacak rol: bilinen ilk rol; roller cozulemiyorsa
-        /// geriye donuk uyumluluk icin "BusinessOwner" sabiti.
+        /// Denetim kaydına yazılacak rol: bilinen ilk rol; roller çözülemiyorsa
+        /// geriye dönük uyumluluk için "BusinessOwner" sabiti.
         /// </summary>
         private string ResolveActorRole()
             => _currentUser.Roles.FirstOrDefault() ?? "BusinessOwner";

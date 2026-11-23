@@ -8,47 +8,47 @@ namespace Rezervise.Application.Features.Services.Commands.UpdateService
         {
             RuleFor(x => x.ServiceId)
                 .NotEmpty()
-                .WithMessage("Hizmet ID bos olamaz.");
+                .WithMessage("Hizmet ID boş olamaz.");
 
             RuleFor(x => x.BusinessId)
                 .NotEmpty()
-                .WithMessage("Isletme ID bos olamaz.");
+                .WithMessage("İşletme ID boş olamaz.");
 
             RuleFor(x => x.OwnerId)
                 .NotEmpty()
-                .WithMessage("Sahip ID bos olamaz.");
+                .WithMessage("Sahip ID boş olamaz.");
 
             RuleFor(x => x.Name)
                 .NotEmpty()
-                .WithMessage("Hizmet adi bos olamaz.")
+                .WithMessage("Hizmet adı boş olamaz.")
                 .MinimumLength(2)
-                .WithMessage("Hizmet adi en az 2 karakter olmalidir.")
+                .WithMessage("Hizmet adı en az 2 karakter olmalıdır.")
                 .MaximumLength(100)
-                .WithMessage("Hizmet adi en fazla 100 karakter olmalidir.");
+                .WithMessage("Hizmet adı en fazla 100 karakter olmalıdır.");
 
             RuleFor(x => x.Price)
                 .GreaterThan(0)
-                .WithMessage("Fiyat 0'dan buyuk olmalidir.");
+                .WithMessage("Fiyat 0'dan büyük olmalıdır.");
 
             RuleFor(x => x.Currency)
                 .NotEmpty()
-                .WithMessage("Para birimi bos olamaz.")
+                .WithMessage("Para birimi boş olamaz.")
                 .Length(3)
-                .WithMessage("Para birimi 3 karakter olmalidir.");
+                .WithMessage("Para birimi 3 karakter olmalıdır.");
 
             RuleFor(x => x.DurationInMinutes)
                 .InclusiveBetween(5, 480)
-                .WithMessage("Sure 5-480 dakika arasinda olmalidir.")
+                .WithMessage("Süre 5-480 dakika arasında olmalıdır.")
                 .Must(d => d % 5 == 0)
-                .WithMessage("Sure 5 dakikanin kati olmalidir.");
+                .WithMessage("Süre 5 dakikanın katı olmalıdır.");
 
             RuleFor(x => x.ServiceCategoryId)
                 .NotEmpty()
-                .WithMessage("Kategori ID bos olamaz.");
+                .WithMessage("Kategori ID boş olamaz.");
 
             RuleFor(x => x.Description)
                 .MaximumLength(500)
-                .WithMessage("Aciklama en fazla 500 karakter olmalidir.");
+                .WithMessage("Açıklama en fazla 500 karakter olmalıdır.");
         }
     }
 }

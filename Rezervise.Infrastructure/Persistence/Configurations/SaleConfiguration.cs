@@ -61,7 +61,7 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.HasIndex(x => x.CustomerId);
             builder.HasIndex(x => x.Status);
 
-            // Gunluk satis ozeti sorgusu (isletme + gun) icin birlesik index.
+            // Günlük satış özeti sorgusu (işletme + gün) için birleşik index.
             builder.HasIndex(x => new { x.BusinessId, x.SoldAt })
                 .HasDatabaseName("IX_Sales_BusinessId_SoldAt");
         }

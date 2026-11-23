@@ -23,15 +23,15 @@ import { StatusBadge } from "../../../shared/components/StatusBadge";
 import type { BusinessListFilters, BusinessListItem } from "../types";
 
 /**
- * ISLETME listesi (dokuman 9 / dokuman 22).
- * Sayfalama sunucudadir; status/search filtreleri URL query'de korunur,
- * boylece geri/ileri gezinme ve link paylasimi filtreleri korur.
+ * İŞLETME listesi (doküman 9 / doküman 22).
+ * Sayfalama sunucudadır; status/search filtreleri URL query'de korunur,
+ * böylece geri/ileri gezinme ve link paylaşımı filtreleri korur.
  */
 
 const STATUS_OPTIONS: Array<{ value: string; label: string }> = [
-  { value: "", label: "Tumu" },
+  { value: "", label: "Tümü" },
   { value: "Active", label: "Aktif" },
-  { value: "Suspended", label: "Askida" },
+  { value: "Suspended", label: "Askıda" },
 ];
 
 function formatDate(value: string): string {
@@ -42,7 +42,7 @@ function formatDate(value: string): string {
 const COLUMNS: Array<DataTableColumn<BusinessListItem>> = [
   {
     key: "name",
-    header: "Isletme Adi",
+    header: "İşletme Adı",
     render: (row) => (
       <RouterLink to={`/businesses/${row.id}`} style={{ color: "inherit", fontWeight: 600 }}>
         {row.name}
@@ -50,23 +50,23 @@ const COLUMNS: Array<DataTableColumn<BusinessListItem>> = [
     ),
   },
   { key: "status", header: "Durum", render: (row) => <StatusBadge status={row.status} /> },
-  { key: "cityId", header: "Sehir", render: (row) => row.cityId },
+  { key: "cityId", header: "Şehir", render: (row) => row.cityId },
   {
     key: "rating",
     header: "Puan",
     render: (row) =>
       Number.isFinite(row.rating)
-        ? `${row.rating.toFixed(1)} (${row.totalReviews} degerlendirme)`
-        : "Puanlanmadi",
+        ? `${row.rating.toFixed(1)} (${row.totalReviews} değerlendirme)`
+        : "Puanlanmadı",
   },
-  { key: "createdAt", header: "Kayit Tarihi", render: (row) => formatDate(row.createdAt) },
+  { key: "createdAt", header: "Kayıt Tarihi", render: (row) => formatDate(row.createdAt) },
 ];
 
 export function BusinessListPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Dokuman 22: filtreler URL'de yasamali; gecersiz/yok degerler "" olarak normalize edilir.
+  // Doküman 22: filtreler URL'de yaşamalı; geçersiz/yok değerler "" olarak normalize edilir.
   const filters = useMemo<BusinessListFilters>(
     () => ({
       status: searchParams.get("status") ?? "",
@@ -79,7 +79,7 @@ export function BusinessListPage() {
   const [pageSize, setPageSize] = useState(50);
   const [searchInput, setSearchInput] = useState(filters.search);
 
-  // Filtre degistiginde sayfa numarasi bastan baslar.
+  // Filtre degistiginde sayfa numarasi bastan başlar.
   const prevFiltersRef = useRef(filters);
   useEffect(() => {
     if (prevFiltersRef.current !== filters) {
@@ -88,7 +88,7 @@ export function BusinessListPage() {
     }
   }, [filters]);
 
-  // URL query'ye filtre yazar; bos deger parametreyi tamamen kaldirir.
+  // URL query'ye filtre yazar; boş değer parametreyi tamamen kaldırır.
   const patchParams = useCallback(
     (patch: Record<string, string>) => {
       const next = new URLSearchParams(searchParams);
@@ -101,7 +101,7 @@ export function BusinessListPage() {
     [searchParams, setSearchParams],
   );
 
-  // Arama kutusu: yazma durdugunda URL query'ye yazilir (debounce).
+  // Arama kutusu: yazma durdugunda URL query'ye yazılır (debounce).
   useEffect(() => {
     if (searchInput === filters.search) return;
     const timer = window.setTimeout(() => {
@@ -110,7 +110,7 @@ export function BusinessListPage() {
     return () => window.clearTimeout(timer);
   }, [searchInput, filters.search, patchParams]);
 
-  // URL baska bir yoldan degisirse (geri/ileri gezinme) kutu senkron kalir.
+  // URL başka bir yoldan değişirse (geri/ileri gezinme) kutu senkron kalır.
   useEffect(() => {
     setSearchInput(filters.search);
   }, [filters.search]);
@@ -143,7 +143,7 @@ export function BusinessListPage() {
   return (
     <Box>
       <PageHeader
-        title="Isletmeler"
+        title="İşletmeler"
         actions={
           query.data ? (
             <Typography variant="body2" color="text.secondary">
@@ -157,7 +157,7 @@ export function BusinessListPage() {
           <TextField
             size="small"
             fullWidth
-            label="Isletme ara (ad)"
+            label="İşletme ara (ad)"
             value={searchInput}
             onChange={(event) => setSearchInput(event.target.value)}
           />
@@ -182,7 +182,7 @@ export function BusinessListPage() {
         </Grid>
       </Grid>
       <DataTable<BusinessListItem>
-        ariaLabel="isletme listesi"
+        ariaLabel="işletme listesi"
         columns={COLUMNS}
         rows={query.data?.items}
         loading={query.isLoading}
@@ -193,7 +193,7 @@ export function BusinessListPage() {
         onPageChange={setPage}
         onPageSizeChange={setPageSize}
         onRefresh={() => void query.refetch()}
-        emptyLabel="Filtreye uygun isletme bulunamadi."
+        emptyLabel="Filtreye uygun işletme bulunamadı."
         rowActions={renderRowActions}
       />
     </Box>

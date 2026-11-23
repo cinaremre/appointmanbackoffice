@@ -5,8 +5,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Tracking.Queries.GetTrackingLinkStats
 {
     /// <summary>
-    /// Isletmenin takip linkleri icin olcum ozeti:
-    /// toplam acilis, benzersiz oturum sayisi ve olay tipi kirilimi.
+    /// İşletmenin takip linkleri için ölçüm özeti:
+    /// toplam açılış, benzersiz oturum sayısı ve olay tipi kırılımı.
     /// </summary>
     public class GetTrackingLinkStatsQuery : IRequest<Result<List<TrackingLinkStatsDto>>>
     {

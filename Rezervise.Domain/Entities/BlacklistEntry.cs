@@ -30,10 +30,10 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (userId == Guid.Empty)
-                throw new ArgumentException("Kullanici ID bos olamaz.", nameof(userId));
+                throw new ArgumentException("Kullanıcı ID boş olamaz.", nameof(userId));
 
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             UserId = userId;
             BusinessId = businessId;
@@ -47,10 +47,10 @@ namespace Rezervise.Domain.Entities
         public void Remove(string removedBy, string? reason = null)
         {
             if (IsDeleted)
-                throw new DomainException("Bu kayit zaten kara listeden cikarilmis.");
+                throw new DomainException("Bu kayıt zaten kara listeden çıkarılmış.");
 
             if (string.IsNullOrWhiteSpace(removedBy))
-                throw new DomainException("Cikaran kisi bos olamaz.");
+                throw new DomainException("Çıkaran kişi boş olamaz.");
 
             RemovedAt = DateTime.UtcNow;
             RemovedBy = removedBy;

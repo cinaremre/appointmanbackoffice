@@ -3,26 +3,26 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Musteri x hizmet bazinda ziyaret ozeti (dokuman Modul 13).
-    /// Geri cagirma aday hesabi bu kayitlar uzerinden yapilir.
+    /// Müşteri x hizmet bazında ziyaret özeti (doküman Modül 13).
+    /// Geri çağırma aday hesabı bu kayıtlar üzerinden yapılır.
     /// </summary>
     public class CustomerServiceHistory : BaseEntity
     {
         public Guid BusinessId { get; private set; }
 
-        /// <summary>Musterinin User ID'si.</summary>
+        /// <summary>Müşterinin User ID'si.</summary>
         public Guid CustomerId { get; private set; }
 
         public Guid ServiceId { get; private set; }
 
-        /// <summary>Son tamamlanan randevunun UTC ani.</summary>
+        /// <summary>Son tamamlanan randevunun UTC anı.</summary>
         public DateTime LastCompletedAt { get; private set; }
 
         public int VisitCount { get; private set; }
 
         /// <summary>
-        /// Tamamlanan ziyaretler arasindaki medyan gun araligi.
-        /// VisitCount &lt; 2 ise hesaplanamaz; null kalir.
+        /// Tamamlanan ziyaretler arasındaki medyan gün aralığı.
+        /// VisitCount &lt; 2 ise hesaplanamaz; null kalır.
         /// </summary>
         public int? MedianIntervalDays { get; private set; }
 
@@ -37,13 +37,13 @@ namespace Rezervise.Domain.Entities
             : base(Guid.NewGuid())
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (customerId == Guid.Empty)
-                throw new ArgumentException("Musteri ID bos olamaz.", nameof(customerId));
+                throw new ArgumentException("Müşteri ID boş olamaz.", nameof(customerId));
 
             if (serviceId == Guid.Empty)
-                throw new ArgumentException("Hizmet ID bos olamaz.", nameof(serviceId));
+                throw new ArgumentException("Hizmet ID boş olamaz.", nameof(serviceId));
 
             BusinessId = businessId;
             CustomerId = customerId;
@@ -52,11 +52,11 @@ namespace Rezervise.Domain.Entities
 
         /// <summary>
         /// Tamamlanan randevu tarihlerinden istatistikleri yeniden hesaplar.
-        /// Medyan aralik: sirali tarihlere komsu farklarin medyani;
-        /// ziyaret sayisi 2'den azsa medyan null'dir.
+        /// Medyan aralık: sıralı tarihlere komşu farkların medyanı;
+        /// ziyaret sayısı 2'den azsa medyan null'dir.
         /// </summary>
-        /// <param name="completedDates">Tamamlanan randevularin tarihleri (UTC).</param>
-        /// <param name="now">Referans UTC an; bos liste durumunda kullanilmaz.</param>
+        /// <param name="completedDates">Tamamlanan randevuların tarihleri (UTC).</param>
+        /// <param name="now">Referans UTC an; boş liste durumunda kullanılmaz.</param>
         public void RecalculateFrom(List<DateTime> completedDates, DateTime now)
         {
             if (completedDates is null)
@@ -71,8 +71,8 @@ namespace Rezervise.Domain.Entities
 
             if (dates.Count == 0)
             {
-                // Hic ziyaret yoksa gecmis bir an isaretle; aday listesinde
-                // IntervalDays kontrolu onu dogal olarak eler.
+                // Hiç ziyaret yoksa geçmiş bir an işaretle; aday listesinde
+                // IntervalDays kontrolü onu doğal olarak eler.
                 LastCompletedAt = DateTime.SpecifyKind(now, DateTimeKind.Utc);
                 MedianIntervalDays = null;
                 UpdatedAt = DateTime.UtcNow;

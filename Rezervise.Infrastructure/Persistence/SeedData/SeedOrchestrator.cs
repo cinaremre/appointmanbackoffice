@@ -7,17 +7,17 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
     public static class SeedOrchestrator
     {
         /// <summary>
-        /// Tum seed datalarini sirayla ekler.
-        /// Siralama foreign key bagimliliklarina gore yapilmistir.
+        /// Tüm seed datalarını sırayla ekler.
+        /// Sıralama foreign key bağımlılıklarına göre yapılmıştır.
         /// </summary>
         public static async Task SeedAllAsync(AppDbContext context, ILogger logger)
         {
-            logger.LogInformation("=== SEED ISLEMI BASLIYOR ===");
+            logger.LogInformation("=== SEED İŞLEMİ BAŞLIYOR ===");
 
-            // Coklu instance korumasi: uygulama ayni anda birden fazla instance ile
-            // acilirsa yalnizca bir tanesi seed eder. Kilit alinamazsa bu instance
-            // sessizce cikar; duplicate kayit veya PK ihlali olusmaz.
-            // @LockOwner='Session' kilidi baglanti kapandiginda otomatik birakir.
+            // Çoklu instance koruması: uygulama aynı anda birden fazla instance ile
+            // açılırsa yalnızca bir tanesi seed eder. Kilit alınamazsa bu instance
+            // sessizce çıkar; duplicate kayıt veya PK ihlali oluşmaz.
+            // @LockOwner='Session' kilidi bağlantı kapandığında otomatik bırakır.
             await context.Database.OpenConnectionAsync();
 
             await using var lockCommand = context.Database.GetDbConnection().CreateCommand();
@@ -32,7 +32,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
             if (lockResult < 0)
             {
                 logger.LogInformation(
-                    "Seed kilidi alinamadi (baska bir instance seed ediyor), atlaniyor.");
+                    "Seed kilidi alınamadı (başka bir instance seed ediyor), atlanıyor.");
                 return;
             }
 
@@ -40,46 +40,46 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
 
             try
             {
-                // 0. Konum verileri (il -> ilce). Isletme adresleri CityId/DistrictId
-                //    ile bu kayitlara bagli oldugu icin en once eklenmelidir.
+                // 0. Konum verileri (il -> ilçe). İşletme adresleri CityId/DistrictId
+                //    ile bu kayıtlara bağlı olduğu için en önce eklenmelidir.
                 await CitySeed.SeedAsync(context, logger);
                 await DistrictSeed.SeedAsync(context, logger);
                 await LocalitySeed.SeedAsync(context, logger);
                 await NeighborhoodSeed.SeedAsync(context, logger);
 
-                // 1. Kategoriler (bagimsiz)
+                // 1. Kategoriler (bağımsız)
                 await ServiceCategorySeed.SeedAsync(context, logger);
                 await BusinessCategorySeed.SeedAsync(context, logger);
 
-                // 2. Kullanicilar (isletme sahipleri icin gerekli)
+                // 2. Kullanıcılar (işletme sahipleri için gerekli)
                 await UserSeed.SeedAsync(context, logger);
 
-                // 3. Isletmeler (User + BusinessCategory gerektirir)
+                // 3. İşletmeler (User + BusinessCategory gerektirir)
                 await BusinessSeed.SeedAsync(context, logger);
 
-                // 4. Isletme-hizmet kategorileri (Business + ServiceCategory gerektirir)
+                // 4. İşletme-hizmet kategorileri (Business + ServiceCategory gerektirir)
                 await BusinessServiceCategorySeed.SeedAsync(context, logger);
 
-                // 5. Calisanlar (Business gerektirir)
+                // 5. Çalışanlar (Business gerektirir)
                 await EmployeeSeed.SeedAsync(context, logger);
 
                 // 6. Hizmetler (Business + ServiceCategory gerektirir)
                 await ServiceSeed.SeedAsync(context, logger);
 
-                // 7. Calisan-hizmet iliskileri (Employee + Service gerektirir)
+                // 7. Çalışan-hizmet ilişkileri (Employee + Service gerektirir)
                 await EmployeeServiceSeed.SeedAsync(context, logger);
 
-                // 8. Calisma saatleri (Business / Employee gerektirir)
+                // 8. Çalışma saatleri (Business / Employee gerektirir)
                 await WorkingHourSeed.SeedAsync(context, logger);
                 await EmployeeWorkingHourSeed.SeedAsync(context, logger);
 
-                // 9. Calisan izinleri (Employee gerektirir)
+                // 9. Çalışan izinleri (Employee gerektirir)
                 await EmployeeTimeOffSeed.SeedAsync(context, logger);
 
                 // 10. Randevular (User + Business + Service + Employee gerektirir)
                 await AppointmentSeed.SeedAsync(context, logger);
 
-                // 11. Randevu gecmisi (Appointment gerektirir)
+                // 11. Randevu geçmişi (Appointment gerektirir)
                 await AppointmentHistorySeed.SeedAsync(context, logger);
 
                 // 12. Yorumlar (User + Business + Appointment gerektirir)
@@ -93,30 +93,30 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
 
                 await transaction.CommitAsync();
 
-                logger.LogInformation("=== SEED ISLEMI TAMAMLANDI ===");
+                logger.LogInformation("=== SEED İŞLEMİ TAMAMLANDI ===");
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                logger.LogError(ex, "=== SEED ISLEMI BASARISIZ, GERI ALINDI ===");
+                logger.LogError(ex, "=== SEED İŞLEMİ BAŞARISIZ, GERİ ALINDI ===");
                 throw;
             }
         }
 
         /// <summary>
-        /// Tum verileri temizler (gelistirme/test ortami icin).
-        /// FK kontrolleri gecici devre disi birakilarak silinir.
+        /// Tüm verileri temizler (geliştirme/test ortamı için).
+        /// FK kontrolleri geçici devre dışı bırakılarak silinir.
         /// </summary>
         public static async Task ClearAllAsync(AppDbContext context, ILogger logger)
         {
-            logger.LogInformation("=== VERITABANI TEMIZLENIYOR ===");
+            logger.LogInformation("=== VERİTABANI TEMİZLENİYOR ===");
 
             await context.Database.ExecuteSqlRawAsync(
                 "EXEC sp_MSforeachtable 'ALTER TABLE ? NOCHECK CONSTRAINT ALL'");
 
             try
             {
-                // Child -> Parent sirasi
+                // Child -> Parent sırası
                 await context.AppointmentHistories.ExecuteDeleteAsync();
                 await context.Reviews.ExecuteDeleteAsync();
                 await context.Favorites.ExecuteDeleteAsync();
@@ -133,8 +133,8 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
                 await context.BusinessCategories.ExecuteDeleteAsync();
                 await context.ServiceCategoryTranslations.ExecuteDeleteAsync();
                 await context.ServiceCategories.ExecuteDeleteAsync();
-                // Konum verileri en son silinir: isletmeler CityId/DistrictId ile
-                // bu kayitlara bagli oldugu icin once alt tablolar temizlenmis olmali.
+                // Konum verileri en son silinir: işletmeler CityId/DistrictId ile
+                // bu kayıtlara bağlı olduğu için önce alt tablolar temizlenmiş olmalı.
                 await context.Neighborhoods.ExecuteDeleteAsync();
                 await context.Localities.ExecuteDeleteAsync();
                 await context.Districts.ExecuteDeleteAsync();
@@ -147,7 +147,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
                     "EXEC sp_MSforeachtable 'ALTER TABLE ? CHECK CONSTRAINT ALL'");
             }
 
-            logger.LogInformation("=== VERITABANI TEMIZLENDI ===");
+            logger.LogInformation("=== VERİTABANI TEMİZLENDİ ===");
         }
     }
 }

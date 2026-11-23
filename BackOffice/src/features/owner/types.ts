@@ -1,17 +1,17 @@
 /**
- * Owner portal tipleri ve etiket cozumleyicileri.
+ * Owner portal tipleri ve etiket çözümleyicileri.
  *
- * Kapsam: JWT kimliginden turetilen isletme. Alan adlari backend DTO'larinin
- * System.Text.Json camelCase karsiliklaridir:
- * - Dashboard kartlari: BusinessDashboardDto (Reporting/GetBusinessDashboard).
- * - Gunluk satis ozeti: DailySalesSummaryDto (Sales/GetDailySalesSummary).
- * Durum alanlari sayisal serilesir (0 tabanli enum); etiketler bu dosyada
- * cozumlenir, islem gecerliligi her zaman SUNUCUDA belirlenir.
+ * Kapsam: JWT kimliğinden türetilen işletme. Alan adları backend DTO'larının
+ * System.Text.Json camelCase karşılıklarıdır:
+ * - Dashboard kartları: BusinessDashboardDto (Reporting/GetBusinessDashboard).
+ * - Günlük satış özeti: DailySalesSummaryDto (Sales/GetDailySalesSummary).
+ * Durum alanları sayısal serileşir (0 tabanlı enum); etiketler bu dosyada
+ * çözümlenir, işlem geçerliliği her zaman SUNUCUDA belirlenir.
  */
 
-// === Isletme ===
+// === İşletme ===
 
-/** GET /owner/businesses liste ogesi. */
+/** GET /owner/businesses liste öğesi. */
 export interface OwnedBusinessListItem {
   id: string;
   name: string;
@@ -23,7 +23,7 @@ export interface OwnedBusinessListItem {
   createdAt: string;
 }
 
-/** GET /owner/businesses/{id} detayi: liste alanlari + ozet sayilari. */
+/** GET /owner/businesses/{id} detayı: liste alanları + özet sayıları. */
 export interface OwnedBusinessDetail extends OwnedBusinessListItem {
   activeServiceCount: number;
   employeeCount: number;
@@ -32,43 +32,43 @@ export interface OwnedBusinessDetail extends OwnedBusinessListItem {
 
 // === Dashboard (BusinessDashboardDto + DailySalesSummaryDto) ===
 
-/** Gunluk randevu kartlari; alan adlari backend DTO'suyla birebir. */
+/** Günlük randevu kartları; alan adları backend DTO'suyla birebir. */
 export interface OwnerDashboardDto {
   businessId: string;
   date: string;
-  /** Bugunku beklemede/onayli randevu sayisi. */
+  /** Bugünkü beklemede/onaylı randevu sayısı. */
   bugunkiRandevular: number;
-  /** Bugun tamamlanan randevu sayisi. */
+  /** Bugün tamamlanan randevu sayısı. */
   tamamlanan: number;
-  /** Bugun iptal edilen randevu sayisi. */
+  /** Bugün iptal edilen randevu sayısı. */
   iptaller: number;
-  /** Bugun gelmeyen (no-show) randevu sayisi. */
+  /** Bugün gelmeyen (no-show) randevu sayısı. */
   noShow: number;
-  /** 0-1 arasi doluluk orani (iki haneye yuvarlanir). */
+  /** 0-1 arası doluluk oranı (iki haneye yuvarlanir). */
   dolulukOrani: number;
 }
 
-/** Gunluk satis ozeti; tum tutarlar net degerdir (iadeler dusulur). */
+/** Günlük satış özeti; tüm tutarlar net değerdir (iadeler düşülür). */
 export interface DailySalesSummaryDto {
   date: string;
   businessId: string;
-  /** Tamamlanan satis sayisi. */
+  /** Tamamlanan satış sayısı. */
   salesCount: number;
-  /** Gunun satis toplami (GrandTotal). */
+  /** Günün satış toplamı (GrandTotal). */
   totalSales: number;
-  /** Net nakit tahsilat (iadeler dusulmus). */
+  /** Net nakit tahsilat (iadeler düşülmüş). */
   cashCollected: number;
-  /** Net kart tahsilat (iadeler dusulmus). */
+  /** Net kart tahsilat (iadeler düşülmüş). */
   cardCollected: number;
-  /** Gunun gider toplami. */
+  /** Günün gider toplamı. */
   totalExpenses: number;
-  /** Gunun satislarinda henuz odenmemis bakiye. */
+  /** Günün satışlarında henüz ödenmemiş bakiye. */
   outstandingReceivables: number;
-  /** Isletmede acik kasa oturumu var mi? */
+  /** İşletmede açık kasa oturumu var mı? */
   isCashOpen: boolean;
 }
 
-/** GET /owner/businesses/{id}/dashboard yanitinin govdesi. */
+/** GET /owner/businesses/{id}/dashboard yanıtının gövdesi. */
 export interface OwnerDashboardResponse {
   dashboard: OwnerDashboardDto;
   summary: DailySalesSummaryDto;
@@ -76,7 +76,7 @@ export interface OwnerDashboardResponse {
 
 // === Randevular ===
 
-/** GET /owner/businesses/{id}/appointments ogesi; status sayisaldir. */
+/** GET /owner/businesses/{id}/appointments öğesi; status sayısaldır. */
 export interface OwnerAppointmentListItem {
   id: string;
   userId: string;
@@ -90,7 +90,7 @@ export interface OwnerAppointmentListItem {
 
 // === Hizmetler ===
 
-/** GET /owner/businesses/{id}/services ogesi. */
+/** GET /owner/businesses/{id}/services öğesi. */
 export interface OwnerServiceListItem {
   id: string;
   name: string;
@@ -100,9 +100,9 @@ export interface OwnerServiceListItem {
   isActive: boolean;
 }
 
-// === Calisanlar ve izinler ===
+// === Çalışanlar ve izinler ===
 
-/** GET /owner/businesses/{id}/employees ogesi. */
+/** GET /owner/businesses/{id}/employees öğesi. */
 export interface OwnerEmployeeListItem {
   id: string;
   firstName: string;
@@ -111,7 +111,7 @@ export interface OwnerEmployeeListItem {
   isActive: boolean;
 }
 
-/** GET /owner/businesses/{id}/time-offs ogesi; status sayisaldir. */
+/** GET /owner/businesses/{id}/time-offs öğesi; status sayısaldır. */
 export interface OwnerTimeOffListItem {
   id: string;
   employeeId: string;
@@ -125,8 +125,8 @@ export interface OwnerTimeOffListItem {
 // === Finans ===
 
 /**
- * GET /owner/businesses/{id}/finance/sales ogesi. Owner satis ucu liste-only
- * sade DTO dondurur; toplam kolonu gerekiyorsa sonradan eklenir.
+ * GET /owner/businesses/{id}/finance/sales öğesi. Owner satış ucu liste-only
+ * sade DTO döndürür; toplam kolonu gerekiyorsa sonradan eklenir.
  */
 export interface OwnerSaleListItem {
   id: string;
@@ -137,7 +137,7 @@ export interface OwnerSaleListItem {
   status: number;
 }
 
-/** GET /owner/businesses/{id}/finance/payments ogesi. */
+/** GET /owner/businesses/{id}/finance/payments öğesi. */
 export interface OwnerPaymentListItem {
   id: string;
   saleId: string;
@@ -149,7 +149,7 @@ export interface OwnerPaymentListItem {
   isRefund: boolean;
 }
 
-/** GET /owner/businesses/{id}/finance/cash-sessions ogesi. */
+/** GET /owner/businesses/{id}/finance/cash-sessions öğesi. */
 export interface OwnerCashSessionListItem {
   id: string;
   openedAt: string;
@@ -157,7 +157,7 @@ export interface OwnerCashSessionListItem {
   closedAt?: string | null;
   expectedCash?: number | null;
   countedCash?: number | null;
-  /** Sayilan - beklenen nakit farki; acik oturumda null. */
+  /** Sayılan - beklenen nakit farkı; açık oturumda null. */
   difference?: number | null;
   /** EnumCashSessionStatus: 0=Open, 1=Closed. */
   status: number;
@@ -165,7 +165,7 @@ export interface OwnerCashSessionListItem {
 
 // === Stok ve paketler ===
 
-/** GET /owner/businesses/{id}/stock/products ogesi. */
+/** GET /owner/businesses/{id}/stock/products öğesi. */
 export interface OwnerProductListItem {
   id: string;
   sku: string;
@@ -173,15 +173,15 @@ export interface OwnerProductListItem {
   salePrice: number;
   minimumStock: number;
   isActive: boolean;
-  /** Guncel stok bakiyesi; minimum altina dustugunde vurgulanir. */
+  /** Guncel stok bakiyesi; minimum altına düştüğünde vurgulanır. */
   balance: number;
 }
 
-/** GET /owner/businesses/{id}/stock/movements ogesi. */
+/** GET /owner/businesses/{id}/stock/movements öğesi. */
 export interface OwnerStockMovementListItem {
   id: string;
   productId: string;
-  /** Hareket turu (sayisal); bilinmeyen deger ham gosterilir. */
+  /** Hareket türü (sayısal); bilinmeyen değer ham gösterilir. */
   movementType: number;
   quantity: number;
   unitCost: number;
@@ -189,7 +189,7 @@ export interface OwnerStockMovementListItem {
   occurredAt: string;
 }
 
-/** GET /owner/businesses/{id}/packages ogesi: musterinin aldig paket hakki. */
+/** GET /owner/businesses/{id}/packages öğesi: müşterinin aldığı paket hakkı. */
 export interface OwnerCustomerPackageListItem {
   id: string;
   customerId: string;
@@ -200,13 +200,13 @@ export interface OwnerCustomerPackageListItem {
   purchased: number;
   consumed: number;
   reserved: number;
-  /** Kalan kullanilabilir hak (purchased - consumed - reserved). */
+  /** Kalan kullanılabilir hak (purchased - consumed - reserved). */
   remaining: number;
 }
 
 // === Yorumlar ===
 
-/** GET /owner/businesses/{id}/reviews ogesi. */
+/** GET /owner/businesses/{id}/reviews öğesi. */
 export interface OwnerReviewListItem {
   id: string;
   customerId: string;
@@ -216,7 +216,7 @@ export interface OwnerReviewListItem {
   createdAt: string;
 }
 
-// === Durum etiketleri (sayisal enum karsiliklari) ===
+// === Durum etiketleri (sayısal enum karşılıkları) ===
 
 /** EnumAppointmentStatus: 0=Pending..4=NoShow (admin etiketleriyle uyumlu). */
 export const APPOINTMENT_STATUS_LABELS: Record<number, string> = {
@@ -227,7 +227,7 @@ export const APPOINTMENT_STATUS_LABELS: Record<number, string> = {
   4: "NoShow",
 };
 
-/** Randevu durumu filtre secenekleri (URL query degerleri string'dir). */
+/** Randevu durumu filtre seçenekleri (URL query değerleri string'dir). */
 export const APPOINTMENT_STATUS_OPTIONS: ReadonlyArray<{ value: string; label: string }> = [
   { value: "0", label: "Pending" },
   { value: "1", label: "Confirmed" },
@@ -236,29 +236,29 @@ export const APPOINTMENT_STATUS_OPTIONS: ReadonlyArray<{ value: string; label: s
   { value: "4", label: "NoShow" },
 ];
 
-/** Izin durumu: 0=Beklemede, 1=Onaylandi, 2=Reddedildi. */
+/** İzin durumu: 0=Beklemede, 1=Onaylandı, 2=Reddedildi. */
 export const TIME_OFF_STATUS_LABELS: Record<number, string> = {
   0: "Beklemede",
-  1: "Onaylandi",
+  1: "Onaylandı",
   2: "Reddedildi",
 };
 
 export const TIME_OFF_STATUS_OPTIONS: ReadonlyArray<{ value: string; label: string }> = [
-  { value: "", label: "Tumu" },
+  { value: "", label: "Tümü" },
   { value: "0", label: "Beklemede" },
-  { value: "1", label: "Onaylandi" },
+  { value: "1", label: "Onaylandı" },
   { value: "2", label: "Reddedildi" },
 ];
 
 /** EnumSaleStatus: 0=Pending, 1=Completed, 2=Cancelled, 3=Refunded. */
 export const SALE_STATUS_LABELS: Record<number, string> = {
   0: "Beklemede",
-  1: "Tamamlandi",
-  2: "Iptal",
-  3: "Iade",
+  1: "Tamamlandı",
+  2: "İptal",
+  3: "İade",
 };
 
-/** EnumPaymentMethod: 0=Cash..5=PackageCredit (kisa owner etiketleri). */
+/** EnumPaymentMethod: 0=Cash..5=PackageCredit (kısa owner etiketleri). */
 export const PAYMENT_METHOD_LABELS: Record<number, string> = {
   0: "Nakit",
   1: "Kart",
@@ -270,36 +270,36 @@ export const PAYMENT_METHOD_LABELS: Record<number, string> = {
 
 /** EnumCashSessionStatus: 0=Open, 1=Closed. */
 export const CASH_SESSION_STATUS_LABELS: Record<number, string> = {
-  0: "Acik",
-  1: "Kapali",
+  0: "Açık",
+  1: "Kapalı",
 };
 
 export const CASH_SESSION_STATUS_OPTIONS: ReadonlyArray<{ value: string; label: string }> = [
-  { value: "0", label: "Acik" },
-  { value: "1", label: "Kapali" },
+  { value: "0", label: "Açık" },
+  { value: "1", label: "Kapalı" },
 ];
 
 /**
- * Stok hareket turu (sayisal). Sunucu enum karsiligi sabitlenmediginden
- * bilinmeyen degerler ham gosterilir.
+ * Stok hareket türü (sayısal). Sunucu enum karşılığı sabitlenmediginden
+ * bilinmeyen değerler ham gösterilir.
  */
 export const STOCK_MOVEMENT_TYPE_LABELS: Record<number, string> = {
-  0: "Giris",
-  1: "Cikis",
+  0: "Giriş",
+  1: "Çıkış",
   2: "Duzeltme",
 };
 
 /**
- * Musteri paket durumu (sayisal). Sunucu enum karsiligi sabitlenmediginden
- * bilinmeyen degerler ham gosterilir.
+ * Müşteri paket durumu (sayısal). Sunucu enum karşılığı sabitlenmediginden
+ * bilinmeyen değerler ham gösterilir.
  */
 export const CUSTOMER_PACKAGE_STATUS_LABELS: Record<number, string> = {
   0: "Aktif",
   1: "Tukendi",
-  2: "Suresi Doldu",
+  2: "Süresi Doldu",
 };
 
-/** Sayisal enum → etiket; bilinmeyen deger ham gosterilir, eksikte "-". */
+/** Sayısal enum → etiket; bilinmeyen değer ham gösterilir, eksikte "-". */
 export function ownerLabelFor(
   raw: number | string | null | undefined,
   labels: Record<number, string>,
@@ -315,17 +315,17 @@ export function appointmentStatusLabel(raw: number | string | null | undefined):
   return ownerLabelFor(raw, APPOINTMENT_STATUS_LABELS);
 }
 
-/** Izin durumu etiketi (0-2). */
+/** İzin durumu etiketi (0-2). */
 export function timeOffStatusLabel(raw: number | string | null | undefined): string {
   return ownerLabelFor(raw, TIME_OFF_STATUS_LABELS);
 }
 
-/** Satis durumu etiketi (0-3). */
+/** Satış durumu etiketi (0-3). */
 export function saleStatusLabel(raw: number | string | null | undefined): string {
   return ownerLabelFor(raw, SALE_STATUS_LABELS);
 }
 
-/** Odeme yontemi etiketi (0-5). */
+/** Ödeme yöntemi etiketi (0-5). */
 export function paymentMethodLabel(raw: number | string | null | undefined): string {
   return ownerLabelFor(raw, PAYMENT_METHOD_LABELS);
 }
@@ -335,12 +335,12 @@ export function cashSessionStatusLabel(raw: number | string | null | undefined):
   return ownerLabelFor(raw, CASH_SESSION_STATUS_LABELS);
 }
 
-/** Stok hareket turu etiketi. */
+/** Stok hareket türü etiketi. */
 export function movementTypeLabel(raw: number | string | null | undefined): string {
   return ownerLabelFor(raw, STOCK_MOVEMENT_TYPE_LABELS);
 }
 
-/** Musteri paket durumu etiketi. */
+/** Müşteri paket durumu etiketi. */
 export function packageStatusLabel(raw: number | string | null | undefined): string {
   return ownerLabelFor(raw, CUSTOMER_PACKAGE_STATUS_LABELS);
 }
@@ -350,19 +350,19 @@ export function activeText(isActive: boolean): string {
   return isActive ? "Aktif" : "Pasif";
 }
 
-// === Bicimlendirme yardimcilari (owner kopyasi; finance modulunden import edilmez) ===
+// === Biçimlendirme yardımcıları (owner kopyası; finance modülünden import edilmez) ===
 
-/** Para bicimi: tr-TR binlik ayirici + TRY icin "TL" kisa adi. */
+/** Para biçimi: tr-TR binlik ayirici + TRY için "TL" kısa adı. */
 export function formatMoney(value: number, currency = "TRY"): string {
   return `${value.toLocaleString("tr-TR")} ${currency === "TRY" ? "TL" : currency}`;
 }
 
-/** Isaretli para bicimi: pozitif "+" oneki tasir, negatifte "-" zaten vardir. */
+/** Isaretli para biçimi: pozitif "+" öneki taşır, negatifte "-" zaten vardir. */
 export function formatSignedMoney(value: number, currency = "TRY"): string {
   return `${value > 0 ? "+" : ""}${formatMoney(value, currency)}`;
 }
 
-/** Kisa tarih+saat bicimi; gecersiz degerde ham metni dondurur. */
+/** Kısa tarih+saat biçimi; geçersiz degerde ham metni döndürür. */
 export function formatDateTime(iso?: string | null): string {
   if (!iso) return "-";
   const date = new Date(iso);
@@ -370,7 +370,7 @@ export function formatDateTime(iso?: string | null): string {
   return date.toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "short" });
 }
 
-/** Sade tarih bicimi; gecersiz degerde ham metni dondurur. */
+/** Sade tarih biçimi; geçersiz degerde ham metni döndürür. */
 export function formatDateOnly(iso?: string | null): string {
   if (!iso) return "-";
   const date = new Date(iso);
@@ -378,12 +378,12 @@ export function formatDateOnly(iso?: string | null): string {
   return date.toLocaleDateString("tr-TR");
 }
 
-/** Bugunun UTC ISO tarih kismi (date input baslangic degeri). */
+/** Bugunun UTC ISO tarih kısmi (date input başlangıç degeri). */
 export function todayIsoDate(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-/** GUID kisa gosterim; tam deger title ozelliginde tasir. */
+/** GUID kısa gösterim; tam değer title ozelliginde taşır. */
 export function shortId(value: string): string {
   return value.slice(0, 8);
 }

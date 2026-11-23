@@ -41,26 +41,26 @@ namespace Rezervise.Application.Features.Sales.Commands.RefundPayment
         {
             try
             {
-                // 1. Orijinal odemeyi bul
+                // 1. Orijinal ödemeyi bul
                 var payment = await _paymentRepository.GetByIdAsync(request.PaymentId, cancellationToken);
                 if (payment is null)
-                    return Result<Guid>.Failure(Error.NotFoundById("Odeme", request.PaymentId));
+                    return Result<Guid>.Failure(Error.NotFoundById("Ödeme", request.PaymentId));
 
-                // 2. Yetki kontrolu: odemenin isletmesi uzerinden business.OwnerId esas alinir.
+                // 2. Yetki kontrolü: ödemenin işletmesi üzerinden business.OwnerId esas alınır.
                 var business = await _businessRepository.GetByIdAsync(payment.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFoundById("Isletme", payment.BusinessId));
+                    return Result<Guid>.Failure(Error.NotFoundById("İşletme", payment.BusinessId));
 
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Forbidden("Bu isletme icin iade islemi yapma yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu işletme için iade işlemi yapma yetkiniz yok."));
 
-                // 3. Ters kayit ilkesi: iade kaydi tekrar iade edilemez.
+                // 3. Ters kayıt ilkesi: iade kaydı tekrar iade edilemez.
                 if (payment.IsRefund)
-                    return Result<Guid>.Failure(Error.BusinessRule("Iade kaydi tekrar iade edilemez."));
+                    return Result<Guid>.Failure(Error.BusinessRule("İade kaydı tekrar iade edilemez."));
 
-                // 4. Tutar dogrulama: kalan iade tutari asilamaz.
+                // 4. Tutar doğrulama: kalan iade tutarı aşılamaz.
                 if (request.Amount <= 0)
-                    return Result<Guid>.Failure(Error.Validation("Iade tutari sifirdan buyuk olmalidir."));
+                    return Result<Guid>.Failure(Error.Validation("İade tutarı sıfırdan büyük olmalıdır."));
 
                 var previousRefunds = await _paymentRepository.FindAsync(
                     p => p.RefersToPaymentId == payment.Id && !p.IsDeleted,
@@ -71,11 +71,11 @@ namespace Rezervise.Application.Features.Sales.Commands.RefundPayment
 
                 if (request.Amount > remaining)
                     return Result<Guid>.Failure(Error.Validation(
-                        "Iade tutari orijinal odemenin kalan iade tutarini gecemez.",
-                        $"Kalan iade tutari: {remaining}"));
+                        "İade tutarı orijinal ödemenin kalan iade tutarını geçemez.",
+                        $"Kalan iade tutarı: {remaining}"));
 
-                // 5. Nakit iadeler icin acik kasa oturumu zorunludur; iade hem
-                //    ters odeme kaydi hem de kasaya CashOut hareketi olarak yazilir.
+                // 5. Nakit iadeler için açık kasa oturumu zorunludur; iade hem
+                //    ters ödeme kaydı hem de kasaya CashOut hareketi olarak yazılır.
                 var now = _dateTimeService.UtcNow;
                 Guid? cashSessionId = null;
 
@@ -91,18 +91,18 @@ namespace Rezervise.Application.Features.Sales.Commands.RefundPayment
 
                     if (openSession is null)
                         return Result<Guid>.Failure(Error.Conflict(
-                            "Nakit iade icin acik kasa oturumu bulunamadi."));
+                            "Nakit iade için açık kasa oturumu bulunamadı."));
 
                     cashSessionId = openSession.Id;
                 }
 
-                // 6. Ters kaydi olustur (negatif tutar yerine IsRefund bayrakli kayit)
+                // 6. Ters kaydı oluştur (negatif tutar yerine IsRefund bayraklı kayıt)
                 var refundPayment = Payment.CreateRefund(payment, request.Amount, now, cashSessionId);
                 await _paymentRepository.AddAsync(refundPayment, cancellationToken);
 
-                // 7. Nakit ise kasadan cikis hareketi yaz. ReferenceId dolu oldugu
-                //    icin gun sonu hesabinda manuel cikislara degil iade odemesine
-                //    bagli olarak sayilir (cifte sayim onlenir).
+                // 7. Nakit ise kasadan çıkış hareketi yaz. ReferenceId dolu öldüğü
+                //    için gün sonu hesabında manuel çıkışlara değil iade ödemesine
+                //    bağlı olarak sayılır (çifte sayım önlenir).
                 if (payment.PaymentMethod == EnumPaymentMethod.Cash && cashSessionId.HasValue)
                 {
                     var movement = new CashMovement(
@@ -117,7 +117,7 @@ namespace Rezervise.Application.Features.Sales.Commands.RefundPayment
                     await _cashMovementRepository.AddAsync(movement, cancellationToken);
                 }
 
-                // 8. Odemenin tamami iade edildiyse orijinal kaydi isaretle.
+                // 8. Ödemenin tamamı iade edildiyse orijinal kaydı işaretle.
                 if (alreadyRefunded + request.Amount >= payment.Amount)
                     payment.MarkRefunded(now);
 
@@ -131,7 +131,7 @@ namespace Rezervise.Application.Features.Sales.Commands.RefundPayment
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Iade islemi sirasinda bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("İade işlemi sırasında bir hata oluştu.", ex.Message));
             }
         }
     }

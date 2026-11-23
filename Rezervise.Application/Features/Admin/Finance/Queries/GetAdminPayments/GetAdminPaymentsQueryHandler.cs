@@ -31,8 +31,8 @@ namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminPayments
                 var toDate = request.ToDate;
                 var isRefund = request.IsRefund;
 
-                // 1. Filtre: isletme, odeme yontemi, tarih araligi ve
-                //    iade/normal ayrimi (null = hepsi).
+                // 1. Filtre: işletme, ödeme yöntemi, tarih aralığı ve
+                //    iade/normal ayrımı (null = hepsi).
                 var payments = await _paymentRepository.FindAsync(
                     p => !p.IsDeleted
                         && (businessId == null || p.BusinessId == businessId)
@@ -75,7 +75,7 @@ namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminPayments
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<AdminPaymentDto>>.Failure(
-                    Error.Internal("Odeme listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Ödeme listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

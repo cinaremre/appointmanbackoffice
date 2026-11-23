@@ -165,8 +165,8 @@ namespace Rezervise.Domain.ValueObjects
 
         public override int GetHashCode()
         {
-            // HashCode.Combine en fazla 8 arguman aldigi icin
-            // alan sayisi arttiginda HashCode ornegi kullanilir.
+            // HashCode.Combine en fazla 8 argüman aldığı için
+            // alan sayısı arttığında HashCode örneği kullanılır.
             var hash = new HashCode();
             hash.Add(CityId);
             hash.Add(DistrictId);

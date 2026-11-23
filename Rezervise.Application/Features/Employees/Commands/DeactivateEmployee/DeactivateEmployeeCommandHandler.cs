@@ -31,23 +31,23 @@ namespace Rezervise.Application.Features.Employees.Commands.DeactivateEmployee
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde OwnerId'si değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Unauthorized("Bu calisani pasif etme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Unauthorized("Bu çalışanı pasif etme yetkiniz yok."));
 
-                // 3. Calisan kontrolu
+                // 3. Çalışan kontrolü
                 var employee = await _employeeRepository.GetByIdAsync(request.EmployeeId, cancellationToken);
                 if (employee is null)
-                    return Result<Guid>.Failure(Error.NotFound("Calisan", request.EmployeeId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Çalışan", request.EmployeeId.ToString()));
 
-                // 4. Calisan isletmeye ait mi?
+                // 4. Çalışan işletmeye ait mi?
                 if (employee.BusinessId != request.BusinessId)
-                    return Result<Guid>.Failure(Error.BusinessRule("Calisan bu isletmeye ait degil."));
+                    return Result<Guid>.Failure(Error.BusinessRule("Çalışan bu işletmeye ait değil."));
 
                 // 5. Pasif et
                 employee.Deactivate(request.Reason);
@@ -63,7 +63,7 @@ namespace Rezervise.Application.Features.Employees.Commands.DeactivateEmployee
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Calisan pasif edilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Çalışan pasif edilirken bir hata oluştu.", ex.Message));
             }
         }
     }

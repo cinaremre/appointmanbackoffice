@@ -4,17 +4,17 @@ using MediatR;
 namespace Rezervise.Application.Features.Appointments.Commands.MarkAppointmentNoShow
 {
     /// <summary>
-    /// Randevuyu "gelmedi" (no-show) olarak isaretler.
+    /// Randevuyu "gelmedi" (no-show) olarak işaretler.
     /// </summary>
     public class MarkAppointmentNoShowCommand : IRequest<Result<Guid>>
     {
-        /// <summary>Isaretlenecek randevu kimligi.</summary>
+        /// <summary>İşaretlenecek randevu kimliği.</summary>
         public Guid AppointmentId { get; set; }
 
-        /// <summary>Istegi yapan kullanici (JWT'den yazilir).</summary>
+        /// <summary>İsteği yapan kullanıcı (JWT'den yazılır).</summary>
         public Guid UserId { get; set; }
 
-        /// <summary>Islemi yapan kullanici etiketi (gecmis kaydinda gorunur).</summary>
+        /// <summary>İşlemi yapan kullanıcı etiketi (geçmiş kaydında görünür).</summary>
         public string? ChangedBy { get; set; }
     }
 }

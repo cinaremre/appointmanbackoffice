@@ -10,10 +10,10 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Employees.Queries.GetMyTimeOffs
 {
     /// <summary>
-    /// Isletme sahibinin izin listesi. EmployeeTimeOff entity'sinde
-    /// BusinessId bulunmadigindan kapsam soyle kurulur: once isletmenin
-    /// calisanlari yuklenir, sonra bu calisanlarin izinleri listelenir.
-    /// Durum, onay bayragi ve soft-delete uzerinden turetilir.
+    /// İşletme sahibinin izin listesi. EmployeeTimeOff entity'sinde
+    /// BusinessId bulunmadığından kapsam söyle kurulur: önce işletmenin
+    /// çalışanları yüklenir, sonra bu çalışanların izinleri listelenir.
+    /// Durum, onay bayrağı ve soft-delete üzerinden türetilir.
     /// </summary>
     public class GetMyTimeOffsQueryHandler
         : IRequestHandler<GetMyTimeOffsQuery, Result<AdminPagedResult<OwnerTimeOffListItemDto>>>
@@ -41,20 +41,20 @@ namespace Rezervise.Application.Features.Owner.Employees.Queries.GetMyTimeOffs
         {
             try
             {
-                // 1. Sahiplik: isletme JWT sahibine ait olmali.
+                // 1. Sahiplik: işletme JWT sahibine ait olmalı.
                 var owned = await OwnerScope.FindOwnedBusinessAsync(
                     _businessRepository, _currentUser, request.BusinessId, cancellationToken);
 
                 if (owned.IsFailure)
                     return Result<AdminPagedResult<OwnerTimeOffListItemDto>>.Failure(owned.Error!);
 
-                // 2. Sayfalama kurallari.
+                // 2. Sayfalama kuralları.
                 var page = AdminPaging.NormalizePage(request.Page);
                 var pageSize = AdminPaging.ClampPageSize(request.PageSize);
 
-                // 3. Kapsam: isletmenin silinmemis calisanlarinin ID'leri.
-                //    EmployeeTimeOff BusinessId tasimadigindan bu join
-                //    bellek icinde kurulur (ilk surum).
+                // 3. Kapsam: işletmenin silinmemiş çalışanlarının ID'leri.
+                //    EmployeeTimeOff BusinessId taşımadığından bu join
+                //    bellek içinde kurulur (ilk sürüm).
                 var employees = await _employeeRepository.FindAsync(
                     e => e.BusinessId == request.BusinessId && !e.IsDeleted,
                     cancellationToken);
@@ -65,19 +65,19 @@ namespace Rezervise.Application.Features.Owner.Employees.Queries.GetMyTimeOffs
                     return Result<AdminPagedResult<OwnerTimeOffListItemDto>>.Success(
                         new AdminPagedResult<OwnerTimeOffListItemDto>());
 
-                // 4. Bu calisanlarin izinleri (reddedilenler dahil: soft-delete
-                //    kayitlari "Rejected" durumunda listelenir).
+                // 4. Bu çalışanların izinleri (reddedilenler dahil: soft-delete
+                //    kayıtları "Rejected" durumunda listelenir).
                 var timeOffs = await _timeOffRepository.FindAsync(
                     t => employeeIds.Contains(t.EmployeeId),
                     cancellationToken);
 
-                // 5. Durum turetme ve opsiyonel durum filtresi.
+                // 5. Durum türetme ve opsiyonel durum filtresi.
                 var projected = timeOffs
                     .Select(t => new { TimeOff = t, Status = ResolveStatus(t) })
                     .Where(x => request.Status == null || x.Status == request.Status)
                     .ToList();
 
-                // 6. Kararli siralama: en yeni baslangic once.
+                // 6. Kararlı sıralama: en yeni başlangıç önce.
                 var ordered = projected
                     .OrderByDescending(x => x.TimeOff.StartDate)
                     .ThenBy(x => x.TimeOff.Id)
@@ -109,13 +109,13 @@ namespace Rezervise.Application.Features.Owner.Employees.Queries.GetMyTimeOffs
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<OwnerTimeOffListItemDto>>.Failure(
-                    Error.Internal("Izin listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("İzin listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
 
         /// <summary>
-        /// Durum turetme: soft-delete edilmis kayit Rejected, onayli kayit
-        /// Approved, digerleri Pending'tir.
+        /// Durum türetme: soft-delete edilmiş kayıt Rejected, onaylı kayıt
+        /// Approved, diğerleri Pending'tir.
         /// </summary>
         private static OwnerTimeOffStatus ResolveStatus(EmployeeTimeOff timeOff)
         {

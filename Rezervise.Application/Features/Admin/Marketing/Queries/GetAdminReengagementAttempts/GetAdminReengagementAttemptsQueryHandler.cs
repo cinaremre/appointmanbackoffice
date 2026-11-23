@@ -6,9 +6,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminReengagementAttempts
 {
     /// <summary>
-    /// Geri cagirma denemelerini filtreler ve tetiklenme zamanina gore tersten
-    /// siralar. Liste sorgusu oldugu icin sayfalama uygulanmaz; donusum takibi
-    /// icin rapor kullanimina uygun boyutta tutulur.
+    /// Geri çağırma denemelerini filtreler ve tetiklenme zamanına göre tersten
+    /// sıralar. Liste sorgusu öldüğü için sayfalama uygulanmaz; dönüşüm takibi
+    /// için rapor kullanımına uygun boyutta tutulur.
     /// </summary>
     public class GetAdminReengagementAttemptsQueryHandler
         : IRequestHandler<GetAdminReengagementAttemptsQuery, Result<AdminReengagementAttemptListDto>>
@@ -61,7 +61,7 @@ namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminReengag
             catch (Exception ex)
             {
                 return Result<AdminReengagementAttemptListDto>.Failure(
-                    Error.Internal("Geri cagirma denemeleri getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Geri çağırma denemeleri getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

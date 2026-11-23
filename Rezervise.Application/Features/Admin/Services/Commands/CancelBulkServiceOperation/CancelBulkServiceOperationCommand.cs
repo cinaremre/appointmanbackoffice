@@ -5,8 +5,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Services.Commands.CancelBulkServiceOperation
 {
     /// <summary>
-    /// Pending/Validating/AwaitingApproval durumundaki toplu islemi iptal eder
-    /// (dokuman Modul 10). Running ve sonrasi durumlar Conflict doner.
+    /// Pending/Validating/AwaitingApproval durumundaki toplu işlemi iptal eder
+    /// (doküman Modül 10). Running ve sonrası durumlar Conflict döner.
     /// </summary>
     public class CancelBulkServiceOperationCommand : IRequest<Result<CancelledBulkOperationDto>>
     {

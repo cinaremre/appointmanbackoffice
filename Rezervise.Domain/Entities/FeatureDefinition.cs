@@ -3,14 +3,14 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Platformda tanimli bir ucretli/entitlement ozelligi (dokuman Modul 14).
-    /// Kodu benzersizdir; plan ve override kayitlari bu tanima baglanir.
+    /// Platformda tanımlı bir ücretli/entitlement özelliği (doküman Modül 14).
+    /// Kodu benzersizdir; plan ve override kayıtları bu tanıma bağlanır.
     /// </summary>
     public class FeatureDefinition : BaseEntity
     {
         /// <summary>
-        /// Ozelligin benzersiz kodu (orn. "WHATSAPP_REMINDER").
-        /// Uygulama kodu FeatureCodes sabitlerini kullanir.
+        /// Özelliğin benzersiz kodu (orn. "WHATSAPP_REMINDER").
+        /// Uygulama kodu FeatureCodes sabitlerini kullanır.
         /// </summary>
         public string Code { get; private set; }
 
@@ -18,7 +18,7 @@ namespace Rezervise.Domain.Entities
 
         public string? Description { get; private set; }
 
-        /// <summary>Devre disi ozellik hicbir kaynaktan acik donmez.</summary>
+        /// <summary>Devre dışı özellik hiçbir kaynaktan açık dönmez.</summary>
         public bool IsActive { get; private set; }
 
         private FeatureDefinition() { } // EF Core
@@ -40,12 +40,12 @@ namespace Rezervise.Domain.Entities
         public void SetCode(string code)
         {
             if (string.IsNullOrWhiteSpace(code))
-                throw new DomainException("Ozellik kodu bos olamaz.");
+                throw new DomainException("Özellik kodu boş olamaz.");
 
             code = code.Trim();
 
             if (code.Length < 2 || code.Length > 64)
-                throw new DomainException("Ozellik kodu 2-64 karakter arasinda olmali.");
+                throw new DomainException("Özellik kodu 2-64 karakter arasında olmalı.");
 
             Code = code;
             UpdatedAt = DateTime.UtcNow;
@@ -54,10 +54,10 @@ namespace Rezervise.Domain.Entities
         public void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new DomainException("Ozellik adi bos olamaz.");
+                throw new DomainException("Özellik adı boş olamaz.");
 
             if (name.Length < 2 || name.Length > 100)
-                throw new DomainException("Ozellik adi 2-100 karakter arasinda olmali.");
+                throw new DomainException("Özellik adı 2-100 karakter arasında olmalı.");
 
             Name = name;
             UpdatedAt = DateTime.UtcNow;
@@ -66,7 +66,7 @@ namespace Rezervise.Domain.Entities
         public void SetDescription(string? description)
         {
             if (description != null && description.Length > 500)
-                throw new DomainException("Ozellik aciklamasi 500 karakterden uzun olamaz.");
+                throw new DomainException("Özellik açıklaması 500 karakterden uzun olamaz.");
 
             Description = description;
             UpdatedAt = DateTime.UtcNow;

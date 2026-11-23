@@ -7,9 +7,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppointmentConflicts
 {
     /// <summary>
-    /// Verilen isletmenin verilen gunundeki calisan cakismalarini tespit eder.
+    /// Verilen işletmenin verilen günündeki çalışan çakışmalarını tespit eder.
     /// Aktif randevular (Pending/Confirmed) EmployeeId + AppointmentDate
-    /// ciftine gore gruplanir; birden fazla kayit dusen gruplar doner.
+    /// çiftine göre gruplanır; birden fazla kayıt düşen gruplar döner.
     /// </summary>
     public class GetAdminAppointmentConflictsQueryHandler : IRequestHandler<GetAdminAppointmentConflictsQuery, Result<IReadOnlyList<AdminAppointmentConflictDto>>>
     {
@@ -26,12 +26,12 @@ namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppo
         {
             try
             {
-                // 1. Gun sinirlari UTC olarak hesaplanir; saat/dakika bilgisi
-                //    istekten bagimsiz olarak sifirlanir.
+                // 1. Gün sınırları UTC olarak hesaplanır; saat/dakika bilgisi
+                //    istekten bağımsız olarak sıfırlanır.
                 var dayStart = DateTime.SpecifyKind(request.Date.Date, DateTimeKind.Utc);
                 var dayEnd = dayStart.AddDays(1);
 
-                // 2. O gunun aktif randevularini getir.
+                // 2. O günün aktif randevularını getir.
                 var activeAppointments = await _appointmentRepository.FindAsync(
                     a => a.BusinessId == request.BusinessId
                         && a.AppointmentDate >= dayStart
@@ -40,7 +40,7 @@ namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppo
                             || a.Status == EnumAppointmentStatus.Confirmed),
                     cancellationToken);
 
-                // 3. Ayni calisan + ayni randevu saati gruplarini tespit et.
+                // 3. Aynı çalışan + aynı randevu saati gruplarını tespit et.
                 var conflicts = activeAppointments
                     .GroupBy(a => new { a.EmployeeId, a.AppointmentDate })
                     .Where(g => g.Count() > 1)
@@ -61,7 +61,7 @@ namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppo
             catch (Exception ex)
             {
                 return Result.Failure<IReadOnlyList<AdminAppointmentConflictDto>>(
-                    Error.Internal("Randevu cakismalari getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Randevu çakışmaları getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

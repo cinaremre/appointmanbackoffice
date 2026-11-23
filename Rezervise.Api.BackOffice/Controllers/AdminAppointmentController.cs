@@ -12,10 +12,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers
 {
     /// <summary>
-    /// Randevu operasyonlari (dokuman Modul 12). Okuma AppointmentRead,
-    /// yonetici iptali AppointmentCancel permission'ina baglidir.
-    /// DOKUMAN 12.3: override (gecmis/randevu kurallarini asma) ilk surumde
-    /// yok; ayri bir komutla eklenecek.
+    /// Randevu operasyonları (doküman Modül 12). Okuma AppointmentRead,
+    /// yönetici iptali AppointmentCancel permission'ina bağlıdır.
+    /// DOKUMAN 12.3: override (geçmiş/randevu kurallarını aşma) ilk sürümde
+    /// yok; ayrı bir komutla eklenecek.
     /// </summary>
     [Route("api/v1/admin/appointments")]
     public sealed class AdminAppointmentController : BackOfficeControllerBase
@@ -27,7 +27,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             _mediator = mediator;
         }
 
-        /// <summary>Randevulari filtreleyerek sayfalayarak listeler.</summary>
+        /// <summary>Randevuları filtreleyerek sayfalayarak listeler.</summary>
         [HttpGet]
         [Authorize(Policy = AdminPermissions.AppointmentRead)]
         [ProducesResponseType(typeof(AdminResponse<IReadOnlyList<AdminAppointmentListItemDto>>), StatusCodes.Status200OK)]
@@ -40,7 +40,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkList(result.Value.Items, result.Value.Page, result.Value.PageSize, result.Value.TotalCount);
         }
 
-        /// <summary>Tek randevunun detayini kisa gecmisiyle getirir.</summary>
+        /// <summary>Tek randevunun detayını kısa geçmişiyle getirir.</summary>
         [HttpGet("{id:guid}")]
         [Authorize(Policy = AdminPermissions.AppointmentRead)]
         [ProducesResponseType(typeof(AdminResponse<AdminAppointmentDetailDto>), StatusCodes.Status200OK)]
@@ -54,8 +54,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Randevuyu yonetici olarak iptal eder. Domain kurallari mevcut
-        /// musteri/isletme iptal akisiyla ayni kaynaktan uygulanir.
+        /// Randevuyu yönetici olarak iptal eder. Domain kuralları mevcut
+        /// müşteri/işletme iptal akışıyla aynı kaynaktan uygulanır.
         /// </summary>
         [HttpPost("{id:guid}/cancel")]
         [Authorize(Policy = AdminPermissions.AppointmentCancel)]
@@ -75,16 +75,16 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Bir isletmenin belirli gunundeki calisan cakismalarini listeler.
-        /// DuplicateKey index'i cakismayi zaten engeller; endpoint tespit
-        /// amaclidir.
+        /// Bir işletmenin belirli günündeki çalışan çakışmalarını listeler.
+        /// DuplicateKey index'i çakışmayı zaten engeller; endpoint tespit
+        /// amaçlıdır.
         /// </summary>
         [HttpGet("conflicts")]
         [Authorize(Policy = AdminPermissions.AppointmentRead)]
         [ProducesResponseType(typeof(AdminResponse<IReadOnlyList<AdminAppointmentConflictDto>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetConflicts([FromQuery] Guid? businessId, [FromQuery] DateTime? date)
         {
-            // Parametreler zorunludur; eksikse istek dogrulamasi gecersizdir.
+            // Parametreler zorunludur; eksikse istek doğrulaması geçersizdir.
             if (!businessId.HasValue || businessId.Value == Guid.Empty)
                 return AdminErrorMapper.ToProblem(Error.Validation("businessId zorunludur."));
 
@@ -103,13 +103,13 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkEnvelope(result.Value);
         }
 
-        /// <summary>Yonetici iptali istek govdesi. Reason zorunludur.</summary>
+        /// <summary>Yönetici iptali istek gövdesi. Reason zorunludur.</summary>
         public sealed class AdminCancelAppointmentRequest
         {
-            /// <summary>Yoneticinin iptal gerekcesi; zorunludur.</summary>
+            /// <summary>Yöneticinin iptal gerekçesi; zorunludur.</summary>
             public string? Reason { get; set; }
 
-            /// <summary>Randevuya islenecek gerekce; bos ise Reason kullanilir.</summary>
+            /// <summary>Randevuya işlenecek gerekçe; boş ise Reason kullanılır.</summary>
             public string? CancellationReason { get; set; }
         }
     }

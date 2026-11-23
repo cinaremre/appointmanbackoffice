@@ -1,31 +1,31 @@
 /**
- * Denetim kaydi tipleri (dokuman Modul 21). Gerekce ve deger betimlemeleri
- * sunucuda sinirlanmis metinler olarak gelir; frontend maskeleme yapmaz.
+ * Denetim kaydı tipleri (doküman Modül 21). Gerekçe ve değer betimlemeleri
+ * sunucuda sınırlanmış metinler olarak gelir; frontend maskeleme yapmaz.
  */
 export interface AuditLog {
   id: string;
   actorUserId: string;
 
-  /** Islem anindaki yonetici rol adi. */
+  /** İşlem anındaki yönetici rol adı. */
   actorRole: string;
 
-  /** Ilgili isletme; platform genelinde islemlerde bos. */
+  /** İlgili işletme; platform genelinde işlemlerde boş. */
   businessId?: string | null;
   entityType: string;
   entityId: string;
   action: string;
 
-  /** Onceki degerlerin kisa JSON betimlemesi. */
+  /** Önceki değerlerin kısa JSON betimlemesi. */
   oldValues?: string | null;
 
-  /** Yeni degerlerin kisa JSON betimlemesi. */
+  /** Yeni değerlerin kısa JSON betimlemesi. */
   newValues?: string | null;
 
-  /** Yoneticinin islem gerekcesi. */
+  /** Yoneticinin işlem gerekçesi. */
   reason?: string | null;
   correlationId?: string | null;
   ipAddress?: string | null;
 
-  /** Kaydin olusturulma ani (UTC). */
+  /** Kaydın oluşturulma anı (UTC). */
   createdAtUtc: string;
 }

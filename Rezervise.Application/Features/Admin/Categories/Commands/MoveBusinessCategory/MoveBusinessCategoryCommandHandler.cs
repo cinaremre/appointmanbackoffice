@@ -37,8 +37,8 @@ namespace Rezervise.Application.Features.Admin.Categories.Commands.MoveBusinessC
         {
             try
             {
-                // Dongu korumasi icin tum agac tek seferde cekilir; ust zinciri
-                // ParentId iliskileri uzerinden yurume navigation'a bagli degildir.
+                // Döngü koruması için tüm ağaç tek seferde çekilir; üst zinciri
+                // ParentId ilişkileri üzerinden yürüme navigation'a bağlı değildir.
                 var categories = await _categoryRepository.FindAsync(
                     c => !c.IsDeleted,
                     cancellationToken);
@@ -49,7 +49,7 @@ namespace Rezervise.Application.Features.Admin.Categories.Commands.MoveBusinessC
                     return Result<Guid>.Failure(
                         Error.NotFound("Kategori", request.CategoryId.ToString()));
 
-                // Kok seviyesine tasima: dongu riski yok.
+                // Kök seviyesine taşıma: döngü riski yok.
                 if (request.TargetParentId is null)
                 {
                     var oldParentId = category.ParentCategoryId;
@@ -77,29 +77,29 @@ namespace Rezervise.Application.Features.Admin.Categories.Commands.MoveBusinessC
 
                 if (!byId.TryGetValue(request.TargetParentId.Value, out var targetParent))
                     return Result<Guid>.Failure(
-                        Error.NotFound("Ust kategori", request.TargetParentId.Value.ToString()));
+                        Error.NotFound("Üst kategori", request.TargetParentId.Value.ToString()));
 
-                // 9.3 Dongu korumasi: hedef ustun zincirinde tasinan kategori
-                // kendisi varsa tasima dongu olusturur. Ornek: A, B'nin cocugu ise
-                // B, A'nin altina tasinamaz.
+                // 9.3 Döngü koruması: hedef üstün zincirinde taşınan kategori
+                // kendisi varsa taşıma döngü oluşturur. Örnek: A, B'nin çocuğu ise
+                // B, A'nin altına taşınamaz.
                 var cursor = targetParent;
                 var guard = 0;
                 while (cursor is not null)
                 {
                     if (cursor.Id == request.CategoryId)
                         return Result<Guid>.Failure(
-                            Error.Conflict("Kategori agacinda dongu olusmaz."));
+                            Error.Conflict("Kategori ağacında döngü oluşmaz."));
 
                     cursor = cursor.ParentCategoryId.HasValue
                         && byId.TryGetValue(cursor.ParentCategoryId.Value, out var ancestor)
                         ? ancestor
                         : null;
 
-                    // Bozuk veri korumasi: derinlik toplam kayit sayisini asamaz.
+                    // Bozuk veri koruması: derinlik toplam kayıt sayısını aşamaz.
                     guard++;
                     if (guard > categories.Count + 1)
                         return Result<Guid>.Failure(
-                            Error.Internal("Kategori zinciri bozuk; dongu taramasi basarisiz."));
+                            Error.Internal("Kategori zinciri bozuk; döngü taraması başarısız."));
                 }
 
                 var oldParent = category.ParentCategoryId;
@@ -127,7 +127,7 @@ namespace Rezervise.Application.Features.Admin.Categories.Commands.MoveBusinessC
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(
-                    Error.Internal("Kategori tasinirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kategori taşınırken bir hata oluştu.", ex.Message));
             }
         }
     }

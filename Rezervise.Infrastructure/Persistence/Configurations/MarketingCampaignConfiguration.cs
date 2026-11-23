@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Pazarlama kampanyasi. Harcama ve randevu atiflari bu kampanyaya baglanir.
+    /// Pazarlama kampanyası. Harcama ve randevu atıfları bu kampanyaya bağlanır.
     /// </summary>
     public class MarketingCampaignConfiguration : BaseConfiguration<MarketingCampaign>
     {

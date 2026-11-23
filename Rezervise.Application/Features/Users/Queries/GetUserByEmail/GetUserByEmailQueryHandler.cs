@@ -19,18 +19,18 @@ namespace Rezervise.Application.Features.Users.Queries.GetUserByEmail
         {
             try
             {
-                // 1. Email ile kullanici ara
+                // 1. Email ile kullanıcı ara
                 var users = await _userRepository.FindAsync(
                     u => u.Email == request.Email && !u.IsDeleted,
                     cancellationToken);
 
                 var user = users.FirstOrDefault();
 
-                // 2. Kullanici bulunamadiysa hata dondur
+                // 2. Kullanıcı bulunamadıysa hata döndür
                 if (user is null)
-                    return Result<UserDto>.Failure(Error.NotFound("Kullanici", request.Email));
+                    return Result<UserDto>.Failure(Error.NotFound("Kullanıcı", request.Email));
 
-                // 3. Verileri DTO'ya donustur
+                // 3. Verileri DTO'ya dönüştür
                 var dto = new UserDto
                 {
                     Id = user.Id,
@@ -46,12 +46,12 @@ namespace Rezervise.Application.Features.Users.Queries.GetUserByEmail
                     CreatedAt = user.CreatedAt
                 };
 
-                // 4. Basarili sonucu dondur
+                // 4. Başarılı sonucu döndür
                 return Result<UserDto>.Success(dto);
             }
             catch (Exception ex)
             {
-                return Result<UserDto>.Failure(Error.Internal("Kullanici bilgileri getirilirken bir hata olustu.", ex.Message));
+                return Result<UserDto>.Failure(Error.Internal("Kullanıcı bilgileri getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

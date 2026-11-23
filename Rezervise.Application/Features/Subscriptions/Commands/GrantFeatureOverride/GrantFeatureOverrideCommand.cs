@@ -4,9 +4,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Subscriptions.Commands.GrantFeatureOverride
 {
     /// <summary>
-    /// Isletmeye ozellik bazli gecici erisim karari verir (dokuman Modul 14).
-    /// Aktif override abonelik planindaki degerleri ezer.
-    /// Yalniz platform yoneticileri cagirabilir.
+    /// İşletmeye özellik bazlı geçici erişim kararı verir (doküman Modül 14).
+    /// Aktif override abonelik planındaki değerleri ezer.
+    /// Yalnız platform yöneticileri çağırabilir.
     /// </summary>
     public class GrantFeatureOverrideCommand : IRequest<Result<Guid>>
     {
@@ -14,16 +14,16 @@ namespace Rezervise.Application.Features.Subscriptions.Commands.GrantFeatureOver
         public Guid FeatureId { get; set; }
         public bool IsEnabled { get; set; }
 
-        /// <summary>Null ise plan kotasi gecerli kalir.</summary>
+        /// <summary>Null ise plan kotası geçerli kalır.</summary>
         public int? QuotaOverride { get; set; }
 
-        /// <summary>Gecerlilik baslangici (UTC).</summary>
+        /// <summary>Geçerlilik başlangıcı (UTC).</summary>
         public DateTime ValidFrom { get; set; }
 
-        /// <summary>Gecerlilik sonu (UTC); null = belirsiz sure.</summary>
+        /// <summary>Geçerlilik sonu (UTC); null = belirsiz süre.</summary>
         public DateTime? ValidUntil { get; set; }
 
-        /// <summary>Kayit gerekcesi (denetim icin onerilir).</summary>
+        /// <summary>Kayıt gerekçesi (denetim için önerilir).</summary>
         public string? Reason { get; set; }
     }
 }

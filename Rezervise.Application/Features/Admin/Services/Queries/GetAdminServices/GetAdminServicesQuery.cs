@@ -4,9 +4,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Services.Queries.GetAdminServices
 {
     /// <summary>
-    /// Platform yoneticisi hizmet katalogunu sayfali listeler
-    /// (dokuman Modul 10). Sayfa boyutu 1..200 arasina sinirlanir,
-    /// varsayilan 50'dir.
+    /// Platform yöneticisi hizmet kataloğunu sayfalı listeler
+    /// (doküman Modül 10). Sayfa boyutu 1..200 arasına sınırlanır,
+    /// varsayılan 50'dir.
     /// </summary>
     public class GetAdminServicesQuery : IRequest<Result<AdminServiceListResultDto>>
     {
@@ -29,7 +29,7 @@ namespace Rezervise.Application.Features.Admin.Services.Queries.GetAdminServices
         public bool IsActive { get; set; }
     }
 
-    /// <summary>Sayfali liste sonucu; controller pagination meta'sini buradan uretir.</summary>
+    /// <summary>Sayfalı liste sonucu; controller pagination meta'sını buradan üretir.</summary>
     public class AdminServiceListResultDto
     {
         public IReadOnlyList<AdminServiceListItemDto> Items { get; set; } = Array.Empty<AdminServiceListItemDto>();

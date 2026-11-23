@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Paket hak hareketi. Ayni randevu icin birden fazla hareket olabilecegi
-    /// (Reserve -> Consume gecisi gibi) icin AppointmentId uzerinde unique
-    /// kisit YOKTUR; cift rezervasyon engeli handler tarafindan Active
-    /// Reservation sorgusuyla saglanir.
+    /// Paket hak hareketi. Aynı randevu için birden fazla hareket olabileceği
+    /// (Reserve -> Consume geçişi gibi) için AppointmentId üzerinde unique
+    /// kısıt YOKTUR; çift rezervasyon engeli handler tarafından Active
+    /// Reservation sorgusuyla sağlanır.
     /// </summary>
     public class PackageUsageConfiguration : BaseConfiguration<PackageUsage>
     {

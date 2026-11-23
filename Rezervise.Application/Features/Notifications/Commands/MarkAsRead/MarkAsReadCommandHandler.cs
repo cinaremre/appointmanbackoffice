@@ -27,7 +27,7 @@ namespace Rezervise.Application.Features.Notifications.Commands.MarkAsRead
         {
             try
             {
-                // 1. Bildirim kontrolu (silinmis kayitlar haric)
+                // 1. Bildirim kontrolü (silinmiş kayıtlar hariç)
                 var notifications = await _notificationRepository.FindAsync(
                     n => n.Id == request.NotificationId && !n.IsDeleted,
                     cancellationToken);
@@ -37,8 +37,8 @@ namespace Rezervise.Application.Features.Notifications.Commands.MarkAsRead
                 if (notification is null)
                     return Result<Guid>.Failure(Error.NotFound("Bildirim", request.NotificationId.ToString()));
 
-                // 2. Yetki kontrolu.
-                //    Aktor kimligi imzali token'dan gelir; istekteki alan kullaniciyi temsil etmez.
+                // 2. Yetki kontrolü.
+                //    Aktör kimliği imzalı token'dan gelir; istekteki alan kullanıcıyı temsil etmez.
                 var currentUserId = _currentUser.UserId;
                 if (currentUserId is null)
                     return Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser"));
@@ -46,11 +46,11 @@ namespace Rezervise.Application.Features.Notifications.Commands.MarkAsRead
                 if (notification.UserId != currentUserId.Value)
                     return Result<Guid>.Failure(Error.Unauthorized("Bu bildirimi okuma yetkiniz yok."));
 
-                // 3. Zaten okundu mu?
+                // 3. Zaten okundu mü?
                 if (notification.IsRead)
                     return Result<Guid>.Failure(Error.Conflict("Bildirim zaten okundu."));
 
-                // 4. Okundu olarak isaretle
+                // 4. Okundu olarak işaretle
                 notification.MarkAsRead();
 
                 // 5. Kaydet
@@ -64,7 +64,7 @@ namespace Rezervise.Application.Features.Notifications.Commands.MarkAsRead
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Bildirim okundu isaretlenirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Bildirim okundu işaretlenirken bir hata oluştu.", ex.Message));
             }
         }
     }

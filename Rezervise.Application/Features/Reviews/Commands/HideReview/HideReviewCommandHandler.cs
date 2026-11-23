@@ -32,12 +32,12 @@ namespace Rezervise.Application.Features.Reviews.Commands.HideReview
         {
             try
             {
-                // 0. Controller'daki rol kisitinin yaninda handler seviyesinde de
-                //    yonetici zorunlulugu dogrulanir (defense in depth).
+                // 0. Controller'daki rol kısıtının yanında handler seviyesinde de
+                //    yönetici zorunluluğu doğrulanır (defense in depth).
                 if (!CallerAuthorization.IsAdministrator(_currentUser))
                     return Result<Guid>.Failure(Error.Forbidden("Yorumu gizleme yetkiniz yok."));
 
-                // 1. Yorum kontrolu
+                // 1. Yorum kontrolü
                 var review = await _reviewRepository.GetByIdAsync(request.ReviewId, cancellationToken);
                 if (review is null)
                     return Result<Guid>.Failure(Error.NotFound("Yorum", request.ReviewId.ToString()));
@@ -46,7 +46,7 @@ namespace Rezervise.Application.Features.Reviews.Commands.HideReview
                 if (!review.IsVisible)
                     return Result<Guid>.Failure(Error.Conflict("Yorum zaten gizli."));
 
-                // 3. Gizleme ve puan yeniden hesaplamasi ayni transaction'da.
+                // 3. Gizleme ve puan yeniden hesaplaması aynı transaction'da.
                 await _unitOfWork.ExecuteInTransactionAsync(async token =>
                 {
                     review.Hide();
@@ -62,8 +62,8 @@ namespace Rezervise.Application.Features.Reviews.Commands.HideReview
             }
             catch (Exception)
             {
-                // Beklenmeyen hata detayi istemciye sizdirilmaz.
-                return Result<Guid>.Failure(Error.Internal("Yorum gizlenirken bir hata olustu."));
+                // Beklenmeyen hata detayı istemciye sızdırılmaz.
+                return Result<Guid>.Failure(Error.Internal("Yorum gizlenirken bir hata oluştu."));
             }
         }
 

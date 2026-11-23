@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Isletmenin geri cagirma kurali. ServiceId null ise tum hizmetler
-    /// icin gecerlidir.
+    /// İşletmenin geri çağırma kuralı. ServiceId null ise tüm hizmetler
+    /// için geçerlidir.
     /// </summary>
     public class BusinessReengagementRuleConfiguration : BaseConfiguration<BusinessReengagementRule>
     {
@@ -42,8 +42,8 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasDefaultValue(true);
 
-            // Iliskiler acikca Restrict: convention cascade SQL Server'da
-            // multiple cascade path hatasi uretir.
+            // İlişkiler açıkça Restrict: convention cascade SQL Server'da
+            // multiple cascade path hatası üretir.
             builder.HasOne(x => x.Business)
                 .WithMany()
                 .HasForeignKey(x => x.BusinessId)

@@ -24,9 +24,9 @@ namespace Rezervise.Application.Features.Neighborhoods.Queries.GetByLocality
             try
             {
                 if (request.LocalityId <= 0)
-                    return Result<List<NeighborhoodDto>>.Failure(Error.BusinessRule("Locality ID gecersiz."));
+                    return Result<List<NeighborhoodDto>>.Failure(Error.BusinessRule("Locality ID geçersiz."));
 
-                // 1. Locality kaydini kontrol et
+                // 1. Locality kaydını kontrol et
                 var localities = await _localityRepository.FindAsync(l => l.Id == request.LocalityId, cancellationToken);
                 if (localities.Count == 0)
                     return Result<List<NeighborhoodDto>>.Failure(Error.NotFound("Locality", request.LocalityId.ToString()));
@@ -43,7 +43,7 @@ namespace Rezervise.Application.Features.Neighborhoods.Queries.GetByLocality
                     filtered = filtered.Where(n => n.IsActive);
                 }
 
-                // 4. DTO'ya donustur
+                // 4. DTO'ya dönüştür
                 var dtos = filtered
                     .OrderBy(n => n.Name)
                     .Select(n => new NeighborhoodDto
@@ -60,7 +60,7 @@ namespace Rezervise.Application.Features.Neighborhoods.Queries.GetByLocality
             catch (Exception ex)
             {
                 return Result<List<NeighborhoodDto>>.Failure(
-                    Error.Internal("Mahalleler getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Mahalleler getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

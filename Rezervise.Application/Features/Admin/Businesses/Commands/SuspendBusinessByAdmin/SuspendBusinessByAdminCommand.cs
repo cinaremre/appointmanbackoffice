@@ -4,14 +4,14 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Businesses.Commands.SuspendBusinessByAdmin
 {
     /// <summary>
-    /// Platform yoneticisinin isletmeyi askiya almasi (dokuman Modul 8).
-    /// Gerekce zorunludur ve denetim kaydina yazilir.
+    /// Platform yöneticisinin işletmeyi askıya alması (doküman Modül 8).
+    /// Gerekçe zorunludur ve denetim kaydına yazılır.
     /// </summary>
     public class SuspendBusinessByAdminCommand : IRequest<Result<Guid>>
     {
         public Guid BusinessId { get; set; }
 
-        /// <summary>Askıya alma gerekcesi; bos gonderilemez.</summary>
+        /// <summary>Askıya alma gerekçesi; boş gönderilemez.</summary>
         public string? Reason { get; set; }
     }
 }

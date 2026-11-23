@@ -4,8 +4,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Categories.Commands.UpdateBusinessCategoryByAdmin
 {
     /// <summary>
-    /// Platform yoneticisi kategori ad/sira/durum alanlarini gunceller.
-    /// Tum alanlar opsiyoneldir; yalnizca gonderilenler degisir.
+    /// Platform yöneticisi kategori ad/sıra/durum alanlarını günceller.
+    /// Tüm alanlar opsiyoneldir; yalnızca gönderilenler değişir.
     /// </summary>
     public class UpdateBusinessCategoryByAdminCommand : IRequest<Result<Guid>>
     {

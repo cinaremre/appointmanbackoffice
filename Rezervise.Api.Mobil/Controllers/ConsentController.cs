@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Musteri iletisim izinleri (dokuman Modul 16).
-    /// Pazarlama gonderiminden once can-contact ucu zorunludur.
+    /// Müşteri iletişim izinleri (doküman Modül 16).
+    /// Pazarlama gönderiminden önce can-contact ucu zorunludur.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -25,11 +25,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Musterinin kanal + amac bazinda iznini belirler; gecmis kaydi ekler.
-        /// Pazarlama izni geri cekilirse kanal tamamen kapatilir.
+        /// Müşterinin kanal + amaç bazında iznini belirler; geçmiş kaydı ekler.
+        /// Pazarlama izni geri çekilirse kanal tamamen kapatılır.
         /// </summary>
-        /// <param name="command">Izin bilgileri</param>
-        /// <returns>Guncellenen tercih kaydinin ID'si</returns>
+        /// <param name="command">İzin bilgileri</param>
+        /// <returns>Güncellenen tercih kaydının ID'si</returns>
         [HttpPost("set")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
@@ -44,14 +44,14 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Belirtilen kanal + amac icin musterile iletisime gecilabilir mi?
-        /// Pazarlama gonderimi oncesi cagrilmasi zorunludur.
+        /// Belirtilen kanal + amaç için müşterile iletişime geçilabilir mi?
+        /// Pazarlama gönderimi öncesi çağrılması zorunludur.
         /// </summary>
-        /// <param name="businessId">Isletme ID'si</param>
-        /// <param name="customerId">Musteri User ID'si</param>
-        /// <param name="channel">Iletisim kanali</param>
-        /// <param name="purpose">Kullanim amaci</param>
-        /// <returns>Iletisime gecilebilirse true</returns>
+        /// <param name="businessId">İşletme ID'si</param>
+        /// <param name="customerId">Müşteri User ID'si</param>
+        /// <param name="channel">İletişim kanalı</param>
+        /// <param name="purpose">Kullanım amacı</param>
+        /// <returns>İletişime geçilebilirse true</returns>
         [HttpGet("can-contact")]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status400BadRequest)]

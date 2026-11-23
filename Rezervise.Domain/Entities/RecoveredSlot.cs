@@ -4,8 +4,8 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Iptal edilen bir randevudan aciga cikan slot (dokuman Modul 10).
-    /// Isletme bu slotu bekleme listesinden doldurmaya calisir; sonuc
+    /// İptal edilen bir randevudan açığa çıkan slot (doküman Modül 10).
+    /// İşletme bu slotu bekleme listesinden doldurmaya çalışır; sonuç
     /// Rebooked (dolduruldu) veya Lost (kaybedildi) olur.
     /// </summary>
     public class RecoveredSlot : BaseEntity
@@ -13,7 +13,7 @@ namespace Rezervise.Domain.Entities
         public Guid BusinessId { get; private set; }
         public Guid CancelledAppointmentId { get; private set; }
 
-        /// <summary>Slotu dolduran yeni randevu; henuz doldurulmadiysa bos.</summary>
+        /// <summary>Slotu dolduran yeni randevu; henüz doldurulmadıysa boş.</summary>
         public Guid? ReplacementAppointmentId { get; private set; }
 
         public DateTime ReleasedAt { get; private set; }
@@ -26,10 +26,10 @@ namespace Rezervise.Domain.Entities
             : base(Guid.NewGuid())
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (cancelledAppointmentId == Guid.Empty)
-                throw new ArgumentException("Randevu ID bos olamaz.", nameof(cancelledAppointmentId));
+                throw new ArgumentException("Randevu ID boş olamaz.", nameof(cancelledAppointmentId));
 
             BusinessId = businessId;
             CancelledAppointmentId = cancelledAppointmentId;
@@ -44,7 +44,7 @@ namespace Rezervise.Domain.Entities
                 throw new DomainException("RecoveredSlot.NotOpen");
 
             if (replacementAppointmentId == Guid.Empty)
-                throw new ArgumentException("Yeni randevu ID bos olamaz.", nameof(replacementAppointmentId));
+                throw new ArgumentException("Yeni randevu ID boş olamaz.", nameof(replacementAppointmentId));
 
             ReplacementAppointmentId = replacementAppointmentId;
             RebookedAt = now;
@@ -52,7 +52,7 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = now;
         }
 
-        /// <summary>Slot doldurulamadan kaybedildi (sure doldu / baska musteri aldi).</summary>
+        /// <summary>Slot doldurulamadan kaybedildi (süre doldu / başka müşteri aldı).</summary>
         public void MarkLost(DateTime now)
         {
             if (Status != EnumRecoveredSlotStatus.Open)

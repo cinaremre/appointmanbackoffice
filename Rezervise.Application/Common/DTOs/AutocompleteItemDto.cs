@@ -1,9 +1,9 @@
 namespace Rezervise.Application.Common.DTOs
 {
     /// <summary>
-    /// Autocomplete sonucu. Id ve ParentId metinsel tutulur cunku adres
-    /// entity'leri int, kategori entity'leri Guid anahtar kullanir; mobil
-    /// istemci bu degeri ilgili endpoint'e oldugu gibi geri gonderir.
+    /// Autocomplete sonucu. Id ve ParentId metinsel tutulur çünkü adres
+    /// entity'leri int, kategori entity'leri Guid anahtar kullanır; mobil
+    /// istemci bu değeri ilgili endpoint'e öldüğü gibi geri gönderir.
     /// </summary>
     public class AutocompleteItemDto
     {

@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Isletme islemlerini yonetir.
+    /// İşletme işlemlerini yönetir.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -34,7 +34,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Sahip ID'si her zaman JWT'den cozulur; govde OwnerId degeri yetki kaynagi degildir.
+        /// Sahip ID'si her zaman JWT'den çözülür; gövde OwnerId değeri yetki kaynağı değildir.
         /// </summary>
         private IActionResult? ResolveCurrentUserId(out Guid userId)
         {
@@ -49,14 +49,14 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Yeni isletme olusturur.
+        /// Yeni işletme oluşturur.
         /// </summary>
         [HttpPost]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] CreateBusinessCommand command)
         {
-            // OwnerId JWT'den gelir; govde degerine guvenilmez.
+            // OwnerId JWT'den gelir; gövde değerine güvenilmez.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
@@ -71,14 +71,14 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Isletme bilgilerini gunceller.
+        /// İşletme bilgilerini günceller.
         /// </summary>
         [HttpPut]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update([FromBody] UpdateBusinessCommand command)
         {
-            // OwnerId JWT'den gelir; govde degerine guvenilmez.
+            // OwnerId JWT'den gelir; gövde değerine güvenilmez.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
@@ -93,14 +93,14 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Isletmeyi aktif eder.
+        /// İşletmeyi aktif eder.
         /// </summary>
         [HttpPost("{id}/activate")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Activate(Guid id, [FromBody] ActivateBusinessCommand command)
         {
-            // ID ve sahip kimligi guvenilir kaynaklardan alinir.
+            // ID ve sahip kimliği güvenilir kaynaklardan alınır.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
@@ -116,14 +116,14 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Isletmeyi pasif eder.
+        /// İşletmeyi pasif eder.
         /// </summary>
         [HttpPost("{id}/deactivate")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Deactivate(Guid id, [FromBody] DeactivateBusinessCommand command)
         {
-            // ID ve sahip kimligi guvenilir kaynaklardan alinir.
+            // ID ve sahip kimliği güvenilir kaynaklardan alınır.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
@@ -139,7 +139,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// ID'ye gore isletme getirir.
+        /// ID'ye göre işletme getirir.
         /// </summary>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Result<BusinessDto>), StatusCodes.Status200OK)]
@@ -156,7 +156,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Sahibine gore isletmeleri getirir.
+        /// Sahibine göre işletmeleri getirir.
         /// </summary>
         [HttpGet("owner/{ownerId}")]
         [ProducesResponseType(typeof(Result<List<BusinessDto>>), StatusCodes.Status200OK)]
@@ -182,22 +182,22 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kategori, sehir ve ilceye gore isletme arar.
+        /// Kategori, şehir ve ilçeye göre işletme arar.
         /// </summary>
-        /// <param name="categoryId">Isletme kategorisi (opsiyonel).</param>
+        /// <param name="categoryId">İşletme kategorisi (opsiyonel).</param>
         /// <param name="city">
-        /// Sehir ADI (orn. "Ankara"). Sayisal ID verilmemisse bu ada gore
-        /// City tablosundan ID cozulur.
+        /// Şehir ADI (orn. "Ankara"). Sayısal ID verilmemişse bu ada göre
+        /// City tablosundan ID çözülür.
         /// </param>
         /// <param name="cityId">
-        /// Sehir ID'si (opsiyonel). Verilirse <paramref name="city"/> dikkate alinmaz.
+        /// Şehir ID'si (opsiyonel). Verilirse <paramref name="city"/> dikkate alınmaz.
         /// </param>
-        /// <param name="districtId">Ilce ID'si (opsiyonel).</param>
+        /// <param name="districtId">İlçe ID'si (opsiyonel).</param>
         /// <param name="localityId">Locality ID'si (opsiyonel).</param>
         /// <param name="neighborhoodId">Mahalle ID'si (opsiyonel).</param>
-        /// <param name="pageNumber">Sayfa numarasi (varsayilan: 1).</param>
-        /// <param name="pageSize">Sayfa boyutu (varsayilan: 20).</param>
-        /// <returns>Eslesen isletme listesi.</returns>
+        /// <param name="pageNumber">Sayfa numarası (varsayılan: 1).</param>
+        /// <param name="pageSize">Sayfa boyutu (varsayılan: 20).</param>
+        /// <returns>Eşleşen işletme listesi.</returns>
         [HttpGet("search")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(Result<List<BusinessDto>>), StatusCodes.Status200OK)]
@@ -212,8 +212,8 @@ namespace Rezervise.Api.Controllers
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 20)
         {
-            // Kullanici girisli ise ID'si sorguya aktarilir: konum kriteri bos
-            // gelirse kullanicinin kayitli il/ilce bilgisi kullanilir.
+            // Kullanıcı girişli ise ID'si sorguya aktarılır: konum kriteri boş
+            // gelirse kullanıcının kayıtlı il/ilçe bilgisi kullanılır.
             var query = new SearchBusinessesQuery
             {
                 CategoryId = categoryId,
@@ -236,21 +236,21 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Hizmet kategorisi veya hizmet adina gore isletme arar.
-        /// Ornek: "Manikur" arayan kullanici, manikur hizmeti veren tum isletmeleri gorur.
+        /// Hizmet kategorisi veya hizmet adına göre işletme arar.
+        /// Örnek: "Manikür" arayan kullanıcı, manikür hizmeti veren tüm işletmeleri görür.
         /// </summary>
         /// <param name="serviceCategoryId">Hizmet kategorisi (opsiyonel)</param>
-        /// <param name="serviceSearchTerm">Hizmet adi (opsiyonel)</param>
-        /// <param name="businessCategoryId">Isletme kategorisi (opsiyonel)</param>
-        /// <param name="city">Sehir (zorunlu)</param>
-        /// <param name="district">Ilce (opsiyonel)</param>
-        /// <param name="pageNumber">Sayfa numarasi (varsayilan: 1)</param>
-        /// <param name="pageSize">Sayfa boyutu (varsayilan: 20)</param>
+        /// <param name="serviceSearchTerm">Hizmet adı (opsiyonel)</param>
+        /// <param name="businessCategoryId">İşletme kategorisi (opsiyonel)</param>
+        /// <param name="city">Şehir (zorunlu)</param>
+        /// <param name="district">İlçe (opsiyonel)</param>
+        /// <param name="pageNumber">Sayfa numarası (varsayılan: 1)</param>
+        /// <param name="pageSize">Sayfa boyutu (varsayılan: 20)</param>
         /// <param name="searchTerm">
-        /// Birlestirilmis arama terimi: isletme adi, hizmet adi veya sehir adindan biri
-        /// eslesirse isletme listelenir (opsiyonel).
+        /// Birleştirilmiş arama terimi: işletme adı, hizmet adı veya şehir adından biri
+        /// eşleşirse işletme listelenir (opsiyonel).
         /// </param>
-        /// <returns>Isletme listesi</returns>
+        /// <returns>İşletme listesi</returns>
         [HttpGet("search-by-service")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(Result<List<BusinessDto>>), StatusCodes.Status200OK)]
@@ -267,8 +267,8 @@ namespace Rezervise.Api.Controllers
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 20)
         {
-            // Kullanici girisli ise ID'si sorguya aktarilir: konum kriteri bos
-            // gelirse kullanicinin kayitli il/ilce bilgisi kullanilir.
+            // Kullanıcı girişli ise ID'si sorguya aktarılır: konum kriteri boş
+            // gelirse kullanıcının kayıtlı il/ilçe bilgisi kullanılır.
             var query = new SearchBusinessesByServiceQuery
             {
                 SearchTerm = searchTerm,
@@ -293,9 +293,9 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Token icindeki kullanici ID'sini okur. Anonim istekte null doner.
-        /// Arama sorgularinda konum kriteri bos geldiginde kullanicinin kayitli
-        /// il/ilce bilgisini kullanabilmek icin gereklidir.
+        /// Token içindeki kullanıcı ID'sını okur. Anonim istekte null döner.
+        /// Arama sorgularında konum kriteri boş geldiğinde kullanıcının kayıtlı
+        /// il/ilçe bilgisini kullanabilmek için gereklidir.
         /// </summary>
         private Guid? GetCurrentUserId()
         {

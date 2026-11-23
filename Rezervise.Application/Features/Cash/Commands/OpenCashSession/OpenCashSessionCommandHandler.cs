@@ -38,24 +38,24 @@ namespace Rezervise.Application.Features.Cash.Commands.OpenCashSession
         {
             try
             {
-                // 1. Kasa kontrolu
+                // 1. Kasa kontrolü
                 var register = await _cashRegisterRepository.GetByIdAsync(request.CashRegisterId, cancellationToken);
                 if (register is null)
                     return Result<Guid>.Failure(Error.NotFoundById("Kasa", request.CashRegisterId));
 
-                // 2. Yetki kontrolu: kasanin isletmesi uzerinden business.OwnerId esas alinir.
+                // 2. Yetki kontrolü: kasanın işletmesi üzerinden business.OwnerId esas alınır.
                 var business = await _businessRepository.GetByIdAsync(register.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFoundById("Isletme", register.BusinessId));
+                    return Result<Guid>.Failure(Error.NotFoundById("İşletme", register.BusinessId));
 
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Forbidden("Bu kasa icin oturum acma yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu kasa için oturum açma yetkiniz yok."));
 
-                // 3. Deaktif kasada oturum acilmaz
+                // 3. Deaktif kasada oturum açılmaz
                 if (!register.IsActive)
-                    return Result<Guid>.Failure(Error.Conflict("Kasa deaktif oldugu icin oturum acilamaz."));
+                    return Result<Guid>.Failure(Error.Conflict("Kasa deaktif öldüğü için oturum açılamaz."));
 
-                // 4. Ayni kasada acik oturum var mi?
+                // 4. Aynı kasada açık oturum var mi?
                 var openSessions = await _cashSessionRepository.FindAsync(
                     s => s.CashRegisterId == register.Id &&
                          s.Status == EnumCashSessionStatus.Open &&
@@ -63,9 +63,9 @@ namespace Rezervise.Application.Features.Cash.Commands.OpenCashSession
                     cancellationToken);
 
                 if (openSessions.Any())
-                    return Result<Guid>.Failure(Error.Conflict("Bu kasada acik bir oturum zaten var."));
+                    return Result<Guid>.Failure(Error.Conflict("Bu kasada açık bir oturum zaten var."));
 
-                // 5. Oturumu ac
+                // 5. Oturumu aç
                 var session = new CashSession(
                     register.Id,
                     register.BusinessId,
@@ -81,7 +81,7 @@ namespace Rezervise.Application.Features.Cash.Commands.OpenCashSession
             catch (DuplicateKeyException)
             {
                 // Unique filtreli index: (CashRegisterId, Status=Open).
-                return Result<Guid>.Failure(Error.Conflict("Bu kasada acik bir oturum zaten var."));
+                return Result<Guid>.Failure(Error.Conflict("Bu kasada açık bir oturum zaten var."));
             }
             catch (DomainException ex)
             {
@@ -89,7 +89,7 @@ namespace Rezervise.Application.Features.Cash.Commands.OpenCashSession
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Kasa oturumu acilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Kasa oturumu açılırken bir hata oluştu.", ex.Message));
             }
         }
     }

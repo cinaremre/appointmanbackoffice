@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Isletme hizmetleri ile ilgili islemleri yonetir.
+    /// İşletme hizmetleri ile ilgili işlemleri yönetir.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -32,7 +32,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Sahip ID'si her zaman JWT'den cozulur; govde OwnerId degeri yetki kaynagi degildir.
+        /// Sahip ID'si her zaman JWT'den çözülür; gövde OwnerId değeri yetki kaynağı değildir.
         /// </summary>
         private IActionResult? ResolveCurrentUserId(out Guid userId)
         {
@@ -47,25 +47,25 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Yeni hizmet olusturur.
+        /// Yeni hizmet oluşturur.
         /// </summary>
         /// <param name="command">Hizmet bilgileri</param>
-        /// <returns>Olusturulan hizmetin ID'si</returns>
+        /// <returns>Oluşturulan hizmetin ID'si</returns>
         [HttpPost]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] CreateServiceCommand command)
         {
-            // 1. OwnerId JWT'den gelir; govde degerine guvenilmez.
+            // 1. OwnerId JWT'den gelir; gövde değerine güvenilmez.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
             command.OwnerId = userId;
 
-            // 2. Command'i mediator ile gonder
+            // 2. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -73,25 +73,25 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Hizmet bilgilerini gunceller.
+        /// Hizmet bilgilerini günceller.
         /// </summary>
-        /// <param name="command">Guncelleme bilgileri</param>
-        /// <returns>Guncellenen hizmetin ID'si</returns>
+        /// <param name="command">Güncelleme bilgileri</param>
+        /// <returns>Güncellenen hizmetin ID'si</returns>
         [HttpPut]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update([FromBody] UpdateServiceCommand command)
         {
-            // 1. OwnerId JWT'den gelir; govde degerine guvenilmez.
+            // 1. OwnerId JWT'den gelir; gövde değerine güvenilmez.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
             command.OwnerId = userId;
 
-            // 2. Command'i mediator ile gonder
+            // 2. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -109,7 +109,7 @@ namespace Rezervise.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Activate(Guid id, [FromBody] ActivateServiceCommand command)
         {
-            // 1. ID ve sahip kimligi guvenilir kaynaklardan alinir.
+            // 1. ID ve sahip kimliği güvenilir kaynaklardan alınır.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
@@ -117,10 +117,10 @@ namespace Rezervise.Api.Controllers
             command.OwnerId = userId;
             command.ActivatedBy = userId.ToString();
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -138,7 +138,7 @@ namespace Rezervise.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Deactivate(Guid id, [FromBody] DeactivateServiceCommand command)
         {
-            // 1. ID ve sahip kimligi guvenilir kaynaklardan alinir.
+            // 1. ID ve sahip kimliği güvenilir kaynaklardan alınır.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
@@ -146,10 +146,10 @@ namespace Rezervise.Api.Controllers
             command.OwnerId = userId;
             command.DeactivatedBy = userId.ToString();
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -157,22 +157,22 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// ID'ye gore hizmet getirir.
+        /// ID'ye göre hizmet getirir.
         /// </summary>
         /// <param name="id">Hizmet ID'si</param>
-        /// <returns>Hizmet detayi</returns>
+        /// <returns>Hizmet detayı</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Result<ServiceDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<ServiceDto>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(Guid id)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetServiceByIdQuery { ServiceId = id };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -180,12 +180,12 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Isletmeye gore hizmetleri getirir.
+        /// İşletmeye göre hizmetleri getirir.
         /// </summary>
-        /// <param name="businessId">Isletme ID'si</param>
+        /// <param name="businessId">İşletme ID'si</param>
         /// <param name="isActive">Sadece aktif hizmetler mi? (opsiyonel)</param>
-        /// <param name="pageNumber">Sayfa numarasi (varsayilan: 1)</param>
-        /// <param name="pageSize">Sayfa boyutu (varsayilan: 10)</param>
+        /// <param name="pageNumber">Sayfa numarası (varsayılan: 1)</param>
+        /// <param name="pageSize">Sayfa boyutu (varsayılan: 10)</param>
         /// <returns>Hizmet listesi</returns>
         [HttpGet("business/{businessId}")]
         [ProducesResponseType(typeof(Result<List<ServiceDto>>), StatusCodes.Status200OK)]
@@ -196,7 +196,7 @@ namespace Rezervise.Api.Controllers
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetServicesByBusinessQuery
             {
                 BusinessId = businessId,
@@ -205,17 +205,17 @@ namespace Rezervise.Api.Controllers
                 PageSize = pageSize
             };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
             return NotFound(result);
         }
         /// <summary>
-        /// Hizmet arar. Isletme, kategori veya arama terimine gore filtrelenebilir.
+        /// Hizmet arar. İşletme, kategori veya arama terimine göre filtrelenebilir.
         /// </summary>
         [HttpGet("search")]
         [AllowAnonymous]

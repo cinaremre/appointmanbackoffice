@@ -39,7 +39,7 @@ namespace Rezervise.Application.Features.Admin.Categories.Commands.UpdateBusines
             {
                 if (request.Name is null && request.DisplayOrder is null && request.IsActive is null)
                     return Result<Guid>.Failure(
-                        Error.Validation("Guncellenecek en az bir alan gereklidir."));
+                        Error.Validation("Güncellenecek en az bir alan gereklidir."));
 
                 var category = await _categoryRepository.GetByIdAsync(
                     request.CategoryId, cancellationToken);
@@ -89,7 +89,7 @@ namespace Rezervise.Application.Features.Admin.Categories.Commands.UpdateBusines
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(
-                    Error.Internal("Kategori guncellenirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kategori güncellenirken bir hata oluştu.", ex.Message));
             }
         }
     }

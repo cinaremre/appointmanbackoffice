@@ -44,15 +44,15 @@ namespace Rezervise.Domain.Entities
     : base(id)
         {
             if (appointmentId == Guid.Empty)
-                throw new ArgumentException("Randevu ID bos olamaz.", nameof(appointmentId));
+                throw new ArgumentException("Randevu ID boş olamaz.", nameof(appointmentId));
 
             AppointmentId = appointmentId;
             OldStatus = oldStatus;
             NewStatus = newStatus;
             ChangedBy = changedBy ?? "System";
             ChangeReason = changeReason;
-            // Degisiklik zamani disaridan verilebilir; ayni istek icindeki
-            // tum kayitlar ayni referans zamani paylasir.
+            // Değişiklik zamanı dışarıdan verilebilir; aynı istek içindeki
+            // tüm kayıtlar aynı referans zamanı paylaşır.
             ChangedAt = changedAt ?? DateTime.UtcNow;
             IpAddress = ipAddress;
             UserAgent = userAgent;
@@ -61,7 +61,7 @@ namespace Rezervise.Domain.Entities
         public void AddAdditionalData(string key, object value)
         {
             if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("Key bos olamaz.", nameof(key));
+                throw new ArgumentException("Key boş olamaz.", nameof(key));
 
             AdditionalData ??= new Dictionary<string, object>();
             AdditionalData[key] = value;

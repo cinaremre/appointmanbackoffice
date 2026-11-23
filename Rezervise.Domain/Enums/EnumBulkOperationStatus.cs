@@ -1,34 +1,34 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Toplu islemin yasam dongusu durumu (dokuman Modul 10).
-    /// Gecisler yalnizca ileri yonde ve mantikli adimlarla yapilir;
-    /// kural disi gecisler DomainException firlatir.
+    /// Toplu işlemin yaşam döngüsü durumu (doküman Modül 10).
+    /// Geçişler yalnızca ileri yönde ve mantıklı adımlarla yapılır;
+    /// kural dışı geçişler DomainException fırlatır.
     /// </summary>
     public enum EnumBulkOperationStatus
     {
-        /// <summary>Kayit olusturuldu; henuz dogrulanmadi.</summary>
+        /// <summary>Kayıt oluşturuldu; henüz doğrulanmadı.</summary>
         Pending = 0,
 
-        /// <summary>Etkilenecek kayitlar dogrulanuyor (onizleme asamasi).</summary>
+        /// <summary>Etkilenecek kayıtlar doğrulanuyor (onizleme aşaması).</summary>
         Validating = 1,
 
-        /// <summary>Dogrulama tamam; yonetici onayi bekleniyor.</summary>
+        /// <summary>Doğrulama tamam; yönetici onayı bekleniyor.</summary>
         AwaitingApproval = 2,
 
-        /// <summary>Islem su anda calisiyor.</summary>
+        /// <summary>İşlem su anda çalışıyor.</summary>
         Running = 3,
 
-        /// <summary>Islem kismen tamamlandi; bazi kayitlar basarisiz.</summary>
+        /// <summary>İşlem kısmen tamamlandı; bazı kayıtlar başarısız.</summary>
         PartiallyCompleted = 4,
 
-        /// <summary>Tum kayitlar basariyla islendi.</summary>
+        /// <summary>Tüm kayıtlar başarıyla işlendi.</summary>
         Completed = 5,
 
-        /// <summary>Islem hatayla sonlandi.</summary>
+        /// <summary>İşlem hatayla sonlandı.</summary>
         Failed = 6,
 
-        /// <summary>Islem baslamadan yonetici tarafindan iptal edildi.</summary>
+        /// <summary>İşlem başlamadan yönetici tarafından iptal edildi.</summary>
         Cancelled = 7
     }
 }

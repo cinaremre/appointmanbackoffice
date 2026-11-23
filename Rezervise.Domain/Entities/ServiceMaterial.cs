@@ -3,9 +3,9 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Hizmet recetesi: bir hizmetin tek seferlik gerceklestirilmesinde
-    /// tuketilen malzeme tanimi. Ayni (ServiceId, ProductId) cifti
-    /// isletme bazinda bir kez tanimlanabilir (handler tarafindan kontrol edilir).
+    /// Hizmet reçetesi: bir hizmetin tek seferlik gerçekleştirilmesinde
+    /// tüketilen malzeme tanımı. Aynı (ServiceId, ProductId) çifti
+    /// işletme bazında bir kez tanımlanabilir (handler tarafından kontrol edilir).
     /// </summary>
     public class ServiceMaterial : BaseEntity
     {
@@ -15,12 +15,12 @@ namespace Rezervise.Domain.Entities
 
         public Guid ProductId { get; private set; }
 
-        /// <summary>Bir hizmet gerceklestirildiginde tuketilen miktar.</summary>
+        /// <summary>Bir hizmet gerçekleştirildiğinde tüketilen miktar.</summary>
         public decimal QuantityPerService { get; private set; }
 
         public string Unit { get; private set; }
 
-        private ServiceMaterial() { } // EF Core icin
+        private ServiceMaterial() { } // EF Core için
 
         public ServiceMaterial(
             Guid businessId,
@@ -42,25 +42,25 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (serviceId == Guid.Empty)
-                throw new ArgumentException("Hizmet ID bos olamaz.", nameof(serviceId));
+                throw new ArgumentException("Hizmet ID boş olamaz.", nameof(serviceId));
 
             if (productId == Guid.Empty)
-                throw new ArgumentException("Urun ID bos olamaz.", nameof(productId));
+                throw new ArgumentException("Ürün ID boş olamaz.", nameof(productId));
 
             if (quantityPerService <= 0)
-                throw new DomainException("Hizmet basina tuketim miktari sifirdan buyuk olmalidir.");
+                throw new DomainException("Hizmet basına tüketim miktarı sıfırdan büyük olmalıdır.");
 
             if (quantityPerService > 99999999.99m)
-                throw new DomainException("Hizmet basina tuketim miktari cok yuksek.");
+                throw new DomainException("Hizmet basına tüketim miktarı çok yüksek.");
 
             if (string.IsNullOrWhiteSpace(unit))
-                throw new DomainException("Olcu birimi bos olamaz.");
+                throw new DomainException("Ölçü birimi boş olamaz.");
 
             if (unit.Length > 20)
-                throw new DomainException("Olcu birimi 20 karakterden uzun olamaz.");
+                throw new DomainException("Ölçü birimi 20 karakterden uzun olamaz.");
 
             BusinessId = businessId;
             ServiceId = serviceId;
@@ -72,10 +72,10 @@ namespace Rezervise.Domain.Entities
         public void SetQuantityPerService(decimal quantityPerService)
         {
             if (quantityPerService <= 0)
-                throw new DomainException("Hizmet basina tuketim miktari sifirdan buyuk olmalidir.");
+                throw new DomainException("Hizmet basına tüketim miktarı sıfırdan büyük olmalıdır.");
 
             if (quantityPerService > 99999999.99m)
-                throw new DomainException("Hizmet basina tuketim miktari cok yuksek.");
+                throw new DomainException("Hizmet basına tüketim miktarı çok yüksek.");
 
             QuantityPerService = quantityPerService;
             UpdatedAt = DateTime.UtcNow;

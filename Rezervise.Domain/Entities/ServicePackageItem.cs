@@ -3,9 +3,9 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Paketin icindeki tek hizmet kalemi: hangi hizmetten kac seans
-    /// dahil oldugunu belirtir. <see cref="ServicePackage"/> aggregate'inin
-    /// cocuk entity'sidir.
+    /// Paketin içindeki tek hizmet kalemi: hangi hizmetten kaç seans
+    /// dahil öldüğünü belirtir. <see cref="ServicePackage"/> aggregate'inin
+    /// çocuk entity'sidir.
     /// </summary>
     public class ServicePackageItem : BaseEntity
     {
@@ -22,10 +22,10 @@ namespace Rezervise.Domain.Entities
             : base(Guid.NewGuid())
         {
             if (servicePackageId == Guid.Empty)
-                throw new ArgumentException("Paket ID bos olamaz.", nameof(servicePackageId));
+                throw new ArgumentException("Paket ID boş olamaz.", nameof(servicePackageId));
 
             if (serviceId == Guid.Empty)
-                throw new ArgumentException("Hizmet ID bos olamaz.", nameof(serviceId));
+                throw new ArgumentException("Hizmet ID boş olamaz.", nameof(serviceId));
 
             if (includedSessions <= 0)
                 throw new DomainException("ServicePackageItem.SessionsPositive");
@@ -35,7 +35,7 @@ namespace Rezervise.Domain.Entities
             IncludedSessions = includedSessions;
         }
 
-        /// <summary>Dahil seans sayisini gunceller. Test/seed ve yonetim islemleri icin.</summary>
+        /// <summary>Dahil seans sayısını günceller. Test/seed ve yönetim işlemleri için.</summary>
         public void SetIncludedSessions(int includedSessions)
         {
             if (includedSessions <= 0)

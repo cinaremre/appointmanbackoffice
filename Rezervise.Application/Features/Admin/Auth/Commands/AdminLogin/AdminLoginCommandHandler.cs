@@ -8,8 +8,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Auth.Commands.AdminLogin
 {
     /// <summary>
-    /// Backoffice giris istegi. Yanit yalnizca kimlik/parola dogru VE
-    /// kullanici backoffice rollerinden birine sahipse uretilir.
+    /// Backoffice giriş isteği. Yanıt yalnızca kimlik/parola doğru VE
+    /// kullanıcı backoffice rollerinden birine sahipse üretilir.
     /// </summary>
     public class AdminLoginCommand : IRequest<Result<AdminLoginResponse>>
     {
@@ -17,7 +17,7 @@ namespace Rezervise.Application.Features.Admin.Auth.Commands.AdminLogin
         public string Password { get; set; } = string.Empty;
     }
 
-    /// <summary>Basarili giris yaniti.</summary>
+    /// <summary>Başarılı giriş yanıtı.</summary>
     public class AdminLoginResponse
     {
         public string AccessToken { get; set; } = string.Empty;
@@ -28,16 +28,16 @@ namespace Rezervise.Application.Features.Admin.Auth.Commands.AdminLogin
     }
 
     /// <summary>
-    /// Backoffice girisi. Musteri/isletme sahibi hesaplari bilincli olarak
-    /// reddedilir: backoffice token'i yalnizca yonetici rolleri icin uretilir.
-    /// Kimlik bilgisi hatalarinda tek sabit mesaj donerulur (hesap sayisi
-    /// sizdirilmaz).
+    /// Backoffice girişi. Müşteri/işletme sahibi hesapları bilinçli olarak
+    /// reddedilir: backoffice token'i yalnızca yönetici rolleri için üretilir.
+    /// Kimlik bilgisi hatalarında tek sabit mesaj dönerulur (hesap sayısı
+    /// sızdırılmaz).
     /// </summary>
     public class AdminLoginCommandHandler : IRequestHandler<AdminLoginCommand, Result<AdminLoginResponse>>
     {
         /// <summary>
-        /// Backoffice'e girebilen roller (dokuman 5.2). BusinessOwner da girer;
-        /// erisebilecegi uc'lar yalnizca kendi isletmesi kapsamindadir.
+        /// Backoffice'e girebilen roller (doküman 5.2). BusinessOwner da girer;
+        /// erişebileceği uç'lar yalnızca kendi işletmesi kapsamındadır.
         /// </summary>
         private static readonly string[] BackOfficeRoles =
         {
@@ -62,7 +62,7 @@ namespace Rezervise.Application.Features.Admin.Auth.Commands.AdminLogin
                 var email = request.Email?.Trim() ?? string.Empty;
 
                 if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(request.Password))
-                    return Result<AdminLoginResponse>.Failure(Error.Validation("E-posta ve sifre zorunludur."));
+                    return Result<AdminLoginResponse>.Failure(Error.Validation("E-posta ve şifre zorunludur."));
 
                 var users = await _userRepository.FindAsync(
                     u => u.Email == email && !u.IsDeleted,
@@ -70,14 +70,14 @@ namespace Rezervise.Application.Features.Admin.Auth.Commands.AdminLogin
 
                 var user = users.FirstOrDefault();
 
-                // Bilinmeyen hesap ve yanlis parola ayni sabit cevabi alir.
+                // Bilinmeyen hesap ve yanlış parola aynı sabit cevabı alır.
                 if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
                     return Result<AdminLoginResponse>.Failure(Error.Unauthorized("Auth.InvalidCredentials"));
 
                 if (user.IsLockedOut)
                     return Result<AdminLoginResponse>.Failure(Error.Unauthorized("Auth.AccountLocked"));
 
-                // Rol kontrolu: backoffice yalnizca yonetici rollerine aciktir.
+                // Rol kontrolü: backoffice yalnızca yönetici rollerine açıktır.
                 if (!BackOfficeRoles.Contains(user.Role.ToString()))
                     return Result<AdminLoginResponse>.Failure(Error.Unauthorized("Auth.InvalidCredentials"));
 

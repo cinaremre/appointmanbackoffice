@@ -4,21 +4,21 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Businesses.Commands.UpdateBusinessByAdmin
 {
     /// <summary>
-    /// Platform yoneticisinin isletme temel bilgilerini guncellemesi
-    /// (dokuman Modul 8). Yalnizca bos olmayan alanlar guncellenir;
-    /// islem denetim kaydina yazilir.
+    /// Platform yöneticisinin işletme temel bilgilerini güncellemesi
+    /// (doküman Modül 8). Yalnızca boş olmayan alanlar güncellenir;
+    /// işlem denetim kaydına yazılır.
     /// </summary>
     public class UpdateBusinessByAdminCommand : IRequest<Result<Guid>>
     {
         public Guid BusinessId { get; set; }
 
-        /// <summary>Yeni isletme adi; bos ise degistirilmez.</summary>
+        /// <summary>Yeni işletme adı; boş ise değiştirilmez.</summary>
         public string? Name { get; set; }
 
-        /// <summary>Yeni aciklama; null ise degistirilmez.</summary>
+        /// <summary>Yeni açıklama; null ise değiştirilmez.</summary>
         public string? Description { get; set; }
 
-        /// <summary>Yoneticinin islem gerekcesi; denetim kaydina yazilir.</summary>
+        /// <summary>Yöneticinin işlem gerekçesi; denetim kaydına yazılır.</summary>
         public string? Reason { get; set; }
     }
 }

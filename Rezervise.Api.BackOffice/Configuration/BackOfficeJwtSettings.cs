@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations;
 namespace Rezervise.BackOffice.Api.Configuration
 {
     /// <summary>
-    /// Backoffice JWT ayarlari. Ayri audience kullanilir; musteri API'si
-    /// tarafindan uretilen token'lar backoffice'te GECERLI OLMAZ.
+    /// Backoffice JWT ayarları. Ayrı audience kullanılır; müşteri API'si
+    /// tarafından üretilen token'lar backoffice'te GECERLI OLMAZ.
     /// </summary>
     public sealed class BackOfficeJwtSettings
     {
@@ -23,7 +23,7 @@ namespace Rezervise.BackOffice.Api.Configuration
         [Required(ErrorMessage = "JwtSettings:Issuer is required.")]
         public string Issuer { get; init; } = string.Empty;
 
-        /// <summary>Backoffice'e ozel audience ("Rezervise-Backoffice").</summary>
+        /// <summary>Backoffice'e özel audience ("Rezervise-Backoffice").</summary>
         [Required(ErrorMessage = "JwtSettings:Audience is required.")]
         public string Audience { get; init; } = "Rezervise-Backoffice";
 

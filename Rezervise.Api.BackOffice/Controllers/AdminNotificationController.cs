@@ -12,8 +12,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers
 {
     /// <summary>
-    /// Bildirim yonetimi (dokuman Modul 14). Route'lar
-    /// BackOfficeControllerBase uzerindeki "api/v1/admin" oneki ile birlesir:
+    /// Bildirim yönetimi (doküman Modül 14). Route'lar
+    /// BackOfficeControllerBase üzerindeki "api/v1/admin" öneki ile birleşir:
     /// GET  api/v1/admin/notifications
     /// GET  api/v1/admin/notifications/stats
     /// POST api/v1/admin/notifications/{id}/retry
@@ -28,8 +28,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Bildirim listesi: kullanici, tip ve gonderim zamani filtreleriyle
-        /// sayfali sonuc dondurur.
+        /// Bildirim listesi: kullanıcı, tip ve gönderim zamanı filtreleriyle
+        /// sayfalı sonuç döndürür.
         /// </summary>
         [HttpGet("notifications")]
         [Authorize(Policy = AdminPermissions.NotificationRead)]
@@ -58,8 +58,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Son 30 gunun bildirim istatistikleri: toplam, okunmus, okunmamis
-        /// ve tip bazinda kirilim.
+        /// Son 30 günün bildirim istatistikleri: toplam, okunmuş, okunmamış
+        /// ve tip bazında kırılım.
         /// </summary>
         [HttpGet("notifications/stats")]
         [Authorize(Policy = AdminPermissions.NotificationRead)]
@@ -74,15 +74,15 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Bildirim yeniden gonderim talebi (kritik islem; denetim kaydi yazilir).
-        /// Ilk surumde asil gonderim saglayici entegrasyonuna kadar yalnizca
-        /// kabul ve denetim kaydi uretir.
+        /// Bildirim yeniden gönderim talebi (kritik işlem; denetim kaydı yazılır).
+        /// İlk sürümde asıl gönderim sağlayıcı entegrasyonuna kadar yalnızca
+        /// kabul ve denetim kaydı üretir.
         /// </summary>
         [HttpPost("notifications/{id:guid}/retry")]
         [Authorize(Policy = AdminPermissions.NotificationRetry)]
         public async Task<IActionResult> Retry(Guid id, [FromQuery] string? reason)
         {
-            // Aktor kimligi JWT claim'lerinden cozulur; istemciye guvenilmez.
+            // Aktör kimliği JWT claim'lerinden çözülür; istemciye güvenilmez.
             var actorIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var actorRole = User.Claims
                 .FirstOrDefault(c => c.Type == "role" || c.Type == ClaimTypes.Role)
@@ -103,8 +103,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Hata kodunu HTTP durum koduna esler; izin hatasi 403, kimlik hatasi
-        /// 401, bulunamadi 404 olarak doner.
+        /// Hata kodunu HTTP durum koduna eşler; izin hatası 403, kimlik hatası
+        /// 401, bulunamadı 404 olarak döner.
         /// </summary>
         private IActionResult FromError<T>(Result<T> result)
         {

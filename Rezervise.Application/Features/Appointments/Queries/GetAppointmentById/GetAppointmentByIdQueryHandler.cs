@@ -28,9 +28,9 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAppointmentById
                 if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
                     return Result<AppointmentDto>.Failure(Error.Unauthorized("Auth.Unauthorized"));
 
-                // 1. Randevuyu ID'ye gore getir.
-                //    Include edilmezse personel, isletme, hizmet ve kullanici alanlari null doner.
-                //    Silinmis kayitlar da 404 dondurur.
+                // 1. Randevuyu ID'ye göre getir.
+                //    Include edilmezse personel, işletme, hizmet ve kullanıcı alanları null döner.
+                //    Silinmiş kayıtlar da 404 döndürür.
                 var matches = await _appointmentRepository.FindWithIncludesAsync(
                     a => a.Id == request.AppointmentId && !a.IsDeleted,
                     new[]
@@ -44,20 +44,20 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAppointmentById
 
                 var appointment = matches.FirstOrDefault();
 
-                // 2. Randevu bulunamadiysa hata dondur
+                // 2. Randevu bulunamadıysa hata döndür
                 if (appointment is null)
                     return Result<AppointmentDto>.Failure(Error.NotFound("Randevu", request.AppointmentId.ToString()));
 
-                // 3. Yetki: randevu sahibi, isletme sahibi veya yonetici.
+                // 3. Yetki: randevu sahibi, işletme sahibi veya yönetici.
                 var canRead =
                     CallerAuthorization.CanActAsUser(_currentUser, appointment.UserId) ||
                     (appointment.Business is not null &&
                      CallerAuthorization.CanActForBusiness(_currentUser, appointment.Business.OwnerId));
 
                 if (!canRead)
-                    return Result<AppointmentDto>.Failure(Error.Forbidden("Bu randevuyu goruntuleme yetkiniz yok."));
+                    return Result<AppointmentDto>.Failure(Error.Forbidden("Bu randevuyu görüntüleme yetkiniz yok."));
 
-                // 4. Verileri DTO'ya donustur
+                // 4. Verileri DTO'ya dönüştür
                 var dto = new AppointmentDto
                 {
                     Id = appointment.Id,
@@ -89,7 +89,7 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAppointmentById
             }
             catch (Exception)
             {
-                return Result<AppointmentDto>.Failure(Error.Internal("Randevu bilgileri getirilirken bir hata olustu."));
+                return Result<AppointmentDto>.Failure(Error.Internal("Randevu bilgileri getirilirken bir hata oluştu."));
             }
         }
     }

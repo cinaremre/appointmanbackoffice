@@ -4,7 +4,7 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Operations.Queries.GetAdminJobDetail
 {
     /// <summary>
-    /// Tek bir aktarim isinin detayi: is ozeti ve satir sonuclarinin ilk 200'i.
+    /// Tek bir aktarım işinin detayı: is özeti ve satır sonuçlarının ilk 200'i.
     /// </summary>
     public class GetAdminJobDetailQuery : IRequest<Result<AdminJobDetailDto>>
     {

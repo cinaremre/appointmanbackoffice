@@ -5,27 +5,27 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyProducts
 {
     /// <summary>
-    /// Isletme sahibinin urun listesi. Sahiplik handler'da dogrulanir;
-    /// stok bakiyesi hareket defterinin isaretli toplamidir.
+    /// İşletme sahibinin ürün listesi. Sahiplik handler'da doğrulanır;
+    /// stok bakiyesi hareket defterinin işaretli toplamıdır.
     /// </summary>
     public class GetMyProductsQuery : IRequest<Result<AdminPagedResult<OwnerProductDto>>>
     {
         public Guid BusinessId { get; set; }
 
-        /// <summary>Urun ad/SKU icerik aramasi.</summary>
+        /// <summary>Ürün ad/SKU içerik araması.</summary>
         public string? Search { get; set; }
 
-        /// <summary>Aktif/pasif urun filtresi.</summary>
+        /// <summary>Aktif/pasif ürün filtresi.</summary>
         public bool? IsActive { get; set; }
 
-        /// <summary>1 tabanli sayfa numarasi.</summary>
+        /// <summary>1 tabanlı sayfa numarası.</summary>
         public int Page { get; set; } = 1;
 
-        /// <summary>Sayfa boyutu; handler en fazla 200'e sinirlar.</summary>
+        /// <summary>Sayfa boyutu; handler en fazla 200'e sınırlar.</summary>
         public int PageSize { get; set; } = 50;
     }
 
-    /// <summary>Owner urun satiri; defterden hesaplanan bakiyeyle.</summary>
+    /// <summary>Owner ürün satırı; defterden hesaplanan bakiyeyle.</summary>
     public class OwnerProductDto
     {
         public Guid Id { get; init; }
@@ -46,7 +46,7 @@ namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyProducts
 
         public bool IsActive { get; init; }
 
-        /// <summary>Hareket defterinin isaretli toplami (giris - cikis).</summary>
+        /// <summary>Hareket defterinin işaretli toplamı (giriş - çıkış).</summary>
         public decimal StockBalance { get; init; }
     }
 }

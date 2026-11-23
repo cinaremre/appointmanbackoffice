@@ -1,19 +1,19 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Prim tahakkuk durumlari. Tahakkuklar yalnizca ileri yonde
-    /// Accrued -> Paid gecisine sahiptir; Accrued -> Reversed geri alma
+    /// Prim tahakkuk durumları. Tahakkuklar yalnızca ileri yönde
+    /// Accrued -> Paid geçişine sahiptir; Accrued -> Reversed geri alma
     /// Reverse() metodu ile, Paid durumundan geri alma kabul edilmez.
     /// </summary>
     public enum EnumCommissionAccrualStatus
     {
-        /// <summary>Tahakkuk olustu, odeme bekliyor.</summary>
+        /// <summary>Tahakkuk oluştu, ödeme bekliyor.</summary>
         Accrued = 0,
 
-        /// <summary>Odeme doneminde odenmis.</summary>
+        /// <summary>Ödeme döneminde ödenmiş.</summary>
         Paid = 1,
 
-        /// <summary>Tahakkuk ters cevrilmis (iptal/iade).</summary>
+        /// <summary>Tahakkuk ters çevrilmiş (iptal/iade).</summary>
         Reversed = 2
     }
 }

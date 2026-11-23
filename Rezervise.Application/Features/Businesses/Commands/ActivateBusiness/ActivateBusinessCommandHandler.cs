@@ -28,21 +28,21 @@ namespace Rezervise.Application.Features.Businesses.Commands.ActivateBusiness
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu - JWT'den cozulen isletme sahibi veya yonetici mi?
+                // 2. Yetki kontrolü - JWT'den çözülen işletme sahibi veya yönetici mi?
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Unauthorized("Bu isletmeyi aktif etme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Unauthorized("Bu işletmeyi aktif etme yetkiniz yok."));
 
                 // 3. Zaten aktif mi?
                 if (business.IsActive)
-                    return Result<Guid>.Failure(Error.Conflict("Isletme zaten aktif."));
+                    return Result<Guid>.Failure(Error.Conflict("İşletme zaten aktif."));
 
                 // 4. Aktif et
-                // Denetim kaydi da govde degil, JWT kimliginden yazilir.
+                // Denetim kaydı da gövde değil, JWT kimliğinden yazılır.
                 business.Activate(_currentUser.UserId?.ToString() ?? "System");
 
                 // 5. Kaydet
@@ -56,7 +56,7 @@ namespace Rezervise.Application.Features.Businesses.Commands.ActivateBusiness
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Isletme aktif edilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("İşletme aktif edilirken bir hata oluştu.", ex.Message));
             }
         }
     }

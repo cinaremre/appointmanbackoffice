@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 namespace Rezervise.Infrastructure.Services
 {
     /// <summary>
-    /// Yonetici denetim kayitlarini dogrudan repository uzerinden kalici hale
-    /// getirir. Yazim hatasi is akisini bozmaz: kayit atlanir ve loglanir.
+    /// Yönetici denetim kayıtlarını doğrudan repository üzerinden kalıcı hale
+    /// getirir. Yazım hatası is akışını bozmaz: kayıt atlanır ve loğlanır.
     /// </summary>
     public class AdminAuditSink : IAdminAuditSink
     {
@@ -25,7 +25,7 @@ namespace Rezervise.Infrastructure.Services
             _logger = logger;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public async Task RecordAsync(
             Guid actorUserId,
             string actorRole,
@@ -61,10 +61,10 @@ namespace Rezervise.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                // Denetim yazimi ana islemi bozmamali; kayip loglanir.
+                // Denetim yazımı ana işlemi bozmamalı; kayıp loğlanır.
                 _logger.LogWarning(
                     ex,
-                    "AdminAuditLog yazilamadi. Actor={ActorUserId} Entity={EntityType}/{EntityId} Action={Action}",
+                    "AdminAuditLog yazılamadı. Actor={ActorUserId} Entity={EntityType}/{EntityId} Action={Action}",
                     actorUserId,
                     entityType,
                     entityId,

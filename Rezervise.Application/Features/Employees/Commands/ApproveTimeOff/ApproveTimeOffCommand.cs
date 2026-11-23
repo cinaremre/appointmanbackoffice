@@ -8,8 +8,8 @@ namespace Rezervise.Application.Features.Employees.Commands.ApproveTimeOff
         public Guid TimeOffId { get; set; }
 
         /// <summary>
-        /// JWT'den cozulen istek sahibi. Handler govde degerine guvenmez;
-        /// yalnizca token kimligiyle tutarli oldugunda kabul eder.
+        /// JWT'den çözülen istek sahibi. Handler gövde değerine güvenmez;
+        /// yalnızca token kimliğiyle tutarlı öldüğünda kabul eder.
         /// </summary>
         public Guid RequesterId { get; set; }
     }

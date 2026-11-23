@@ -13,19 +13,19 @@ using MediatR;
 namespace Rezervise.Application.Features.Imports.Commands.ExecuteImportJob
 {
     /// <summary>
-    /// Aktarim isini isler:
-    /// - Kolon eslesmesinden telefon kolonu bulunur,
-    /// - her satir icin SourceRecordKey (normalize edilmis telefon,
-    ///   PhoneNumber value object ile) hesaplanir,
-    /// - ayni anahtarin ilk gorunumu Imported, tekrarlari SkippedDuplicate,
-    /// - gecersiz telefonlar Failed olarak kaydedilir,
-    /// - is Completed durumuna gecer.
+    /// Aktarım işini işler:
+    /// - Kolon eşleşmesinden telefon kolonu bulunur,
+    /// - her satır için SourceRecordKey (normalize edilmiş telefon,
+    ///   PhoneNumber value object ile) hesaplanır,
+    /// - aynı anahtarın ilk görünümü Imported, tekrarları SkippedDuplicate,
+    /// - geçersiz telefonlar Failed olarak kaydedilir,
+    /// - is Completed durumuna geçer.
     ///
-    /// BASITLESTIRME KARARI (ilk surum): musteri (User) kaydi olusturulmaz;
-    /// satirlar yalnizca Imported/SkippedDuplicate olarak isaretlenir.
-    /// Kullanici kayitlari register akisina baglanacak; buradaki
-    /// SourceRecordKey altyapisi ileride kullanici hesabi eslestirmesinde
-    /// deterministik anahtar olarak kullanilacak.
+    /// BASITLESTIRME KARARI (ilk sürüm): müşteri (User) kaydı oluşturulmaz;
+    /// satırlar yalnızca Imported/SkippedDuplicate olarak işaretlenir.
+    /// Kullanıcı kayıtları register akışına bağlanacak; buradaki
+    /// SourceRecordKey altyapısı ileride kullanıcı hesabı eşleştirmesinde
+    /// deterministik anahtar olarak kullanılacak.
     /// </summary>
     public class ExecuteImportJobCommandHandler : IRequestHandler<ExecuteImportJobCommand, Result<Guid>>
     {
@@ -53,35 +53,35 @@ namespace Rezervise.Application.Features.Imports.Commands.ExecuteImportJob
         {
             try
             {
-                // 1. Is kontrolu
+                // 1. İs kontrolü
                 var job = await _importJobRepository.GetByIdAsync(request.ImportJobId, cancellationToken);
                 if (job is null)
-                    return Result<Guid>.Failure(Error.NotFound("Aktarim isi", request.ImportJobId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Aktarım isi", request.ImportJobId.ToString()));
 
-                // 2. Yetki kontrolu: isin isletmesi uzerinden JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: işin işletmesi üzerinden JWT kimliği esas alınır.
                 var business = await _businessRepository.GetByIdAsync(job.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", job.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", job.BusinessId.ToString()));
 
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Unauthorized("Bu aktarim isini calistirma yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Unauthorized("Bu aktarım işini çalıştırma yetkiniz yok."));
 
-                // 3. Tamamlanmis is tekrar calistirilamaz.
+                // 3. Tamamlanmış is tekrar çalıştırılamaz.
                 if (job.Status == EnumImportStatus.Completed)
-                    return Result<Guid>.Failure(Error.Conflict("Bu aktarim isi zaten tamamlanmis; tekrar calistirilamaz."));
+                    return Result<Guid>.Failure(Error.Conflict("Bu aktarım isi zaten tamamlanmış; tekrar çalıştırılamaz."));
 
-                // 4. Kolon eslesmesini coz: {"0":"FullName","1":"Phone"}.
-                //    Phone alani zorunludur; SourceRecordKey telefondan uretilir.
+                // 4. Kolon eşleşmesini çöz: {"0":"FullName","1":"Phone"}.
+                //    Phone alani zorunludur; SourceRecordKey telefondan üretilir.
                 var phoneIndex = TryResolvePhoneIndex(request.ColumnMapping, out var mappingError);
                 if (phoneIndex is null)
                     return Result<Guid>.Failure(mappingError!);
 
-                // 5. Isi isleme al ve eslesmesi kaydet.
+                // 5. İsi işleme al ve eşleşmesi kaydet.
                 job.SetColumnMapping(request.ColumnMapping);
                 job.StartProcessing();
                 await _importJobRepository.UpdateAsync(job, cancellationToken);
 
-                // 6. Satirlari isle. Ilk satir kolon basligidir; veri 2. satirdan baslar.
+                // 6. Satırları isle. İlk satır kolon başlığıdır; veri 2. satırdan başlar.
                 var rows = CsvParser.Parse(job.CsvContent);
                 var importedKeys = new HashSet<string>();
                 var importedCount = 0;
@@ -92,18 +92,18 @@ namespace Rezervise.Application.Features.Imports.Commands.ExecuteImportJob
                     var row = rows[i];
                     var rowNumber = i;
 
-                    // 6a. Telefon degerini eslesmeden al.
+                    // 6a. Telefon değerini eşleşmeden al.
                     var phoneValue = phoneIndex.Value < row.Length ? row[phoneIndex.Value] : null;
 
                     if (string.IsNullOrWhiteSpace(phoneValue))
                     {
                         await AddRowAsync(job.Id, rowNumber, EnumImportRowStatus.Failed,
-                            errorDetails: "Telefon kolonu bos.", cancellationToken: cancellationToken);
+                            errorDetails: "Telefon kolonu boş.", cancellationToken: cancellationToken);
                         failedCount++;
                         continue;
                     }
 
-                    // 6b. Normalize edilmis telefon = deterministik eslestirme anahtari.
+                    // 6b. Normalize edilmiş telefon = deterministik eşleştirme anahtarı.
                     string recordKey;
                     try
                     {
@@ -112,13 +112,13 @@ namespace Rezervise.Application.Features.Imports.Commands.ExecuteImportJob
                     catch (DomainException)
                     {
                         await AddRowAsync(job.Id, rowNumber, EnumImportRowStatus.Failed,
-                            errorDetails: "Gecersiz telefon numarasi.", cancellationToken: cancellationToken);
+                            errorDetails: "Geçersiz telefon numarası.", cancellationToken: cancellationToken);
                         failedCount++;
                         continue;
                     }
 
-                    // 6c. Mukerrer kontrolu: once bu calistirmada, sonra onceki
-                    //     islerden ayni isletmeye ait Imported satirlar.
+                    // 6c. Mükerrer kontrolü: önce bu çalıştırmada, sonra önceki
+                    //     işlerden aynı işletmeye ait Imported satırlar.
                     if (importedKeys.Contains(recordKey) || await WasAlreadyImportedAsync(job.BusinessId, recordKey, cancellationToken))
                     {
                         await AddRowAsync(job.Id, rowNumber, EnumImportRowStatus.SkippedDuplicate,
@@ -126,15 +126,15 @@ namespace Rezervise.Application.Features.Imports.Commands.ExecuteImportJob
                         continue;
                     }
 
-                    // 6d. Yeni kayit: ilk surumde musteri tablosuna yazilmaz,
-                    //     yalnizca Imported olarak isaretlenir (register akisi baglanacak).
+                    // 6d. Yeni kayıt: ilk sürümde müşteri tablosuna yazılmaz,
+                    //     yalnızca Imported olarak işaretlenir (register akışı bağlanacak).
                     await AddRowAsync(job.Id, rowNumber, EnumImportRowStatus.Imported,
                         sourceRecordKey: recordKey, cancellationToken: cancellationToken);
                     importedKeys.Add(recordKey);
                     importedCount++;
                 }
 
-                // 7. Isi tamamla ve sayaclari yaz.
+                // 7. İsi tamamla ve sayaçları yaz.
                 job.Complete(importedCount, failedCount);
                 await _importJobRepository.UpdateAsync(job, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -147,12 +147,12 @@ namespace Rezervise.Application.Features.Imports.Commands.ExecuteImportJob
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Aktarim isi calistirilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Aktarım isi çalıştırılırken bir hata oluştu.", ex.Message));
             }
         }
 
         /// <summary>
-        /// Kolon eslesme JSON'unu parse eder ve Phone alaninin index'ini doner.
+        /// Kolon eşleşme JSON'unu parse eder ve Phone alanının index'ini döner.
         /// </summary>
         private static int? TryResolvePhoneIndex(string columnMapping, out Error? error)
         {
@@ -165,13 +165,13 @@ namespace Rezervise.Application.Features.Imports.Commands.ExecuteImportJob
             }
             catch (JsonException)
             {
-                error = Error.Conflict("Kolon eslesmesi gecerli bir JSON degil.");
+                error = Error.Conflict("Kolon eşleşmesi geçerli bir JSON değil.");
                 return null;
             }
 
             if (mapping is null || mapping.Count == 0)
             {
-                error = Error.Conflict("Kolon eslesmesi bos olamaz.");
+                error = Error.Conflict("Kolon eşleşmesi boş olamaz.");
                 return null;
             }
 
@@ -184,11 +184,11 @@ namespace Rezervise.Application.Features.Imports.Commands.ExecuteImportJob
                 }
             }
 
-            error = Error.Conflict("Kolon eslesmesinde Phone alani tanimli degil.");
+            error = Error.Conflict("Kolon eşleşmesinde Phone alani tanımlı değil.");
             return null;
         }
 
-        /// <summary>Ayni isletmenin onceki aktarimlarinda bu anahtar zaten aktarilmis mi?</summary>
+        /// <summary>Aynı işletmenin önceki aktarımlarında bu anahtar zaten aktarılmış mi?</summary>
         private async Task<bool> WasAlreadyImportedAsync(Guid businessId, string recordKey, CancellationToken cancellationToken)
         {
             var importedRows = await _rowResultRepository.FindAsync(

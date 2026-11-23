@@ -1,32 +1,32 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Isletme durumu
+    /// İşletme durumu
     /// </summary>
     public enum EnumBusinessStatus
     {
         /// <summary>
-        /// Aktif - Isletme aktif ve hizmet veriyor
+        /// Aktif - İşletme aktif ve hizmet veriyor
         /// </summary>
         Active = 0,
 
         /// <summary>
-        /// Pasif - Isletme ge�ici olarak kapali
+        /// Pasif - İşletme geçici olarak kapalı
         /// </summary>
         Inactive = 1,
 
         /// <summary>
-        /// Dogrulama Bekliyor - Isletme onay bekliyor
+        /// Doğrulama Bekliyor - İşletme onay bekliyor
         /// </summary>
         PendingVerification = 2,
 
         /// <summary>
-        /// Askida - Isletme ge�ici olarak askiya alindi
+        /// Askıda - İşletme geçici olarak askıya alındı
         /// </summary>
         Suspended = 3,
 
         /// <summary>
-        /// Kapali - Isletme kalici olarak kapandi
+        /// Kapalı - İşletme kalıcı olarak kapandı
         /// </summary>
         Closed = 4
     }

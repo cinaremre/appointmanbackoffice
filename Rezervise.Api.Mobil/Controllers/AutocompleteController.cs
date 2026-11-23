@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Tek bir uctan adres hiyerarsisi ve kategori agaclari icin otomatik
-    /// tamamlama saglar. Mobil istemci sonucu ID ile birlikte alir ve bu ID'yi
-    /// ilgili endpoint'e aynen geri gonderir.
+    /// Tek bir uçtan adres hiyerarşisi ve kategori ağaçları için otomatik
+    /// tamamlama sağlar. Mobil istemci sonucu ID ile birlikte alır ve bu ID'yi
+    /// ilgili endpoint'e aynen geri gönderir.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -25,19 +25,19 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Verilen tip icinde en az 3 karakterlik arama yapar ve ID'li sonuc listesi doner.
+        /// Verilen tip içinde en az 3 karakterlik arama yapar ve ID'li sonuç listesi döner.
         /// </summary>
         /// <param name="type">
         /// Kaynak tipi: city, district, locality, neighborhood, businessCategory, serviceCategory.
         /// </param>
-        /// <param name="q">Arama terimi (en az 3 karakter, buyuk/kucuk harf duyarsiz).</param>
+        /// <param name="q">Arama terimi (en az 3 karakter, büyük/küçük harf duyarsız).</param>
         /// <param name="parentId">
-        /// Ust birim ID'si (opsiyonel). Verilirse sonuclar o ust birime daraltilir;
-        /// bos birakilirsa arama tum Turkiye genelinde yapilir. Adres tipleri icin
-        /// sayisal, kategori tipleri icin Guid biciminde olmalidir.
+        /// Üst birim ID'si (opsiyonel). Verilirse sonuçlar o üst birime daraltılır;
+        /// boş bırakılırsa arama tüm Türkiye genelinde yapılır. Adres tipleri için
+        /// sayısal, kategori tipleri için Guid biçiminde olmalıdır.
         /// </param>
-        /// <param name="limit">Donulecek en fazla kayit sayisi (1-25, varsayilan: 10).</param>
-        /// <returns>ID ve gorunen ad iceren otomatik tamamlama listesi.</returns>
+        /// <param name="limit">Dönülecek en fazla kayıt sayısı (1-25, varsayılan: 10).</param>
+        /// <returns>ID ve görünen ad içeren otomatik tamamlama listesi.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(Result<List<AutocompleteItemDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<List<AutocompleteItemDto>>), StatusCodes.Status400BadRequest)]
@@ -47,7 +47,7 @@ namespace Rezervise.Api.Controllers
             [FromQuery] string? parentId = null,
             [FromQuery] int limit = 10)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new AutocompleteQuery
             {
                 Type = type,
@@ -56,10 +56,10 @@ namespace Rezervise.Api.Controllers
                 Limit = limit
             };
 
-            // 2. Mediator ile gonder (dogrulama pipeline'da calisir)
+            // 2. Mediator ile gönder (doğrulama pipeline'da çalışır)
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 

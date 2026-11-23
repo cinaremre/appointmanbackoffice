@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Kimlik dogrulama islemlerini yonetir.
+    /// Kimlik doğrulama işlemlerini yönetir.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -27,19 +27,19 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Yeni kullanici kaydi olusturur.
+        /// Yeni kullanıcı kaydı oluşturur.
         /// </summary>
-        /// <param name="command">Kayit bilgileri</param>
-        /// <returns>Olusturulan kullanicinin ID'si</returns>
+        /// <param name="command">Kayıt bilgileri</param>
+        /// <returns>Oluşturulan kullanıcının ID'si</returns>
         [HttpPost("register")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterUserCommand command)
         {
-            // 1. Command'i mediator ile gonder
+            // 1. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -47,19 +47,19 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kullanici girisi yapar ve token dondurur.
+        /// Kullanıcı girişi yapar ve token döndürür.
         /// </summary>
-        /// <param name="command">Giris bilgileri</param>
-        /// <returns>Access token, refresh token ve kullanici bilgileri</returns>
+        /// <param name="command">Giriş bilgileri</param>
+        /// <returns>Access token, refresh token ve kullanıcı bilgileri</returns>
         [HttpPost("login")]
         [ProducesResponseType(typeof(Result<LoginResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<LoginResponse>), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Login([FromBody] LoginCommand command)
         {
-            // 1. Command'i mediator ile gonder
+            // 1. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -67,7 +67,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Suresi dolan access token'i yeniler.
+        /// Süresi dolan access token'i yeniler.
         /// </summary>
         /// <param name="command">Access token ve refresh token</param>
         /// <returns>Yeni access token ve refresh token</returns>
@@ -76,10 +76,10 @@ namespace Rezervise.Api.Controllers
         [ProducesResponseType(typeof(Result<RefreshTokenResponse>), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
         {
-            // 1. Command'i mediator ile gonder
+            // 1. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -87,11 +87,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// E-posta adresini, e-postadaki baglantidan gelen token ile dogrular.
-        /// Baglanti bir e-posta istemcisinden acildigi icin anonim erisime aciktir.
+        /// E-posta adresini, e-postadaki bağlantıdan gelen token ile doğrular.
+        /// Bağlantı bir e-posta istemcisinden açıldığı için anonim erişime açıktır.
         /// </summary>
-        /// <param name="token">Ham dogrulama token'i</param>
-        /// <returns>Dogrulama sonucu</returns>
+        /// <param name="token">Ham doğrulama token'i</param>
+        /// <returns>Doğrulama sonucu</returns>
         [AllowAnonymous]
         [HttpGet("verify-email")]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
@@ -104,10 +104,10 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// GET varyantiyla ayni islemi govde uzerinden yapar (API istemcileri icin).
+        /// GET varyantıyla aynı işlemi gövde üzerinden yapar (API istemcileri için).
         /// </summary>
-        /// <param name="command">Token'i tasiyan komut</param>
-        /// <returns>Dogrulama sonucu</returns>
+        /// <param name="command">Token'i taşıyan komut</param>
+        /// <returns>Doğrulama sonucu</returns>
         [AllowAnonymous]
         [HttpPost("verify-email")]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
@@ -120,11 +120,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Dogrulama e-postasini yeniden gonderir. Yanit, adresin sistemde kayitli
-        /// olup olmadigini sizdirmamak icin her durumda basarili doner.
+        /// Doğrulama e-postasını yeniden gönderir. Yanıt, adresin sistemde kayıtlı
+        /// olup olmadığını sızdırmamak için her durumda başarılı döner.
         /// </summary>
-        /// <param name="command">E-posta adresini tasiyan komut</param>
-        /// <returns>Istek kabul edildi bilgisi</returns>
+        /// <param name="command">E-posta adresini taşıyan komut</param>
+        /// <returns>İstek kabul edildi bilgisi</returns>
         [AllowAnonymous]
         [HttpPost("resend-verification")]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
@@ -140,11 +140,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kayit sonrasi gonderilen telefon dogrulama kodunu dogrular. Basarili
-        /// dogrulamada kullanici aktiflesir ve giris yapabilir.
+        /// Kayıt sonrası gönderilen telefon doğrulama kodunu doğrular. Başarılı
+        /// doğrulamada kullanıcı aktifleşir ve giriş yapabilir.
         /// </summary>
-        /// <param name="command">Telefon numarasi ve kod</param>
-        /// <returns>Dogrulanan kullanicinin ID'si</returns>
+        /// <param name="command">Telefon numarası ve kod</param>
+        /// <returns>Doğrulanan kullanıcının ID'si</returns>
         [AllowAnonymous]
         [HttpPost("verify-phone")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
@@ -160,11 +160,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Telefon dogrulama kodunu yeniden gonderir. Yanit, numaranin kayitli olup
-        /// olmadigini sizdirmamak icin her durumda basarili doner.
+        /// Telefon doğrulama kodunu yeniden gönderir. Yanıt, numaranın kayıtlı olup
+        /// olmadığını sızdırmamak için her durumda başarılı döner.
         /// </summary>
-        /// <param name="command">Telefon numarasini tasiyan komut</param>
-        /// <returns>Istek kabul edildi bilgisi</returns>
+        /// <param name="command">Telefon numarasını taşıyan komut</param>
+        /// <returns>İstek kabul edildi bilgisi</returns>
         [AllowAnonymous]
         [HttpPost("resend-phone-code")]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
@@ -180,11 +180,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Dogrulama sonucunu uygun HTTP durum koduna esler.
-        /// Is kurali ihlalleri (gecersiz/suresi gecmis token) 400 doner.
+        /// Doğrulama sonucunu uygun HTTP durum koduna eşler.
+        /// İs kuralı ihlalleri (geçersiz/süresi geçmiş token) 400 döner.
         /// </summary>
         /// <param name="result">Komut sonucu</param>
-        /// <returns>Sarilmis sonuc</returns>
+        /// <returns>Sarılmış sonuç</returns>
         private IActionResult MapVerificationResult(Result<bool> result)
         {
             if (result.IsSuccess)

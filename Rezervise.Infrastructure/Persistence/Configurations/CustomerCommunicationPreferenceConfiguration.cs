@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Musteri x kanal x amac guncel izni. Tek kayit per kombinasyon;
-    /// gecmis ConsentHistory'den izlenir.
+    /// Müşteri x kanal x amaç güncel izni. Tek kayıt per kombinasyon;
+    /// geçmiş ConsentHistory'den izlenir.
     /// </summary>
     public class CustomerCommunicationPreferenceConfiguration : BaseConfiguration<CustomerCommunicationPreference>
     {
@@ -42,8 +42,8 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.Property(x => x.IsAllowed)
                 .IsRequired();
 
-            // Iliskiler acikca Restrict: convention cascade SQL Server'da
-            // multiple cascade path hatasi uretir.
+            // İlişkiler açıkça Restrict: convention cascade SQL Server'da
+            // multiple cascade path hatası üretir.
             builder.HasOne(x => x.Business)
                 .WithMany()
                 .HasForeignKey(x => x.BusinessId)

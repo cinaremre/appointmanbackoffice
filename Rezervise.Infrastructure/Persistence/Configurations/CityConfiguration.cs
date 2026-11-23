@@ -12,8 +12,8 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
 
             builder.HasKey(x => x.Id);
 
-            // Seed verisi plaka kodlarini (1-81) explicit Id olarak yazdigi icin
-            // IDENTITY uretimi kapatilir.
+            // Seed verişi plaka kodlarını (1-81) explicit Id olarak yazdığı için
+            // IDENTITY üretimi kapatılır.
             builder.Property(x => x.Id)
                 .ValueGeneratedNever();
 

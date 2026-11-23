@@ -69,7 +69,7 @@ namespace Rezervise.Application.Features.Admin.Stock.Queries.GetAdminStockMoveme
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<AdminStockMovementDto>>.Failure(
-                    Error.Internal("Stok hareket listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Stok hareket listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

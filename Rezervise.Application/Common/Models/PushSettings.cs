@@ -4,37 +4,37 @@ using Microsoft.Extensions.Configuration;
 namespace Rezervise.Application.Common.Models
 {
     /// <summary>
-    /// "Push" yapilandirma bolumunden okunan FCM ayarlari.
-    /// ServiceAccount dosyasi YALNIZCA sunucuda saklanir; repoya ASLA girmez.
+    /// "Push" yapılandırma bölümünden okunan FCM ayarları.
+    /// ServiceAccount dosyası YALNIZCA sunucuda saklanır; repoya ASLA girmez.
     /// </summary>
     public sealed class PushSettings
     {
-        /// <summary>Yapilandirma bolum adi.</summary>
+        /// <summary>Yapılandırma bölüm adı.</summary>
         public const string SectionName = "Push";
 
-        /// <summary>FCM gonderimleri yapilsin mi? false ise log tasimasi kullanilir.</summary>
+        /// <summary>FCM gönderimleri yapılsın mi? false ise log taşıması kullanılır.</summary>
         public bool Enabled { get; set; }
 
-        /// <summary>Firebase proje kimligi (FCM HTTP v1 icin zorunlu).</summary>
+        /// <summary>Firebase proje kimliği (FCM HTTP v1 için zorunlu).</summary>
         public string? ProjectId { get; set; }
 
         /// <summary>
-        /// Firebase service account JSON dosyasinin sunucudaki yolu.
+        /// Firebase service account JSON dosyasının sunucudaki yolu.
         /// Console'da "Generate new private key" ile indirilir.
         /// </summary>
         public string? ServiceAccountPath { get; set; }
 
-        /// <summary>Kuyruk kapasitesi; doluysa yeni bildirim reddedilir ve loglanir.</summary>
+        /// <summary>Kuyruk kapasitesi; doluysa yeni bildirim reddedilir ve loğlanır.</summary>
         public int QueueCapacity { get; set; } = 500;
 
-        /// <summary>FCM gonderimi icin gereken yapilandirma tam mi?</summary>
+        /// <summary>FCM gönderimi için gereken yapılandırma tam mi?</summary>
         public bool HasFcmConfiguration =>
             Enabled
             && !string.IsNullOrWhiteSpace(ProjectId)
             && !string.IsNullOrWhiteSpace(ServiceAccountPath);
 
         /// <summary>
-        /// Yapilandirmadan ayarlari okur; eksik degerlerde log tasimasi devrededir.
+        /// Yapılandırmadan ayarları okur; eksik değerlerde log taşıması devrededir.
         /// </summary>
         public static PushSettings FromConfiguration(IConfiguration configuration)
         {

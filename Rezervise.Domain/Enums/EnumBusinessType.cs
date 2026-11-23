@@ -1,57 +1,57 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Isletme tipleri - T�m sekt�rleri kapsayan detayli liste
+    /// İşletme tipleri - Tüm sektörleri kapsayan detaylı liste
     /// </summary>
     public enum EnumBusinessType
     {
         /// <summary>
-        /// Berber - Erkek kuaf�r�
+        /// Berber - Erkek kuaförü
         /// </summary>
         Barber = 0,
 
         /// <summary>
-        /// Dis Hekimi - Dis klinigi
+        /// Dış Hekimi - Dış kliniği
         /// </summary>
         Dentist = 1,
 
         /// <summary>
-        /// D�vmeci - D�vme ve v�cut sanati
+        /// Dövmeci - Dövme ve vücut sanatı
         /// </summary>
         Tattoo = 2,
 
         /// <summary>
-        /// Agdaci - Epilasyon ve agda hizmetleri
+        /// Ağdacı - Epilasyon ve ağda hizmetleri
         /// </summary>
         Waxing = 3,
 
         /// <summary>
-        /// Kuaf�r - Kadin kuaf�r�
+        /// Kuaför - Kadın kuaförü
         /// </summary>
         Hairdresser = 4,
 
         /// <summary>
-        /// Tirnak Salonu - Manik�r ve pedik�r
+        /// Tırnak Salonu - Manikür ve pedikür
         /// </summary>
         NailSalon = 5,
 
         /// <summary>
-        /// Spa - Wellness ve g�zellik merkezi
+        /// Spa - Wellness ve güzellik merkezi
         /// </summary>
         Spa = 6,
 
         /// <summary>
-        /// Masaj Salonu - Terap�tik masaj
+        /// Masaj Salonu - Terapötik masaj
         /// </summary>
         Massage = 7,
 
         /// <summary>
-        /// Makyaj Sanat�isi - Makyaj hizmetleri
+        /// Makyaj Sanatçisi - Makyaj hizmetleri
         /// </summary>
         Makeup = 8,
 
         /// <summary>
-        /// Piercing - V�cut piercing hizmetleri
+        /// Piercing - Vücut piercing hizmetleri
         /// </summary>
         Piercing = 9,
 
@@ -61,37 +61,37 @@ namespace Rezervise.Domain.Enums
         Physiotherapy = 10,
 
         /// <summary>
-        /// Saglik Merkezi - Genel saglik hizmetleri
+        /// Sağlık Merkezi - Genel sağlık hizmetleri
         /// </summary>
         HealthCenter = 11,
 
         /// <summary>
-        /// Psikolog - Danismanlik ve terapi
+        /// Psikolog - Danışmanlık ve terapi
         /// </summary>
         Psychologist = 12,
 
         /// <summary>
-        /// G�zellik Merkezi - Kombine g�zellik hizmetleri
+        /// Güzellik Merkezi - Kombine güzellik hizmetleri
         /// </summary>
         BeautyCenter = 13,
 
         /// <summary>
-        /// Kozmetik Klinigi - Kozmetik uygulamalar
+        /// Kozmetik Kliniği - Kozmetik uygulamalar
         /// </summary>
         CosmeticClinic = 14,
 
         /// <summary>
-        /// Kisisel Antren�r - Fitness ve antrenman
+        /// Kişisel Antrenör - Fitness ve antrenman
         /// </summary>
         PersonalTrainer = 15,
 
         /// <summary>
-        /// Yoga St�dyosu - Yoga ve meditasyon
+        /// Yoga Stüdyosu - Yoga ve meditasyon
         /// </summary>
         YogaStudio = 16,
 
         /// <summary>
-        /// Beslenme Danismani - Diyet ve beslenme
+        /// Beslenme Danışmanı - Diyet ve beslenme
         /// </summary>
         Nutritionist = 17,
 
@@ -101,12 +101,12 @@ namespace Rezervise.Domain.Enums
         Acupuncture = 18,
 
         /// <summary>
-        /// Kayroprakt�r - Omurga ve eklem tedavisi
+        /// Kayropraktör - Omurga ve eklem tedavisi
         /// </summary>
         Chiropractor = 19,
 
         /// <summary>
-        /// G�z Doktoru - G�z muayene ve tedavi
+        /// Göz Doktoru - Göz muayene ve tedavi
         /// </summary>
         Optometrist = 20,
 
@@ -116,7 +116,7 @@ namespace Rezervise.Domain.Enums
         Dermatologist = 21,
 
         /// <summary>
-        /// Diger - Siniflandirilmamis isletmeler
+        /// Diğer - Sınıflandırılmamış işletmeler
         /// </summary>
         Other = 99,
     }

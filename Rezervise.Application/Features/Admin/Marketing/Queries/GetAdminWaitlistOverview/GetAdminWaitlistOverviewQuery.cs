@@ -4,12 +4,12 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminWaitlistOverview
 {
     /// <summary>
-    /// Bekleme listesi genel bakisi (dokuman Modul 15): aktif kayit, teklif durum
-    /// ve kurtarilan slot sayilari tek raporda toplanir.
+    /// Bekleme listesi genel bakışı (doküman Modül 15): aktif kayıt, teklif durum
+    /// ve kurtarılan slot sayıları tek raporda toplanır.
     /// </summary>
     public class GetAdminWaitlistOverviewQuery : IRequest<Result<AdminWaitlistOverviewDto>>
     {
-        /// <summary>Yalnizca bu isletmenin sayilari; bos ise platform geneli.</summary>
+        /// <summary>Yalnızca bu işletmenin sayıları; boş ise platform geneli.</summary>
         public Guid? BusinessId { get; set; }
     }
 }

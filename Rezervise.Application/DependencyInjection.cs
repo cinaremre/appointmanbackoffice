@@ -27,9 +27,9 @@ namespace Rezervise.Application
             // TokenService
             services.AddScoped<ITokenService, TokenService>();
 
-            // Domain event'leri kalici kayit sonrasi MediatR ile yayinlar.
+            // Domain event'leri kalıcı kayıt sonrası MediatR ile yayınlar.
             services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
-            // Yinelenen event'lerin yan etki uretmesini engelleyen surec genelinde tek kayit.
+            // Yinelenen event'lerin yan etki üretmesini engelleyen süreç genelinde tek kayıt.
             services.AddSingleton<EventSideEffectDeduplicator>();
 
             // Business metrics: a single singleton owns the Meter and its instruments.

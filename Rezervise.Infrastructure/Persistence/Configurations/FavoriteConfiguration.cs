@@ -38,9 +38,9 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.HasIndex(x => x.UserId);
             builder.HasIndex(x => x.BusinessId);
 
-            // Filtreli unique index: soft-delete edilmis kayitlar anahtari isgal etmez.
-            // Filtresiz index, favori cikarildiktan sonra yeniden eklemeyi
-            // "zaten favorilerinizde" hatasina dusuruyordu.
+            // Filtreli unique index: soft-delete edilmiş kayıtlar anahtarı işgal etmez.
+            // Filtresiz index, favori çıkarıldıktan sonra yeniden eklemeyi
+            // "zaten favorilerinizde" hatasına düşürüyordu.
             builder.HasIndex(x => new { x.UserId, x.BusinessId })
                 .IsUnique()
                 .HasFilter("[IsDeleted] = 0");

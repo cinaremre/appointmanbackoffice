@@ -1,37 +1,37 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Randevu durumlari
+    /// Randevu durumları
     /// </summary>
     public enum EnumAppointmentStatus
     {
         /// <summary>
-        /// Beklemede - Randevu olusturuldu, hen�z onaylanmadi
+        /// Beklemede - Randevu oluşturuldu, henüz onaylanmadı
         /// </summary>
         Pending = 0,
 
         /// <summary>
-        /// Onaylandi - Randevu onaylandi, ger�eklesmeyi bekliyor
+        /// Onaylandı - Randevu onaylandı, gerçeklesmeyi bekliyor
         /// </summary>
         Confirmed = 1,
 
         /// <summary>
-        /// Tamamlandi - Randevu basariyla ger�eklesti
+        /// Tamamlandı - Randevu başarıyla gerçeklesti
         /// </summary>
         Completed = 2,
 
         /// <summary>
-        /// Iptal edildi - Randevu iptal edildi
+        /// İptal edildi - Randevu iptal edildi
         /// </summary>
         Cancelled = 3,
 
         /// <summary>
-        /// Gelmedi - M�steri randevuya gelmedi (No-Show)
+        /// Gelmedi - Müsteri randevuya gelmedi (No-Show)
         /// </summary>
         NoShow = 4,
 
         /// <summary>
-        /// Yeniden planlandi - Randevu baska bir tarihe ertelendi
+        /// Yeniden planlandı - Randevu başka bir tarihe ertelendi
         /// </summary>
         Rescheduled = 5
     }

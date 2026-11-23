@@ -43,29 +43,29 @@ namespace Rezervise.Application.Features.Inventory.Commands.ConsumeServiceMateri
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<int>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<int>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde OwnerId'si değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<int>.Failure(Error.Forbidden("Bu isletmeye malzeme tuketimi isleme yetkiniz yok."));
+                    return Result<int>.Failure(Error.Forbidden("Bu işletmeye malzeme tüketimi işleme yetkiniz yok."));
 
-                // 3. Tuketim listesi bos olamaz.
+                // 3. Tüketim listesi boş olamaz.
                 if (request.Materials is null || request.Materials.Count == 0)
-                    return Result<int>.Failure(Error.Validation("Tuketim listesi bos olamaz."));
+                    return Result<int>.Failure(Error.Validation("Tüketim listesi boş olamaz."));
 
-                // 4. Randevu kontrolu: randevu isletmeye ait ve Completed olmali.
+                // 4. Randevu kontrolü: randevu işletmeye ait ve Completed olmalı.
                 var appointment = await _appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken);
                 if (appointment is null || appointment.BusinessId != request.BusinessId)
                     return Result<int>.Failure(Error.NotFound("Randevu", request.AppointmentId.ToString()));
 
                 if (appointment.Status != EnumAppointmentStatus.Completed)
                     return Result<int>.Failure(Error.BusinessRule(
-                        "Malzeme tuketimi yalnizca tamamlanmis (Completed) randevular icin islenebilir."));
+                        "Malzeme tüketimi yalnızca tamamlanmış (Completed) randevular için işlenebilir."));
 
-                // 5. Cift isleme engeli: ayni randevu icin tuketim zaten islenmis mi?
+                // 5. Çift işleme engeli: aynı randevu için tüketim zaten işlenmiş mi?
                 var appointmentMovements = await _stockMovementRepository.FindAsync(
                     m => m.BusinessId == request.BusinessId
                          && m.ReferenceType == AppointmentReferenceType
@@ -74,17 +74,17 @@ namespace Rezervise.Application.Features.Inventory.Commands.ConsumeServiceMateri
 
                 if (appointmentMovements.Any())
                     return Result<int>.Failure(Error.Conflict(
-                        "Bu randevu icin malzeme tuketimi zaten islenmistir. Ayni tuketim iki kez kaydedilemez."));
+                        "Bu randevu için malzeme tüketimi zaten işlenmiştir. Aynı tüketim iki kez kaydedilemez."));
 
-                // 6. Satirlari urun bazinda birlestir (ayni urunden iki satir gelirse tek harekette toplanir).
+                // 6. Satırları ürün bazında birleştir (aynı üründen iki satır gelirse tek harekette toplanır).
                 var quantitiesByProduct = request.Materials
                     .GroupBy(l => l.ProductId)
                     .ToDictionary(g => g.Key, g => g.Sum(l => l.Quantity));
 
                 if (quantitiesByProduct.Any(kv => kv.Value <= 0))
-                    return Result<int>.Failure(Error.Validation("Tuketim miktari sifirdan buyuk olmalidir."));
+                    return Result<int>.Failure(Error.Validation("Tüketim miktarı sıfırdan büyük olmalıdır."));
 
-                // 7. Urunleri kontrol et: hepsi isletmeye ait olmali.
+                // 7. Ürünleri kontrol et: hepsi işletmeye ait olmalı.
                 var missingProducts = new List<Guid>();
                 foreach (var productId in quantitiesByProduct.Keys)
                 {
@@ -94,9 +94,9 @@ namespace Rezervise.Application.Features.Inventory.Commands.ConsumeServiceMateri
                 }
 
                 if (missingProducts.Count > 0)
-                    return Result<int>.Failure(Error.NotFound("Urun", string.Join(", ", missingProducts)));
+                    return Result<int>.Failure(Error.NotFound("Ürün", string.Join(", ", missingProducts)));
 
-                // 8. Negatif stok politikasi: urun bazinda mevcut bakiyeyi asan tuketim reddedilir.
+                // 8. Negatif stok politikası: ürün bazında mevcut bakiyeyi aşan tüketim reddedilir.
                 var businessMovements = await _stockMovementRepository.FindAsync(
                     m => m.BusinessId == request.BusinessId && !m.IsDeleted,
                     cancellationToken);
@@ -110,10 +110,10 @@ namespace Rezervise.Application.Features.Inventory.Commands.ConsumeServiceMateri
                     var balance = balances.GetValueOrDefault(productId, 0m);
                     if (balance - consumed < 0)
                         return Result<int>.Failure(Error.Conflict(
-                            $"Stok bakiyesi yetersiz. UrunId: {productId}, mevcut bakiye: {balance}, tuketim: {consumed}."));
+                            $"Stok bakiyesi yetersiz. UrunId: {productId}, mevcut bakiye: {balance}, tüketim: {consumed}."));
                 }
 
-                // 9. ServiceConsumption hareketlerini olustur.
+                // 9. ServiceConsumption hareketlerini oluştur.
                 var occurredAt = _dateTime.UtcNow;
                 var movements = quantitiesByProduct
                     .Select(kv => new StockMovement(
@@ -136,9 +136,9 @@ namespace Rezervise.Application.Features.Inventory.Commands.ConsumeServiceMateri
             }
             catch (DuplicateKeyException)
             {
-                // Es zamanli iki isleme denemesi: referans unique index'i ikincisini reddeder.
+                // Es zamanlı iki işleme denemesi: referans unique index'i ikincisini reddeder.
                 return Result<int>.Failure(Error.Conflict(
-                    "Bu randevu icin malzeme tuketimi zaten islenmistir. Ayni tuketim iki kez kaydedilemez."));
+                    "Bu randevu için malzeme tüketimi zaten işlenmiştir. Aynı tüketim iki kez kaydedilemez."));
             }
             catch (DomainException ex)
             {
@@ -146,7 +146,7 @@ namespace Rezervise.Application.Features.Inventory.Commands.ConsumeServiceMateri
             }
             catch (Exception ex)
             {
-                return Result<int>.Failure(Error.Internal("Malzeme tuketimi islenirken bir hata olustu.", ex.Message));
+                return Result<int>.Failure(Error.Internal("Malzeme tüketimi işlenirken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -4,8 +4,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Waitlist.Commands.CancelWaitlistEntry
 {
     /// <summary>
-    /// Bekleme listesi kaydini iptal eder (dokuman Modul 10).
-    /// Yetki: musterinin kendisi veya isletme sahibi.
+    /// Bekleme listesi kaydını iptal eder (doküman Modül 10).
+    /// Yetki: müşterinin kendisi veya işletme sahibi.
     /// </summary>
     public class CancelWaitlistEntryCommand : IRequest<Result<Guid>>
     {

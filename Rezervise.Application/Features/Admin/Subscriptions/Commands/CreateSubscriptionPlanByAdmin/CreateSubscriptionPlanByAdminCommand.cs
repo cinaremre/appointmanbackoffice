@@ -4,10 +4,10 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Subscriptions.Commands.CreateSubscriptionPlanByAdmin
 {
     /// <summary>
-    /// Backoffice ucu: yeni abonelik plani olusturur (dokuman Modul 13).
-    /// Domain kurallari tek kaynak kalsin diye is, mevcut CreatePlanCommand
-    /// uzerinden yurutulur; bu sarmalayici yalnizca istegi cevirir ve
-    /// basaridan sonra AdminAuditLogs kaydini yazar.
+    /// Backoffice ucu: yeni abonelik planı oluşturur (doküman Modül 13).
+    /// Domain kuralları tek kaynak kalsın diye is, mevcut CreatePlanCommand
+    /// üzerinden yürütülür; bu sarmalayıcı yalnızca isteği çevirir ve
+    /// başarıdan sonra AdminAuditLogs kaydını yazar.
     /// </summary>
     public class CreateSubscriptionPlanByAdminCommand : IRequest<Result<Guid>>
     {
@@ -16,17 +16,17 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Commands.CreateSubs
         public string Currency { get; set; } = "TRY";
         public Domain.Enums.EnumBillingPeriod BillingPeriod { get; set; }
 
-        /// <summary>Plana dahil edilecek ozellikler.</summary>
+        /// <summary>Plana dahil edilecek özellikler.</summary>
         public List<AdminPlanFeatureInputDto> Features { get; set; } = new();
     }
 
-    /// <summary>Plana eklenecek tek ozellik satiri.</summary>
+    /// <summary>Plana eklenecek tek özellik satırı.</summary>
     public class AdminPlanFeatureInputDto
     {
         public Guid FeatureId { get; set; }
         public bool IsEnabled { get; set; }
 
-        /// <summary>Donemsel kota; null = sinirsiz.</summary>
+        /// <summary>Dönemsel kota; null = sınırsız.</summary>
         public int? IncludedQuota { get; set; }
     }
 }

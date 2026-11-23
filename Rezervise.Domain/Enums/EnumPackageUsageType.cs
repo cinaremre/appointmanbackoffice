@@ -1,23 +1,23 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Paket hak hareketinin turu. Bir seansin omru:
-    /// Reservation (randevu olusturuldugunda ayrilir) ->
-    /// Consumption (randevu tamamlaninca tuketilir) veya
-    /// Release (randevu iptal edilince havuza geri doner).
+    /// Paket hak hareketinin turu. Bir seansın ömrü:
+    /// Reservation (randevu oluşturulduğunda ayrılır) ->
+    /// Consumption (randevu tamamlanınca tüketilir) veya
+    /// Release (randevu iptal edilince havuza geri döner).
     /// </summary>
     public enum EnumPackageUsageType
     {
-        /// <summary>Randevu icin hak ayrildi (aktif rezervasyon).</summary>
+        /// <summary>Randevu için hak ayrıldı (aktif rezervasyon).</summary>
         Reservation = 0,
 
-        /// <summary>Randevu gerceklesti, hak tuketildi.</summary>
+        /// <summary>Randevu gerçekleşti, hak tüketildi.</summary>
         Consumption = 1,
 
-        /// <summary>Ayrilan hak randevu iptalinin ardindan serbest birakildi.</summary>
+        /// <summary>Ayrılan hak randevu iptalinin ardından serbest bırakıldı.</summary>
         Release = 2,
 
-        /// <summary>Iade islemi (ilk surumde kullanilmaz, dokuman Modul 5).</summary>
+        /// <summary>İade işlemi (ilk sürümde kullanılmaz, doküman Modül 5).</summary>
         Refund = 3
     }
 }

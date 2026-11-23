@@ -9,10 +9,10 @@ using Microsoft.Extensions.Logging;
 namespace Rezervise.Api.BackOffice.Services;
 
 /// <summary>
-/// Push kuyrugunu backoffice'te de bosaltir (mobil host'taki service ile
-/// ayni davranis). Tek monolitte MediatR taramasi push handler'larini
-/// burada da kurdugu icin kuyruk ve tuketici bu host'ta da yasar.
-/// FCM anahtari tanimlanmadikca log modunda calisir.
+/// Push kuyruğunu backoffice'te de boşaltır (mobil hoşt'taki service ile
+/// aynı davranış). Tek monolitte MediatR taraması push handler'larını
+/// burada da kurduğu için kuyruk ve tüketici bu hoşt'ta da yaşar.
+/// FCM anahtarı tanımlanmadıkça log modunda çalışır.
 /// </summary>
 public sealed class PushBackgroundService : BackgroundService
 {
@@ -54,11 +54,11 @@ public sealed class PushBackgroundService : BackgroundService
         }
         catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
         {
-            // Uygulama kapaniyor; normal akis.
+            // Uygulama kapanıyor; normal akış.
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Push arka plan servisi beklenmedik sekilde durdu.");
+            _logger.LogError(ex, "Push arka plan servisi beklenmedik şekilde durdu.");
         }
     }
 
@@ -77,7 +77,7 @@ public sealed class PushBackgroundService : BackgroundService
             if (attempt < MaxDeliveryAttempts)
             {
                 _logger.LogWarning(
-                    "Push gonderimi basarisiz, yeniden denenecek. Attempt={Attempt} UserId={UserId}",
+                    "Push gönderimi başarısız, yeniden denenecek. Attempt={Attempt} UserId={UserId}",
                     attempt,
                     message.UserId);
 
@@ -130,11 +130,11 @@ public sealed class PushBackgroundService : BackgroundService
             entry.Deactivate();
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            _logger.LogInformation("Gecersiz push token pasiflestirildi. UserId={UserId}", message.UserId);
+            _logger.LogInformation("Geçersiz push token pasifleştirildi. UserId={UserId}", message.UserId);
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Gecersiz push token pasiflestirilemedi. UserId={UserId}", message.UserId);
+            _logger.LogWarning(ex, "Geçersiz push token pasifleştirilemedi. UserId={UserId}", message.UserId);
         }
     }
 }

@@ -34,26 +34,26 @@ namespace Rezervise.Application.Features.Favorites.Commands.AddFavorite
         {
             try
             {
-                // 0. Favori yalnizca JWT kimligine ait kullanici icin olusturulabilir.
-                //    Govde UserId'si yetki kaynagi degildir.
+                // 0. Favori yalnızca JWT kimliğine ait kullanıcı için oluşturulabilir.
+                //    Gövde UserId'si yetki kaynağı değildir.
                 if (!_currentUser.IsAuthenticated ||
                     _currentUser.UserId is null ||
                     _currentUser.UserId.Value != request.UserId)
                     return Result<Guid>.Failure(
-                        Error.Unauthorized("Baska kullanici adina favori ekleme yetkiniz yok."));
+                        Error.Unauthorized("Başka kullanıcı adına favori ekleme yetkiniz yok."));
 
-                // 1. Kullanici kontrolu
+                // 1. Kullanıcı kontrolü
                 var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
                 if (user is null)
-                    return Result<Guid>.Failure(Error.NotFound("Kullanici", request.UserId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Kullanıcı", request.UserId.ToString()));
 
-                // 2. Isletme kontrolu
+                // 2. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 3. Idempotent kontrol: ayni cift icin aktif favori varsa yeni kayit
-                //    olusturulmaz, mevcut kayit doner. Istemci tekrar denemesi 409 uretmez.
+                // 3. Idempotent kontrol: aynı çift için aktif favori varsa yeni kayıt
+                //    oluşturulmaz, mevcut kayıt döner. İstemci tekrar denemesi 409 üretmez.
                 var existingFavorites = await _favoriteRepository.FindAsync(
                     f => f.UserId == request.UserId && f.BusinessId == request.BusinessId && !f.IsDeleted,
                     cancellationToken);
@@ -62,8 +62,8 @@ namespace Rezervise.Application.Features.Favorites.Commands.AddFavorite
                 if (existing is not null)
                     return Result<Guid>.Success(existing.Id);
 
-                // 4. Yeni kayit. (UserId, BusinessId) uzerindeki FILTRELI unique index
-                //    yalnizca aktif kayitlari kapsar; soft-delete edilmis kayit yeniden
+                // 4. Yeni kayıt. (UserId, BusinessId) üzerindeki FILTRELI unique index
+                //    yalnızca aktif kayıtları kapsar; soft-delete edilmiş kayıt yeniden
                 //    eklemeyi engellemez.
                 var favorite = new Favorite(request.UserId, request.BusinessId, request.Note);
 
@@ -74,7 +74,7 @@ namespace Rezervise.Application.Features.Favorites.Commands.AddFavorite
             }
             catch (DuplicateKeyException)
             {
-                // Es zamanli iki ekleme denemesi: aktif kayit olustuysa idempotent don.
+                // Es zamanlı iki ekleme denemesi: aktif kayıt oluştuysa idempotent dön.
                 var raced = await _favoriteRepository.FindAsync(
                     f => f.UserId == request.UserId && f.BusinessId == request.BusinessId && !f.IsDeleted,
                     CancellationToken.None);
@@ -95,7 +95,7 @@ namespace Rezervise.Application.Features.Favorites.Commands.AddFavorite
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Favori eklenirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Favori eklenirken bir hata oluştu.", ex.Message));
             }
         }
     }

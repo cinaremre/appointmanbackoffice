@@ -29,7 +29,7 @@ namespace Rezervise.Application.Features.BusinessCategories.Queries.GetSubCatego
                     c => c.ParentCategoryId == request.CategoryId && !c.IsDeleted,
                     cancellationToken);
 
-                // 3. DTO'ya donustur
+                // 3. DTO'ya dönüştür
                 var dtos = subCategories.Select(c => new BusinessCategoryDto
                 {
                     Id = c.Id,
@@ -51,7 +51,7 @@ namespace Rezervise.Application.Features.BusinessCategories.Queries.GetSubCatego
             catch (Exception ex)
             {
                 return Result<List<BusinessCategoryDto>>.Failure(
-                    Error.Internal("Alt kategoriler getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Alt kategoriler getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

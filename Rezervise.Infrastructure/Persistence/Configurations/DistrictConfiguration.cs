@@ -12,8 +12,8 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
 
             builder.HasKey(x => x.Id);
 
-            // Seed verisi kaynak SQL'deki ilce ID'lerini explicit olarak yazdigi
-            // icin IDENTITY uretimi kapatilir.
+            // Seed verişi kaynak SQL'deki ilçe ID'lerini explicit olarak yazdığı
+            // için IDENTITY üretimi kapatılır.
             builder.Property(x => x.Id)
                 .ValueGeneratedNever();
 

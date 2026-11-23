@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Musterinin satin aldigi paket ornegi. Kalan hak entity'de tutulmaz;
-    /// PackageUsage hareketlerinden hesaplanir.
+    /// Müşterinin satın aldığı paket örneği. Kalan hak entity'de tutulmaz;
+    /// PackageUsage hareketlerinden hesaplanır.
     /// </summary>
     public class CustomerPackageConfiguration : BaseConfiguration<CustomerPackage>
     {

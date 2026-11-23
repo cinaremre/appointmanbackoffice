@@ -8,22 +8,22 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
 {
     /// <summary>
     /// Mahalle referans verilerini ekler.
-    /// Kaynak: mahalle.sql - 51294 mahalle. Zincir: Il -&gt; Ilce -&gt; Locality -&gt; Mahalle.
+    /// Kaynak: mahalle.sql - 51294 mahalle. Zincir: İl -&gt; İlçe -&gt; Locality -&gt; Mahalle.
     /// </summary>
     public static class NeighborhoodSeed
     {
         /// <summary>
-        /// Tek seferde kaydedilecek mahalle sayisi. 50.000+ kayitli referans
-        /// veride ChangeTracker bellek tuketimini sinirlamak icin kullanilir.
+        /// Tek seferde kaydedilecek mahalle sayısı. 50.000+ kayıtlı referans
+        /// veride ChangeTracker bellek tüketimini sınırlamak için kullanılır.
         /// </summary>
         private const int BatchSize = 1000;
 
-        /// <summary>Kaynak verideki toplam mahalle sayisi.</summary>
+        /// <summary>Kaynak verideki toplam mahalle sayısı.</summary>
         private const int ExpectedNeighborhoodCount = 51294;
 
         /// <summary>
-        /// Her elemani "&lt;localityId&gt;:&lt;mahalleId&gt;:&lt;ad&gt;" formatinda olan ham veri.
-        /// Adlar kaynak SQL ile birebir aynidir; ayirici karakter icermezler.
+        /// Her elemanı "&lt;localityId&gt;:&lt;mahalleId&gt;:&lt;ad&gt;" formatında olan ham veri.
+        /// Adlar kaynak SQL ile birebir aynıdır; ayırıcı karakter içermezler.
         /// </summary>
         private static readonly string[] RawNeighborhoods =
         {
@@ -51324,16 +51324,16 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
         };
 
         /// <summary>
-        /// Mahalleleri bolumlu (batch) sekilde veritabanina ekler.
-        /// Tablo dolu ise hicbir sey yapmaz.
+        /// Mahalleleri bölümlü (batch) şekilde veritabanına ekler.
+        /// Tablo dolu ise hiçbir şey yapmaz.
         /// </summary>
-        /// <param name="context">Kullanilacak veritabani baglami.</param>
-        /// <param name="logger">Seed ilerlemesini raporlamak icin loglayici.</param>
+        /// <param name="context">Kullanılacak veritabanı bağlamı.</param>
+        /// <param name="logger">Seed ilerlemesini raporlamak için loglayıcı.</param>
         public static async Task SeedAsync(AppDbContext context, ILogger logger)
         {
             if (await context.Neighborhoods.AnyAsync())
             {
-                logger.LogInformation("Neighborhoods zaten mevcut, atlaniyor.");
+                logger.LogInformation("Neighborhoods zaten mevcut, atlanıyor.");
                 return;
             }
 
@@ -51342,7 +51342,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
 
             foreach (var line in RawNeighborhoods)
             {
-                // Ham satir formati: <localityId>:<mahalleId>:<ad>
+                // Ham satır formatı: <localityId>:<mahalleId>:<ad>
                 var parts = line.Split(new[] { ':' }, 3);
 
                 var localityId = int.Parse(parts[0], CultureInfo.InvariantCulture);
@@ -51353,7 +51353,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
                 if (batch.Count < BatchSize)
                     continue;
 
-                // Parca doldu: kaydet ve izleyiciyi temizle ki bellek sabit kalsin.
+                // Parça doldu: kaydet ve izleyiciyi temizle ki bellek sabit kalsın.
                 await context.Neighborhoods.AddRangeAsync(batch);
                 await context.SaveChangesAsync();
                 context.ChangeTracker.Clear();
@@ -51362,7 +51362,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
                 batch.Clear();
             }
 
-            // Kalan son parcayi yaz.
+            // Kalan son parçayı yaz.
             if (batch.Count > 0)
             {
                 await context.Neighborhoods.AddRangeAsync(batch);
@@ -51374,9 +51374,9 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
 
             if (total != ExpectedNeighborhoodCount)
             {
-                // Beklenmeyen sayi, ID kaymasi anlamina gelir; durumu raporla.
+                // Beklenmeyen sayı, ID kayması anlamına gelir; durumu raporla.
                 logger.LogWarning(
-                    "Neighborhoods sayisi beklenenden farkli: beklenen {Expected}, yazilan {Actual}",
+                    "Neighborhoods sayısı beklenenden farklı: beklenen {Expected}, yazılan {Actual}",
                     ExpectedNeighborhoodCount, total);
             }
 

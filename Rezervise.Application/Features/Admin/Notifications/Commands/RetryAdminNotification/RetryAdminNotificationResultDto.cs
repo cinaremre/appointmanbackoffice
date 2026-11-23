@@ -3,8 +3,8 @@ using Rezervise.Domain.Enums;
 namespace Rezervise.Application.Features.Admin.Notifications.Commands.RetryAdminNotification
 {
     /// <summary>
-    /// Yeniden gonderim talebinin kabul sonucu. Ilk surumde asil gonderim
-    /// yapilmadigi icin sonuc bir "kabul" bilgisidir; detay Note alanindadir.
+    /// Yeniden gönderim talebinin kabul sonucu. İlk sürümde asıl gönderim
+    /// yapılmadığı için sonuç bir "kabul" bilgisidir; detay Note alanındadır.
     /// </summary>
     public class RetryAdminNotificationResultDto
     {
@@ -12,7 +12,7 @@ namespace Rezervise.Application.Features.Admin.Notifications.Commands.RetryAdmin
         public Guid UserId { get; set; }
         public EnumNotificationType Type { get; set; }
 
-        /// <summary>Kabul aciklamasi; basitlestirmenin nedenini net bicimde belirtir.</summary>
+        /// <summary>Kabul açıklaması; basitleştirmenin nedenini net biçimde belirtir.</summary>
         public string Note { get; set; } = string.Empty;
     }
 }

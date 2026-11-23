@@ -14,8 +14,8 @@ import {
 import { useState } from "react";
 
 /**
- * Kritik islem onay diyalogu (dokuman 5.4/24): gerekce zorunludur,
- * etki metni acikca yazilir; onaysiz islem gonderilmez.
+ * Kritik işlem onay diyalogu (doküman 5.4/24): gerekçe zorunludur,
+ * etki metni açıkça yazılır; onaysız işlem gönderilmez.
  */
 export function ReasonConfirmDialog({
   open,
@@ -28,7 +28,7 @@ export function ReasonConfirmDialog({
 }: {
   open: boolean;
   title: string;
-  /** Islemin etkisini anlatan, backend kurallariyla uyumlu metin. */
+  /** İşlemin etkisini anlatan, backend kurallarıyla uyumlu metin. */
   impact: string;
   confirmLabel?: string;
   busy?: boolean;
@@ -39,7 +39,7 @@ export function ReasonConfirmDialog({
   const [touched, setTouched] = useState(false);
   const invalid = touched && reason.trim().length < 3;
 
-  // Mobilde diyalog tam ekran acilir; baslik yaninda kapatma ikonu bulunur.
+  // Mobilde diyalog tam ekran açılır; başlık yanında kapatma ikonu bulunur.
   const theme = useTheme();
   const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -70,7 +70,7 @@ export function ReasonConfirmDialog({
           autoFocus
           margin="dense"
           id="reason"
-          label="Gerekce (zorunlu)"
+          label="Gerekçe (zorunlu)"
           fullWidth
           multiline
           minRows={2}
@@ -78,12 +78,12 @@ export function ReasonConfirmDialog({
           onChange={(e) => setReason(e.target.value)}
           onBlur={() => setTouched(true)}
           error={invalid}
-          helperText={invalid ? "En az 3 karakter girin." : "Bu islem denetim kaydina yazilir."}
+          helperText={invalid ? "En az 3 karakter girin." : "Bu işlem denetim kaydına yazılır."}
         />
       </DialogContent>
       <DialogActions>
         <Button onClick={onCancel} disabled={busy}>
-          Vazgec
+          Vazgeç
         </Button>
         <Button
           onClick={() => onConfirm(reason.trim())}
@@ -91,7 +91,7 @@ export function ReasonConfirmDialog({
           color="primary"
           variant="contained"
         >
-          {busy ? "Isleniyor..." : confirmLabel}
+          {busy ? "İşleniyor..." : confirmLabel}
         </Button>
       </DialogActions>
     </Dialog>

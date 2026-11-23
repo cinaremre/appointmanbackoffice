@@ -19,14 +19,14 @@ namespace Rezervise.Application.Features.Users.Queries.GetUserById
         {
             try
             {
-                // 1. Kullaniciyi ID'ye gore getir
+                // 1. Kullanıcıyı ID'ye göre getir
                 var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
 
-                // 2. Kullanici bulunamadiysa hata dondur
+                // 2. Kullanıcı bulunamadıysa hata döndür
                 if (user is null)
-                    return Result<UserDto>.Failure(Error.NotFound("Kullanici", request.UserId.ToString()));
+                    return Result<UserDto>.Failure(Error.NotFound("Kullanıcı", request.UserId.ToString()));
 
-                // 3. Verileri DTO'ya donustur
+                // 3. Verileri DTO'ya dönüştür
                 var dto = new UserDto
                 {
                     Id = user.Id,
@@ -42,12 +42,12 @@ namespace Rezervise.Application.Features.Users.Queries.GetUserById
                     CreatedAt = user.CreatedAt
                 };
 
-                // 4. Basarili sonucu dondur
+                // 4. Başarılı sonucu döndür
                 return Result<UserDto>.Success(dto);
             }
             catch (Exception ex)
             {
-                return Result<UserDto>.Failure(Error.Internal("Kullanici bilgileri getirilirken bir hata olustu.", ex.Message));
+                return Result<UserDto>.Failure(Error.Internal("Kullanıcı bilgileri getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

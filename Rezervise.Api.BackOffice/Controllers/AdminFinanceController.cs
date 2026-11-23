@@ -13,9 +13,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers
 {
     /// <summary>
-    /// Finans okuma uclari (dokuman Modul 16). Tum listeler salt okunurdur:
-    /// tutar duzeltmeleri (iade, ters kayit, prim ters cevirme) domain
-    /// komutlariyla yapilir, bu controller'da veri asla degistirilmez.
+    /// Finans okuma uçları (doküman Modül 16). Tüm listeler salt okunurdur:
+    /// tutar düzeltmeleri (iade, ters kayıt, prim ters çevirme) domain
+    /// komutlarıyla yapılır, bu controller'da veri asla değiştirilmez.
     /// </summary>
     [ApiController]
     [Authorize]
@@ -30,9 +30,9 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Satis listesi; isletme ve tarih araligi filtreleriyle.
-        /// Filtre kapsaminin GrandTotal toplami yanitta tek nesne olarak
-        /// doner (OkList ekleme alan tasimadigindan liste + toplam birlikte).
+        /// Satış listesi; işletme ve tarih aralığı filtreleriyle.
+        /// Filtre kapsamının GrandTotal toplamı yanıtta tek nesne olarak
+        /// döner (OkList ekleme alan taşımadığından liste + toplam birlikte).
         /// </summary>
         [HttpGet("sales")]
         [Authorize(Policy = AdminPermissions.FinanceRead)]
@@ -60,7 +60,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkEnvelope(result.Value!);
         }
 
-        /// <summary>Odeme listesi; iadeler IsRefund bayragiyla ayri listelenebilir.</summary>
+        /// <summary>Ödeme listesi; iadeler IsRefund bayrağıyla ayrı listelenebilir.</summary>
         [HttpGet("payments")]
         [Authorize(Policy = AdminPermissions.FinanceRead)]
         public async Task<IActionResult> GetPayments(
@@ -91,7 +91,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkList(result.Value!.Items, result.Value.Page, result.Value.PageSize, result.Value.TotalCount);
         }
 
-        /// <summary>Kasa oturumu listesi; beklenen/sayilan nakit ve fark raposuyla.</summary>
+        /// <summary>Kasa oturumu listesi; beklenen/sayılan nakit ve fark raposuyla.</summary>
         [HttpGet("cash-sessions")]
         [Authorize(Policy = AdminPermissions.FinanceRead)]
         public async Task<IActionResult> GetCashSessions(
@@ -116,7 +116,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkList(result.Value!.Items, result.Value.Page, result.Value.PageSize, result.Value.TotalCount);
         }
 
-        /// <summary>Gider listesi; isletme ve tarih araligi filtreleriyle.</summary>
+        /// <summary>Gider listesi; işletme ve tarih aralığı filtreleriyle.</summary>
         [HttpGet("expenses")]
         [Authorize(Policy = AdminPermissions.FinanceRead)]
         public async Task<IActionResult> GetExpenses(
@@ -143,7 +143,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkList(result.Value!.Items, result.Value.Page, result.Value.PageSize, result.Value.TotalCount);
         }
 
-        /// <summary>Prim tahakkuk listesi; isletme, calisan ve durum filtreleriyle.</summary>
+        /// <summary>Prim tahakkuk listesi; işletme, çalışan ve durum filtreleriyle.</summary>
         [HttpGet("commissions")]
         [Authorize(Policy = AdminPermissions.FinanceRead)]
         public async Task<IActionResult> GetCommissions(

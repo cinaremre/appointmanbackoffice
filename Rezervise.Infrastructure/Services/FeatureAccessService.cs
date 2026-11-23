@@ -6,20 +6,20 @@ using Rezervise.Domain.Interfaces;
 namespace Rezervise.Infrastructure.Services
 {
     /// <summary>
-    /// Ozellik erisim kararinin tek kaynagi (dokuman Modul 14.4).
+    /// Özellik erişim kararının tek kaynağı (doküman Modül 14.4).
     ///
-    /// Oncelik sirasi:
-    /// 1. Aktif BusinessFeatureOverride - IsEnabled ve QuotaOverride plani ezer.
-    ///    Gecerlilik araligi [ValidFrom, ValidUntil); suresi dolmus override yok sayilir.
-    /// 2. Isletmenin aktif BusinessSubscription'inin planindaki PlanFeature -
-    ///    IsEnabled ve IncludedQuota esas alinir.
-    /// 3. Abonelik yoksa varsayilan temel ozellikler (FeatureCodes.BasicDefaults)
-    ///    acik kabul edilir; diger tum ozellikler kapalidir.
-    /// 4. Tanimli olmayan ozellik kodu = erisim yok.
+    /// Öncelik sırası:
+    /// 1. Aktif BusinessFeatureOverride - IsEnabled ve QuotaOverride planı ezer.
+    ///    Geçerlilik aralığı [ValidFrom, ValidUntil); süresi dolmuş override yok sayılır.
+    /// 2. İşletmenin aktif BusinessSubscription'inin planındaki PlanFeature -
+    ///    IsEnabled ve IncludedQuota esas alınır.
+    /// 3. Abonelik yoksa varsayılan temel özellikler (FeatureCodes.BasicDefaults)
+    ///    açık kabul edilir; diğer tüm özellikler kapalıdır.
+    /// 4. Tanımlı olmayan özellik kodu = erişim yok.
     ///
-    /// Kota: IncludedQuota/QuotaOverride null ise sinirsizdir; override kotasi
-    /// null ise plan kotasi gecerli kalir. TryReserveQuota donemlik FeatureUsage
-    /// kaydini upsert eder; asim varsa sayac degistirmeden false doner.
+    /// Kota: IncludedQuota/QuotaOverride null ise sınırsızdır; override kotası
+    /// null ise plan kotası geçerli kalır. TryReserveQuota dönemlik FeatureUsage
+    /// kaydını upsert eder; asım varsa sayaç değiştirmeden false döner.
     /// </summary>
     public class FeatureAccessService : IFeatureAccessService
     {
@@ -54,7 +54,7 @@ namespace Rezervise.Infrastructure.Services
 
         public async Task<bool> TryReserveQuotaAsync(Guid businessId, string featureCode, int quantity, CancellationToken ct = default)
         {
-            // 1. Ozelligin etkin durumu ve kotasi cozulur.
+            // 1. Özelliğin etkin durumu ve kotası çözülür.
             var entitlement = await ResolveAsync(businessId, featureCode, ct);
 
             if (!entitlement.IsEnabled)
@@ -63,7 +63,7 @@ namespace Rezervise.Infrastructure.Services
             if (quantity < 0)
                 return false;
 
-            // 2. Donemlik kullanim kaydini bul ("YYYY-MM").
+            // 2. Dönemlik kullanım kaydını bul ("YYYY-MM").
             var now = _dateTime.UtcNow;
             var period = $"{now.Year}-{now.Month:00}";
 
@@ -76,11 +76,11 @@ namespace Rezervise.Infrastructure.Services
 
             var used = usage?.UsedQuantity ?? 0;
 
-            // 3. Kota kontrolu: null kota = sinirsiz.
+            // 3. Kota kontrolü: null kota = sınırsız.
             if (entitlement.Quota.HasValue && used + quantity > entitlement.Quota.Value)
                 return false;
 
-            // 4. Upsert: kayit yoksa olustur, varsa mutlak yeni toplami yaz.
+            // 4. Upsert: kayıt yoksa oluştur, varsa mutlak yeni toplamı yaz.
             if (usage is null)
             {
                 var newUsage = new FeatureUsage(businessId, entitlement.FeatureId, period, quantity);
@@ -95,10 +95,10 @@ namespace Rezervise.Infrastructure.Services
             return true;
         }
 
-        /// <summary>Erisim karari ve gecerli kotanin cozulmus hali.</summary>
+        /// <summary>Erişim kararı ve geçerli kotanın çözülmüş hali.</summary>
         private sealed record FeatureEntitlement(Guid FeatureId, bool IsEnabled, int? Quota)
         {
-            // default(record) null referans uretir; None acikca tanimlanir.
+            // default(record) null referans üretir; None açıkça tanımlanır.
             public static FeatureEntitlement None => new(Guid.Empty, false, null);
         }
 
@@ -107,7 +107,7 @@ namespace Rezervise.Infrastructure.Services
             if (string.IsNullOrWhiteSpace(featureCode))
                 return FeatureEntitlement.None;
 
-            // Tanimsiz ozellik kodu = erisim yok.
+            // Tanımsız özellik kodu = erişim yok.
             var definition = (await _featureDefinitionRepository.FindAsync(
                 d => d.Code == featureCode && !d.IsDeleted,
                 ct)).FirstOrDefault();
@@ -117,7 +117,7 @@ namespace Rezervise.Infrastructure.Services
 
             var now = _dateTime.UtcNow;
 
-            // 1. Aktif override: gecerlilik araligindaki en yeni kayit kazanir.
+            // 1. Aktif override: geçerlilik aralığındaki en yeni kayıt kazanır.
             var overrides = await _overrideRepository.FindAsync(
                 o => o.BusinessId == businessId && o.FeatureId == definition.Id && !o.IsDeleted,
                 ct);
@@ -130,7 +130,7 @@ namespace Rezervise.Infrastructure.Services
             if (activeOverride is not null)
                 return new FeatureEntitlement(definition.Id, activeOverride.IsEnabled, activeOverride.QuotaOverride);
 
-            // 2. Aktif abonelik planindaki ozellik satiri.
+            // 2. Aktif abonelik planındaki özellik satırı.
             var subscriptions = await _subscriptionRepository.FindAsync(
                 s => s.BusinessId == businessId && !s.IsDeleted,
                 ct);
@@ -148,11 +148,11 @@ namespace Rezervise.Infrastructure.Services
                 return new FeatureEntitlement(definition.Id, planFeature?.IsEnabled ?? false, planFeature?.IncludedQuota);
             }
 
-            // 3. Abonelik yok: temel ozellikler acik, digerleri kapali.
+            // 3. Abonelik yok: temel özellikler açık, diğerleri kapalı.
             if (FeatureCodes.BasicDefaults.Contains(featureCode))
                 return new FeatureEntitlement(definition.Id, true, null);
 
-            // 4. Erisim yok.
+            // 4. Erişim yok.
             return FeatureEntitlement.None;
         }
     }

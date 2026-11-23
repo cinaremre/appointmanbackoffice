@@ -31,16 +31,16 @@ namespace Rezervise.Application.Features.PublicPages.Commands.PublishPublicPage
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde OwnerId'si değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Unauthorized("Bu isletmenin public sayfasini yayina alma yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Unauthorized("Bu işletmenin public sayfasını yayına alma yetkiniz yok."));
 
-                // 3. Isletmeye ait mevcut sayfa: varsa guncelle, yoksa olustur.
+                // 3. İşletmeye ait mevcut sayfa: varsa güncelle, yoksa oluştur.
                 var existingPage = (await _pageRepository.FindAsync(
                     p => p.BusinessId == request.BusinessId && !p.IsDeleted,
                     cancellationToken)).FirstOrDefault();
@@ -66,14 +66,14 @@ namespace Rezervise.Application.Features.PublicPages.Commands.PublishPublicPage
                         page.Unpublish();
                 }
 
-                // 4. Slug baska isletmede kullaniliyor mu?
-                //    (Domain kural ihlali DomainException ile, sahiplik cakismasi Conflict ile doner.)
+                // 4. Slug başka işletmede kullanılıyor mü?
+                //    (Domain kural ihlali DomainException ile, sahiplik çakışması Conflict ile döner.)
                 var slugTakenByOther = (await _pageRepository.FindAsync(
                     p => p.Slug == page.Slug && p.BusinessId != request.BusinessId && !p.IsDeleted,
                     cancellationToken)).Any();
 
                 if (slugTakenByOther)
-                    return Result<Guid>.Failure(Error.Conflict("Bu slug baska bir isletme tarafindan kullaniliyor."));
+                    return Result<Guid>.Failure(Error.Conflict("Bu slug başka bir işletme tarafından kullanılıyor."));
 
                 // 5. Kaydet
                 if (existingPage is null)
@@ -91,7 +91,7 @@ namespace Rezervise.Application.Features.PublicPages.Commands.PublishPublicPage
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Public sayfa yayinlanirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Public sayfa yayınlanırken bir hata oluştu.", ex.Message));
             }
         }
     }

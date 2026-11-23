@@ -35,45 +35,45 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
         {
             if (await context.Services.AnyAsync())
             {
-                logger.LogInformation("Services zaten mevcut, atlaniyor.");
+                logger.LogInformation("Services zaten mevcut, atlanıyor.");
                 return;
             }
 
             var services = new List<Service>
             {
-                // Kadikoy Berberi hizmetleri
-                CreateService(Svc1Id, "Sac Kesimi", "Klasik sac kesimi", 150m, 30, ServiceCategorySeed.HaircutId, BusinessSeed.Biz1Id),
-                CreateService(Svc2Id, "Sakal Tirasi", "Ustura ile sakal tirasi", 100m, 20, ServiceCategorySeed.ShaveId, BusinessSeed.Biz1Id),
-                CreateService(Svc3Id, "Sac Boyama", "Profesyonel sac boyama", 350m, 60, ServiceCategorySeed.ColoringId, BusinessSeed.Biz1Id),
-                CreateService(Svc4Id, "Fon", "Sac sekillendirme", 80m, 15, ServiceCategorySeed.StylingId, BusinessSeed.Biz1Id),
+                // Kadıköy Berberi hizmetleri
+                CreateService(Svc1Id, "Saç Kesimi", "Klasik saç kesimi", 150m, 30, ServiceCategorySeed.HaircutId, BusinessSeed.Biz1Id),
+                CreateService(Svc2Id, "Sakal Tıraşı", "Ustura ile sakal tıraşı", 100m, 20, ServiceCategorySeed.ShaveId, BusinessSeed.Biz1Id),
+                CreateService(Svc3Id, "Saç Boyama", "Profesyonel saç boyama", 350m, 60, ServiceCategorySeed.ColoringId, BusinessSeed.Biz1Id),
+                CreateService(Svc4Id, "Fön", "Saç şekillendirme", 80m, 15, ServiceCategorySeed.StylingId, BusinessSeed.Biz1Id),
 
-                // Besiktas Kuafor hizmetleri
-                CreateService(Svc5Id, "Kadin Sac Kesimi", "Katli ve duz kesim", 250m, 45, ServiceCategorySeed.HaircutId, BusinessSeed.Biz2Id),
-                CreateService(Svc6Id, "Sac Boyama", "Balayage, ombre, rofle", 600m, 120, ServiceCategorySeed.ColoringId, BusinessSeed.Biz2Id),
-                CreateService(Svc7Id, "Gelin Saci", "Gelin saci tasarimi", 1500m, 120, ServiceCategorySeed.StylingId, BusinessSeed.Biz2Id),
-                CreateService(Svc8Id, "Fon", "Sac sekillendirme ve fon", 150m, 30, ServiceCategorySeed.StylingId, BusinessSeed.Biz2Id),
+                // Beşiktaş Kuaför hizmetleri
+                CreateService(Svc5Id, "Kadın Saç Kesimi", "Katlı ve düz kesim", 250m, 45, ServiceCategorySeed.HaircutId, BusinessSeed.Biz2Id),
+                CreateService(Svc6Id, "Saç Boyama", "Balayage, ombre, röfle", 600m, 120, ServiceCategorySeed.ColoringId, BusinessSeed.Biz2Id),
+                CreateService(Svc7Id, "Gelin Saçı", "Gelin saçı tasarımı", 1500m, 120, ServiceCategorySeed.StylingId, BusinessSeed.Biz2Id),
+                CreateService(Svc8Id, "Fön", "Saç şekillendirme ve fön", 150m, 30, ServiceCategorySeed.StylingId, BusinessSeed.Biz2Id),
 
                 // Taksim Tattoo hizmetleri
-                CreateService(Svc9Id, "Kucuk Dovme", "5cm e kadar dovme", 800m, 60, ServiceCategorySeed.SmallTattooId, BusinessSeed.Biz3Id),
-                CreateService(Svc10Id, "Orta Dovme", "5-15cm arasi dovme", 1500m, 120, ServiceCategorySeed.MediumTattooId, BusinessSeed.Biz3Id),
-                CreateService(Svc11Id, "Buyuk Dovme", "15cm uzeri dovme", 3000m, 240, ServiceCategorySeed.LargeTattooId, BusinessSeed.Biz3Id),
-                CreateService(Svc12Id, "Piercing", "Vucut piercing", 300m, 20, ServiceCategorySeed.PiercingId, BusinessSeed.Biz3Id),
+                CreateService(Svc9Id, "Küçük Dövme", "5cm'e kadar dövme", 800m, 60, ServiceCategorySeed.SmallTattooId, BusinessSeed.Biz3Id),
+                CreateService(Svc10Id, "Orta Dövme", "5-15cm arası dövme", 1500m, 120, ServiceCategorySeed.MediumTattooId, BusinessSeed.Biz3Id),
+                CreateService(Svc11Id, "Büyük Dövme", "15cm üzeri dövme", 3000m, 240, ServiceCategorySeed.LargeTattooId, BusinessSeed.Biz3Id),
+                CreateService(Svc12Id, "Piercing", "Vücut piercing", 300m, 20, ServiceCategorySeed.PiercingId, BusinessSeed.Biz3Id),
 
-                // Cankaya Berber hizmetleri
-                CreateService(Svc13Id, "Sac Kesimi", "Modern sac kesimi", 180m, 30, ServiceCategorySeed.HaircutId, BusinessSeed.Biz4Id),
-                CreateService(Svc14Id, "Sakal Tirasi", "Sakal sekillendirme", 120m, 20, ServiceCategorySeed.BeardTrimId, BusinessSeed.Biz4Id),
+                // Çankaya Berber hizmetleri
+                CreateService(Svc13Id, "Saç Kesimi", "Modern saç kesimi", 180m, 30, ServiceCategorySeed.HaircutId, BusinessSeed.Biz4Id),
+                CreateService(Svc14Id, "Sakal Tıraşı", "Sakal şekillendirme", 120m, 20, ServiceCategorySeed.BeardTrimId, BusinessSeed.Biz4Id),
 
-                // Alsancak Dis hizmetleri
-                CreateService(Svc15Id, "Dis Temizligi", "Detartraj ve polisaj", 500m, 45, ServiceCategorySeed.DentalCleaningId, BusinessSeed.Biz5Id),
+                // Alsancak Diş hizmetleri
+                CreateService(Svc15Id, "Diş Temizliği", "Detartraj ve polisaj", 500m, 45, ServiceCategorySeed.DentalCleaningId, BusinessSeed.Biz5Id),
                 CreateService(Svc16Id, "Dolgu", "Kompozit dolgu", 800m, 60, ServiceCategorySeed.FillingId, BusinessSeed.Biz5Id),
-                CreateService(Svc17Id, "Dis Cekimi", "Basit dis cekimi", 600m, 30, ServiceCategorySeed.ExtractionId, BusinessSeed.Biz5Id),
-                CreateService(Svc18Id, "Dis Beyazlatma", "Ofis tipi beyazlatma", 2500m, 90, ServiceCategorySeed.WhiteningId, BusinessSeed.Biz5Id),
+                CreateService(Svc17Id, "Diş Çekimi", "Basit diş çekimi", 600m, 30, ServiceCategorySeed.ExtractionId, BusinessSeed.Biz5Id),
+                CreateService(Svc18Id, "Diş Beyazlatma", "Ofis tipi beyazlatma", 2500m, 90, ServiceCategorySeed.WhiteningId, BusinessSeed.Biz5Id),
                 CreateService(Svc19Id, "Kanal Tedavisi", "Tek kanal", 1500m, 90, ServiceCategorySeed.RootCanalId, BusinessSeed.Biz5Id),
 
-                // Nilufer Agda hizmetleri
-                CreateService(Svc20Id, "Tum Vucut Agda", "Tum vucut agda", 400m, 90, ServiceCategorySeed.FullBodyWaxId, BusinessSeed.Biz6Id),
-                CreateService(Svc21Id, "Bacak Agda", "Bacak agda", 150m, 30, ServiceCategorySeed.LegWaxId, BusinessSeed.Biz6Id),
-                CreateService(Svc22Id, "Koltuk Alti Agda", "Koltuk alti", 80m, 15, ServiceCategorySeed.UnderarmWaxId, BusinessSeed.Biz6Id)
+                // Nilüfer Ağda hizmetleri
+                CreateService(Svc20Id, "Tüm Vücut Ağda", "Tüm vücut ağda", 400m, 90, ServiceCategorySeed.FullBodyWaxId, BusinessSeed.Biz6Id),
+                CreateService(Svc21Id, "Bacak Ağda", "Bacak ağda", 150m, 30, ServiceCategorySeed.LegWaxId, BusinessSeed.Biz6Id),
+                CreateService(Svc22Id, "Koltuk Altı Ağda", "Koltuk altı", 80m, 15, ServiceCategorySeed.UnderarmWaxId, BusinessSeed.Biz6Id)
             };
 
             await context.Services.AddRangeAsync(services);

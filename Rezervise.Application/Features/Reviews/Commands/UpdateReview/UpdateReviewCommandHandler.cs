@@ -32,18 +32,18 @@ namespace Rezervise.Application.Features.Reviews.Commands.UpdateReview
         {
             try
             {
-                // 1. Yorum kontrolu
+                // 1. Yorum kontrolü
                 var review = await _reviewRepository.GetByIdAsync(request.ReviewId, cancellationToken);
                 if (review is null)
                     return Result<Guid>.Failure(Error.NotFound("Yorum", request.ReviewId.ToString()));
 
-                // 2. Yetki kontrolu. Aktor kimligi imzali token'dan gelir;
-                //    istek govdesindeki UserId tek basina guvenilmez.
+                // 2. Yetki kontrolü. Aktör kimliği imzalı token'dan gelir;
+                //    istek gövdesindeki UserId tek basına güvenilmez.
                 if (!CallerAuthorization.CanActAsUser(_currentUser, review.UserId))
-                    return Result<Guid>.Failure(Error.Unauthorized("Bu yorumu guncelleme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Unauthorized("Bu yorumu güncelleme yetkiniz yok."));
 
-                // 3. Yorum degisikligi ve puan yeniden hesaplamasi ayni transaction'da.
-                //    RecalculateAsync yorum veritabanina yazildiktan sonra �alismali.
+                // 3. Yorum değişikliği ve puan yeniden hesaplaması aynı transaction'da.
+                //    RecalculateAsync yorum veritabanına yazıldıktan sonra çalismali.
                 await _unitOfWork.ExecuteInTransactionAsync(async token =>
                 {
                     review.UpdateReview(request.Rating, request.Comment);
@@ -59,8 +59,8 @@ namespace Rezervise.Application.Features.Reviews.Commands.UpdateReview
             }
             catch (Exception)
             {
-                // Beklenmeyen hata detayi istemciye sizdirilmaz.
-                return Result<Guid>.Failure(Error.Internal("Yorum guncellenirken bir hata olustu."));
+                // Beklenmeyen hata detayı istemciye sızdırılmaz.
+                return Result<Guid>.Failure(Error.Internal("Yorum güncellenirken bir hata oluştu."));
             }
         }
 

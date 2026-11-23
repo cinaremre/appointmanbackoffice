@@ -5,15 +5,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Common
 {
     /// <summary>
-    /// Handler hatalarini RFC 9457 ProblemDetails'e cevirir (dokuman 7.3).
-    /// Status kodu Error.Code'dan turetilir; ic hata ayrintilari istemciye
-    /// sizmaz. Controller'lar bu mapper ile tek bicimde hata doner.
+    /// Handler hatalarını RFC 9457 ProblemDetails'e çevirir (doküman 7.3).
+    /// Status kodu Error.Code'dan türetilir; iç hata ayrıntıları istemciye
+    /// sızmaz. Controller'lar bu mapper ile tek biçimde hata döner.
     /// </summary>
     internal static class AdminErrorMapper
     {
-        /// <summary>Hata sonucunu uygun status kodlu ProblemDetails'e cevirir.</summary>
-        /// <param name="error">Handler'dan donen hata; null ise genel ic hata uretilir.</param>
-        /// <returns>ProblemDetails iceren IActionResult.</returns>
+        /// <summary>Hata sonucunu uygun status kodlu ProblemDetails'e çevirir.</summary>
+        /// <param name="error">Handler'dan dönen hata; null ise genel iç hata üretilir.</param>
+        /// <returns>ProblemDetails içeren IActionResult.</returns>
         public static ObjectResult ToProblem(Error? error)
         {
             var statusCode = error switch
@@ -31,10 +31,10 @@ namespace Rezervise.BackOffice.Api.Common
             var problem = new ProblemDetails
             {
                 Type = $"https://api.rezervise.com/problems/{MapProblemType(error, statusCode)}",
-                Title = error?.Message ?? "Islem tamamlanamadi.",
+                Title = error?.Message ?? "İşlem tamamlanamadı.",
                 Status = statusCode,
-                // Ic hata ayrintisi yalnizca sunucu loglarinda kalir.
-                Detail = statusCode < 500 ? error?.Message : "Istek islenirken beklenmeyen bir hata olustu."
+                // İç hata ayrıntısı yalnızca sunucu loglarında kalır.
+                Detail = statusCode < 500 ? error?.Message : "İstek işlenirken beklenmeyen bir hata oluştu."
             };
 
             if (error is not null)
@@ -47,7 +47,7 @@ namespace Rezervise.BackOffice.Api.Common
             };
         }
 
-        /// <summary>Problem tip kisalmasini uretir.</summary>
+        /// <summary>Problem tip kısalmasını üretir.</summary>
         private static string MapProblemType(Error? error, int statusCode)
             => error?.Code switch
             {

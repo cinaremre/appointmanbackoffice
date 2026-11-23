@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import { EmptyState, ErrorState, LoadingState } from "./states";
 
 /**
- * Ortak veri tablosu (dokuman 22): server-side sayfalama, loading/empty/error
- * durumlari ve URL senkronu. Buyuk kumeler tamine indirilmez — sayfalama
+ * Ortak veri tablosu (doküman 22): server-side sayfalama, loading/empty/error
+ * durumları ve URL senkronu. Büyük kümeler tamına indirilmez — sayfalama
  * sunucudan gelir (pagination.totalCount).
  */
 export interface DataTableColumn<T> {
@@ -60,14 +60,14 @@ export function DataTable<T extends { id: string }>({
                   {column.header}
                 </TableCell>
               ))}
-              {actionColumn ? <TableCell align="right">Islemler</TableCell> : null}
+              {actionColumn ? <TableCell align="right">İşlemler</TableCell> : null}
             </TableRow>
           </TableHead>
           <TableBody>
             {rowsSafe.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length + actionColumn}>
-                  <EmptyState label={emptyLabel ?? "Kayit bulunamadi."} />
+                  <EmptyState label={emptyLabel ?? "Kayıt bulunamadı."} />
                 </TableCell>
               </TableRow>
             ) : (
@@ -104,8 +104,8 @@ export function DataTable<T extends { id: string }>({
           onRowsPerPageChange={(e) => onPageSizeChange(Number(e.target.value) || 50)}
           rowsPerPageOptions={[25, 50, 100, 200]}
           labelDisplayedRows={({ from, to, count }) => `${from}-${to} / ${count}`}
-          // Mobilde "sayfa basina satir" etiketi ve select gizlenir; dar
-          // ekranda sayfalama altligi tek satira sigar.
+          // Mobilde "sayfa başına satır" etiketi ve select gizlenir; dar
+          // ekranda sayfalama altligi tek satıra sigar.
           sx={{
             "& .MuiTablePagination-selectLabel, & .MuiTablePagination-input": {
               display: { xs: "none", md: "revert" },

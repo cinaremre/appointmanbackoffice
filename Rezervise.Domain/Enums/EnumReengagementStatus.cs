@@ -1,23 +1,23 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Geri cagirma (reengagement) denemesinin durumu (dokuman Modul 13).
+    /// Geri çağırma (reengagement) denemesinin durumu (doküman Modül 13).
     /// </summary>
     public enum EnumReengagementStatus
     {
-        /// <summary>Aday belirlendi, bildirim henuz gonderilmedi.</summary>
+        /// <summary>Aday belirlendi, bildirim henüz gönderilmedi.</summary>
         Eligible = 0,
 
-        /// <summary>Musteriye bildirim gonderildi.</summary>
+        /// <summary>Müşteriye bildirim gönderildi.</summary>
         Notified = 1,
 
-        /// <summary>Musteri geri cagirmayi randevuya cevirdi.</summary>
+        /// <summary>Müşteri geri çağırmayı randevuya çevirdi.</summary>
         Converted = 2,
 
-        /// <summary>Izin/molal nedeniyle gonderim engellendi.</summary>
+        /// <summary>İzin/molal nedeniyle gönderim engellendi.</summary>
         Suppressed = 3,
 
-        /// <summary>Cooldown suresi icinde; tekrar deneme bekliyor.</summary>
+        /// <summary>Cooldown süresi içinde; tekrar deneme bekliyor.</summary>
         Cooldown = 4
     }
 }

@@ -11,8 +11,8 @@ namespace Rezervise.Application.Features.Users.Commands.UpdateUserProfile
         public DateTime? DateOfBirth { get; set; }
         public string? ProfilePictureUrl { get; set; }
 
-        // Kullanicinin kayitli oldugu il / ilce.
-        // Aramalarda kriter bos geldiginde varsayilan konum olarak kullanilir.
+        // Kullanıcının kayıtlı öldüğü il / ilçe.
+        // Aramalarda kriter boş geldiğinde varsayılan konum olarak kullanılır.
         public int? CityId { get; set; }
         public int? DistrictId { get; set; }
     }

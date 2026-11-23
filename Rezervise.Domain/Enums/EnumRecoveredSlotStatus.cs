@@ -1,17 +1,17 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Iptal edilen randevudan aciga cikan slotun durumu (dokuman Modul 10).
+    /// İptal edilen randevudan açığa çıkan slotun durumu (doküman Modül 10).
     /// </summary>
     public enum EnumRecoveredSlotStatus
     {
-        /// <summary>Slot acik; bekleme listesinden doldurulabilir.</summary>
+        /// <summary>Slot açık; bekleme listesinden doldurulabilir.</summary>
         Open = 0,
 
-        /// <summary>Slot bekleme listesinden gelen musteriyle yeniden dolduruldu.</summary>
+        /// <summary>Slot bekleme listesinden gelen müşteriyle yeniden dolduruldu.</summary>
         Rebooked = 1,
 
-        /// <summary>Slot doldurulamadan kaybedildi (sure doldu / baska musteri aldi).</summary>
+        /// <summary>Slot doldurulamadan kaybedildi (süre doldu / başka müşteri aldı).</summary>
         Lost = 2
     }
 }

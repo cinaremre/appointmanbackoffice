@@ -28,7 +28,7 @@ namespace Rezervise.Domain.ValueObjects
                 !other.Latitude.HasValue || !other.Longitude.HasValue)
                 return null;
 
-            // Haversine formulu ile iki nokta arasi mesafe (km)
+            // Haversine formülü ile iki nokta arası mesafe (km)
             const double earthRadius = 6371;
 
             var lat1 = Latitude.Value * Math.PI / 180;

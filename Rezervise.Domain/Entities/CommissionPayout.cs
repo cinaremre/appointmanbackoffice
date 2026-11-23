@@ -4,8 +4,8 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Prim odeme donemi. Donem kapatilirken donem icindeki Accrued
-    /// tahakkuklar toplanir ve odenir; odeme kaydi donemi temsil eder.
+    /// Prim ödeme dönemi. Dönem kapatılırken dönem içindeki Accrued
+    /// tahakkuklar toplanır ve ödenir; ödeme kaydı dönemi temsil eder.
     /// </summary>
     public class CommissionPayout : BaseEntity
     {
@@ -13,20 +13,20 @@ namespace Rezervise.Domain.Entities
 
         public Guid EmployeeId { get; private set; }
 
-        /// <summary>Donem baslangici (UTC, dahil).</summary>
+        /// <summary>Dönem başlangıcı (UTC, dahil).</summary>
         public DateTime PeriodStart { get; private set; }
 
-        /// <summary>Donem sonu (UTC, dahil).</summary>
+        /// <summary>Dönem sonu (UTC, dahil).</summary>
         public DateTime PeriodEnd { get; private set; }
 
-        /// <summary>Donemde odenen toplam prim tutari.</summary>
+        /// <summary>Dönemde ödenen toplam prim tutarı.</summary>
         public decimal Amount { get; private set; }
 
         public EnumCommissionPayoutStatus Status { get; private set; }
 
         public DateTime? PaidAt { get; private set; }
 
-        private CommissionPayout() { } // EF Core icin
+        private CommissionPayout() { } // EF Core için
 
         public CommissionPayout(
             Guid businessId,
@@ -48,22 +48,22 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (employeeId == Guid.Empty)
-                throw new ArgumentException("Calisan ID bos olamaz.", nameof(employeeId));
+                throw new ArgumentException("Çalışan ID boş olamaz.", nameof(employeeId));
 
             if (periodStart == default || periodEnd == default)
-                throw new DomainException("Odeme donem tarihleri bos olamaz.");
+                throw new DomainException("Ödeme dönem tarihleri boş olamaz.");
 
             if (periodEnd < periodStart)
-                throw new DomainException("Odeme donem sonu baslangictan once olamaz.");
+                throw new DomainException("Ödeme dönem sonu başlangıçtan önce olamaz.");
 
             if (amount < 0)
-                throw new DomainException("Odeme tutari negatif olamaz.");
+                throw new DomainException("Ödeme tutarı negatif olamaz.");
 
             if (amount > 99999999.99m)
-                throw new DomainException("Odeme tutari cok yuksek.");
+                throw new DomainException("Ödeme tutarı çok yüksek.");
 
             BusinessId = businessId;
             EmployeeId = employeeId;
@@ -73,11 +73,11 @@ namespace Rezervise.Domain.Entities
             Status = EnumCommissionPayoutStatus.Pending;
         }
 
-        /// <summary>Donemi odenmis olarak kapatir.</summary>
+        /// <summary>Dönemi ödenmiş olarak kapatır.</summary>
         public void MarkAsPaid(DateTime paidAtUtc)
         {
             if (Status == EnumCommissionPayoutStatus.Paid)
-                throw new DomainException("Odeme donemi zaten odenmis.");
+                throw new DomainException("Ödeme dönemi zaten ödenmiş.");
 
             Status = EnumCommissionPayoutStatus.Paid;
             PaidAt = DateTime.SpecifyKind(paidAtUtc, DateTimeKind.Utc);

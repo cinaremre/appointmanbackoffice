@@ -10,12 +10,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers.Owner
 {
     /// <summary>
-    /// Isletme sahibinin kendi isletme bilgileri ve dashboard'u.
-    /// Route seviyesinde BusinessOwner rolune sinirlidir; isletme
-    /// kapsami (sahiplik) handler'larda dogrulanir.
+    /// İşletme sahibinin kendi işletme bilgileri ve dashboard'u.
+    /// Route seviyesinde BusinessOwner rolüne sınırlıdır; işletme
+    /// kapsamı (sahiplik) handler'larda doğrulanır.
     ///
-    /// Route notu: base sinifin "api/v1/admin" oneki burada bilincli
-    /// olarak "api/v1/owner" ile degistirilir.
+    /// Route notu: base sınıfın "api/v1/admin" öneki burada bilinçli
+    /// olarak "api/v1/owner" ile değiştirilir.
     /// </summary>
     [ApiController]
     [Authorize(Roles = "BusinessOwner")]
@@ -29,7 +29,7 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
             _mediator = mediator;
         }
 
-        /// <summary>Sahibin isletme listesi; baska kullanilarin kayitlari donmez.</summary>
+        /// <summary>Sahibin işletme listesi; başka kullanıların kayıtları dönmez.</summary>
         [HttpGet("businesses")]
         public async Task<IActionResult> GetMyBusinesses(
             [FromQuery] int? page,
@@ -49,7 +49,7 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
             return OkList(result.Value!.Items, result.Value.Page, result.Value.PageSize, result.Value.TotalCount);
         }
 
-        /// <summary>Sahibin isletme detayi + calisan/hizmet/randevu sayilari.</summary>
+        /// <summary>Sahibin işletme detayı + çalışan/hizmet/randevu sayıları.</summary>
         [HttpGet("businesses/{businessId:guid}")]
         public async Task<IActionResult> GetMyBusinessDetail(Guid businessId, CancellationToken cancellationToken)
         {
@@ -65,8 +65,8 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
         }
 
         /// <summary>
-        /// Isletme temel bilgilerini guncellestirir. Gonderilen alanlar
-        /// guncellenir; denetim kaydi yazilir.
+        /// İşletme temel bilgilerini güncelleştirir. Gönderilen alanlar
+        /// güncellenir; denetim kaydı yazılır.
         /// </summary>
         [HttpPatch("businesses/{businessId:guid}")]
         public async Task<IActionResult> UpdateMyBusiness(
@@ -92,8 +92,8 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
         }
 
         /// <summary>
-        /// Isletmenin gunluk dashboard kartlari + ayni gunun satis/kasa
-        /// ozeti. Date verilmezse bugun (UTC) raporlanir.
+        /// İşletmenin günlük dashboard kartları + aynı günün satış/kasa
+        /// özeti. Date verilmezse bugün (UTC) raporlanır.
         /// </summary>
         [HttpGet("businesses/{businessId:guid}/dashboard")]
         public async Task<IActionResult> GetMyBusinessDashboard(
@@ -114,14 +114,14 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
             return OkEnvelope(result.Value!);
         }
 
-        /// <summary>PATCH govdesi: yalnizca gonderilen alanlar guncellenir.</summary>
+        /// <summary>PATCH gövdesi: yalnızca gönderilen alanlar güncellenir.</summary>
         public sealed class UpdateMyBusinessRequest
         {
             public string? Name { get; init; }
 
             public string? Description { get; init; }
 
-            /// <summary>Opsiyonel islem gerekcesi; denetim kaydina yazilir.</summary>
+            /// <summary>Opsiyonel işlem gerekçesi; denetim kaydına yazılır.</summary>
             public string? Reason { get; init; }
         }
     }

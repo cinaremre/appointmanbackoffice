@@ -3,19 +3,19 @@ using Rezervise.Application.Common.Interfaces;
 namespace Rezervise.Application.Features.Admin.Common
 {
     /// <summary>
-    /// Yonetici islemlerinin denetim kaydini tek bicimde yazar
-    /// (dokuman Modul 21). Rol adi sabit "Admin"dir: backoffice
-    /// policy'leri zaten rolleri cozmustur, denetim kaydi yalnizca
-    /// kimin ne yaptigini tasir. Yazim hatasi is akisini bozmaz.
+    /// Yönetici işlemlerinin denetim kaydını tek biçimde yazar
+    /// (doküman Modül 21). Rol adı sabit "Admin"dir: backoffice
+    /// policy'leri zaten rolleri çözmüştür, denetim kaydı yalnızca
+    /// kimin ne yaptığını taşır. Yazım hatası is akışını bozmaz.
     /// </summary>
     public static class AdminAuditRecorder
     {
-        /// <summary>Denetim kaydindaki sabit rol adi.</summary>
+        /// <summary>Denetim kaydındaki sabit rol adı.</summary>
         public const string ActorRole = "Admin";
 
         /// <summary>
-        /// Kritik yonetici islemini denetim kaydina yazar.
-        /// Kimlik dogrulanmamissa veya yazim hata verirse kayit atlanir.
+        /// Kritik yönetici işlemini denetim kaydına yazar.
+        /// Kimlik doğrulanmamışsa veya yazım hata verirse kayıt atlanır.
         /// </summary>
         public static async Task RecordAsync(
             IAdminAuditSink sink,
@@ -51,7 +51,7 @@ namespace Rezervise.Application.Features.Admin.Common
             }
             catch
             {
-                // Denetim kaydi yazimi is akisini bozmamali (dokuman Modul 21).
+                // Denetim kaydı yazımı is akışını bozmamalı (doküman Modül 21).
             }
         }
     }

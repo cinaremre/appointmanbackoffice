@@ -1,7 +1,7 @@
 namespace Rezervise.BackOffice.Api.Common
 {
     /// <summary>
-    /// Backoffice response envelope'u (dokuman 7.2).
+    /// Backoffice response envelope'u (doküman 7.2).
     /// Tekil cevap: data + meta. Liste cevap: data + pagination + meta.
     /// </summary>
     public sealed class AdminResponse<T>
@@ -13,7 +13,7 @@ namespace Rezervise.BackOffice.Api.Common
         public AdminMeta Meta { get; init; } = new();
     }
 
-    /// <summary>Liste cevabinin sayfalama bilgisi.</summary>
+    /// <summary>Liste cevabının sayfalama bilgisi.</summary>
     public sealed class PaginationMeta
     {
         public int Page { get; init; }

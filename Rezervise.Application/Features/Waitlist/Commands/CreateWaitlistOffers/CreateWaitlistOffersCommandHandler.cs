@@ -42,29 +42,29 @@ namespace Rezervise.Application.Features.Waitlist.Commands.CreateWaitlistOffers
         {
             try
             {
-                // 1. Isletme ve yetki kontrolu: teklif uretme isletme onay adimidir.
+                // 1. İşletme ve yetki kontrolü: teklif üretme işletme onay adımıdır.
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<List<Guid>>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<List<Guid>>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<List<Guid>>.Failure(Error.Forbidden("Bekleme listesi teklifi uretme yetkiniz yok."));
+                    return Result<List<Guid>>.Failure(Error.Forbidden("Bekleme listesi teklifi üretme yetkiniz yok."));
 
-                // 2. Hizmet kontrolu
+                // 2. Hizmet kontrolü
                 var service = await _serviceRepository.GetByIdAsync(request.ServiceId, cancellationToken);
                 if (service is null)
                     return Result<List<Guid>>.Failure(Error.NotFound("Hizmet", request.ServiceId.ToString()));
 
                 if (service.BusinessId != request.BusinessId)
-                    return Result<List<Guid>>.Failure(Error.Validation("Hizmet bu isletmeye ait degil.", $"ServiceId: {request.ServiceId}"));
+                    return Result<List<Guid>>.Failure(Error.Validation("Hizmet bu işletmeye ait değil.", $"ServiceId: {request.ServiceId}"));
 
-                // 3. Sinir kontrolu
+                // 3. Sınır kontrolü
                 if (request.MaxOffers <= 0)
-                    return Result<List<Guid>>.Failure(Error.Validation("MaxOffers sifirdan buyuk olmali."));
+                    return Result<List<Guid>>.Failure(Error.Validation("MaxOffers sıfırdan büyük olmalı."));
 
-                // 4. Uygun Active kayitlar: ayni isletme + ayni hizmet ve slot
-                //    kaydin tarih araliginda. PreferredEmployeeId ilk surumde
-                //    eslestirmede yok sayilir.
+                // 4. Uygun Active kayıtlar: aynı işletme + aynı hizmet ve slot
+                //    kaydın tarih aralığında. PreferredEmployeeId ilk sürümde
+                //    eşleştirmede yok sayılır.
                 var entries = await _waitlistEntryRepository.FindAsync(
                     e => e.BusinessId == request.BusinessId &&
                          e.ServiceId == request.ServiceId &&
@@ -72,8 +72,8 @@ namespace Rezervise.Application.Features.Waitlist.Commands.CreateWaitlistOffers
                          !e.IsDeleted,
                     cancellationToken);
 
-                // 5. Ayni slot icin hali hazirda Pending teklifi olan kayitlar
-                //    tekrar teklif uretmez; cift teklif engellenir.
+                // 5. Aynı slot için hali hazırda Pending teklifi olan kayıtlar
+                //    tekrar teklif üretmez; çift teklif engellenir.
                 var pendingOffers = await _waitlistOfferRepository.FindAsync(
                     o => o.BusinessId == request.BusinessId &&
                          o.SlotStart == request.SlotStart &&
@@ -85,7 +85,7 @@ namespace Rezervise.Application.Features.Waitlist.Commands.CreateWaitlistOffers
                     .Select(o => o.WaitlistEntryId)
                     .ToHashSet();
 
-                // 6. Onceliklendirme: once kayit olan musteri once teklif alir.
+                // 6. Önceliklendirme: önce kayıt olan müşteri önce teklif alır.
                 var candidates = entries
                     .Where(e => e.MatchesSlot(request.SlotStart) &&
                                 !alreadyOfferedEntryIds.Contains(e.Id))
@@ -93,7 +93,7 @@ namespace Rezervise.Application.Features.Waitlist.Commands.CreateWaitlistOffers
                     .Take(request.MaxOffers)
                     .ToList();
 
-                // 7. Pending teklifleri uret: ExpiresAt = now + WaitlistPolicy.OfferLifetime.
+                // 7. Pending teklifleri üret: ExpiresAt = now + WaitlistPolicy.OfferLifetime.
                 var now = _dateTime.UtcNow;
                 var expiresAt = now.Add(WaitlistPolicy.OfferLifetime);
 
@@ -122,7 +122,7 @@ namespace Rezervise.Application.Features.Waitlist.Commands.CreateWaitlistOffers
             }
             catch (Exception ex)
             {
-                return Result<List<Guid>>.Failure(Error.Internal("Bekleme listesi teklifleri uretilirken bir hata olustu.", ex.Message));
+                return Result<List<Guid>>.Failure(Error.Internal("Bekleme listesi teklifleri üretilirken bir hata oluştu.", ex.Message));
             }
         }
     }

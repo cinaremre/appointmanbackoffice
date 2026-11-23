@@ -28,15 +28,15 @@ namespace Rezervise.Application.Features.Reviews.Queries.GetById
         {
             try
             {
-                // 1. Yorumu ID'ye gore getir
+                // 1. Yorumu ID'ye göre getir
                 var review = await _reviewRepository.GetByIdAsync(request.ReviewId, cancellationToken);
 
-                // 2. Yorum bulunamadiysa hata dondur
+                // 2. Yorum bulunamadıysa hata döndür
                 if (review is null)
                     return Result<ReviewDto>.Failure(Error.NotFound("Yorum", request.ReviewId.ToString()));
 
-                // 3. Gizli veya silinmis yorumlar sadece yazarina, isletme sahibine
-                //    veya yoneticiye acik; digerlerine yokmus gibi davranilir.
+                // 3. Gizli veya silinmiş yorumlar sadece yazarına, işletme sahibine
+                //    veya yöneticiye açık; diğerlerine yokmus gibi davranılır.
                 if (!review.IsVisible || review.IsDeleted)
                 {
                     var canView = CallerAuthorization.CanActAsUser(_currentUser, review.UserId);
@@ -52,7 +52,7 @@ namespace Rezervise.Application.Features.Reviews.Queries.GetById
                         return Result<ReviewDto>.Failure(Error.NotFound("Yorum", request.ReviewId.ToString()));
                 }
 
-                // 4. DTO'ya donustur
+                // 4. DTO'ya dönüştür
                 var dto = new ReviewDto
                 {
                     Id = review.Id,
@@ -72,8 +72,8 @@ namespace Rezervise.Application.Features.Reviews.Queries.GetById
             }
             catch (Exception)
             {
-                // Beklenmeyen hata detayi istemciye sizdirilmaz.
-                return Result<ReviewDto>.Failure(Error.Internal("Yorum bilgileri getirilirken bir hata olustu."));
+                // Beklenmeyen hata detayı istemciye sızdırılmaz.
+                return Result<ReviewDto>.Failure(Error.Internal("Yorum bilgileri getirilirken bir hata oluştu."));
             }
         }
     }

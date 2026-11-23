@@ -10,11 +10,11 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Dashboard.Queries.GetMyBusinessDashboard
 {
     /// <summary>
-    /// Isletme sahibinin dashboard'u. Domain hesaplama YENIDEN yazilmaz:
+    /// İşletme sahibinin dashboard'u. Domain hesaplama YENIDEN yazılmaz:
     /// mevcut <see cref="GetBusinessDashboardQuery"/> ve
-    /// <see cref="GetDailySalesSummaryQuery"/> IMediator ile saranilir.
-    /// Sahiplik oncelikli burada dogrulanir; saranilan handler'larin kendi
-    /// yetki kontrolleri de ayrica gecerlidir (derin savunma).
+    /// <see cref="GetDailySalesSummaryQuery"/> IMediator ile saranılır.
+    /// Sahiplik öncelikli burada doğrulanır; saranılan handler'larin kendi
+    /// yetki kontrolleri de ayrıca geçerlidir (derin savunma).
     /// </summary>
     public class GetMyBusinessDashboardQueryHandler
         : IRequestHandler<GetMyBusinessDashboardQuery, Result<DashboardWithSummaryDto>>
@@ -39,17 +39,17 @@ namespace Rezervise.Application.Features.Owner.Dashboard.Queries.GetMyBusinessDa
         {
             try
             {
-                // 1. Sahiplik: isletme JWT sahibine ait olmali.
+                // 1. Sahiplik: işletme JWT sahibine ait olmalı.
                 var owned = await OwnerScope.FindOwnedBusinessAsync(
                     _businessRepository, _currentUser, request.BusinessId, cancellationToken);
 
                 if (owned.IsFailure)
                     return Result<DashboardWithSummaryDto>.Failure(owned.Error!);
 
-                // 2. Rapor gunu: istenmediyse bugun (UTC).
+                // 2. Rapor günü: istenmediyse bugün (UTC).
                 var date = (request.Date ?? DateTime.UtcNow).Date;
 
-                // 3. Mevcut dashboard sorgusu ayni parametrelerle saranilir.
+                // 3. Mevcut dashboard sorgusu aynı parametrelerle saranılır.
                 var dashboardResult = await _mediator.Send(
                     new GetBusinessDashboardQuery
                     {
@@ -61,7 +61,7 @@ namespace Rezervise.Application.Features.Owner.Dashboard.Queries.GetMyBusinessDa
                 if (dashboardResult.IsFailure)
                     return Result<DashboardWithSummaryDto>.Failure(dashboardResult.Error!);
 
-                // 4. Ayni gunun satis/kasa ozeti de tek kaynaktan gelir.
+                // 4. Aynı günün satış/kasa özeti de tek kaynaktan gelir.
                 var summaryResult = await _mediator.Send(
                     new GetDailySalesSummaryQuery
                     {
@@ -73,7 +73,7 @@ namespace Rezervise.Application.Features.Owner.Dashboard.Queries.GetMyBusinessDa
                 if (summaryResult.IsFailure)
                     return Result<DashboardWithSummaryDto>.Failure(summaryResult.Error!);
 
-                // 5. Birlesik DTO: kartlar + gunluk ozet tek yanitta.
+                // 5. Birleşik DTO: kartlar + günlük özet tek yanıtta.
                 return Result<DashboardWithSummaryDto>.Success(new DashboardWithSummaryDto
                 {
                     Dashboard = dashboardResult.Value!,
@@ -83,7 +83,7 @@ namespace Rezervise.Application.Features.Owner.Dashboard.Queries.GetMyBusinessDa
             catch (Exception ex)
             {
                 return Result<DashboardWithSummaryDto>.Failure(
-                    Error.Internal("Dashboard getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Dashboard getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

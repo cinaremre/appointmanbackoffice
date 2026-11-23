@@ -37,26 +37,26 @@ namespace Rezervise.Application.Features.Inventory.Commands.DefineServiceMateria
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde OwnerId'si değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Forbidden("Bu isletmeye recete tanimlama yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu işletmeye reçete tanımlama yetkiniz yok."));
 
-                // 3. Hizmet kontrolu: hizmet isletmeye ait olmali.
+                // 3. Hizmet kontrolü: hizmet işletmeye ait olmalı.
                 var service = await _serviceRepository.GetByIdAsync(request.ServiceId, cancellationToken);
                 if (service is null || service.BusinessId != request.BusinessId)
                     return Result<Guid>.Failure(Error.NotFound("Hizmet", request.ServiceId.ToString()));
 
-                // 4. Urun kontrolu: urun isletmeye ait olmali.
+                // 4. Ürün kontrolü: ürün işletmeye ait olmalı.
                 var product = await _productRepository.GetByIdAsync(request.ProductId, cancellationToken);
                 if (product is null || product.BusinessId != request.BusinessId)
-                    return Result<Guid>.Failure(Error.NotFound("Urun", request.ProductId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Ürün", request.ProductId.ToString()));
 
-                // 5. Ayni (ServiceId, ProductId) cifti daha once tanimlanmis mi?
+                // 5. Aynı (ServiceId, ProductId) çifti daha önce tanımlanmış mi?
                 var existing = await _serviceMaterialRepository.FindAsync(
                     sm => sm.BusinessId == request.BusinessId
                           && sm.ServiceId == request.ServiceId
@@ -66,9 +66,9 @@ namespace Rezervise.Application.Features.Inventory.Commands.DefineServiceMateria
 
                 if (existing.Any())
                     return Result<Guid>.Failure(Error.Conflict(
-                        "Bu hizmet icin bu urun zaten recetede tanimli."));
+                        "Bu hizmet için bu ürün zaten reçetede tanımlı."));
 
-                // 6. Recete kaydini olustur
+                // 6. Reçete kaydını oluştur
                 var serviceMaterial = new ServiceMaterial(
                     request.BusinessId,
                     request.ServiceId,
@@ -84,9 +84,9 @@ namespace Rezervise.Application.Features.Inventory.Commands.DefineServiceMateria
             }
             catch (DuplicateKeyException)
             {
-                // Es zamanli iki tanimlama denemesi: unique index ikincisini reddeder.
+                // Es zamanlı iki tanımlama denemesi: unique index ikincisini reddeder.
                 return Result<Guid>.Failure(
-                    Error.Conflict("Bu hizmet icin bu urun zaten recetede tanimli."));
+                    Error.Conflict("Bu hizmet için bu ürün zaten reçetede tanımlı."));
             }
             catch (DomainException ex)
             {
@@ -94,7 +94,7 @@ namespace Rezervise.Application.Features.Inventory.Commands.DefineServiceMateria
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Hizmet recetesi tanimlanirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Hizmet reçetesi tanımlanırken bir hata oluştu.", ex.Message));
             }
         }
     }

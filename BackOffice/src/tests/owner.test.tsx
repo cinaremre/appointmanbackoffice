@@ -8,18 +8,18 @@ import { OwnerAppointmentsPage } from "../features/owner/pages/OwnerAppointments
 import { OwnerDashboardPage } from "../features/owner/pages/OwnerDashboardPage";
 
 /**
- * Owner portal sayfa testleri. fetch mock URL farkindir: isletme listesi
- * uc'u 1 isletme doner (tek isletme otomatik secilir), dashboard uc'u
- * BusinessDashboardDto + DailySalesSummaryDto sekilli govde dondurur.
- * AuthProvider + QueryClientProvider + MemoryRouter sarmalayicilari
- * gercek sayfa ortamini taklit eder.
+ * Owner portal sayfa testleri. fetch mock URL farkındır: işletme listesi
+ * uc'u 1 işletme döner (tek işletme otomatik seçilir), dashboard uc'u
+ * BusinessDashboardDto + DailySalesSummaryDto şekilli gövde döndürür.
+ * AuthProvider + QueryClientProvider + MemoryRouter sarmalayıcıları
+ * gerçek sayfa ortamini taklit eder.
  */
 
 const BUSINESSES = [
   {
     id: "b1",
-    name: "Kuafor Merkez",
-    description: "Sac ve sakal bakimi",
+    name: "Kuaför Merkez",
+    description: "Saç ve sakal bakımı",
     isActive: true,
     rating: 4.2,
     totalReviews: 11,
@@ -51,7 +51,7 @@ const DASHBOARD = {
   },
 };
 
-/** Basarili liste cevabi: { data, pagination } envelope'u. */
+/** Başarılı liste cevabı: { data, pagination } envelope'u. */
 function okEnvelope(data: unknown) {
   return {
     ok: true,
@@ -83,7 +83,7 @@ function fakeAuth() {
   sessionStorage.setItem("backoffice.token", "test-token");
 }
 
-/** URL'e gore cevap donderen fetch mock (owner cagrilari tam yol ister). */
+/** URL'e göre cevap döndüren fetch mock (owner çağrıları tam yol ister). */
 function routeMock(handler: (url: string) => unknown) {
   vi.stubGlobal(
     "fetch",
@@ -114,23 +114,23 @@ afterEach(() => {
 });
 
 describe("OwnerDashboardPage", () => {
-  it("tek isletme otomatik secilir ve gunluk KPI basliklari gorunur", async () => {
+  it("tek işletme otomatik seçilir ve günlük KPI başlıkları görünür", async () => {
     routeMock((url) => (url.includes("/dashboard") ? DASHBOARD : BUSINESSES));
 
     renderPage(<OwnerDashboardPage />);
 
-    expect(await screen.findByText("Bugunki Randevular")).toBeInTheDocument();
-    expect(screen.getByText("Gunluk Satis Ozeti")).toBeInTheDocument();
+    expect(await screen.findByText("Bugünkü Randevular")).toBeInTheDocument();
+    expect(screen.getByText("Günlük Satış Özeti")).toBeInTheDocument();
     expect(screen.getByText("Net Nakit Tahsilat")).toBeInTheDocument();
   });
 });
 
 describe("OwnerAppointmentsPage", () => {
-  it("bos listede EmptyState gosterir", async () => {
+  it("boş listede EmptyState gösterir", async () => {
     routeMock((url) => (url.includes("/appointments") ? [] : BUSINESSES));
 
     renderPage(<OwnerAppointmentsPage />);
 
-    expect(await screen.findByText("Randevu bulunamadi.")).toBeInTheDocument();
+    expect(await screen.findByText("Randevu bulunamadı.")).toBeInTheDocument();
   });
 });

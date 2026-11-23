@@ -36,21 +36,21 @@ namespace Rezervise.Application.Features.Reengagement.Commands.MarkReengagementN
         {
             try
             {
-                // 1. Isletme kontrolu.
+                // 1. İşletme kontrolü.
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki: bildirim isaretleme isletme sahibi veya platform yoneticisi isidir.
+                // 2. Yetki: bildirim işaretleme işletme sahibi veya platform yöneticisi işidir.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Unauthorized("Bu isletme icin geri cagirma bildirimi isaretleme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Unauthorized("Bu işletme için geri çağırma bildirimi işaretleme yetkiniz yok."));
 
-                // 3. Kural bu isletmeye ait olmali.
+                // 3. Kural bu işletmeye ait olmalı.
                 var rule = await _ruleRepository.GetByIdAsync(request.RuleId, cancellationToken);
                 if (rule is null || rule.BusinessId != request.BusinessId || rule.IsDeleted)
-                    return Result<Guid>.Failure(Error.NotFound("Geri cagirma kurali", request.RuleId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Geri çağırma kuralı", request.RuleId.ToString()));
 
-                // 4. Deneme kaydini olustur ve bildirim gonderildi olarak isaretle.
+                // 4. Deneme kaydını oluştur ve bildirim gönderildi olarak işaretle.
                 var attempt = new ReengagementAttempt(
                     request.BusinessId,
                     request.CustomerId,
@@ -67,7 +67,7 @@ namespace Rezervise.Application.Features.Reengagement.Commands.MarkReengagementN
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Geri cagirma bildirimi isaretlenirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Geri çağırma bildirimi işaretlenirken bir hata oluştu.", ex.Message));
             }
         }
     }

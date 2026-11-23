@@ -25,7 +25,7 @@ namespace Rezervise.Domain.Entities
     : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             DayOfWeek = dayOfWeek;
             BusinessId = businessId;
@@ -39,13 +39,13 @@ namespace Rezervise.Domain.Entities
         public void SetWorkingHours(TimeSpan startTime, TimeSpan endTime)
         {
             if (startTime >= endTime)
-                throw new DomainException("Baslangi� saati bitis saatinden �nce olmalidir.");
+                throw new DomainException("Baslangiç saati bitiş saatinden önce olmalıdır.");
 
             if (startTime.TotalHours < 0 || endTime.TotalHours > 24)
-                throw new DomainException("�alisma saatleri 00:00-24:00 arasinda olmalidir.");
+                throw new DomainException("Çalisma saatleri 00:00-24:00 arasında olmalıdır.");
 
             if (startTime.Minutes % 5 != 0 || endTime.Minutes % 5 != 0)
-                throw new DomainException("�alisma saatleri 5 dakikanin kati olmalidir.");
+                throw new DomainException("Çalisma saatleri 5 dakikanın katı olmalıdır.");
 
             var oldStartTime = StartTime;
             var oldEndTime = EndTime;
@@ -54,7 +54,7 @@ namespace Rezervise.Domain.Entities
             EndTime = endTime;
             UpdatedAt = DateTime.UtcNow;
 
-            // Eger g�ncelleniyorsa (Id bos degilse) event firlat
+            // Eğer güncelleniyorsa (Id boş değilse) event fırlat
             if (Id != Guid.Empty && (oldStartTime != startTime || oldEndTime != endTime))
             {
                 AddDomainEvent(new WorkingHourUpdatedEvent(
@@ -101,9 +101,9 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Araligin tamaminin mesai saatleri icinde kaldigini kontrol eder.
-        /// Mesai saatleri isletmenin yerel duvar saatidir; normalization icin
-        /// start/end ayni takvim gunune ait olmalidir.
+        /// Aralığın tamamının mesai saatleri içinde kaldığını kontrol eder.
+        /// Mesai saatleri işletmenin yerel duvar saatidir; normalization için
+        /// start/end aynı takvim gününe ait olmalıdır.
         /// </summary>
         public bool IsWithinWorkingHours(DateTime start, DateTime end)
         {
@@ -113,8 +113,8 @@ namespace Rezervise.Domain.Entities
             if (start.TimeOfDay < StartTime)
                 return false;
 
-            // 24:00, gunun sonundaki gece yarisidir. Bu sinir degeri yalnizca
-            // ayni gunun sonu (veya bir sonraki gunun 00:00'i) olarak kabul edilir.
+            // 24:00, günün sonundaki gece yarısıdır. Bu sınır değeri yalnızca
+            // aynı günün sonu (veya bir sonraki günün 00:00'i) olarak kabul edilir.
             if (EndTime >= TimeSpan.FromHours(24))
             {
                 if (start.Date == end.Date)
@@ -127,9 +127,9 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Isletme genelinde mola tanimlanmaz; molalar calisan bazinda
-        /// (EmployeeWorkingHour) tutulur. Aralik API'si domain genelinde ayni
-        /// kalsin diye bu metot her zaman false doner.
+        /// İşletme genelinde mola tanımlanmaz; molalar çalışan bazında
+        /// (EmployeeWorkingHour) tutulur. Aralık API'si domain genelinde aynı
+        /// kalsın diye bu metot her zaman false döner.
         /// </summary>
         public bool OverlapsBreak(DateTime start, DateTime end)
         {

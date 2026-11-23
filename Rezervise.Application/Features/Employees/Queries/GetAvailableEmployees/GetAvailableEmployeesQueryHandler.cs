@@ -32,9 +32,9 @@ namespace Rezervise.Application.Features.Employees.Queries.GetAvailableEmployees
         {
             try
             {
-                // 1. Isletmenin aktif ve randevu kabul eden calisanlarini getir.
-                //    Navigasyonlar yuklenmezse domain kontrolleri sessizce yanlis sonuc verir:
-                //    CanProvideService() her zaman false doner ve sonuc listesi bosalir.
+                // 1. İşletmenin aktif ve randevu kabul eden çalışanlarını getir.
+                //    Navigasyonlar yüklenmezse domain kontrolleri sessizce yanlış sonuç verir:
+                //    CanProvideService() her zaman false döner ve sonuç listesi boşalır.
                 var employees = await _employeeRepository.FindWithIncludesAsync(
                     e => e.BusinessId == request.BusinessId &&
                          e.IsActive &&
@@ -59,14 +59,14 @@ namespace Rezervise.Application.Features.Employees.Queries.GetAvailableEmployees
                         .ToList();
                 }
 
-                // 3. Tarih filtresi - calisma saati, izin ve cakisma kontrolu
+                // 3. Tarih filtresi - çalışma saati, izin ve çakışma kontrolü
                 if (request.AppointmentDate.HasValue && request.ServiceId.HasValue)
                 {
                     var service = await _serviceRepository.GetByIdAsync(request.ServiceId.Value, cancellationToken);
                     if (service is null)
                         return Result<List<EmployeeDto>>.Failure(Error.NotFound("Hizmet", request.ServiceId.Value.ToString()));
 
-                    // Isletme mesaisi yalnizca calisanin kendi mesai kaydi yoksa devreye girer.
+                    // İşletme mesaisi yalnızca çalışanın kendi mesai kaydı yoksa devreye girer.
                     var businesses = await _businessRepository.FindWithIncludesAsync(
                         b => b.Id == request.BusinessId && !b.IsDeleted,
                         new[] { nameof(Business.WorkingHours) },
@@ -76,7 +76,7 @@ namespace Rezervise.Application.Features.Employees.Queries.GetAvailableEmployees
 
                     var appointmentDate = request.AppointmentDate.Value;
 
-                    // The API receives UTC instants, but opening hours are stored as local
+                    // The API receives UTC instants, büt opening hours are stored as local
                     // wall-clock time-of-day. Comparing against the raw UTC value would shift
                     // every availability decision by the configured offset.
                     var businessLocalStart = _dateTimeService.ToBusinessLocalTime(appointmentDate);
@@ -86,7 +86,7 @@ namespace Rezervise.Application.Features.Employees.Queries.GetAvailableEmployees
                     var startTime = appointmentDate;
                     var endTime = startTime.AddMinutes(service.DurationInMinutes);
 
-                    // Calisma saati ve izin kontrolleri bellekte yapilir; navigasyonlar zaten yuklu.
+                    // Çalışma saati ve izin kontrolleri bellekte yapılır; navigasyonlar zaten yüklü.
                     var scheduleEligible = availableEmployees
                         .Where(e => IsScheduled(e, business, businessLocalStart, businessLocalEnd))
                         .ToList();
@@ -97,10 +97,10 @@ namespace Rezervise.Application.Features.Employees.Queries.GetAvailableEmployees
                     }
                     else
                     {
-                        // Cakisma kontrolu tek sorguda yapilir: calisan basina sorgu (N+1) yerine 1 sorgu.
+                        // Çakışma kontrolü tek sorguda yapılır: çalışan basına sorgu (N+1) yerine 1 sorgu.
                         var candidateIds = scheduleEligible.Select(e => e.Id).ToList();
 
-                        // No-show ve iptal edilmis randevular saati isgal etmez.
+                        // No-show ve iptal edilmiş randevular saati işgal etmez.
                         var conflicts = await _appointmentRepository.FindAsync(
                             a => candidateIds.Contains(a.EmployeeId) &&
                                  a.Status != Domain.Enums.EnumAppointmentStatus.Cancelled &&
@@ -117,7 +117,7 @@ namespace Rezervise.Application.Features.Employees.Queries.GetAvailableEmployees
                     }
                 }
 
-                // 4. DTO'ya donustur
+                // 4. DTO'ya dönüştür
                 var dtos = availableEmployees
                     .OrderBy(e => e.DisplayOrder)
                     .Select(e => new EmployeeDto
@@ -146,20 +146,20 @@ namespace Rezervise.Application.Features.Employees.Queries.GetAvailableEmployees
             catch (Exception ex)
             {
                 return Result<List<EmployeeDto>>.Failure(
-                    Error.Internal("Musait calisanlar getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Müsait çalışanlar getirilirken bir hata oluştu.", ex.Message));
             }
         }
 
         /// <summary>
-        /// Calisanin verilen yerel zaman araliginda gorevli olup olmadigini belirler.
-        /// Calisanin kendi mesai kaydi yoksa isletme mesaisi esas alinir; aksi halde
-        /// mesai kaydi olmayan calisanlar hicbir zaman musait donmez.
+        /// Çalışanın verilen yerel zaman aralığında görevli olup olmadığını belirler.
+        /// Çalışanın kendi mesai kaydı yoksa işletme mesaisi esas alınır; aksi halde
+        /// mesai kaydı olmayan çalışanlar hiçbir zaman müsait dönmez.
         /// </summary>
-        /// <param name="employee">Kontrol edilecek calisan.</param>
-        /// <param name="business">Isletme (mesai saatleri yuklu olmali).</param>
-        /// <param name="localStart">Isletme yerel saatinde aralik baslangici.</param>
-        /// <param name="localEnd">Isletme yerel saatinde aralik bitisi.</param>
-        /// <returns>Calisan bu araligi verebiliyorsa true.</returns>
+        /// <param name="employee">Kontrol edilecek çalışan.</param>
+        /// <param name="business">İşletme (mesai saatleri yüklü olmalı).</param>
+        /// <param name="localStart">İşletme yerel saatinde aralık başlangıcı.</param>
+        /// <param name="localEnd">İşletme yerel saatinde aralık bitişi.</param>
+        /// <returns>Çalışan bu aralığı verebiliyorsa true.</returns>
         private static bool IsScheduled(Employee employee, Business? business, DateTime localStart, DateTime localEnd)
         {
             if (employee.IsOnTimeOff(localStart))

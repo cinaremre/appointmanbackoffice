@@ -32,16 +32,16 @@ namespace Rezervise.Application.Features.Employees.Commands.CreateEmployee
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde OwnerId'si değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Unauthorized("Bu isletmeye calisan ekleme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Unauthorized("Bu işletmeye çalışan ekleme yetkiniz yok."));
 
-                // 3. Ayni isimde calisan var mi?
+                // 3. Aynı isimde çalışan var mi?
                 var existingEmployees = await _employeeRepository.FindAsync(
                     e => e.BusinessId == request.BusinessId &&
                          e.FirstName == request.FirstName &&
@@ -50,12 +50,12 @@ namespace Rezervise.Application.Features.Employees.Commands.CreateEmployee
                     cancellationToken);
 
                 if (existingEmployees.Any())
-                    return Result<Guid>.Failure(Error.Conflict("Bu isimde bir calisan zaten mevcut."));
+                    return Result<Guid>.Failure(Error.Conflict("Bu isimde bir çalışan zaten mevcut."));
 
-                // 4. Telefon numarasi olustur
+                // 4. Telefon numarası oluştur
                 var phoneNumber = new PhoneNumber(request.PhoneNumber);
 
-                // 5. Calisan olustur
+                // 5. Çalışan oluştur
                 var employee = new Employee(
                     request.FirstName,
                     request.LastName,
@@ -91,7 +91,7 @@ namespace Rezervise.Application.Features.Employees.Commands.CreateEmployee
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Calisan olusturulurken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Çalışan oluşturulurken bir hata oluştu.", ex.Message));
             }
         }
     }

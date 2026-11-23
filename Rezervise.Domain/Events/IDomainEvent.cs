@@ -6,7 +6,7 @@ namespace Rezervise.Domain.Events
 {
     public interface IDomainEvent
     {
-        /// <summary>Olayin benzersiz kimligi; yan etki tekrarlarini engellemek icin kullanilir.</summary>
+        /// <summary>Olayın benzersiz kimliği; yan etki tekrarlarını engellemek için kullanılır.</summary>
         Guid Id { get; }
 
         DateTime OccurredOn { get; }

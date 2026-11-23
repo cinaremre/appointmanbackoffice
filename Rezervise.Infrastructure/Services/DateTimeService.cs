@@ -22,7 +22,7 @@ namespace Rezervise.Infrastructure.Services
         }
 
         /// <summary>
-        /// Initialises the service with the configured business time zone offset.
+        /// İnitialıses the service with the configured business time zone offset.
         /// </summary>
         /// <param name="configuration">
         /// Application configuration; when null or missing the key, the built-in default is used.
@@ -72,7 +72,7 @@ namespace Rezervise.Infrastructure.Services
             return days;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public DateTime ToBusinessLocalTime(DateTime utcDateTime)
         {
             // Treat an unspecified kind as UTC: the API contract states timestamps are UTC.
@@ -83,7 +83,7 @@ namespace Rezervise.Infrastructure.Services
             return DateTime.SpecifyKind(utcDateTime.Add(_businessTimeZoneOffset), DateTimeKind.Unspecified);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public DateTime ToUtc(DateTime businessLocalDateTime)
             => DateTime.SpecifyKind(businessLocalDateTime.Subtract(_businessTimeZoneOffset), DateTimeKind.Utc);
     }

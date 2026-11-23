@@ -4,24 +4,24 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Notifications.Commands.RetryAdminNotification
 {
     /// <summary>
-    /// Bildirim yeniden gonderim talebi (dokuman Modul 14, kritik islem).
-    /// Denetim kaydi zorunludur; handler Action="NotificationRetry" yazar.
+    /// Bildirim yeniden gönderim talebi (doküman Modül 14, kritik işlem).
+    /// Denetim kaydı zorunludur; handler Action="NotificationRetry" yazar.
     /// </summary>
     public class RetryAdminNotificationCommand : IRequest<Result<RetryAdminNotificationResultDto>>
     {
-        /// <summary>Yeniden gonderimi istenen bildirimin kimligi.</summary>
+        /// <summary>Yeniden gönderimi istenen bildirimin kimliği.</summary>
         public Guid NotificationId { get; set; }
 
         /// <summary>
-        /// Islemi yapan yoneticinin User ID'si. Controller bu alani JWT
-        /// claim'lerinden doldurur; handler istemciye guvenmez.
+        /// İşlemi yapan yöneticinin User ID'si. Controller bu alani JWT
+        /// claim'lerinden doldurur; handler istemciye güvenmez.
         /// </summary>
         public Guid ActorUserId { get; set; }
 
-        /// <summary>Islem anindaki yonetici rol adi (denetim kaydi icin).</summary>
+        /// <summary>İşlem anındaki yönetici rol adı (denetim kaydı için).</summary>
         public string ActorRole { get; set; } = string.Empty;
 
-        /// <summary>Yoneticinin islem gerekcesi; opsiyonel.</summary>
+        /// <summary>Yöneticinin işlem gerekçesi; opsiyonel.</summary>
         public string? Reason { get; set; }
     }
 }

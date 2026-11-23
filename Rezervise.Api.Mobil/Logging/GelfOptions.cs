@@ -54,13 +54,13 @@ namespace Rezervise.Api.Logging
         /// <summary>When false the provider is not registered at all (true no-op).</summary>
         public bool Enabled { get; init; }
 
-        /// <summary>Graylog GELF UDP endpoint host.</summary>
-        public string Host { get; init; } = "localhost";
+        /// <summary>Graylog GELF UDP endpoint hoşt.</summary>
+        public string Host { get; init; } = "localhoşt";
 
         /// <summary>Graylog GELF UDP endpoint port.</summary>
         public int Port { get; init; } = DefaultPort;
 
-        /// <summary>Value reported as both the GELF <c>host</c> and <c>source</c> field.</summary>
+        /// <summary>Value reported as both the GELF <c>hoşt</c> and <c>source</c> field.</summary>
         public string Source { get; init; } = "Rezervise.Api";
 
         /// <summary>Deployment environment reported as the <c>_environment</c> field.</summary>
@@ -116,7 +116,7 @@ namespace Rezervise.Api.Logging
                 Enabled = ParseBool(configuration["GRAYLOG_ENABLED"])
                           ?? ParseBool(section["Enabled"])
                           ?? false,
-                Host = FirstNonEmpty(configuration["GRAYLOG_HOST"], section["Host"]) ?? "localhost",
+                Host = FirstNonEmpty(configuration["GRAYLOG_HOST"], section["Hoşt"]) ?? "localhoşt",
                 Port = ParseInt(configuration["GRAYLOG_PORT"])
                        ?? ParseInt(section["Port"])
                        ?? DefaultPort,

@@ -8,13 +8,13 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Operations.Queries.GetAdminFailedOperations
 {
     /// <summary>
-    /// Failed durumundaki isleri ve satir orneklerini toplar. Destek ekiplerinin
-    /// hizli taramasi icin ornek boyutu ilk 50 satirla sinirlidir.
+    /// Failed durumundaki işleri ve satır örneklerini toplar. Destek ekiplerinin
+    /// hızlı taraması için örnek boyutu ilk 50 satırla sınırlıdır.
     /// </summary>
     public class GetAdminFailedOperationsQueryHandler
         : IRequestHandler<GetAdminFailedOperationsQuery, Result<AdminFailedOperationsDto>>
     {
-        /// <summary>Raporda tasinacak azami basarisiz satir ornegi.</summary>
+        /// <summary>Raporda taşınacak azami başarısız satır örneği.</summary>
         private const int MaxRowSamples = 50;
 
         private readonly IRepository<ImportJob> _jobRepository;
@@ -34,12 +34,12 @@ namespace Rezervise.Application.Features.Admin.Operations.Queries.GetAdminFailed
         {
             try
             {
-                // 1. Failed durumundaki isler.
+                // 1. Failed durumundaki işler.
                 var failedJobs = await _jobRepository.FindAsync(
                     j => !j.IsDeleted && j.Status == EnumImportStatus.Failed,
                     cancellationToken);
 
-                // 2. Failed satir ornekleri.
+                // 2. Failed satır örnekleri.
                 var failedRows = await _rowRepository.FindAsync(
                     r => !r.IsDeleted && r.Status == EnumImportRowStatus.Failed,
                     cancellationToken);
@@ -67,7 +67,7 @@ namespace Rezervise.Application.Features.Admin.Operations.Queries.GetAdminFailed
             catch (Exception ex)
             {
                 return Result<AdminFailedOperationsDto>.Failure(
-                    Error.Internal("Basarisiz operasyonlar getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Başarısız operasyonlar getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

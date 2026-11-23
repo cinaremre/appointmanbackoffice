@@ -25,7 +25,7 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetBusiness
         {
             try
             {
-                // 1. Su anki ay dahil son uc donem ("YYYY-MM").
+                // 1. Su anki ay dahil son uç dönem ("YYYY-MM").
                 var now = DateTime.UtcNow;
                 var periods = new[]
                 {
@@ -34,7 +34,7 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetBusiness
                     now.AddMonths(-2).ToString("yyyy-MM")
                 };
 
-                // 2. Donem icindeki kullanim kayitlari ve ozellik tanimlari.
+                // 2. Dönem içindeki kullanım kayıtları ve özellik tanımları.
                 var usages = await _featureUsageRepository.FindAsync(
                     u => u.BusinessId == request.BusinessId
                         && periods.Contains(u.UsagePeriod)
@@ -47,7 +47,7 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetBusiness
 
                 var definitionById = definitions.ToDictionary(d => d.Id);
 
-                // 3. Ozellik ve donem bazinda sirali liste.
+                // 3. Özellik ve dönem bazında sıralı liste.
                 var result = usages
                     .Where(u => definitionById.ContainsKey(u.FeatureId))
                     .Select(u => new AdminFeatureUsageDto
@@ -67,7 +67,7 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetBusiness
             catch (Exception ex)
             {
                 return Result<IReadOnlyList<AdminFeatureUsageDto>>.Failure(
-                    Error.Internal("Ozellik kullanimlari getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Özellik kullanımları getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

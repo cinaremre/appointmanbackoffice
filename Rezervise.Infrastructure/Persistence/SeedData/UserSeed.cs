@@ -9,7 +9,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
 {
     public static class UserSeed
     {
-        // Sabit GUID'ler - diger seed dosyalarinda referans icin
+        // Sabit GUID'ler - diğer seed dosyalarında referans için
         public static readonly Guid AdminId = Guid.Parse("11111111-1111-1111-1111-111111111111");
         public static readonly Guid Owner1Id = Guid.Parse("22222222-2222-2222-2222-222222222222");
         public static readonly Guid Owner2Id = Guid.Parse("33333333-3333-3333-3333-333333333333");
@@ -20,7 +20,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
         public static readonly Guid Customer4Id = Guid.Parse("88888888-8888-8888-8888-888888888888");
         public static readonly Guid Customer5Id = Guid.Parse("99999999-9999-9999-9999-999999999999");
 
-        // Calisan kullanicilar
+        // Çalışan kullanıcılar
         public static readonly Guid EmployeeUser1Id = Guid.Parse("aaaaaaaa-0001-0000-0000-000000000001");
         public static readonly Guid EmployeeUser2Id = Guid.Parse("aaaaaaaa-0002-0000-0000-000000000002");
         public static readonly Guid EmployeeUser3Id = Guid.Parse("aaaaaaaa-0003-0000-0000-000000000003");
@@ -29,7 +29,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
         {
             if (await context.Users.AnyAsync())
             {
-                logger.LogInformation("Users zaten mevcut, atlaniyor.");
+                logger.LogInformation("Users zaten mevcut, atlanıyor.");
                 return;
             }
 
@@ -38,45 +38,45 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
                 CreateUser(AdminId, "Sistem", "Admin", "admin@example.com", "+905550000001",
                     EnumUserRole.SuperAdmin, "1985-05-15", true, true),
 
-                CreateUser(Owner1Id, "Mehmet", "Yilmaz", "businessowner1@example.com", "+905550000002",
+                CreateUser(Owner1Id, "Mehmet", "Yılmaz", "businessowner1@example.com", "+905550000002",
                     EnumUserRole.BusinessOwner, "1988-03-20", true, true),
 
-                CreateUser(Owner2Id, "Ayse", "Kaya", "businessowner2@example.com", "+905550000003",
+                CreateUser(Owner2Id, "Ayşe", "Kaya", "businessowner2@example.com", "+905550000003",
                     EnumUserRole.BusinessOwner, "1990-07-12", true, true),
 
                 CreateUser(Owner3Id, "Ali", "Demir", "businessowner3@example.com", "+905550000004",
                     EnumUserRole.BusinessOwner, "1992-11-08", true, false),
 
-                CreateUser(Customer1Id, "Ahmet", "Celik", "customer1@example.com", "+905550000005",
+                CreateUser(Customer1Id, "Ahmet", "Çelik", "customer1@example.com", "+905550000005",
                     EnumUserRole.Customer, "1995-01-25", true, true),
 
                 CreateUser(Customer2Id, "Zeynep", "Arslan", "customer2@example.com", "+905550000006",
                     EnumUserRole.Customer, "1997-06-18", true, false),
 
-                CreateUser(Customer3Id, "Can", "Ozturk", "customer3@example.com", "+905550000007",
+                CreateUser(Customer3Id, "Can", "Öztürk", "customer3@example.com", "+905550000007",
                     EnumUserRole.Customer, "1993-09-30", false, false),
 
-                CreateUser(Customer4Id, "Elif", "Sahin", "customer4@example.com", "+905550000008",
+                CreateUser(Customer4Id, "Elif", "Şahin", "customer4@example.com", "+905550000008",
                     EnumUserRole.Customer, "1999-12-05", true, true),
 
-                CreateUser(Customer5Id, "Burak", "Yildiz", "customer5@example.com", "+905550000009",
+                CreateUser(Customer5Id, "Burak", "Yıldız", "customer5@example.com", "+905550000009",
                     EnumUserRole.Customer, "1991-04-22", true, false),
 
-                // Calisan kullanicilar
+                // Çalışan kullanıcılar
                 CreateUser(EmployeeUser1Id, "Hasan", "Usta", "hasan.usta@example.com", "+905550000010",
                     EnumUserRole.Customer, "1980-01-01", true, true),
 
-                CreateUser(EmployeeUser2Id, "Selin", "Sac", "selin.sac@example.com", "+905550000011",
+                CreateUser(EmployeeUser2Id, "Selin", "Saç", "selin.sac@example.com", "+905550000011",
                     EnumUserRole.Customer, "1985-06-15", true, true),
 
-                CreateUser(EmployeeUser3Id, "Kaan", "Dovmeci", "kaan.dovmeci@example.com", "+905550000012",
+                CreateUser(EmployeeUser3Id, "Kaan", "Dövmeci", "kaan.dovmeci@example.com", "+905550000012",
                     EnumUserRole.Customer, "1990-03-20", true, true)
             };
 
             await context.Users.AddRangeAsync(users);
             await context.SaveChangesAsync();
 
-            logger.LogInformation("Users seed edildi: {Count} kullanici", users.Count);
+            logger.LogInformation("Users seed edildi: {Count} kullanıcı", users.Count);
         }
 
         private static User CreateUser(Guid id, string firstName, string lastName, string email,

@@ -4,10 +4,10 @@ using Rezervise.Application.Common.Interfaces;
 namespace Rezervise.Api.Services
 {
     /// <summary>
-    /// Yonetici denetim baglami (IAdminAuditContext) musteri API'si uyarlamasi.
-    /// Tek solution'da MediatR tum Application assembly'sini taradigi icin
-    /// Admin/Owner handler'larinin DI bagimliliklari bu host'ta da karsilanir.
-    /// Correlation ID istek basligindan, IP baglantidan cozulur.
+    /// Yönetici denetim bağlamı (IAdminAuditContext) müşteri API'si uyarlaması.
+    /// Tek solution'da MediatR tüm Application assembly'sını taradığı için
+    /// Admin/Owner handler'larının DI bağımlılıkları bu hoşt'ta da karşılanır.
+    /// Correlation ID istek başlığından, IP bağlantıdan çözülür.
     /// </summary>
     public sealed class AdminAuditContextAccessor : IAdminAuditContext
     {

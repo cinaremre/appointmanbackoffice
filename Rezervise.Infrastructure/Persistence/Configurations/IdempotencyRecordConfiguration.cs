@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Idempotency kayitlarinin sema eslemesi.
-    /// Anahtar uzerinde tekillik vardir; ayni anahtarla ikinci kayit DB tarafindan reddedilir.
+    /// Idempotency kayıtlarının sema eşlemesi.
+    /// Anahtar üzerinde tekillik vardır; aynı anahtarla ikinci kayıt DB tarafından reddedilir.
     /// </summary>
     public class IdempotencyRecordConfiguration : IEntityTypeConfiguration<IdempotencyRecord>
     {

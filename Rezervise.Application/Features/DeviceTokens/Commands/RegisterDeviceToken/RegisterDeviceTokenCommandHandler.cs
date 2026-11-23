@@ -9,9 +9,9 @@ using MediatR;
 namespace Rezervise.Application.Features.DeviceTokens.Commands.RegisterDeviceToken
 {
     /// <summary>
-    /// Mobil cihazin FCM token'ini kaydeder. Kimlik JWT'den gelir: kullanici
-    /// yalnizca KENDI cihazini kaydedebilir. Ayni token tekrar kaydedilirse
-    /// gorunurluk tazelenir (idempotent upsert).
+    /// Mobil cihazın FCM token'ini kaydeder. Kimlik JWT'den gelir: kullanıcı
+    /// yalnızca KENDI cihazını kaydedebilir. Aynı token tekrar kaydedilirse
+    /// görünürlük tazelenir (idempotent upsert).
     /// </summary>
     public class RegisterDeviceTokenCommand : IRequest<Result<Guid>>
     {
@@ -21,7 +21,7 @@ namespace Rezervise.Application.Features.DeviceTokens.Commands.RegisterDeviceTok
         /// <summary>Cihaz platformu (0=Android, 1=iOS).</summary>
         public EnumDevicePlatform Platform { get; set; }
 
-        /// <summary>Atanacak kullanici ID'si; JWT kimligiyle eslesmelidir.</summary>
+        /// <summary>Atanacak kullanıcı ID'si; JWT kimliğiyle eşleşmelidir.</summary>
         public Guid UserId { get; set; }
     }
 
@@ -48,9 +48,9 @@ namespace Rezervise.Application.Features.DeviceTokens.Commands.RegisterDeviceTok
         {
             try
             {
-                // Cihaz kaydi yalnizca kendisi icin yapilir (IDOR korumasi).
+                // Cihaz kaydı yalnızca kendisi için yapılır (IDOR koruması).
                 if (_currentUser.UserId is null || _currentUser.UserId != request.UserId)
-                    return Result<Guid>.Failure(Error.Forbidden("Cihaz kaydi yalnizca kendi hesabiniz icin yapilabilir."));
+                    return Result<Guid>.Failure(Error.Forbidden("Cihaz kaydı yalnızca kendi hesabınız için yapılabilir."));
 
                 var now = _dateTime.UtcNow;
 
@@ -74,8 +74,8 @@ namespace Rezervise.Application.Features.DeviceTokens.Commands.RegisterDeviceTok
             }
             catch (DuplicateKeyException)
             {
-                // Es zamanli iki kayit: ikincisi unique index'e takilir; kayit zaten vardir.
-                return Result<Guid>.Failure(Error.Conflict("Cihaz zaten kayitli."));
+                // Es zamanlı iki kayıt: ikincisi unique index'e takılır; kayıt zaten vardır.
+                return Result<Guid>.Failure(Error.Conflict("Cihaz zaten kayıtlı."));
             }
             catch (DomainException ex)
             {
@@ -83,7 +83,7 @@ namespace Rezervise.Application.Features.DeviceTokens.Commands.RegisterDeviceTok
             }
             catch (Exception)
             {
-                return Result<Guid>.Failure(Error.Internal("Cihaz token kaydi sirasinda bir hata olustu."));
+                return Result<Guid>.Failure(Error.Internal("Cihaz token kaydı sırasında bir hata oluştu."));
             }
         }
     }

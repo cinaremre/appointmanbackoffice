@@ -1,7 +1,7 @@
 /**
- * Rol -> permission eslemesinin frontend kopyasi (dokuman 5.2/5.3).
- * Bu KULLANICI DENeyimi icindir: menuler ve aksiyon butonlari gizlenir.
- * Nihai yetki kontrolu backend policy'lerinde yapilir.
+ * Rol -> permission eşlemesinin frontend kopyası (doküman 5.2/5.3).
+ * Bu KULLANICI DENeyimi içindir: menüler ve aksiyon butonları gizlenir.
+ * Nihai yetki kontrolü backend policy'lerinde yapılır.
  */
 
 export const PERMISSIONS = {
@@ -37,8 +37,8 @@ export const PERMISSIONS = {
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 
 /**
- * Isletme sahibi izinleri: owner portal uc'lari. Scope her zaman
- * JWT kimliginden turetilen isletme kapsamidir; nihai kontrol sunucudadir.
+ * İşletme sahibi izinleri: owner portal uçları. Scope her zaman
+ * JWT kimliğinden türetilen işletme kapsamıdır; nihai kontrol sunucudadır.
  */
 export const OWNER_PERMISSIONS = {
   dashboard: "owner.dashboard",
@@ -101,11 +101,11 @@ export const ROLE_PERMISSIONS: Record<string, (Permission | OwnerPermission)[]> 
     PERMISSIONS.notificationRead, PERMISSIONS.marketingRead, PERMISSIONS.reportRead, PERMISSIONS.auditRead,
     PERMISSIONS.operationsRead,
   ],
-  // Isletme sahibi: yalnizca owner portal uc'lari (kendi isletmesi).
+  // İşletme sahibi: yalnızca owner portal uçları (kendi işletmesi).
   BusinessOwner: Object.values(OWNER_PERMISSIONS),
 };
 
-/** Rol listesinden permission'a sahip mi? SuperAdmin her izne sahiptir. */
+/** Rol listesinden permission'a sahip mı? SuperAdmin her izne sahiptir. */
 export function hasPermission(
   roles: string[],
   permission: Permission | OwnerPermission,

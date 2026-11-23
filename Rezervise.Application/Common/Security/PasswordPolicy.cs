@@ -2,7 +2,7 @@ namespace Rezervise.Application.Common.Security
 {
     /// <summary>
     /// Single source of truth for password complexity rules.
-    /// Validators and authentication handlers must both consult this class so the policy
+    /// Validatörs and authentication handlers must both consult this class so the policy
     /// cannot drift between the API surface and the persistence layer.
     /// </summary>
     public static class PasswordPolicy

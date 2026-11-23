@@ -4,15 +4,15 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetAdminSubscriptionPlans
 {
     /// <summary>
-    /// Tum abonelik planlarini, plan basina dahil ozellik listesiyle
-    /// getirir (dokuman Modul 13). Plan-ozellik eslesmesi PlanFeature
-    /// kayitlari ile FeatureDefinition uzerinden bellek icinde kurulur.
+    /// Tüm abonelik planlarını, plan basına dahil özellik listesiyle
+    /// getirir (doküman Modül 13). Plan-özellik eşleşmesi PlanFeature
+    /// kayıtları ile FeatureDefinition üzerinden bellek içinde kurulur.
     /// </summary>
     public class GetAdminSubscriptionPlansQuery : IRequest<Result<IReadOnlyList<AdminSubscriptionPlanDto>>>
     {
     }
 
-    /// <summary>Plan ve ozellik setinin admin gorunumu.</summary>
+    /// <summary>Plan ve özellik setinin admin görünümü.</summary>
     public class AdminSubscriptionPlanDto
     {
         public Guid Id { get; set; }
@@ -22,19 +22,19 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetAdminSub
         public Domain.Enums.EnumBillingPeriod BillingPeriod { get; set; }
         public bool IsActive { get; set; }
 
-        /// <summary>Plana dahil ozellikler; kod bazinda eslesmis halde.</summary>
+        /// <summary>Plana dahil özellikler; kod bazında eşleşmiş halde.</summary>
         public IReadOnlyList<AdminPlanFeatureDto> Features { get; set; } = Array.Empty<AdminPlanFeatureDto>();
     }
 
-    /// <summary>Plana dahil tek ozellik satiri.</summary>
+    /// <summary>Plana dahil tek özellik satırı.</summary>
     public class AdminPlanFeatureDto
     {
-        /// <summary>Ozellik tanim kodu (orn. "WHATSAPP_REMINDER").</summary>
+        /// <summary>Özellik tanım kodu (orn. "WHATSAPP_REMINDER").</summary>
         public string FeatureCode { get; set; } = string.Empty;
 
         public bool IsEnabled { get; set; }
 
-        /// <summary>Donemsel kota; null = sinirsiz.</summary>
+        /// <summary>Dönemsel kota; null = sınırsız.</summary>
         public int? IncludedQuota { get; set; }
     }
 }

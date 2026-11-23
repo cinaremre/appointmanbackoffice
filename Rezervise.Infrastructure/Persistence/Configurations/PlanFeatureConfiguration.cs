@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Plana dahil edilen ozellik ve donemsel kotasi.
-    /// Ayni plan + ozellik cifti bir kez tanimlanabilir.
+    /// Plana dahil edilen özellik ve dönemsel kotası.
+    /// Aynı plan + özellik çifti bir kez tanımlanabilir.
     /// </summary>
     public class PlanFeatureConfiguration : BaseConfiguration<PlanFeature>
     {

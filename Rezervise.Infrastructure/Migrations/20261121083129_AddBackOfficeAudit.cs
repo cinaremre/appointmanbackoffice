@@ -5,20 +5,20 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Rezervise.Infrastructure.Migrations
 {
-    /// <inheritdoc />
+    /// <inheritdoç />
     public partial class AddBackOfficeAudit : Migration
     {
-        /// <inheritdoc />
+        /// <inheritdoç />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
                 name: "AdminAuditLogs",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ActorUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
+                    ActorUserId = table.Column<Guid>(type: "üniqueidentifier", nullable: false),
                     ActorRole = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    BusinessId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    BusinessId = table.Column<Guid>(type: "üniqueidentifier", nullable: true),
                     EntityType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     EntityId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Action = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -55,7 +55,7 @@ namespace Rezervise.Infrastructure.Migrations
                 column: "CreatedAtUtc");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

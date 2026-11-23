@@ -29,7 +29,7 @@ namespace Rezervise.Application.Features.Businesses.Queries.SearchBusinesses
         {
             try
             {
-                // 1. Temel filtre: aktif, dogrulanmis, silinmemis
+                // 1. Temel filtre: aktif, doğrulanmış, silinmemiş
                 Expression<Func<Business, bool>> predicate = b =>
                     b.IsActive &&
                     b.IsVerified &&
@@ -42,28 +42,28 @@ namespace Rezervise.Application.Features.Businesses.Queries.SearchBusinesses
                     predicate = predicate.AndAlso(b => b.CategoryId == categoryId);
                 }
 
-                // 3. Konum cozumleme: istekte gelen deger varsa o kullanilir ve ASLA ezilmez.
-                //    Istekte konum gelmediyse kullanicinin kayitli adresi devreye girer.
+                // 3. Konum çözümleme: istekte gelen değer varsa o kullanılır ve ASLA ezilmez.
+                //    İstekte konum gelmediyse kullanıcının kayıtlı adresi devreye girer.
                 var cityId = request.CityId;
                 var districtId = request.DistrictId;
 
-                // Istekte sehir ADI geldiyse ID'ye cozulur. Address bir value object oldugu ve
-                // City navigasyonu icermedigi icin once ID cozumu, sonra Address.CityId filtresi gerekir.
-                // CityId doluysa ada hic bakilmaz; sayisal ID her zaman oncelikli.
+                // İstekte şehir ADI geldiyse ID'ye çözülür. Address bir value object öldüğü ve
+                // City navigasyonu içermediği için önce ID çözümü, sonra Address.CityId filtresi gerekir.
+                // CityId doluysa ada hiç bakılmaz; sayısal ID her zaman öncelikli.
                 if (!cityId.HasValue && !string.IsNullOrWhiteSpace(request.City))
                 {
                     var rawCity = request.City.Trim();
                     var normalized = SearchNormalizer.Normalize(rawCity);
                     var lowered = rawCity.ToLower();
 
-                    // 1) Tam eslesme (normalize edilmis arama adi veya birebir ad)
+                    // 1) Tam eşleşme (normalize edilmiş arama adı veya birebir ad)
                     var citiesByName = await _cityRepository.FindAsync(
                         c => c.SearchName == normalized || c.Name.ToLower() == lowered,
                         cancellationToken);
 
                     var resolvedCity = citiesByName.FirstOrDefault();
 
-                    // 2) Tam eslesme yoksa kismi eslesmeye dus (orn. "Ankar" -> "Ankara")
+                    // 2) Tam eşleşme yoksa kısmı eşleşmeye düş (orn. "Ankar" -> "Ankara")
                     if (resolvedCity is null)
                     {
                         var citiesByPartial = await _cityRepository.FindAsync(
@@ -75,7 +75,7 @@ namespace Rezervise.Application.Features.Businesses.Queries.SearchBusinesses
 
                     if (resolvedCity is null)
                         return Result<List<BusinessDto>>.Failure(
-                            Error.BusinessRule("Belirtilen sehir bulunamadi."));
+                            Error.BusinessRule("Belirtilen şehir bulunamadı."));
 
                     cityId = resolvedCity.Id;
                 }
@@ -95,12 +95,12 @@ namespace Rezervise.Application.Features.Businesses.Queries.SearchBusinesses
 
                 if (!cityId.HasValue && !districtId.HasValue)
                     return Result<List<BusinessDto>>.Failure(
-                        Error.BusinessRule("Arama icin sehir veya ilce bilgisi gereklidir."));
+                        Error.BusinessRule("Arama için şehir veya ilçe bilgisi gereklidir."));
 
                 if (cityId.HasValue)
                     predicate = predicate.AndAlso(b => b.Address.CityId == cityId.Value);
 
-                // 4. Ilce filtresi (opsiyonel)
+                // 4. İlçe filtresi (opsiyonel)
                 if (districtId.HasValue)
                 {
                     predicate = predicate.AndAlso(b => b.Address.DistrictId == districtId.Value);
@@ -121,7 +121,7 @@ namespace Rezervise.Application.Features.Businesses.Queries.SearchBusinesses
                 // 5. Verileri getir
                 var businesses = await _businessRepository.FindAsync(predicate, cancellationToken);
 
-                // 6. Siralama ve sayfalama
+                // 6. Sıralama ve sayfalama
                 var pagedBusinesses = businesses
                     .OrderByDescending(b => b.Rating)
                     .ThenBy(b => b.Name)
@@ -129,7 +129,7 @@ namespace Rezervise.Application.Features.Businesses.Queries.SearchBusinesses
                     .Take(request.PageSize)
                     .ToList();
 
-                // 7. DTO'ya donustur
+                // 7. DTO'ya dönüştür
                 var dtos = pagedBusinesses.Select(b => new BusinessDto
                 {
                     Id = b.Id,
@@ -154,7 +154,7 @@ namespace Rezervise.Application.Features.Businesses.Queries.SearchBusinesses
             catch (Exception ex)
             {
                 return Result<List<BusinessDto>>.Failure(
-                    Error.Internal("Isletmeler aranirken bir hata olustu.", ex.Message));
+                    Error.Internal("İşletmeler aranırken bir hata oluştu.", ex.Message));
             }
         }
     }

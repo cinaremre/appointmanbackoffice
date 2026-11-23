@@ -28,10 +28,10 @@ namespace Rezervise.Application.Features.Services.Queries.GetServicesByBusiness
                     predicate = predicate.AndAlso(s => s.IsActive == request.IsActive.Value);
                 }
 
-                // Navigation'lar yuklenmezse ServiceCategoryName "Unknown", BusinessName ve
-                // BusinessAddress null doner. GetName() cevirilere bagli oldugu icin
-                // Translations da include edilir. Address owned type oldugu icin
-                // Business yuklendiginde otomatik gelir.
+                // Navigation'lar yüklenmezse ServiceCategoryName "Unknown", BusinessName ve
+                // BusinessAddress null döner. GetName() çevirilere bağlı öldüğü için
+                // Translations da include edilir. Address owned type öldüğü için
+                // Business yüklendiğinde otomatik gelir.
                 var services = await _serviceRepository.FindWithIncludesAsync(
                     predicate,
                     new[]
@@ -70,7 +70,7 @@ namespace Rezervise.Application.Features.Services.Queries.GetServicesByBusiness
             catch (Exception ex)
             {
                 return Result<List<ServiceDto>>.Failure(
-                    Error.Internal("Hizmetler getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Hizmetler getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

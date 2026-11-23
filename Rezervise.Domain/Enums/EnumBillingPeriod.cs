@@ -1,14 +1,14 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Abonelik planinin faturalandirma donemi (dokuman Modul 14).
+    /// Abonelik planının faturalandırma dönemi (doküman Modül 14).
     /// </summary>
     public enum EnumBillingPeriod
     {
-        /// <summary>Aylik faturalandirma.</summary>
+        /// <summary>Aylık faturalandırma.</summary>
         Monthly = 0,
 
-        /// <summary>Yillik faturalandirma.</summary>
+        /// <summary>Yıllık faturalandırma.</summary>
         Yearly = 1
     }
 }

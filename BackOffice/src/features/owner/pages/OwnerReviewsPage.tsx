@@ -10,9 +10,9 @@ import type { OwnerReviewListItem } from "../types";
 import { formatDateOnly, shortId } from "../types";
 
 /**
- * Owner yorumlari: isletme kapsaminda musterilerin biriktirdigi yorumlar.
- * Puan yildiz metni olarak gosterilir ("4.5"); gizli yorumlar rozetle
- * isaretlenir. Yorum moderasyonu domain kurallariyla yapilir; bu sayfa
+ * Owner yorumları: işletme kapsamında müşterilerin biriktirdiği yorumlar.
+ * Puan yildiz metni olarak gösterilir ("4.5"); gizli yorumlar rozetle
+ * işaretlenir. Yorum moderasyonu domain kurallarıyla yapılır; bu sayfa
  * salt okunurdur.
  */
 
@@ -31,7 +31,7 @@ export function OwnerReviewsPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
 
-  // Tek isletme otomatik secilir.
+  // Tek işletme otomatik seçilir.
   const businessId = selectedId || businesses[0]?.id || "";
 
   const reviewsQuery = useQuery({
@@ -45,7 +45,7 @@ export function OwnerReviewsPage() {
   });
 
   const columns: DataTableColumn<OwnerReviewListItem>[] = [
-    { key: "customerId", header: "Musteri", render: (row) => <GuidText value={row.customerId} /> },
+    { key: "customerId", header: "Müşteri", render: (row) => <GuidText value={row.customerId} /> },
     { key: "rating", header: "Puan", render: (row) => row.rating.toFixed(1) },
     { key: "comment", header: "Yorum", render: (row) => row.comment ?? "-" },
     {
@@ -67,7 +67,7 @@ export function OwnerReviewsPage() {
     return (
       <Box>
         <PageHeader title="Yorumlar" />
-        <EmptyState label="Size ait isletme bulunamadi." />
+        <EmptyState label="Size ait işletme bulunamadı." />
       </Box>
     );
   }
@@ -83,7 +83,7 @@ export function OwnerReviewsPage() {
         <TextField
           select
           size="small"
-          label="Isletme"
+          label="İşletme"
           value={businessId}
           onChange={(e) => setSelectedId(e.target.value)}
           disabled={businesses.length <= 1}
@@ -110,8 +110,8 @@ export function OwnerReviewsPage() {
           setPageSize(nextSize);
           setPage(1);
         }}
-        emptyLabel="Yorum bulunamadi."
-        ariaLabel="isletme yorumlari tablosu"
+        emptyLabel="Yorum bulunamadı."
+        ariaLabel="işletme yorumları tablosu"
         onRefresh={() => void reviewsQuery.refetch()}
       />
     </Box>

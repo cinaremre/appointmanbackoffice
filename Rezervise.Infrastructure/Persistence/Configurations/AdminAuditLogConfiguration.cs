@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Yonetici denetim kaydi. Append-only defter: update/delete API'si
-    /// bilincli olarak sunulmaz. Sorgular isletme ve tarih uzerinden.
+    /// Yönetici denetim kaydı. Append-only defter: update/delete API'si
+    /// bilinçli olarak sunulmaz. Sorgular işletme ve tarih üzerinden.
     /// </summary>
     public class AdminAuditLogConfiguration : BaseConfiguration<AdminAuditLog>
     {
@@ -61,9 +61,9 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.Property(x => x.CreatedAtUtc)
                 .IsRequired();
 
-            // Denetim kayitlari fiziksel olarak silinmez: EF soft delete'i
-            // (IsDeleted) devre disi birakmak yerine query filter yalnizca
-            // aktif kayitlara uygulanmaz; kayitlar append-only tutulur.
+            // Denetim kayıtları fiziksel olarak silinmez: EF soft delete'i
+            // (IsDeleted) devre dışı bırakmak yerine query filter yalnızca
+            // aktif kayıtlara uygulanmaz; kayıtlar append-only tutulur.
             builder.HasIndex(x => x.BusinessId)
                 .HasDatabaseName("IX_AdminAuditLogs_BusinessId");
 

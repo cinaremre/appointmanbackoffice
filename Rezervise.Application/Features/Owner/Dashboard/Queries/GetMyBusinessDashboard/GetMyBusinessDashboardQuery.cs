@@ -6,26 +6,26 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Dashboard.Queries.GetMyBusinessDashboard
 {
     /// <summary>
-    /// Isletme sahibinin yonetici paneli. Sahiplik handler'da dogrulanir;
+    /// İşletme sahibinin yönetici paneli. Sahiplik handler'da doğrulanır;
     /// kartlar mevcut <see cref="GetBusinessDashboardQuery"/> ve
-    /// <see cref="GetDailySalesSummaryQuery"/> uzerinden IMediator ile
-    /// tek kaynaktan hesaplanir.
+    /// <see cref="GetDailySalesSummaryQuery"/> üzerinden IMediator ile
+    /// tek kaynaktan hesaplanır.
     /// </summary>
     public class GetMyBusinessDashboardQuery : IRequest<Result<DashboardWithSummaryDto>>
     {
         public Guid BusinessId { get; set; }
 
-        /// <summary>Kartlarin hesaplanacagi gun (UTC); bos ise bugun.</summary>
+        /// <summary>Kartların hesaplanacağı gün (UTC); boş ise bugün.</summary>
         public DateTime? Date { get; set; }
     }
 
-    /// <summary>Isletme dashboard kartlari + ayni gunun satis/kasa ozeti.</summary>
+    /// <summary>İşletme dashboard kartları + aynı günün satış/kasa özeti.</summary>
     public class DashboardWithSummaryDto
     {
-        /// <summary>Randevu/doluluk kartlari (Modul 15.1).</summary>
+        /// <summary>Randevu/doluluk kartları (Modül 15.1).</summary>
         public BusinessDashboardDto Dashboard { get; init; } = new();
 
-        /// <summary>Ayni gunun net satis/kasa ozeti (Modul 16).</summary>
+        /// <summary>Aynı günün net satış/kasa özeti (Modül 16).</summary>
         public DailySalesSummaryDto DailySalesSummary { get; init; } = new();
     }
 }

@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Iletisim izni degisikliklerinin degismez kaydi. Append-only;
-    /// denetim ve hukuki ispat icin tutulur.
+    /// İletişim izni değişikliklerinin değişmez kaydı. Append-only;
+    /// denetim ve hukuki ispat için tutulur.
     /// </summary>
     public class ConsentHistoryConfiguration : BaseConfiguration<ConsentHistory>
     {

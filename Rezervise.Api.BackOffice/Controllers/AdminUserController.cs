@@ -12,9 +12,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers
 {
     /// <summary>
-    /// Kullanici yonetimi (dokuman Modul 11). Okuma UserRead, kilit/acilis ve
-    /// oturum iptali UserManage permission'ina baglidir. Kritik islemlerde
-    /// govdede gerekce (reason) zorunludur.
+    /// Kullanıcı yönetimi (doküman Modül 11). Okuma UserRead, kilit/açılış ve
+    /// oturum iptali UserManage permission'ina bağlıdır. Kritik işlemlerde
+    /// gövdede gerekçe (reason) zorunludur.
     /// </summary>
     [Route("api/v1/admin/users")]
     public sealed class AdminUserController : BackOfficeControllerBase
@@ -26,7 +26,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             _mediator = mediator;
         }
 
-        /// <summary>Kullanicilari filtreleyerek sayfalayarak listeler.</summary>
+        /// <summary>Kullanıcıları filtreleyerek sayfalayarak listeler.</summary>
         [HttpGet]
         [Authorize(Policy = AdminPermissions.UserRead)]
         [ProducesResponseType(typeof(AdminResponse<IReadOnlyList<AdminUserListItemDto>>), StatusCodes.Status200OK)]
@@ -39,7 +39,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkList(result.Value.Items, result.Value.Page, result.Value.PageSize, result.Value.TotalCount);
         }
 
-        /// <summary>Tek kullanicinin detayini uyelikleriyle getirir.</summary>
+        /// <summary>Tek kullanıcının detayını üyelikleriyle getirir.</summary>
         [HttpGet("{id:guid}")]
         [Authorize(Policy = AdminPermissions.UserRead)]
         [ProducesResponseType(typeof(AdminResponse<AdminUserDetailDto>), StatusCodes.Status200OK)]
@@ -52,7 +52,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkEnvelope(result.Value);
         }
 
-        /// <summary>Kullanici hesabini kilitler. Gerekce zorunludur.</summary>
+        /// <summary>Kullanıcı hesabını kilitler. Gerekçe zorunludur.</summary>
         [HttpPost("{id:guid}/lock")]
         [Authorize(Policy = AdminPermissions.UserManage)]
         public async Task<IActionResult> Lock(Guid id, [FromBody] AdminUserActionRequest? body)
@@ -69,7 +69,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkEnvelope(new { id, status = "locked" });
         }
 
-        /// <summary>Kilili hesabi tekrar acar. Gerekce zorunludur.</summary>
+        /// <summary>Kilili hesabı tekrar açar. Gerekçe zorunludur.</summary>
         [HttpPost("{id:guid}/unlock")]
         [Authorize(Policy = AdminPermissions.UserManage)]
         public async Task<IActionResult> Unlock(Guid id, [FromBody] AdminUserActionRequest? body)
@@ -86,7 +86,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkEnvelope(new { id, status = "active" });
         }
 
-        /// <summary>Kullanicinin tum oturumlarini gecersiz kilar. Gerekce zorunludur.</summary>
+        /// <summary>Kullanıcının tüm oturumlarını geçersiz kılar. Gerekçe zorunludur.</summary>
         [HttpPost("{id:guid}/revoke-sessions")]
         [Authorize(Policy = AdminPermissions.UserManage)]
         public async Task<IActionResult> RevokeSessions(Guid id, [FromBody] AdminUserActionRequest? body)
@@ -103,10 +103,10 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkEnvelope(new { id, sessionsRevoked = true });
         }
 
-        /// <summary>Kilit/acilis/oturum iptali isteklerinin ortak govdesi.</summary>
+        /// <summary>Kilit/açılış/oturum iptali isteklerinin ortak gövdesi.</summary>
         public sealed class AdminUserActionRequest
         {
-            /// <summary>Yoneticinin islem gerekcesi; zorunludur.</summary>
+            /// <summary>Yöneticinin işlem gerekçesi; zorunludur.</summary>
             public string? Reason { get; set; }
         }
     }

@@ -5,7 +5,7 @@ using MediatR;
 namespace Rezervise.Application.Features.Cash.Commands.AddCashMovement
 {
     /// <summary>
-    /// Acik kasa oturumuna manuel nakit girisi/cikisi ekler.
+    /// Açık kasa oturumuna manuel nakit girişi/çıkışı ekler.
     /// </summary>
     public class AddCashMovementCommand : IRequest<Result<Guid>>
     {
@@ -13,10 +13,10 @@ namespace Rezervise.Application.Features.Cash.Commands.AddCashMovement
 
         public EnumCashMovementType MovementType { get; set; }
 
-        /// <summary>Hareket tutari; her zaman pozitiftir, yonu MovementType ile belirlenir.</summary>
+        /// <summary>Hareket tutarı; her zaman pozitiftir, yönü MovementType ile belirlenir.</summary>
         public decimal Amount { get; set; }
 
-        /// <summary>Hareket gerekcesi.</summary>
+        /// <summary>Hareket gerekçesi.</summary>
         public string? Reason { get; set; }
     }
 }

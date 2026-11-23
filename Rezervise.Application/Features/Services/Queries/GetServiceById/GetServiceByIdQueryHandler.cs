@@ -19,10 +19,10 @@ namespace Rezervise.Application.Features.Services.Queries.GetServiceById
         {
             try
             {
-                // Navigation'lar yuklenmezse ServiceCategoryName "Unknown", BusinessName ve
-                // BusinessAddress null doner. GetName() cevirilere bagli oldugu icin
-                // Translations da include edilir. Address owned type oldugu icin
-                // Business yuklendiginde otomatik gelir.
+                // Navigation'lar yüklenmezse ServiceCategoryName "Unknown", BusinessName ve
+                // BusinessAddress null döner. GetName() çevirilere bağlı öldüğü için
+                // Translations da include edilir. Address owned type öldüğü için
+                // Business yüklendiğinde otomatik gelir.
                 var matches = await _serviceRepository.FindWithIncludesAsync(
                     s => s.Id == request.ServiceId && !s.IsDeleted,
                     new[]
@@ -58,7 +58,7 @@ namespace Rezervise.Application.Features.Services.Queries.GetServiceById
             }
             catch (Exception ex)
             {
-                return Result<ServiceDto>.Failure(Error.Internal("Hizmet bilgileri getirilirken bir hata olustu.", ex.Message));
+                return Result<ServiceDto>.Failure(Error.Internal("Hizmet bilgileri getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

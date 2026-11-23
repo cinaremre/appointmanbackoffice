@@ -4,10 +4,10 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Veri aktarim isi (musteri CSV vb.).
-    /// Durum akisi: Uploaded -> Mapping -> Processing -> Completed/Failed.
-    /// CsvContent entity uzerinde saklanir ki Execute adimi satirlari
-    /// yeniden isleyebilsin (ilk surum basitlestirmesi).
+    /// Veri aktarım isi (müşteri CSV vb.).
+    /// Durum akışı: Uploaded -> Mapping -> Processing -> Completed/Failed.
+    /// CsvContent entity üzerinde saklanır ki Execute adımı satırları
+    /// yeniden işleyebilsin (ilk sürüm basitleştirmesi).
     /// </summary>
     public class ImportJob : BaseEntity
     {
@@ -19,10 +19,10 @@ namespace Rezervise.Domain.Entities
 
         public EnumImportStatus Status { get; private set; }
 
-        /// <summary>Kolon eslesmesi JSON metni (orn. {"0":"FullName","1":"Phone"}).</summary>
+        /// <summary>Kolon eşleşmesi JSON metni (orn. {"0":"FullName","1":"Phone"}).</summary>
         public string ColumnMapping { get; private set; }
 
-        /// <summary>Ham CSV icerigi; Execute adiminda tekrar parse edilir.</summary>
+        /// <summary>Ham CSV içeriği; Execute adımında tekrar parse edilir.</summary>
         public string CsvContent { get; private set; }
 
         public int TotalRows { get; private set; }
@@ -45,28 +45,28 @@ namespace Rezervise.Domain.Entities
             Guid createdBy)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (createdBy == Guid.Empty)
-                throw new ArgumentException("Olusturan kullanici ID bos olamaz.", nameof(createdBy));
+                throw new ArgumentException("Oluşturan kullanıcı ID boş olamaz.", nameof(createdBy));
 
             if (string.IsNullOrWhiteSpace(sourceSystem))
-                throw new DomainException("ImportJob.SourceSystemRequired", "Kaynak sistem bos olamaz.");
+                throw new DomainException("ImportJob.SourceSystemRequired", "Kaynak sistem boş olamaz.");
 
             if (sourceSystem.Length > 100)
                 throw new DomainException("ImportJob.SourceSystemTooLong", "Kaynak sistem en fazla 100 karakter olabilir.");
 
             if (string.IsNullOrWhiteSpace(fileName))
-                throw new DomainException("ImportJob.FileNameRequired", "Dosya adi bos olamaz.");
+                throw new DomainException("ImportJob.FileNameRequired", "Dosya adı boş olamaz.");
 
             if (fileName.Length > 260)
-                throw new DomainException("ImportJob.FileNameTooLong", "Dosya adi en fazla 260 karakter olabilir.");
+                throw new DomainException("ImportJob.FileNameTooLong", "Dosya adı en fazla 260 karakter olabilir.");
 
             if (string.IsNullOrWhiteSpace(csvContent))
-                throw new DomainException("ImportJob.CsvContentRequired", "CSV icerigi bos olamaz.");
+                throw new DomainException("ImportJob.CsvContentRequired", "CSV içeriği boş olamaz.");
 
             if (totalRows < 0)
-                throw new DomainException("ImportJob.TotalRowsNegative", "Satir sayisi negatif olamaz.");
+                throw new DomainException("ImportJob.TotalRowsNegative", "Satır sayısı negatif olamaz.");
 
             BusinessId = businessId;
             SourceSystem = sourceSystem.Trim();
@@ -80,7 +80,7 @@ namespace Rezervise.Domain.Entities
             Status = EnumImportStatus.Uploaded;
         }
 
-        /// <summary>Isi kolon eslesmesi bekler duruma alir.</summary>
+        /// <summary>İsi kolon eşleşmesi bekler duruma alır.</summary>
         public void MarkAwaitingMapping()
         {
             if (Status != EnumImportStatus.Uploaded)
@@ -90,35 +90,35 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Kolon eslesmesini kaydeder.</summary>
+        /// <summary>Kolon eşleşmesini kaydeder.</summary>
         public void SetColumnMapping(string columnMapping)
         {
             if (string.IsNullOrWhiteSpace(columnMapping))
-                throw new DomainException("ImportJob.MappingRequired", "Kolon eslesmesi bos olamaz.");
+                throw new DomainException("ImportJob.MappingRequired", "Kolon eşleşmesi boş olamaz.");
 
             if (columnMapping.Length > 4000)
-                throw new DomainException("ImportJob.MappingTooLong", "Kolon eslesmesi en fazla 4000 karakter olabilir.");
+                throw new DomainException("ImportJob.MappingTooLong", "Kolon eşleşmesi en fazla 4000 karakter olabilir.");
 
             ColumnMapping = columnMapping;
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Islemeye baslar: Processing durumuna gecer ve baslangic zamani tusar.</summary>
+        /// <summary>İşlemeye başlar: Processing durumuna geçer ve başlangıç zamanı tuşar.</summary>
         public void StartProcessing()
         {
             if (Status == EnumImportStatus.Completed)
-                throw new DomainException("ImportJob.AlreadyCompleted", "Bu aktarim isi zaten tamamlanmis.");
+                throw new DomainException("ImportJob.AlreadyCompleted", "Bu aktarım isi zaten tamamlanmış.");
 
             Status = EnumImportStatus.Processing;
             StartedAt = DateTime.UtcNow;
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Isi tamamlanmis olarak isaretler ve sayaclari yazar.</summary>
+        /// <summary>İsi tamamlanmış olarak işaretler ve sayaçları yazar.</summary>
         public void Complete(int importedRows, int failedRows)
         {
             if (importedRows < 0 || failedRows < 0)
-                throw new DomainException("ImportJob.CountsNegative", "Satir sayaclari negatif olamaz.");
+                throw new DomainException("ImportJob.CountsNegative", "Satır sayaçları negatif olamaz.");
 
             Status = EnumImportStatus.Completed;
             ImportedRows = importedRows;
@@ -127,7 +127,7 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Isi hata ile sonlandirir.</summary>
+        /// <summary>İsi hata ile sonlandırır.</summary>
         public void MarkFailed()
         {
             Status = EnumImportStatus.Failed;

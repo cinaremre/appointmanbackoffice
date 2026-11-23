@@ -10,8 +10,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Employees.Queries.GetMyEmployees
 {
     /// <summary>
-    /// Isletme sahibinin calisan listesi. Sahiplik OwnerScope ile
-    /// dogrulanir; liste yalnizca istenen isletmenin calisanlarini doner.
+    /// İşletme sahibinin çalışan listesi. Sahiplik OwnerScope ile
+    /// doğrulanır; liste yalnızca istenen işletmenin çalışanlarını döner.
     /// </summary>
     public class GetMyEmployeesQueryHandler
         : IRequestHandler<GetMyEmployeesQuery, Result<AdminPagedResult<OwnerEmployeeListItemDto>>>
@@ -36,23 +36,23 @@ namespace Rezervise.Application.Features.Owner.Employees.Queries.GetMyEmployees
         {
             try
             {
-                // 1. Sahiplik: isletme JWT sahibine ait olmali.
+                // 1. Sahiplik: işletme JWT sahibine ait olmalı.
                 var owned = await OwnerScope.FindOwnedBusinessAsync(
                     _businessRepository, _currentUser, request.BusinessId, cancellationToken);
 
                 if (owned.IsFailure)
                     return Result<AdminPagedResult<OwnerEmployeeListItemDto>>.Failure(owned.Error!);
 
-                // 2. Sayfalama kurallari.
+                // 2. Sayfalama kuralları.
                 var page = AdminPaging.NormalizePage(request.Page);
                 var pageSize = AdminPaging.ClampPageSize(request.PageSize);
 
-                // 3. Isletmenin silinmemis calisanlari.
+                // 3. İşletmenin silinmemiş çalışanları.
                 var employees = await _employeeRepository.FindAsync(
                     e => e.BusinessId == request.BusinessId && !e.IsDeleted,
                     cancellationToken);
 
-                // 4. Kararli siralama: once goruntuleme sirasi, sonra ad.
+                // 4. Kararlı sıralama: önce görüntüleme sırası, sonra ad.
                 var ordered = employees
                     .OrderBy(e => e.DisplayOrder)
                     .ThenBy(e => e.LastName, StringComparer.OrdinalIgnoreCase)
@@ -85,7 +85,7 @@ namespace Rezervise.Application.Features.Owner.Employees.Queries.GetMyEmployees
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<OwnerEmployeeListItemDto>>.Failure(
-                    Error.Internal("Calisan listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Çalışan listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -22,11 +22,11 @@ namespace Rezervise.Application.Features.Users.Commands.DeleteAccount
         private readonly ICurrentUserService _currentUser;
         private readonly RezerviseMetrics _metrics;
 
-        /// <param name="userRepository">Kullanici deposu.</param>
-        /// <param name="businessRepository">Isletme deposu; sahiplik kontrolu icin.</param>
-        /// <param name="unitOfWork">Kalicilik birimi.</param>
-        /// <param name="currentUser">Token'dan cozulen aktor kimligi.</param>
-        /// <param name="metrics">KVKK hesap verebilirlik izi icin sayac.</param>
+        /// <param name="userRepository">Kullanıcı deposu.</param>
+        /// <param name="businessRepository">İşletme deposu; sahiplik kontrolü için.</param>
+        /// <param name="unitOfWork">Kalıcılık birimi.</param>
+        /// <param name="currentUser">Token'dan çözülen aktör kimliği.</param>
+        /// <param name="metrics">KVKK hesap verebilirlik izi için sayaç.</param>
         public DeleteAccountCommandHandler(
             IRepository<User> userRepository,
             IRepository<Business> businessRepository,
@@ -41,20 +41,20 @@ namespace Rezervise.Application.Features.Users.Commands.DeleteAccount
             _metrics = metrics;
         }
 
-        /// <param name="request">Silme istegi; mevcut sifreyi tasir.</param>
-        /// <param name="cancellationToken">Iptal belirteci.</param>
-        /// <returns>Basarida <c>true</c>.</returns>
+        /// <param name="request">Silme isteği; mevcut şifreyi taşır.</param>
+        /// <param name="cancellationToken">İptal belirteci.</param>
+        /// <returns>Başarıda <c>true</c>.</returns>
         public async Task<Result<bool>> Handle(DeleteAccountCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                // 0. Aktor kimligi her zaman imzali token'dan gelir; istekteki
-                //    hicbir alan kullaniciyi temsil etmez (IDOR korumasi).
+                // 0. Aktör kimliği her zaman imzalı token'dan gelir; istekteki
+                //    hiçbir alan kullanıcıyı temsil etmez (IDOR koruması).
                 var currentUserId = _currentUser.UserId;
                 if (currentUserId is null)
                     return Result<bool>.Failure(Error.Unauthorized("Auth.InvalidUser"));
 
-                // 1. Kullaniciyi getir; silinmis kayit tekrar islenmez.
+                // 1. Kullanıcıyı getir; silinmiş kayıt tekrar işlenmez.
                 var users = await _userRepository.FindAsync(
                     u => u.Id == currentUserId.Value && !u.IsDeleted,
                     cancellationToken);
@@ -63,14 +63,14 @@ namespace Rezervise.Application.Features.Users.Commands.DeleteAccount
                 if (user is null)
                     return Result<bool>.Failure(Error.NotFound("User", currentUserId.Value.ToString()));
 
-                // 2. Yikici islem icin sifre tekrar dogrulanir. Basarisiz deneme
-                //    hesabi degistirmez; hata mesaji kimligi sizdirmaz.
+                // 2. Yıkıcı işlem için şifre tekrar doğrulanır. Başarısız deneme
+                //    hesabı değiştirmez; hata mesajı kimliği sızdırmaz.
                 if (!BCryptNet.Verify(request.CurrentPassword, user.PasswordHash))
                     return Result<bool>.Failure(Error.Unauthorized("Auth.CurrentPasswordInvalid"));
 
-                // 3. Isletme sahibi olan kullanici once devretmelidir (urun karari).
-                //    Sahiplik ayri sorguyla kontrol edilir; navigation include edilmez
-                //    cunku OwnedBusinesses'in EF'te eslenmis olmasi garanti degildir.
+                // 3. İşletme sahibi olan kullanıcı önce devretmelidir (ürün kararı).
+                //    Sahiplik ayrı sorguyla kontrol edilir; navigation include edilmez
+                //    çünkü OwnedBusinesses'in EF'te eşlenmiş olması garanti değildir.
                 var ownedBusinesses = await _businessRepository.FindAsync(
                     b => b.OwnerId == currentUserId.Value && !b.IsDeleted,
                     cancellationToken);
@@ -78,15 +78,15 @@ namespace Rezervise.Application.Features.Users.Commands.DeleteAccount
                 if (ownedBusinesses.Any())
                     return Result<bool>.Failure(Error.BusinessRule("Auth.AccountDeletionBlockedByBusinesses"));
 
-                // 4. Tek bir domain cagrisiyla tum kisisel veri silinir ve kayit
+                // 4. Tek bir domain çağrısıyla tüm kişisel veri silinir ve kayıt
                 //    soft delete edilir. Ranglar/yorumlar/favoriler/bildirimler
-                //    SILINMEZ; anonim kullaniciya bagli kalir.
+                //    SILINMEZ; anonim kullanıcıya bağlı kalır.
                 user.AnonymizeAndDelete(DateTime.UtcNow);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // KVKK hesap verebilirlik izi: kimlik tasimayan sayac. Kisisel veri
-                // (e-posta, telefon, sebep) bilincli olarak kaydedilmez.
+                // KVKK hesap verebilirlik izi: kimlik taşımayan sayaç. Kişisel veri
+                // (e-posta, telefon, sebep) bilinçli olarak kaydedilmez.
                 _metrics.RecordAccountDeleted();
 
                 return Result<bool>.Success(true);
@@ -98,7 +98,7 @@ namespace Rezervise.Application.Features.Users.Commands.DeleteAccount
             catch (Exception ex)
             {
                 return Result<bool>.Failure(
-                    Error.Internal("Hesap silinirken bir hata olustu.", ex.Message));
+                    Error.Internal("Hesap silinirken bir hata oluştu.", ex.Message));
             }
         }
     }

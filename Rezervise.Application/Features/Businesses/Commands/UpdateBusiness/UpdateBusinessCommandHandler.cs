@@ -28,24 +28,24 @@ namespace Rezervise.Application.Features.Businesses.Commands.UpdateBusiness
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu - JWT'den cozulen isletme sahibi veya yonetici mi?
+                // 2. Yetki kontrolü - JWT'den çözülen işletme sahibi veya yönetici mi?
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Unauthorized("Bu isletmeyi guncelleme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Unauthorized("Bu işletmeyi güncelleme yetkiniz yok."));
 
-                // 3. Ayni isimde baska isletme var mi?
+                // 3. Aynı isimde başka işletme var mi?
                 var existingBusinesses = await _businessRepository.FindAsync(
                     b => b.Name == request.Name && b.Id != request.BusinessId && !b.IsDeleted,
                     cancellationToken);
 
                 if (existingBusinesses.Any())
-                    return Result<Guid>.Failure(Error.Conflict("Bu isimde bir isletme zaten mevcut."));
+                    return Result<Guid>.Failure(Error.Conflict("Bu isimde bir işletme zaten mevcut."));
 
-                // 4. Bilgileri guncelle
+                // 4. Bilgileri güncelle
                 business.SetName(request.Name);
                 business.SetDescription(request.Description);
                 business.UpdateContactInfo(request.PhoneNumber, request.Email, request.WebsiteUrl);
@@ -65,7 +65,7 @@ namespace Rezervise.Application.Features.Businesses.Commands.UpdateBusiness
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Isletme guncellenirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("İşletme güncellenirken bir hata oluştu.", ex.Message));
             }
         }
     }

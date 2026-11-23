@@ -13,34 +13,34 @@ namespace Rezervise.Application.Features.Appointments.Commands.RescheduleAppoint
 
             RuleFor(x => x.AppointmentId)
                 .NotEmpty()
-                .WithMessage("Randevu ID bos olamaz.");
+                .WithMessage("Randevu ID boş olamaz.");
 
             RuleFor(x => x.UserId)
                 .NotEmpty()
-                .WithMessage("Kullanici ID bos olamaz.");
+                .WithMessage("Kullanıcı ID boş olamaz.");
 
             RuleFor(x => x.NewAppointmentDate)
                 .NotEmpty()
-                .WithMessage("Yeni randevu tarihi bos olamaz.");
+                .WithMessage("Yeni randevu tarihi boş olamaz.");
 
             RuleFor(x => x.NewAppointmentDate)
                 .Must(BeInFuture)
-                .WithMessage("Randevu tarihi gecmis olamaz.");
+                .WithMessage("Randevu tarihi geçmiş olamaz.");
 
             RuleFor(x => x.NewAppointmentDate)
                 .Must(BeValidLocalHour)
-                .WithMessage("Randevu saati 06:00-23:59 arasinda olmalidir.");
+                .WithMessage("Randevu saati 06:00-23:59 arasında olmalıdır.");
 
             RuleFor(x => x.NewAppointmentDate)
                 .Must(BeMultipleOfFiveLocalMinutes)
-                .WithMessage("Randevu saati 5 dakikanin kati olmalidir.");
+                .WithMessage("Randevu saati 5 dakikanın katı olmalıdır.");
 
             RuleFor(x => x.NewEmployeeId)
                 .Must(id => !id.HasValue || id.Value != Guid.Empty)
-                .WithMessage("Yeni calisan ID gecersiz.");
+                .WithMessage("Yeni çalışan ID geçersiz.");
         }
 
-        // Istek tarihi UTC anidir; mesai saatleri ise isletmenin yerel duvar saatidir.
+        // İstek tarihi UTC anıdır; mesai saatleri ise işletmenin yerel duvar saatidir.
         private bool BeInFuture(DateTime date) => date > _dateTimeService.UtcNow;
 
         private bool BeValidLocalHour(DateTime date)

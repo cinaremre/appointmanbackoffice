@@ -1,17 +1,17 @@
 /**
- * Finans modulu tipleri (dokuman Modul 16-17).
+ * Finans modülü tipleri (doküman Modül 16-17).
  *
  * Controller okuma notlari:
- * - GET /finance/sales  -> OkEnvelope ile AdminSalesListDto doner:
+ * - GET /finance/sales  -> OkEnvelope ile AdminSalesListDto döner:
  *   { items, page, pageSize, totalCount, totalPages, hasMore, totalGrandTotal }.
- *   Liste + toplam tek nesne icinde geldiginden client tarafinda getItem +
- *   manual cozumleme kullanilir (getList degil).
+ *   Liste + toplam tek nesne içinde geldiğinden client tarafında getItem +
+ *   manual çözümleme kullanılır (getList değil).
  * - GET /finance/payments | cash-sessions | expenses | commissions -> OkList
- *   ile doner: { data: [...], pagination: {...} }; getList ile okunur.
- * - Odemelerde iadeler IsRefund bayragiyla ayri listelenir (true = iadeler).
+ *   ile döner: { data: [...], pagination: {...} }; getList ile okunur.
+ * - Ödemelerde iadeler IsRefund bayrağıyla ayrı listelenir (true = iadeler).
  */
 
-/** GET /finance/sales tek satiri. */
+/** GET /finance/sales tek satırı. */
 export interface SaleRow {
   id: string;
   businessId: string;
@@ -25,7 +25,7 @@ export interface SaleRow {
   status: number | string;
 }
 
-/** Sayfalanmis satis listesi + filtre kapsaminin GrandTotal toplami. */
+/** Sayfalanmış satış listesi + filtre kapsamının GrandTotal toplamı. */
 export interface AdminSalesListDto {
   items: SaleRow[];
   page: number;
@@ -33,11 +33,11 @@ export interface AdminSalesListDto {
   totalCount: number;
   totalPages?: number;
   hasMore?: boolean;
-  /** Filtreye uyan TUM satislarin toplam tutari (yalnizca sayfa degil). */
+  /** Filtreye uyan TÜM satışların toplam tutarı (yalnızca sayfa değil). */
   totalGrandTotal?: number | null;
 }
 
-/** GET /finance/payments tek satiri; iade kayitlari RefersToPaymentId ile baglanir. */
+/** GET /finance/payments tek satırı; iade kayıtları RefersToPaymentId ile bağlanır. */
 export interface PaymentRow {
   id: string;
   businessId: string;
@@ -52,7 +52,7 @@ export interface PaymentRow {
   refersToPaymentId?: string | null;
 }
 
-/** GET /finance/cash-sessions tek satiri; Difference kapanista hesaplanir. */
+/** GET /finance/cash-sessions tek satırı; Difference kapanışta hesaplanır. */
 export interface CashSessionRow {
   id: string;
   businessId: string;
@@ -64,12 +64,12 @@ export interface CashSessionRow {
   closedAt?: string | null;
   expectedCash?: number | null;
   countedCash?: number | null;
-  /** Sayilan - beklenen nakit farki; acik oturumda null. */
+  /** Sayılan - beklenen nakit farkı; açık oturumda null. */
   difference?: number | null;
   status: number | string;
 }
 
-/** GET /finance/expenses tek satiri. */
+/** GET /finance/expenses tek satırı. */
 export interface ExpenseRow {
   id: string;
   businessId: string;
@@ -82,7 +82,7 @@ export interface ExpenseRow {
   status: number | string;
 }
 
-/** GET /finance/commissions tek satiri. */
+/** GET /finance/commissions tek satırı. */
 export interface CommissionRow {
   id: string;
   businessId: string;
@@ -98,9 +98,9 @@ export interface CommissionRow {
 /** EnumSaleStatus: 0=Pending, 1=Completed, 2=Cancelled, 3=Refunded. */
 export const SALE_STATUS_LABELS: Record<number, string> = {
   0: "Beklemede",
-  1: "Tamamlandi",
-  2: "Iptal",
-  3: "Iade",
+  1: "Tamamlandı",
+  2: "İptal",
+  3: "İade",
 };
 
 /** EnumPaymentMethod: 0=Cash, 1=BankCard, 2=Transfer, 3=Online, 4=GiftCard, 5=PackageCredit. */
@@ -115,18 +115,18 @@ export const PAYMENT_METHOD_LABELS: Record<number, string> = {
 
 /** EnumCashSessionStatus: 0=Open, 1=Closed. */
 export const CASH_SESSION_STATUS_LABELS: Record<number, string> = {
-  0: "Acik",
-  1: "Kapali",
+  0: "Açık",
+  1: "Kapalı",
 };
 
 /** EnumCommissionAccrualStatus: 0=Accrued, 1=Paid, 2=Reversed. */
 export const COMMISSION_STATUS_LABELS: Record<number, string> = {
   0: "Tahakkuk",
-  1: "Odenmis",
+  1: "Ödenmiş",
   2: "Ters Cevrildi",
 };
 
-/** Enum sayi veya string gelebilir; toleransli etiket dondurur. */
+/** Enum sayı veya string gelebilir; toleranslı etiket döndürür. */
 export function labelFor(raw: unknown, labels: Record<number, string>): string {
   if (typeof raw === "number") return labels[raw] ?? String(raw);
   if (typeof raw === "string") {
@@ -136,24 +136,24 @@ export function labelFor(raw: unknown, labels: Record<number, string>): string {
   return "-";
 }
 
-/** Para bicimi: tr-TR binlik ayirici + TRY icin "TL" kisa adi. */
+/** Para biçimi: tr-TR binlik ayirici + TRY için "TL" kısa adı. */
 export function formatMoney(value: number, currency = "TRY"): string {
   return `${value.toLocaleString("tr-TR")} ${currency === "TRY" ? "TL" : currency}`;
 }
 
-/** Isaretli para bicimi: pozitif "+" oneki tasir, negatifte "-" zaten vardir. */
+/** Isaretli para biçimi: pozitif "+" öneki taşır, negatifte "-" zaten vardir. */
 export function formatSignedMoney(value: number, currency = "TRY"): string {
   return `${value > 0 ? "+" : ""}${formatMoney(value, currency)}`;
 }
 
-/** Kisa tarih+saat bicimi; gecersiz degerde ham metni dondurur. */
+/** Kısa tarih+saat biçimi; geçersiz degerde ham metni döndürür. */
 export function formatDateTime(iso: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return iso;
   return date.toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "short" });
 }
 
-/** Basit GUID dogrulamasi: filtre girisleri icin. */
+/** Basit GUID doğrulaması: filtre girişleri için. */
 export function isGuid(value: string): boolean {
   return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
     value.trim(),

@@ -7,8 +7,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Notifications.Queries.GetAdminNotifications
 {
     /// <summary>
-    /// Bildirim listesini filtreler, gonderim zamanina gore tersten siralar ve
-    /// sayfalar. Yetki kontrolu API katmanindaki permission policy ile yapilir.
+    /// Bildirim listesini filtreler, gönderim zamanına göre tersten sıralar ve
+    /// sayfalar. Yetki kontrolü API katmanındaki permission policy ile yapılır.
     /// </summary>
     public class GetAdminNotificationsQueryHandler
         : IRequestHandler<GetAdminNotificationsQuery, Result<AdminNotificationListDto>>
@@ -26,8 +26,8 @@ namespace Rezervise.Application.Features.Admin.Notifications.Queries.GetAdminNot
         {
             try
             {
-                // Filtre kosullari lambda icinde kapanis degiskenlariyla tasinir;
-                // null filtreler dogal olarak devre disi kalir.
+                // Filtre koşulları lambda içinde kapanış değişkenlarıyla taşınır;
+                // null filtreler doğal olarak devre dışı kalır.
                 var userId = request.UserId;
                 var type = request.Type;
                 var fromDate = request.FromDate;
@@ -65,11 +65,11 @@ namespace Rezervise.Application.Features.Admin.Notifications.Queries.GetAdminNot
             catch (Exception ex)
             {
                 return Result<AdminNotificationListDto>.Failure(
-                    Error.Internal("Bildirim listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Bildirim listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
 
-        /// <summary>Entity uzerinden yonetici gorunumu DTO'su uretir.</summary>
+        /// <summary>Entity üzerinden yönetici görünümü DTO'su üretir.</summary>
         private static AdminNotificationDto ToDto(Notification notification) => new()
         {
             Id = notification.Id,

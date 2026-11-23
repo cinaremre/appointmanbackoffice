@@ -4,37 +4,37 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Reports.Queries.GetPlatformOverview
 {
     /// <summary>
-    /// Platform geneli ozet raporu (dokuman Modul 18). Sayilar canli
-    /// tablolardan hesaplanir; buyuk olcekte hazir ozet tablolarina
-    /// tasinacaktir.
+    /// Platform geneli özet raporu (doküman Modül 18). Sayılar canlı
+    /// tablolardan hesaplanır; büyük ölçekte hazır özet tablolarına
+    /// taşınacaktır.
     /// </summary>
     public class GetPlatformOverviewQuery : IRequest<Result<PlatformOverviewDto>>
     {
     }
 
-    /// <summary>Platform ozet metrikleri.</summary>
+    /// <summary>Platform özet metrikleri.</summary>
     public class PlatformOverviewDto
     {
-        /// <summary>Silinmemis toplam isletme sayisi.</summary>
+        /// <summary>Silinmemiş toplam işletme sayısı.</summary>
         public int TotalBusinesses { get; init; }
 
-        /// <summary>Aktif isletme sayisi.</summary>
+        /// <summary>Aktif işletme sayısı.</summary>
         public int ActiveBusinesses { get; init; }
 
-        /// <summary>Askidaki (aktif olmayan) isletme sayisi.</summary>
+        /// <summary>Askıdaki (aktif olmayan) işletme sayısı.</summary>
         public int SuspendedBusinesses { get; init; }
 
-        /// <summary>Son 30 gunde kayit olan isletme sayisi.</summary>
+        /// <summary>Son 30 günde kayıt olan işletme sayısı.</summary>
         public int NewRegistrations30Days { get; init; }
 
         public int TotalAppointments { get; init; }
 
         public int CompletedAppointments { get; init; }
 
-        /// <summary>Iptal edilen randevu orani, yuzde.</summary>
+        /// <summary>İptal edilen randevu oranı, yüzde.</summary>
         public decimal CancellationRate { get; init; }
 
-        /// <summary>No-show randevu orani, yuzde.</summary>
+        /// <summary>No-show randevu oranı, yüzde.</summary>
         public decimal NoShowRate { get; init; }
     }
 }

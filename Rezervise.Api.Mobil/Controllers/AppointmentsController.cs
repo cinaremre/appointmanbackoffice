@@ -18,7 +18,7 @@ using System.Security.Claims;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Randevu islemlerini yonetir.
+    /// Randevu işlemlerini yönetir.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -33,15 +33,15 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Yeni randevu olusturur.
+        /// Yeni randevu oluşturur.
         /// </summary>
         /// <param name="command">Randevu bilgileri</param>
         /// <param name="idempotencyKey">
-        /// Ayni istegin ag tekrari veya cift tiklama ile mukerrer gonderilmesini
-        /// engelleyen istemci anahtari. Ayni anahtarla gelen ikinci istek
-        /// yeni randevu uretmez, ilk olusan randevunun ID'sini doner.
+        /// Aynı isteğin ağ tekrarı veya çift tıklama ile mükerrer gönderilmesini
+        /// engelleyen istemci anahtarı. Aynı anahtarla gelen ikinci istek
+        /// yeni randevu üretmez, ilk oluşan randevunun ID'sını döner.
         /// </param>
-        /// <returns>Olusturulan randevunun ID'si</returns>
+        /// <returns>Oluşturulan randevunun ID'si</returns>
         [HttpPost]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
@@ -74,7 +74,7 @@ namespace Rezervise.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Cancel([FromBody] CancelAppointmentCommand command)
         {
-            // JWT'den gelen kimlik govdeye yazilan UserId'nin yerine gecer.
+            // JWT'den gelen kimlik gövdeye yazılan UserId'nin yerine geçer.
             var requesterId = GetRequesterId();
             if (requesterId == Guid.Empty)
                 return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
@@ -90,17 +90,17 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Randevuyu "gelmedi" (no-show) olarak isaretler.
+        /// Randevuyu "gelmedi" (no-show) olarak işaretler.
         /// </summary>
-        /// <param name="command">Isaretlenecek randevu bilgisi</param>
-        /// <returns>Isaretlenen randevunun ID'si</returns>
+        /// <param name="command">İşaretlenecek randevu bilgisi</param>
+        /// <returns>İşaretlenen randevunun ID'si</returns>
         [HttpPost("no-show")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> MarkNoShow([FromBody] MarkAppointmentNoShowCommand command)
         {
-            // JWT'den gelen kimlik govdeye yazilan UserId'nin yerine gecer.
+            // JWT'den gelen kimlik gövdeye yazılan UserId'nin yerine geçer.
             var requesterId = GetRequesterId();
             if (requesterId == Guid.Empty)
                 return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
@@ -155,7 +155,7 @@ namespace Rezervise.Api.Controllers
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Reschedule([FromBody] RescheduleAppointmentCommand command)
         {
-            // JWT'den gelen kimlik govdeye yazilan UserId'nin yerine gecer.
+            // JWT'den gelen kimlik gövdeye yazılan UserId'nin yerine geçer.
             var requesterId = GetRequesterId();
             if (requesterId == Guid.Empty)
                 return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
@@ -171,7 +171,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// ID'ye gore randevu getirir.
+        /// ID'ye göre randevu getirir.
         /// </summary>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Result<AppointmentDto>), StatusCodes.Status200OK)]
@@ -188,7 +188,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Isletmeye gore randevulari getirir.
+        /// İşletmeye göre randevuları getirir.
         /// </summary>
         [HttpGet("business/{businessId}")]
         [ProducesResponseType(typeof(Result<List<AppointmentDto>>), StatusCodes.Status200OK)]
@@ -222,7 +222,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kullaniciya gore randevulari getirir.
+        /// Kullanıcıya göre randevuları getirir.
         /// </summary>
         [HttpGet("user/{userId}")]
         [ProducesResponseType(typeof(Result<List<AppointmentDto>>), StatusCodes.Status200OK)]
@@ -254,7 +254,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Belirli bir calisanin belirli bir hizmet icin musait saatlerini getirir.
+        /// Belirli bir çalışanın belirli bir hizmet için müsait saatlerini getirir.
         /// </summary>
         [HttpGet("available-slots")]
         [AllowAnonymous]

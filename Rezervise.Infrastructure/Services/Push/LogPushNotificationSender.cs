@@ -5,9 +5,9 @@ using Microsoft.Extensions.Logging;
 namespace Rezervise.Infrastructure.Services.Push
 {
     /// <summary>
-    /// FCM yapilandirilmamisken kullanilan yedek tasima (SMS/e-posta log modu
-    /// deseni ile ayni). Bildirim uygulamasyon log'una yazilir; akis bastan
-    /// sona test edilebilir, hicbir dis cagi yapilmaz.
+    /// FCM yapılandırılmamışken kullanılan yedek taşıma (SMS/e-posta log modu
+    /// deseni ile aynı). Bildirim uygulamasyon log'una yazılır; akış baştan
+    /// sona test edilebilir, hiçbir dış çağı yapılmaz.
     /// </summary>
     internal sealed class LogPushNotificationSender : IPushNotificationSender
     {
@@ -18,7 +18,7 @@ namespace Rezervise.Infrastructure.Services.Push
             _logger = logger;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public Task<PushSendResult> SendAsync(PushMessage message, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(message);

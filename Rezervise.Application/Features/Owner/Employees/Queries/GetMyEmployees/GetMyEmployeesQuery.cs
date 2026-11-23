@@ -5,21 +5,21 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Employees.Queries.GetMyEmployees
 {
     /// <summary>
-    /// Isletme sahibinin kendi calisan listesi. Sahiplik handler'da
-    /// dogrulanir.
+    /// İşletme sahibinin kendi çalışan listesi. Sahiplik handler'da
+    /// doğrulanır.
     /// </summary>
     public class GetMyEmployeesQuery : IRequest<Result<AdminPagedResult<OwnerEmployeeListItemDto>>>
     {
         public Guid BusinessId { get; set; }
 
-        /// <summary>1 tabanli sayfa numarasi.</summary>
+        /// <summary>1 tabanlı sayfa numarası.</summary>
         public int Page { get; set; } = 1;
 
-        /// <summary>Sayfa boyutu; handler en fazla 200'e sinirlar.</summary>
+        /// <summary>Sayfa boyutu; handler en fazla 200'e sınırlar.</summary>
         public int PageSize { get; set; } = 50;
     }
 
-    /// <summary>Owner calisan liste satiri.</summary>
+    /// <summary>Owner çalışan liste satırı.</summary>
     public class OwnerEmployeeListItemDto
     {
         public Guid Id { get; init; }

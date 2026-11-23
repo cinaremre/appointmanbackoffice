@@ -10,8 +10,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Services.Queries.GetMyServices
 {
     /// <summary>
-    /// Isletme sahibinin hizmet listesi. Sahiplik OwnerScope ile
-    /// dogrulanir; liste yalnizca istenen isletmenin hizmetlerini doner.
+    /// İşletme sahibinin hizmet listesi. Sahiplik OwnerScope ile
+    /// doğrulanır; liste yalnızca istenen işletmenin hizmetlerini döner.
     /// </summary>
     public class GetMyServicesQueryHandler
         : IRequestHandler<GetMyServicesQuery, Result<AdminPagedResult<OwnerServiceListItemDto>>>
@@ -36,14 +36,14 @@ namespace Rezervise.Application.Features.Owner.Services.Queries.GetMyServices
         {
             try
             {
-                // 1. Sahiplik: isletme JWT sahibine ait olmali.
+                // 1. Sahiplik: işletme JWT sahibine ait olmalı.
                 var owned = await OwnerScope.FindOwnedBusinessAsync(
                     _businessRepository, _currentUser, request.BusinessId, cancellationToken);
 
                 if (owned.IsFailure)
                     return Result<AdminPagedResult<OwnerServiceListItemDto>>.Failure(owned.Error!);
 
-                // 2. Sayfalama kurallari.
+                // 2. Sayfalama kuralları.
                 var page = AdminPaging.NormalizePage(request.Page);
                 var pageSize = AdminPaging.ClampPageSize(request.PageSize);
 
@@ -51,7 +51,7 @@ namespace Rezervise.Application.Features.Owner.Services.Queries.GetMyServices
                 var search = string.IsNullOrWhiteSpace(request.Search) ? null : request.Search.Trim();
                 var isActive = request.IsActive;
 
-                // 3. Filtre: isletme + durum + serbest metin (ad).
+                // 3. Filtre: işletme + durum + serbest metin (ad).
                 var services = await _serviceRepository.FindAsync(
                     s => s.BusinessId == businessId
                         && !s.IsDeleted
@@ -59,7 +59,7 @@ namespace Rezervise.Application.Features.Owner.Services.Queries.GetMyServices
                         && (isActive == null || s.IsActive == isActive),
                     cancellationToken);
 
-                // 4. Kararli siralama: once ad, sonra Id.
+                // 4. Kararlı sıralama: önce ad, sonra Id.
                 var ordered = services
                     .OrderBy(s => s.Name, StringComparer.OrdinalIgnoreCase)
                     .ThenBy(s => s.Id)
@@ -92,7 +92,7 @@ namespace Rezervise.Application.Features.Owner.Services.Queries.GetMyServices
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<OwnerServiceListItemDto>>.Failure(
-                    Error.Internal("Hizmet listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Hizmet listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

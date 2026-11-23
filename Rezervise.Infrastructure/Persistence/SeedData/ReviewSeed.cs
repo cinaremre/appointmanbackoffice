@@ -11,7 +11,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
         {
             if (await context.Reviews.AnyAsync())
             {
-                logger.LogInformation("Reviews zaten mevcut, atlaniyor.");
+                logger.LogInformation("Reviews zaten mevcut, atlanıyor.");
                 return;
             }
 
@@ -19,23 +19,23 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
             var reviews = new List<Review>
             {
                 CreateReview(UserSeed.Customer1Id, BusinessSeed.Biz1Id, AppointmentSeed.Apt1Id,
-                    5, "Hasan Usta harika bir kesim yapti, kesinlikle tavsiye ederim.",
+                    5, "Hasan Usta harika bir kesim yaptı, kesinlikle tavsiye ederim.",
                     today.AddDays(-9), true),
 
                 CreateReview(UserSeed.Customer2Id, BusinessSeed.Biz2Id, AppointmentSeed.Apt2Id,
-                    4, "Selin Hanim cok ilgiliydi, sacim guzel oldu. Biraz bekledim.",
+                    4, "Selin Hanım çok ilgiliydi, saçım güzel oldu. Biraz bekledim.",
                     today.AddDays(-7), true),
 
                 CreateReview(UserSeed.Customer4Id, BusinessSeed.Biz3Id, AppointmentSeed.Apt4Id,
-                    5, "Kaan cok yetenekli bir sanatci, dovmem tam istedigim gibi oldu.",
+                    5, "Kaan çok yetenekli bir sanatçı, dövmem tam istediğim gibi oldu.",
                     today.AddDays(-2), true),
 
                 CreateReview(UserSeed.Customer5Id, BusinessSeed.Biz4Id, AppointmentSeed.Apt5Id,
-                    3, "Fena degildi ama cok bekledim. Kesim idare eder.",
+                    3, "Fena değildi ama çok bekledim. Kesim idare eder.",
                     today.AddDays(-1), true),
 
                 CreateReview(UserSeed.Customer1Id, BusinessSeed.Biz2Id, null,
-                    2, "Sacim istedigim gibi olmadi, memnun kalmadim.",
+                    2, "Saçım istediğim gibi olmadı, memnun kalmadım.",
                     today.AddDays(-20), false)  // gizli
             };
 

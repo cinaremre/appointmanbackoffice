@@ -5,18 +5,18 @@ using MediatR;
 namespace Rezervise.Application.Features.Consents.Queries.CanContact
 {
     /// <summary>
-    /// Belirtilen kanal + amac icin musteriyetle iletisime gecilabilir mi?
-    /// (dokuman Modul 16)
+    /// Belirtilen kanal + amaç için müşteriyetle iletişime geçilabilir mi?
+    /// (doküman Modül 16)
     ///
-    /// ONEMLI: Pazarlama (Marketing) amacli her gonderimden once bu sorgu
-    /// zorunludur. Sonuc false ise gonderim yapilmamalidir; sorgu atlanarak
-    /// gonderilen pazarlama mesajlari izin ihlali olusturur.
+    /// ONEMLI: Pazarlama (Marketing) amaçlı her gönderimden önce bu sorgu
+    /// zorunludur. Sonuç false ise gönderim yapılmamalıdır; sorgu atlanarak
+    /// gönderilen pazarlama mesajları izin ihlali oluşturur.
     /// </summary>
     public class CanContactQuery : IRequest<Result<bool>>
     {
         public Guid BusinessId { get; set; }
 
-        /// <summary>Musterinin User ID'si.</summary>
+        /// <summary>Müşterinin User ID'si.</summary>
         public Guid CustomerId { get; set; }
 
         public EnumConsentChannel Channel { get; set; }

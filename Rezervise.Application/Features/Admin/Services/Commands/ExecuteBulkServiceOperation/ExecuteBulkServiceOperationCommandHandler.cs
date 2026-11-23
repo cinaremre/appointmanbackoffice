@@ -18,8 +18,8 @@ namespace Rezervise.Application.Features.Admin.Services.Commands.ExecuteBulkServ
         private static readonly JsonSerializerOptions PayloadJsonOptions = new(JsonSerializerDefaults.Web);
 
         /// <summary>
-        /// Ilk surumde kayit basina senkron isleme chunk boyutu.
-        /// Buyuk olcekte kuyruk tabanli islemciye tasinacaktir (dokuman 10.4).
+        /// İlk sürümde kayıt basına senkron işleme chunk boyutu.
+        /// Büyük ölçekte kuyruk tabanlı işlemciye taşınacaktır (doküman 10.4).
         /// </summary>
         private const int ChunkSize = 200;
 
@@ -62,21 +62,21 @@ namespace Rezervise.Application.Features.Admin.Services.Commands.ExecuteBulkServ
 
                 if (operation is null)
                     return Result<ExecutedBulkOperationDto>.Failure(
-                        Error.NotFound("Toplu islem", request.BulkOperationId.ToString()));
+                        Error.NotFound("Toplu işlem", request.BulkOperationId.ToString()));
 
-                // Onizleme kayitlari asla yurutulmez.
+                // Onizleme kayıtları asla yürütülmez.
                 if (operation.DryRun)
                     return Result<ExecutedBulkOperationDto>.Failure(
-                        Error.Conflict("Onizleme (dry run) kayitlari yurutulemez; gercek islem icin yeni bir toplu islem olusturun."));
+                        Error.Conflict("Onizleme (dry run) kayıtları yürütülemez; gerçek işlem için yeni bir toplu işlem oluşturun."));
 
-                // Yalnizca dogrulanmis/onay bekleyen isler baslatilabilir.
-                // Tamamlanmis/iptal edilen/kosan isler Conflict doner.
+                // Yalnızca doğrulanmış/onay bekleyen işler başlatılabilir.
+                // Tamamlanmış/iptal edilen/koşan işler Conflict döner.
                 if (operation.Status != EnumBulkOperationStatus.Validating
                     && operation.Status != EnumBulkOperationStatus.AwaitingApproval)
                     return Result<ExecutedBulkOperationDto>.Failure(
-                        Error.Conflict("Toplu islem bu durumda yurutulemez.", $"Durum: {operation.Status}"));
+                        Error.Conflict("Toplu işlem bu durumda yürütülemez.", $"Durum: {operation.Status}"));
 
-                // Payload append-only: yurutme sirasinda yalnizca okunur.
+                // Payload append-only: yürütme sırasında yalnızca okunur.
                 BulkServiceOperationPayload? payload;
                 try
                 {
@@ -86,20 +86,20 @@ namespace Rezervise.Application.Features.Admin.Services.Commands.ExecuteBulkServ
                 catch (JsonException)
                 {
                     return Result<ExecutedBulkOperationDto>.Failure(
-                        Error.Conflict("Toplu islem payload'i gecersiz; islem yurutulemez."));
+                        Error.Conflict("Toplu işlem payload'i geçersiz; işlem yürütülemez."));
                 }
 
                 if (payload is null || payload.ServiceIds.Count == 0)
                     return Result<ExecutedBulkOperationDto>.Failure(
-                        Error.Conflict("Toplu islem payload'i bos; islem yurutulemez."));
+                        Error.Conflict("Toplu işlem payload'i boş; işlem yürütülemez."));
 
-                // Kategori degisimi icin hedef kategori bir kez yuklenir.
+                // Kategori değişimi için hedef kategori bir kez yüklenir.
                 ServiceCategory? targetCategory = null;
                 if (operation.OperationType == EnumBulkOperationType.ChangeServiceCategory)
                 {
                     if (!payload.TargetCategoryId.HasValue)
                         return Result<ExecutedBulkOperationDto>.Failure(
-                            Error.Conflict("Kategori degisimi icin hedef kategori payload'da yok."));
+                            Error.Conflict("Kategori değişimi için hedef kategori payload'da yok."));
 
                     targetCategory = await _serviceCategoryRepository.GetByIdAsync(
                         payload.TargetCategoryId.Value, cancellationToken);
@@ -109,13 +109,13 @@ namespace Rezervise.Application.Features.Admin.Services.Commands.ExecuteBulkServ
                             Error.NotFound("Hizmet kategorisi", payload.TargetCategoryId.Value.ToString()));
                 }
 
-                // Durum gecisi: Validating/AwaitingApproval -> Running.
+                // Durum geçişi: Validating/AwaitingApproval -> Running.
                 operation.Start();
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // PARCALI ISLEME: kayitlar chunk'lar halinde islenir. Ilk surumde
-                // senkron yurutulur; asamali durum raporu SuccessCount/FailedCount
-                // uzerinden takip edilir (dokuman 10.4).
+                // PARCALI ISLEME: kayıtlar chunk'lar halinde işlenir. İlk sürümde
+                // senkron yürütülür; aşamalı durum raporu SuccessCount/FailedCount
+                // üzerinden takip edilir (doküman 10.4).
                 var successCount = 0;
                 var failedCount = 0;
                 var errorReport = new StringBuilder();
@@ -131,7 +131,7 @@ namespace Rezervise.Application.Features.Admin.Services.Commands.ExecuteBulkServ
                             if (service is null || service.IsDeleted)
                             {
                                 failedCount++;
-                                AppendError(errorReport, serviceId, "Hizmet bulunamadi veya silinmis.");
+                                AppendError(errorReport, serviceId, "Hizmet bulunamadı veya silinmiş.");
                                 continue;
                             }
 
@@ -149,7 +149,7 @@ namespace Rezervise.Application.Features.Admin.Services.Commands.ExecuteBulkServ
                                 default:
                                     failedCount++;
                                     AppendError(errorReport, serviceId,
-                                        $"Desteklenmeyen islem tipi: {operation.OperationType}.");
+                                        $"Desteklenmeyen işlem tipi: {operation.OperationType}.");
                                     continue;
                             }
 
@@ -157,14 +157,14 @@ namespace Rezervise.Application.Features.Admin.Services.Commands.ExecuteBulkServ
                         }
                         catch (DomainException ex)
                         {
-                            // Tek kaydin kural hatasi tum islemi durdurmaz.
+                            // Tek kaydın kural hatası tüm işlemi durdurmaz.
                             failedCount++;
                             AppendError(errorReport, serviceId, ex.Message);
                         }
                     }
 
-                    // Chunk sonunda ara durum kaydedilir; uzun islemlerde
-                    // guncel sayaclar veritabaninda gorunur kalir.
+                    // Chunk sonunda ara durum kaydedilir; uzun işlemlerde
+                    // güncel sayaçlar veritabanında görünür kalır.
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
                 }
 
@@ -203,11 +203,11 @@ namespace Rezervise.Application.Features.Admin.Services.Commands.ExecuteBulkServ
             catch (Exception ex)
             {
                 return Result<ExecutedBulkOperationDto>.Failure(
-                    Error.Internal("Toplu islem yurutulurken bir hata olustu.", ex.Message));
+                    Error.Internal("Toplu işlem yürütülürken bir hata oluştu.", ex.Message));
             }
         }
 
-        /// <summary>Hata raporunu 4000 karakter sinirinda biriktirir.</summary>
+        /// <summary>Hata raporunu 4000 karakter sınırında biriktirir.</summary>
         private static void AppendError(StringBuilder report, Guid serviceId, string reason)
         {
             if (report.Length >= MaxErrorReportLength)

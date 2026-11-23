@@ -4,17 +4,17 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers
 {
     /// <summary>
-    /// Backoffice controller'larinin ortak tasiyicisi. Envelope uretimini
-    /// tek yerde toplar; controller yalnizca handler cagrisi ve HTTP eslemesi yapar.
-    /// Route: base "api/v1/admin" oneki turetilmis controller'lara devrolunur;
-    /// kendi [Route] tanimi olan controller'lar (orn. [Route("api/v1/admin/businesses")])
-    /// base onekini bilincli olarak degistirir.
+    /// Backoffice controller'larının ortak taşıyıcısı. Envelope üretimini
+    /// tek yerde toplar; controller yalnızca handler çağrısı ve HTTP eşlemesi yapar.
+    /// Route: base "api/v1/admin" öneki türetilmiş controller'lara devrolünür;
+    /// kendi [Route] tanımı olan controller'lar (orn. [Route("api/v1/admin/businesses")])
+    /// base önekini bilinçli olarak değiştirir.
     /// </summary>
     [ApiController]
     [Route("api/v1/admin")]
     public abstract class BackOfficeControllerBase : ControllerBase
     {
-        /// <summary>Tekil basarili cevabi envelope ile sarar.</summary>
+        /// <summary>Tekil başarılı cevabı envelope ile sarar.</summary>
         protected OkObjectResult OkEnvelope<T>(T data)
             => Ok(new AdminResponse<T>
             {
@@ -22,7 +22,7 @@ namespace Rezervise.BackOffice.Api.Controllers
                 Meta = new AdminMeta { CorrelationId = CorrelationId() }
             });
 
-        /// <summary>Liste cevabini sayfalama bilgisiyle sarar.</summary>
+        /// <summary>Liste cevabını sayfalama bilgisiyle sarar.</summary>
         protected OkObjectResult OkList<T>(
             IReadOnlyList<T> items,
             int page,
@@ -46,7 +46,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             });
         }
 
-        /// <summary>Servlet filtre zincirindeki correlation kimligi.</summary>
+        /// <summary>Servlet filtre zincirindeki correlation kimliği.</summary>
         private string CorrelationId()
             => Response.Headers.TryGetValue("X-Correlation-ID", out var value)
                 ? value.ToString()

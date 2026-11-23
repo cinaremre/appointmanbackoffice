@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Platform ozellik tanimi. Kod benzersizdir; plan ve override kayitlari
-    /// bu tanima baglanir.
+    /// Platform özellik tanımı. Kod benzersizdir; plan ve override kayıtları
+    /// bu tanıma bağlanır.
     /// </summary>
     public class FeatureDefinitionConfiguration : BaseConfiguration<FeatureDefinition>
     {

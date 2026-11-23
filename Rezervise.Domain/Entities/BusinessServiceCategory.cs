@@ -20,10 +20,10 @@ namespace Rezervise.Domain.Entities
     : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (serviceCategoryId == Guid.Empty)
-                throw new ArgumentException("Kategori ID bos olamaz.", nameof(serviceCategoryId));
+                throw new ArgumentException("Kategori ID boş olamaz.", nameof(serviceCategoryId));
 
             BusinessId = businessId;
             ServiceCategoryId = serviceCategoryId;

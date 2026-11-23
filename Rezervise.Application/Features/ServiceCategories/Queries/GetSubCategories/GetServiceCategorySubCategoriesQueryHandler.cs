@@ -29,8 +29,8 @@ namespace Rezervise.Application.Features.ServiceCategories.Queries.GetSubCategor
                         Error.NotFound("Kategori", request.CategoryId.ToString()));
 
                 // 2. Alt kategorileri getir.
-                //    Translations yuklenmezse GetName() "Unknown" doner; SubCategories/Services
-                //    yuklenmezse IsLeaf(), GetSubCategoryCount() ve GetServiceCount() yanlis olur.
+                //    Translations yüklenmezse GetName() "Unknown" döner; SubCategories/Services
+                //    yüklenmezse IsLeaf(), GetSubCategoryCount() ve GetServiceCount() yanlış olur.
                 var subCategories = await _categoryRepository.FindWithIncludesAsync(
                     c => c.ParentCategoryId == request.CategoryId &&
                          !c.IsDeleted &&
@@ -44,7 +44,7 @@ namespace Rezervise.Application.Features.ServiceCategories.Queries.GetSubCategor
                     },
                     cancellationToken);
 
-                // 3. DTO'ya donustur
+                // 3. DTO'ya dönüştür
                 var dtos = subCategories
                     .OrderBy(c => c.DisplayOrder)
                     .Select(c => new ServiceCategoryDto
@@ -70,7 +70,7 @@ namespace Rezervise.Application.Features.ServiceCategories.Queries.GetSubCategor
             catch (Exception ex)
             {
                 return Result<List<ServiceCategoryDto>>.Failure(
-                    Error.Internal("Alt kategoriler getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Alt kategoriler getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

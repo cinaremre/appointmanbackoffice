@@ -10,9 +10,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Reviews.Queries.GetMyReviews
 {
     /// <summary>
-    /// Isletme sahibinin yorum listesi. Sahiplik OwnerScope ile
-    /// dogrulanir; yorumlar en yeni once, gizli yorumlar dahil listelenir
-    /// (owner tum durumlari gormelidir).
+    /// İşletme sahibinin yorum listesi. Sahiplik OwnerScope ile
+    /// doğrulanır; yorumlar en yeni önce, gizli yorumlar dahil listelenir
+    /// (owner tüm durumları görmelidir).
     /// </summary>
     public class GetMyReviewsQueryHandler
         : IRequestHandler<GetMyReviewsQuery, Result<AdminPagedResult<OwnerReviewDto>>>
@@ -37,23 +37,23 @@ namespace Rezervise.Application.Features.Owner.Reviews.Queries.GetMyReviews
         {
             try
             {
-                // 1. Sahiplik: isletme JWT sahibine ait olmali.
+                // 1. Sahiplik: işletme JWT sahibine ait olmalı.
                 var owned = await OwnerScope.FindOwnedBusinessAsync(
                     _businessRepository, _currentUser, request.BusinessId, cancellationToken);
 
                 if (owned.IsFailure)
                     return Result<AdminPagedResult<OwnerReviewDto>>.Failure(owned.Error!);
 
-                // 2. Sayfalama kurallari.
+                // 2. Sayfalama kuralları.
                 var page = AdminPaging.NormalizePage(request.Page);
                 var pageSize = AdminPaging.ClampPageSize(request.PageSize);
 
-                // 3. Isletmenin silinmemis yorumlari (gizli dahil).
+                // 3. İşletmenin silinmemiş yorumları (gizli dahil).
                 var reviews = await _reviewRepository.FindAsync(
                     r => r.BusinessId == request.BusinessId && !r.IsDeleted,
                     cancellationToken);
 
-                // 4. En yeni yorum once; karisikligi onlemek icin Id sirasi.
+                // 4. En yeni yorum önce; karışıklığı önlemek için Id sırası.
                 var ordered = reviews
                     .OrderByDescending(r => r.CreatedAt)
                     .ThenBy(r => r.Id)
@@ -85,7 +85,7 @@ namespace Rezervise.Application.Features.Owner.Reviews.Queries.GetMyReviews
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<OwnerReviewDto>>.Failure(
-                    Error.Internal("Yorum listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Yorum listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

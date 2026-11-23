@@ -3,41 +3,41 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Isletme stok urunu. Fiyat alanlari decimal para degerleridir
-    /// (Money value object'i kadar kati kurallar gerektirmediginden
-    /// dogrudan decimal tutulur). Stok bakiyesi Product uzerinde
-    /// tutulmaz; hareketlerin (StockMovement) toplamindan hesaplanir.
+    /// İşletme stok ürünü. Fiyat alanları decimal para değerleridir
+    /// (Money value object'i kadar katı kurallar gerektirmediğinden
+    /// doğrudan decimal tutulur). Stok bakiyesi Product üzerinde
+    /// tutulmaz; hareketlerin (StockMovement) toplamından hesaplanır.
     /// </summary>
     public class Product : BaseEntity
     {
         public Guid BusinessId { get; private set; }
 
-        /// <summary>Isletme icinde benzersiz stok kodu.</summary>
+        /// <summary>İşletme içinde benzersiz stok kodu.</summary>
         public string Sku { get; private set; }
 
-        /// <summary>Barkod (opsiyonel, taratma icin).</summary>
+        /// <summary>Barkod (opsiyonel, taratma için).</summary>
         public string? Barcode { get; private set; }
 
         public string Name { get; private set; }
 
-        /// <summary>Urun kategorisi (opsiyonel; kategori agaci ilk surunde kullanilmaz).</summary>
+        /// <summary>Ürün kategorisi (opsiyonel; kategori ağacı ilk süründe kullanılmaz).</summary>
         public Guid? CategoryId { get; private set; }
 
-        /// <summary>Olcu birimi (adet, kg, lt, ...). Varsayilan "adet".</summary>
+        /// <summary>Ölçü birimi (adet, kg, lt, ...). Varsayılan "adet".</summary>
         public string Unit { get; private set; }
 
-        /// <summary>Satin alma fiyati (giris maliyeti).</summary>
+        /// <summary>Satın alma fiyatı (giriş maliyeti).</summary>
         public decimal PurchasePrice { get; private set; }
 
-        /// <summary>Satis fiyati.</summary>
+        /// <summary>Satış fiyatı.</summary>
         public decimal SalePrice { get; private set; }
 
-        /// <summary>Kritik stok seviyesi; altina dusuldugunde urun low-stock raporuna girer.</summary>
+        /// <summary>Kritik stok seviyesi; altına düşüldüğünde ürün low-stock raporuna girer.</summary>
         public decimal MinimumStock { get; private set; }
 
         public bool IsActive { get; private set; }
 
-        private Product() { } // EF Core icin
+        private Product() { } // EF Core için
 
         public Product(
             string sku,
@@ -68,7 +68,7 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             Sku = NormalizeSku(sku);
             SetName(name);
@@ -82,16 +82,16 @@ namespace Rezervise.Domain.Entities
             IsActive = true;
         }
 
-        /// <summary>SKU benzersizligi isletme bazindadir; buyuk/kucuk harf ve bosluklar normalize edilir.</summary>
+        /// <summary>SKU benzersizliği işletme bazındadır; büyük/küçük harf ve boşluklar normalize edilir.</summary>
         private static string NormalizeSku(string sku)
         {
             if (string.IsNullOrWhiteSpace(sku))
-                throw new DomainException("Urun SKU'su bos olamaz.");
+                throw new DomainException("Ürün SKU'su boş olamaz.");
 
             var normalized = sku.Trim().ToUpperInvariant();
 
             if (normalized.Length > 50)
-                throw new DomainException("Urun SKU'su 50 karakterden uzun olamaz.");
+                throw new DomainException("Ürün SKU'su 50 karakterden uzun olamaz.");
 
             return normalized;
         }
@@ -99,12 +99,12 @@ namespace Rezervise.Domain.Entities
         private static string NormalizeUnit(string unit)
         {
             if (string.IsNullOrWhiteSpace(unit))
-                throw new DomainException("Urun olcu birimi bos olamaz.");
+                throw new DomainException("Ürün ölçü birimi boş olamaz.");
 
             var normalized = unit.Trim();
 
             if (normalized.Length > 20)
-                throw new DomainException("Urun olcu birimi 20 karakterden uzun olamaz.");
+                throw new DomainException("Ürün ölçü birimi 20 karakterden uzun olamaz.");
 
             return normalized;
         }
@@ -128,7 +128,7 @@ namespace Rezervise.Domain.Entities
                 throw new DomainException("Fiyat negatif olamaz.");
 
             if (value > 99999999.99m)
-                throw new DomainException("Fiyat cok yuksek.");
+                throw new DomainException("Fiyat çok yüksek.");
 
             return Math.Round(value, 2);
         }
@@ -139,7 +139,7 @@ namespace Rezervise.Domain.Entities
                 throw new DomainException("Miktar negatif olamaz.");
 
             if (value > 99999999.99m)
-                throw new DomainException("Miktar cok yuksek.");
+                throw new DomainException("Miktar çok yüksek.");
 
             return value;
         }
@@ -147,10 +147,10 @@ namespace Rezervise.Domain.Entities
         public void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new DomainException("Urun adi bos olamaz.");
+                throw new DomainException("Ürün adı boş olamaz.");
 
             if (name.Length < 2 || name.Length > 100)
-                throw new DomainException("Urun adi 2-100 karakter arasinda olmalidir.");
+                throw new DomainException("Ürün adı 2-100 karakter arasında olmalıdır.");
 
             Name = name.Trim();
             UpdatedAt = DateTime.UtcNow;

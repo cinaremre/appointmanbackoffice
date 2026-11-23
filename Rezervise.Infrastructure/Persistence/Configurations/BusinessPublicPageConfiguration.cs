@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Isletmenin kamuya acik rezervasyon sayfasi.
-    /// Slug tum sistemde benzersizdir; anonim erisim slug uzerinden yapilir.
+    /// İşletmenin kamuya açık rezervasyon sayfası.
+    /// Slug tüm sistemde benzersizdir; anonim erişim slug üzerinden yapılır.
     /// </summary>
     public class BusinessPublicPageConfiguration : BaseConfiguration<BusinessPublicPage>
     {
@@ -31,8 +31,8 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
                 .IsRequired(false)
                 .HasMaxLength(2000);
 
-            // Slug sistem genelinde benzersiz: iki isletme ayni rezervasyon
-            // adresini kullanamaz. Yayin durumu filtreye girmez; yayindan
+            // Slug sistem genelinde benzersiz: iki işletme aynı rezervasyon
+            // adresini kullanamaz. Yayın durumu filtreye girmez; yayından
             // kalkan sayfa slug'i elinde tutmaya devam eder.
             builder.HasIndex(x => x.Slug)
                 .IsUnique()

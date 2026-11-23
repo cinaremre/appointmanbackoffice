@@ -38,10 +38,10 @@ namespace Rezervise.Domain.Entities
     : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (serviceCategoryId == Guid.Empty)
-                throw new ArgumentException("Kategori ID bos olamaz.", nameof(serviceCategoryId));
+                throw new ArgumentException("Kategori ID boş olamaz.", nameof(serviceCategoryId));
 
             SetName(name);
             Price = price ?? throw new ArgumentNullException(nameof(price));
@@ -55,10 +55,10 @@ namespace Rezervise.Domain.Entities
         public void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new DomainException("Hizmet adi bos olamaz.");
+                throw new DomainException("Hizmet adı boş olamaz.");
 
             if (name.Length < 2 || name.Length > 100)
-                throw new DomainException("Hizmet adi 2-100 karakter arasinda olmalidir.");
+                throw new DomainException("Hizmet adı 2-100 karakter arasında olmalıdır.");
 
             var oldName = Name;
             Name = name;
@@ -76,7 +76,7 @@ namespace Rezervise.Domain.Entities
         public void SetDescription(string? description)
         {
             if (description != null && description.Length > 500)
-                throw new DomainException("A�iklama 500 karakterden uzun olamaz.");
+                throw new DomainException("Açiklama 500 karakterden uzun olamaz.");
 
             var oldDescription = Description;
             Description = description;
@@ -94,10 +94,10 @@ namespace Rezervise.Domain.Entities
         public void SetDuration(int durationInMinutes)
         {
             if (durationInMinutes < 5 || durationInMinutes > 480)
-                throw new DomainException("Hizmet s�resi 5 dakika ile 8 saat arasinda olmalidir.");
+                throw new DomainException("Hizmet süresi 5 dakika ile 8 saat arasında olmalıdır.");
 
             if (durationInMinutes % 5 != 0)
-                throw new DomainException("Hizmet s�resi 5 dakikanin kati olmalidir.");
+                throw new DomainException("Hizmet süresi 5 dakikanın katı olmalıdır.");
 
             var oldDuration = DurationInMinutes;
             DurationInMinutes = durationInMinutes;
@@ -236,10 +236,10 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(employeeService));
 
             if (employeeService.ServiceId != Id)
-                throw new DomainException("Hizmet bu �alisana ait degil.");
+                throw new DomainException("Hizmet bu çalisana ait değil.");
 
             if (_employeeServices.Any(es => es.EmployeeId == employeeService.EmployeeId && !es.IsDeleted))
-                throw new DomainException("Bu hizmet zaten �alisana atanmis.");
+                throw new DomainException("Bu hizmet zaten çalisana atanmış.");
 
             _employeeServices.Add(employeeService);
             UpdatedAt = DateTime.UtcNow;
@@ -251,7 +251,7 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(employeeService));
 
             if (!_employeeServices.Contains(employeeService))
-                throw new DomainException("Bu hizmet �alisanda bulunamadi.");
+                throw new DomainException("Bu hizmet çalisanda bulunamadı.");
 
             _employeeServices.Remove(employeeService);
             UpdatedAt = DateTime.UtcNow;

@@ -37,20 +37,20 @@ namespace Rezervise.Application.Features.Reporting.Queries.GetBusinessDashboard
         {
             try
             {
-                // 1. Isletme kontrolu.
+                // 1. İşletme kontrolü.
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<BusinessDashboardDto>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<BusinessDashboardDto>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki: dashboard isletme sahibi veya platform yoneticisine aittir.
+                // 2. Yetki: dashboard işletme sahibi veya platform yöneticisine aittir.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<BusinessDashboardDto>.Failure(Error.Unauthorized("Bu isletmenin dashboardunu gorme yetkiniz yok."));
+                    return Result<BusinessDashboardDto>.Failure(Error.Unauthorized("Bu işletmenin dashboardunu görme yetkiniz yok."));
 
-                // 3. Gun araligi: [gun basi, gun sonu) UTC.
+                // 3. Gün aralığı: [gün başı, gün sonu) UTC.
                 var dayStart = request.Date.Date;
                 var dayEnd = dayStart.AddDays(1);
 
-                // 4. Gunun randevularini tek sorguda getir.
+                // 4. Günün randevularını tek sorguda getir.
                 var dayAppointments = await _appointmentRepository.FindAsync(
                     a => a.BusinessId == request.BusinessId
                         && a.AppointmentDate >= dayStart
@@ -70,9 +70,9 @@ namespace Rezervise.Application.Features.Reporting.Queries.GetBusinessDashboard
                     NoShow = dayAppointments.Count(a => a.Status == EnumAppointmentStatus.NoShow)
                 };
 
-                // 5. Doluluk orani (basit ilk surum):
-                //    dolu sure = tamamlanan + aktif (Pending/Confirmed) randevularin toplam suresi
-                //    kapasite = aktif calisan sayisi * gunun toplam acik saati
+                // 5. Doluluk oranı (basit ilk sürüm):
+                //    dolu süre = tamamlanan + aktif (Pending/Confirmed) randevuların toplam süresi
+                //    kapasite = aktif çalışan sayısı * günün toplam açık saati
                 var occupiedMinutes = 0.0;
                 var services = await _serviceRepository.FindAsync(
                     s => s.BusinessId == request.BusinessId && !s.IsDeleted,
@@ -89,7 +89,7 @@ namespace Rezervise.Application.Features.Reporting.Queries.GetBusinessDashboard
                     if (!isOccupying)
                         continue;
 
-                    // Bitis saati varsa onu kullan; yoksa hizmet suresine dus.
+                    // Bitiş saati varsa onu kullan; yoksa hizmet süresine düş.
                     var minutes = appointment.EndTime.HasValue
                         ? (appointment.EndTime.Value - appointment.AppointmentDate).TotalMinutes
                         : serviceDurations.GetValueOrDefault(appointment.ServiceId);
@@ -111,7 +111,7 @@ namespace Rezervise.Application.Features.Reporting.Queries.GetBusinessDashboard
                 var openMinutes = workingHours.Sum(w => w.GetDuration().TotalMinutes);
                 var capacityMinutes = employeeCount * openMinutes;
 
-                // Calisan veya acik saat yoksa doluluk hesaplanamaz; 0 doner.
+                // Çalışan veya açık saat yoksa doluluk hesaplanamaz; 0 döner.
                 dto.DolulukOrani = capacityMinutes > 0
                     ? Math.Round((decimal)(occupiedMinutes / capacityMinutes), 2, MidpointRounding.AwayFromZero)
                     : 0m;
@@ -121,7 +121,7 @@ namespace Rezervise.Application.Features.Reporting.Queries.GetBusinessDashboard
             catch (Exception ex)
             {
                 return Result<BusinessDashboardDto>.Failure(
-                    Error.Internal("Dashboard getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Dashboard getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

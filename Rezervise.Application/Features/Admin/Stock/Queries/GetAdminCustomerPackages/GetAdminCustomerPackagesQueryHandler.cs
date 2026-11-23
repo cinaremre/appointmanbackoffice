@@ -37,7 +37,7 @@ namespace Rezervise.Application.Features.Admin.Stock.Queries.GetAdminCustomerPac
                 var customerId = request.CustomerId;
                 var status = request.Status;
 
-                // 1. Paket ornekleri filtresi: isletme, musteri ve durum.
+                // 1. Paket örnekleri filtresi: işletme, müşteri ve durum.
                 var packages = await _customerPackageRepository.FindAsync(
                     p => !p.IsDeleted
                         && (businessId == null || p.BusinessId == businessId)
@@ -52,8 +52,8 @@ namespace Rezervise.Application.Features.Admin.Stock.Queries.GetAdminCustomerPac
                     .Take(pageSize)
                     .ToList();
 
-                // 2. Purchased: paket tanimindaki toplam seans sayisi
-                //    (ServicePackageItem toplami).
+                // 2. Purchased: paket tanımındaki toplam seans sayısı
+                //    (ServicePackageItem toplamı).
                 var servicePackageIds = pageItems
                     .Select(p => p.ServicePackageId)
                     .Distinct()
@@ -69,7 +69,7 @@ namespace Rezervise.Application.Features.Admin.Stock.Queries.GetAdminCustomerPac
                     purchasedByPackage[packageId] = servicePackage?.GetTotalSessions() ?? 0;
                 }
 
-                // 3. Hareketler: yalnizca sayfadaki paketler icin aktif kayitlar.
+                // 3. Hareketler: yalnızca sayfadaki paketler için aktif kayıtlar.
                 var customerPackageIds = pageItems.Select(p => p.Id).ToList();
 
                 var usages = customerPackageIds.Count == 0
@@ -80,7 +80,7 @@ namespace Rezervise.Application.Features.Admin.Stock.Queries.GetAdminCustomerPac
                             && !u.IsDeleted,
                         cancellationToken)).ToList();
 
-                // 4. DTO: kalan hak = purchased - tuketilen - rezerve.
+                // 4. DTO: kalan hak = purchased - tüketilen - rezerve.
                 var items = pageItems
                     .Select(p =>
                     {
@@ -119,7 +119,7 @@ namespace Rezervise.Application.Features.Admin.Stock.Queries.GetAdminCustomerPac
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<AdminCustomerPackageDto>>.Failure(
-                    Error.Internal("Musteri paketi listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Müşteri paketi listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

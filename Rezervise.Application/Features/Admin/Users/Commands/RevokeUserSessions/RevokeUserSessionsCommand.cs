@@ -4,15 +4,15 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Users.Commands.RevokeUserSessions
 {
     /// <summary>
-    /// Bir kullanicinin tum oturumlarini gecersiz kilar (dokuman Modul 11):
-    /// refresh token hash'leri temizlenir, boylece mevcut token yenilenemez.
-    /// Gerekce zorunludur ve denetim kaydina yazilir.
+    /// Bir kullanıcının tüm oturumlarını geçersiz kılar (doküman Modül 11):
+    /// refresh token hash'leri temizlenir, böylece mevcut token yenilenemez.
+    /// Gerekçe zorunludur ve denetim kaydına yazılır.
     /// </summary>
     public class RevokeUserSessionsCommand : IRequest<Result>
     {
         public Guid UserId { get; set; }
 
-        /// <summary>Yoneticinin oturum iptali gerekcesi; zorunludur.</summary>
+        /// <summary>Yöneticinin oturum iptali gerekçesi; zorunludur.</summary>
         public string? Reason { get; set; }
     }
 }

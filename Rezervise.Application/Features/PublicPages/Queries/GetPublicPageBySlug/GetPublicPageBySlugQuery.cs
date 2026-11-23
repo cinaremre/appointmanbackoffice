@@ -5,9 +5,9 @@ using MediatR;
 namespace Rezervise.Application.Features.PublicPages.Queries.GetPublicPageBySlug
 {
     /// <summary>
-    /// Slug ile public sayfa ozetini getirir. ANONIM uctur:
-    /// handler hicbir sekilde ICurrentUserService kullanmaz.
-    /// Yayinda olmayan sayfa NotFound doner; varlik bilgisi sizdirilmaz.
+    /// Slug ile public sayfa özetini getirir. ANONIM üçtür:
+    /// handler hiçbir şekilde ICurrentUserService kullanmaz.
+    /// Yayında olmayan sayfa NotFound döner; varlık bilgisi sızdırılmaz.
     /// </summary>
     public class GetPublicPageBySlugQuery : IRequest<Result<PublicPageDto>>
     {

@@ -4,15 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Common
 {
     /// <summary>
-    /// Result hatalarini RFC 9457 uyumlu ProblemDetails cevaplarina cevirir
-    /// (dokuman 7.3). Handler'lar istisna firlatmak yerine Result dondugu
-    /// icin esleme controller sinirinda yapilir.
+    /// Result hatalarını RFC 9457 uyumlu ProblemDetails cevaplarına çevirir
+    /// (doküman 7.3). Handler'lar istisna fırlatmak yerine Result döndüğü
+    /// için eşleme controller sınırında yapılır.
     /// </summary>
     public static class AdminResultMapper
     {
         /// <summary>
-        /// Basarisiz Result'i HTTP hata cevabina cevirir.
-        /// Basarili Result'larda cagirilmaz.
+        /// Başarısız Result'i HTTP hata cevabına çevirir.
+        /// Başarılı Result'larda çağırılmaz.
         /// </summary>
         public static ObjectResult ToProblem<T>(this Result<T> result, string correlationId)
         {

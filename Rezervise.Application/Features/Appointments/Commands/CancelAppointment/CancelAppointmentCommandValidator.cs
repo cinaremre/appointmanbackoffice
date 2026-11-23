@@ -8,15 +8,15 @@ namespace Rezervise.Application.Features.Appointments.Commands.CancelAppointment
         {
             RuleFor(x => x.AppointmentId)
                 .NotEmpty()
-                .WithMessage("Randevu ID bos olamaz.");
+                .WithMessage("Randevu ID boş olamaz.");
 
             RuleFor(x => x.UserId)
                 .NotEmpty()
-                .WithMessage("Kullanici ID bos olamaz.");
+                .WithMessage("Kullanıcı ID boş olamaz.");
 
             RuleFor(x => x.Reason)
                 .MaximumLength(500)
-                .WithMessage("Iptal gerekcesi 500 karakterden uzun olamaz.");
+                .WithMessage("İptal gerekçesi 500 karakterden uzun olamaz.");
         }
     }
 }

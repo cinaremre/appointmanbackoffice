@@ -25,22 +25,22 @@ namespace Rezervise.Application.Features.Notifications.Queries.GetUnreadNotifica
         {
             try
             {
-                // 0. Kimlik her zaman imzali token'dan gelir; istekteki hicbir alan kullaniciyi temsil etmez.
+                // 0. Kimlik her zaman imzalı token'dan gelir; istekteki hiçbir alan kullanıcıyı temsil etmez.
                 var currentUserId = _currentUser.UserId;
                 if (currentUserId is null)
                     return Result<List<NotificationDto>>.Failure(Error.Unauthorized("Auth.InvalidUser"));
 
-                // 1. Okunmamis bildirimleri getir
+                // 1. Okunmamış bildirimleri getir
                 var notifications = await _notificationRepository.FindAsync(
                     n => n.UserId == currentUserId.Value && !n.IsRead && !n.IsDeleted,
                     cancellationToken);
 
-                // 2. Siralama
+                // 2. Sıralama
                 var unreadNotifications = notifications
                     .OrderByDescending(n => n.SentAt)
                     .ToList();
 
-                // 3. DTO'ya donustur
+                // 3. DTO'ya dönüştür
                 var dtos = unreadNotifications.Select(n => new NotificationDto
                 {
                     Id = n.Id,
@@ -60,7 +60,7 @@ namespace Rezervise.Application.Features.Notifications.Queries.GetUnreadNotifica
             catch (Exception ex)
             {
                 return Result<List<NotificationDto>>.Failure(
-                    Error.Internal("Okunmamis bildirimler getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Okunmamış bildirimler getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

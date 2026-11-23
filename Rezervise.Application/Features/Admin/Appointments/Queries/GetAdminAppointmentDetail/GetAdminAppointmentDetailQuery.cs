@@ -4,9 +4,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppointmentDetail
 {
     /// <summary>
-    /// Tek bir randevuyu kisa durum gecmisiyle getirir (dokuman Modul 12).
-    /// Gecmis kayitlari CreatedAt/ChangedAt azalan sirada, en fazla 20 kayit
-    /// olarak doner. Randevu yoksa NotFound.
+    /// Tek bir randevuyu kısa durum geçmişiyle getirir (doküman Modül 12).
+    /// Geçmiş kayıtları CreatedAt/ChangedAt azalan sırada, en fazla 20 kayıt
+    /// olarak döner. Randevu yoksa NotFound.
     /// </summary>
     public class GetAdminAppointmentDetailQuery : IRequest<Result<AdminAppointmentDetailDto>>
     {

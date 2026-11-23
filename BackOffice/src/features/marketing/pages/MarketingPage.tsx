@@ -46,11 +46,11 @@ import {
 } from "../types";
 
 /**
- * Pazarlama sayfasi (dokuman Modul 15): kampanyalar, bekleme listesi ve geri
- * cagirma denemeleri. Tum sayilar API'den gelir; frontend hesaplama uretmez.
+ * Pazarlama sayfası (doküman Modül 15): kampanyalar, bekleme listesi ve geri
+ * çağırma denemeleri. Tüm sayılar API'den gelir; frontend hesaplama üretmez.
  */
 
-/** ISO tarih -> "dd.MM.yyyy HH:mm"; gecersizse ham deger korunur. */
+/** ISO tarih -> "dd.MM.yyyy HH:mm"; geçersizse ham değer korunur. */
 function formatDateTime(value?: string | null): string {
   if (!value) return "-";
   const date = new Date(value);
@@ -61,7 +61,7 @@ function formatMoney(value: number): string {
   return `${Number(value ?? 0).toLocaleString("tr-TR")} TL`;
 }
 
-/** GUID kisaltmasi; tablolarda uzun kimlikleri okunur tutar. */
+/** GUID kısaltması; tablolarda uzun kimlikleri okunur tutar. */
 function shortId(value?: string | null): string {
   return value ? value.slice(0, 8) : "-";
 }
@@ -89,7 +89,7 @@ const campaignColumns: DataTableColumn<CampaignListItem>[] = [
 const recoveredSlotColumns: DataTableColumn<RecoveredSlot>[] = [
   {
     key: "cancelled",
-    header: "Iptal Edilen Randevu",
+    header: "İptal Edilen Randevu",
     render: (row) => shortId(row.cancelledAppointmentId),
   },
   {
@@ -99,13 +99,13 @@ const recoveredSlotColumns: DataTableColumn<RecoveredSlot>[] = [
       <StatusBadge status={RECOVERED_SLOT_STATUS_LABELS[row.status] ?? String(row.status)} />
     ),
   },
-  { key: "released", header: "Aciga Cikis", render: (row) => formatDateTime(row.releasedAt) },
+  { key: "released", header: "Açığa Çıkış", render: (row) => formatDateTime(row.releasedAt) },
   { key: "rebooked", header: "Yeniden Dolum", render: (row) => formatDateTime(row.rebookedAt) },
 ];
 
 const attemptColumns: DataTableColumn<ReengagementAttempt>[] = [
-  { key: "customer", header: "Musteri", render: (row) => shortId(row.customerId) },
-  { key: "business", header: "Isletme", render: (row) => shortId(row.businessId) },
+  { key: "customer", header: "Müşteri", render: (row) => shortId(row.customerId) },
+  { key: "business", header: "İşletme", render: (row) => shortId(row.businessId) },
   {
     key: "status",
     header: "Durum",
@@ -116,7 +116,7 @@ const attemptColumns: DataTableColumn<ReengagementAttempt>[] = [
   { key: "triggered", header: "Tetiklenme", render: (row) => formatDateTime(row.triggeredAt) },
   {
     key: "converted",
-    header: "Donusen Randevu",
+    header: "Dönüşen Randevu",
     render: (row) => shortId(row.convertedAppointmentId),
   },
 ];
@@ -126,7 +126,7 @@ export function MarketingPage() {
   const theme = useTheme();
   const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Ortak isletme filtresi; bosken platform geneli raporlar.
+  // Ortak işletme filtresi; boşken platform geneli raporlar.
   const [businessId, setBusinessId] = useState("");
 
   // Kampanyalar filtreleri ve sayfalama.
@@ -135,14 +135,14 @@ export function MarketingPage() {
   const [campaignPage, setCampaignPage] = useState(1);
   const [campaignPageSize, setCampaignPageSize] = useState(50);
 
-  // Performans dialog'u hangi kampanya icin acik.
+  // Performans dialog'u hangi kampanya için açık.
   const [performanceCampaignId, setPerformanceCampaignId] = useState<string | null>(null);
 
-  // Kurtarilan kapasite tarih araligi.
+  // Kurtarılan kapasite tarih aralığı.
   const [slotFrom, setSlotFrom] = useState("");
   const [slotTo, setSlotTo] = useState("");
 
-  // Geri cagirma durum filtresi.
+  // Geri çağırma durum filtresi.
   const [attemptStatus, setAttemptStatus] = useState("");
 
   const campaigns = useQuery({
@@ -208,10 +208,10 @@ export function MarketingPage() {
 
   const overviewCards = waitlist.data
     ? [
-        { label: "Aktif Kayit", value: String(waitlist.data.activeEntries) },
+        { label: "Aktif Kayıt", value: String(waitlist.data.activeEntries) },
         { label: "Bekleyen Teklif", value: String(waitlist.data.pendingOffers) },
         { label: "Kabul Edilen Teklif", value: String(waitlist.data.acceptedOffers) },
-        { label: "Suresi Dolan Teklif", value: String(waitlist.data.expiredOffers) },
+        { label: "Süresi Dolan Teklif", value: String(waitlist.data.expiredOffers) },
         { label: "Yeniden Doldurulan Slot", value: String(waitlist.data.rebookedSlots) },
         { label: "Kaybedilen Slot", value: String(waitlist.data.lostSlots) },
       ]
@@ -222,7 +222,7 @@ export function MarketingPage() {
       <PageHeader title="Pazarlama" />
 
       <TextField
-        label="Isletme ID (UUID, opsiyonel)"
+        label="İşletme ID (UUID, opsiyonel)"
         value={businessId}
         onChange={(e) => {
           setBusinessId(e.target.value);
@@ -235,7 +235,7 @@ export function MarketingPage() {
       <Tabs value={tab} onChange={(_, value: number) => setTab(value)} aria-label="pazarlama sekmeleri">
         <Tab label="Kampanyalar" />
         <Tab label="Bekleme Listesi" />
-        <Tab label="Geri Cagirma" />
+        <Tab label="Geri Çağırma" />
       </Tabs>
 
       <Box sx={{ mt: 2 }}>
@@ -253,7 +253,7 @@ export function MarketingPage() {
                 size="small"
                 sx={{ minWidth: { xs: "100%", sm: 180 } }}
               >
-                <MenuItem value="">Tumu</MenuItem>
+                <MenuItem value="">Tümü</MenuItem>
                 {Object.entries(CAMPAIGN_CHANNEL_LABELS).map(([value, label]) => (
                   <MenuItem key={value} value={value}>
                     {label}
@@ -271,7 +271,7 @@ export function MarketingPage() {
                 size="small"
                 sx={{ minWidth: { xs: "100%", sm: 160 } }}
               >
-                <MenuItem value="">Tumu</MenuItem>
+                <MenuItem value="">Tümü</MenuItem>
                 <MenuItem value="true">Aktif</MenuItem>
                 <MenuItem value="false">Pasif</MenuItem>
               </TextField>
@@ -287,14 +287,14 @@ export function MarketingPage() {
               totalCount={campaigns.data?.pagination.totalCount ?? 0}
               onPageChange={setCampaignPage}
               onPageSizeChange={setCampaignPageSize}
-              emptyLabel="Kampanya bulunamadi."
+              emptyLabel="Kampanya bulunamadı."
               ariaLabel="kampanya listesi"
               onRefresh={() => campaigns.refetch()}
               rowActions={(row) => (
                 <Button
                   size="small"
                   onClick={() => setPerformanceCampaignId(row.id)}
-                  aria-label={`${row.name} performansi`}
+                  aria-label={`${row.name} performansı`}
                 >
                   Performans
                 </Button>
@@ -327,11 +327,11 @@ export function MarketingPage() {
             )}
 
             <Typography variant="h6" component="h2" sx={{ mt: 4, mb: 2 }}>
-              Kurtarilan Kapasite
+              Kurtarılan Kapasite
             </Typography>
             <Stack direction="row" spacing={2} useFlexGap sx={{ mb: 2, flexWrap: "wrap" }}>
               <TextField
-                label="Baslangic"
+                label="Başlangıç"
                 type="date"
                 value={slotFrom}
                 onChange={(e) => setSlotFrom(e.target.value)}
@@ -340,7 +340,7 @@ export function MarketingPage() {
                 sx={{ minWidth: { xs: "100%", sm: 170 } }}
               />
               <TextField
-                label="Bitis"
+                label="Bitiş"
                 type="date"
                 value={slotTo}
                 onChange={(e) => setSlotTo(e.target.value)}
@@ -370,11 +370,11 @@ export function MarketingPage() {
                 totalCount={recovered.data.items.length}
                 onPageChange={() => {}}
                 onPageSizeChange={() => {}}
-                ariaLabel="kurtarilan slotlar"
+                ariaLabel="kurtarılan slotlar"
                 onRefresh={() => recovered.refetch()}
               />
             ) : (
-              <EmptyState label="Secili aralikta kurtarilan slot bulunamadi." />
+              <EmptyState label="Secili aralıkta kurtarılan slot bulunamadı." />
             )}
           </Box>
         ) : null}
@@ -390,7 +390,7 @@ export function MarketingPage() {
                 size="small"
                 sx={{ minWidth: { xs: "100%", sm: 200 } }}
               >
-                <MenuItem value="">Tumu</MenuItem>
+                <MenuItem value="">Tümü</MenuItem>
                 {Object.entries(REENGAGEMENT_STATUS_LABELS).map(([value, label]) => (
                   <MenuItem key={value} value={value}>
                     {label}
@@ -409,15 +409,15 @@ export function MarketingPage() {
               totalCount={attempts.data?.items.length ?? 0}
               onPageChange={() => {}}
               onPageSizeChange={() => {}}
-              emptyLabel="Geri cagirma denemesi bulunamadi."
-              ariaLabel="geri cagirma denemeleri"
+              emptyLabel="Geri çağırma denemesi bulunamadı."
+              ariaLabel="geri çağırma denemeleri"
               onRefresh={() => attempts.refetch()}
             />
           </Box>
         ) : null}
       </Box>
 
-      {/* Kampanya performans dialog'u: harcama ve atfedilen sayilar. */}
+      {/* Kampanya performans dialog'u: harcama ve atfedilen sayılar. */}
       <Dialog
         open={performanceCampaignId !== null}
         onClose={() => setPerformanceCampaignId(null)}
@@ -425,7 +425,7 @@ export function MarketingPage() {
         maxWidth="sm"
         fullScreen={is_mobile}
       >
-        <DialogTitle>Kampanya Performansi</DialogTitle>
+        <DialogTitle>Kampanya Performansı</DialogTitle>
         <DialogContent>
           {performance.isLoading ? (
             <LoadingState />

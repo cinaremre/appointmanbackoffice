@@ -35,19 +35,19 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.Property(x => x.AppointmentId)
                 .IsRequired(false);
 
-            // User iliskisi - User'da Reviews var
+            // User ilişkisi - User'da Reviews var
             builder.HasOne(x => x.User)
                 .WithMany(x => x.Reviews)
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Business iliskisi - Business'da Reviews var
+            // Business ilişkisi - Business'da Reviews var
             builder.HasOne(x => x.Business)
                 .WithMany(x => x.Reviews)
                 .HasForeignKey(x => x.BusinessId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Appointment iliskisi - Appointment'da Reviews yok, bu y�zden WithMany() bos
+            // Appointment ilişkisi - Appointment'da Reviews yok, bu yüzden WithMany() boş
             builder.HasOne(x => x.Appointment)
                 .WithMany()
                 .HasForeignKey(x => x.AppointmentId)
@@ -58,8 +58,8 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.HasIndex(x => x.Rating);
             builder.HasIndex(x => x.ReviewDate);
 
-            // Randevu basina yalnizca bir yorum yapilabilir.
-            // AppointmentId null olan yorumlar filtre disinda kalir.
+            // Randevu basına yalnızca bir yorum yapılabilir.
+            // AppointmentId null olan yorumlar filtre dışında kalır.
             builder.HasIndex(x => x.AppointmentId)
                 .IsUnique()
                 .HasFilter("[AppointmentId] IS NOT NULL")

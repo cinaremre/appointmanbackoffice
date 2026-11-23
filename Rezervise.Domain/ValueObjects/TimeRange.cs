@@ -8,7 +8,7 @@ namespace Rezervise.Domain.ValueObjects
         public TimeSpan StartTime { get; private set; }
         public TimeSpan EndTime { get; private set; }
 
-        private TimeRange() { } // EF Core icin
+        private TimeRange() { } // EF Core için
 
         public TimeRange(TimeSpan startTime, TimeSpan endTime)
         {

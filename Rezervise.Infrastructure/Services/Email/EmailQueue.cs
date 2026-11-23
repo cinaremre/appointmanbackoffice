@@ -7,13 +7,13 @@ using Microsoft.Extensions.Logging;
 namespace Rezervise.Infrastructure.Services.Email
 {
     /// <summary>
-    /// Sinirli kapasiteli bellek ici e-posta kuyrugu. Istek thread'i asla beklemez:
-    /// kuyruk doluysa mesaj reddedilir ve uyari loglanir.
+    /// Sınırlı kapasiteli bellek içi e-posta kuyruğu. İstek thread'i asla beklemez:
+    /// kuyruk doluysa mesaj reddedilir ve uyarı loğlanır.
     /// </summary>
     /// <remarks>
-    /// Graylog sink'inden farkli olarak <see cref="BoundedChannelFullMode.Wait"/> kullanilir;
-    /// cunku <c>DropWrite</c> yazma basarili gorunurken mesaji sessizce atar. E-posta
-    /// gozden kacirilmamasi gereken bir islem oldugu icin tasma acikca bildirilir.
+    /// Graylog sink'inden farklı olarak <see cref="BoundedChannelFullMode.Wait"/> kullanılır;
+    /// çünkü <c>DropWrite</c> yazma başarılı görünürken mesajı sessizce atar. E-posta
+    /// gözden kaçırılmaması gereken bir işlem öldüğü için taşma açıkça bildirilir.
     /// </remarks>
     internal sealed class EmailQueue : IEmailQueue, IEmailQueueReader
     {
@@ -21,8 +21,8 @@ namespace Rezervise.Infrastructure.Services.Email
         private readonly ILogger<EmailQueue> _logger;
         private readonly int _capacity;
 
-        /// <param name="options">Kuyruk kapasitesi kaynagi.</param>
-        /// <param name="logger">Tanilama kaydedicisi.</param>
+        /// <param name="options">Kuyruk kapasitesi kaynağı.</param>
+        /// <param name="logger">Tanılama kaydedicisi.</param>
         public EmailQueue(EmailOptions options, ILogger<EmailQueue> logger)
         {
             _logger = logger;
@@ -37,19 +37,19 @@ namespace Rezervise.Infrastructure.Services.Email
             });
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public bool TryEnqueue(EmailMessage message)
         {
             if (message is null)
                 return false;
 
-            // Wait modunda TryWrite dolu kuyrukta bloklamaz, dogrudan false doner.
+            // Wait modunda TryWrite dolu kuyrukta bloklamaz, doğrudan false döner.
             var accepted = _channel.Writer.TryWrite(message);
 
             if (!accepted)
             {
                 _logger.LogWarning(
-                    "E-posta kuyrugu dolu (kapasite {Capacity}); mesaj kuyruga alinamadi. To={To}",
+                    "E-posta kuyruğu dolu (kapasite {Capacity}); mesaj kuyruğa alınamadı. To={To}",
                     _capacity,
                     message.To);
             }
@@ -57,7 +57,7 @@ namespace Rezervise.Infrastructure.Services.Email
             return accepted;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public async IAsyncEnumerable<EmailMessage> ReadAllAsync(
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {

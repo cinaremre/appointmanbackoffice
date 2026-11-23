@@ -10,8 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Personel prim (komisyon) yonetimi: kural tanimi, tahakkuk ve ters cevirme.
-    /// Odeme donemi (payout) islemleri ilk surun kapsaminda degildir.
+    /// Personel prim (komisyon) yönetimi: kural tanımı, tahakkuk ve ters çevirme.
+    /// Ödeme dönemi (payout) işlemleri ilk sürün kapsamında değildir.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -28,7 +28,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Sahip ID'si her zaman JWT'den cozulur; govde OwnerId degeri yetki kaynagi degildir.
+        /// Sahip ID'si her zaman JWT'den çözülür; gövde OwnerId değeri yetki kaynağı değildir.
         /// </summary>
         private IActionResult? ResolveCurrentUserId(out Guid userId)
         {
@@ -43,25 +43,25 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Yeni prim kurali tanimlar. Yuzde tiplerinde Rate 0-1 arasi verilir.
+        /// Yeni prim kuralı tanımlar. Yüzde tiplerinde Rate 0-1 arası verilir.
         /// </summary>
         /// <param name="command">Kural bilgileri</param>
-        /// <returns>Olusturulan kuralin ID'si</returns>
+        /// <returns>Oluşturulan kuralın ID'si</returns>
         [HttpPost("rule")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateRule([FromBody] CreateCommissionRuleCommand command)
         {
-            // 1. OwnerId JWT'den gelir; govde degerine guvenilmez.
+            // 1. OwnerId JWT'den gelir; gövde değerine güvenilmez.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
             command.OwnerId = userId;
 
-            // 2. Command'i mediator ile gonder
+            // 2. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -69,26 +69,26 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Calisana prim tahakkuk eder. Tahakkuk tahsilat tabanlidir: BaseAmount
+        /// Çalışana prim tahakkuk eder. Tahakkuk tahsilat tabanlıdır: BaseAmount
         /// alani tahsil edilen tutar olarak verilmelidir.
         /// </summary>
         /// <param name="command">Tahakkuk bilgileri</param>
-        /// <returns>Olusturulan tahakkukun ID'si</returns>
+        /// <returns>Oluşturulan tahakkukun ID'si</returns>
         [HttpPost("accrue")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Accrue([FromBody] AccrueCommissionCommand command)
         {
-            // 1. OwnerId JWT'den gelir; govde degerine guvenilmez.
+            // 1. OwnerId JWT'den gelir; gövde değerine güvenilmez.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
             command.OwnerId = userId;
 
-            // 2. Command'i mediator ile gonder
+            // 2. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -96,25 +96,25 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Prim tahakkukunu ters cevirir. Odenmis (Paid) tahakkuklar reddedilir.
+        /// Prim tahakkukunu ters çevirir. Ödenmiş (Paid) tahakkuklar reddedilir.
         /// </summary>
-        /// <param name="command">Ters cevirme bilgileri</param>
-        /// <returns>Ters cevrilen tahakkukun ID'si</returns>
+        /// <param name="command">Ters çevirme bilgileri</param>
+        /// <returns>Ters çevrilen tahakkukun ID'si</returns>
         [HttpPost("reverse")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Reverse([FromBody] ReverseCommissionAccrualCommand command)
         {
-            // 1. OwnerId JWT'den gelir; govde degerine guvenilmez.
+            // 1. OwnerId JWT'den gelir; gövde değerine güvenilmez.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
             command.OwnerId = userId;
 
-            // 2. Command'i mediator ile gonder
+            // 2. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 

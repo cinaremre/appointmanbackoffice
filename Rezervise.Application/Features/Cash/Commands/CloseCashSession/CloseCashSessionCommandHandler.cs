@@ -43,30 +43,30 @@ namespace Rezervise.Application.Features.Cash.Commands.CloseCashSession
         {
             try
             {
-                // 1. Oturum kontrolu
+                // 1. Oturum kontrolü
                 var session = await _cashSessionRepository.GetByIdAsync(request.CashSessionId, cancellationToken);
                 if (session is null)
                     return Result<CashSessionCloseResult>.Failure(
                         Error.NotFoundById("Kasa oturumu", request.CashSessionId));
 
-                // 2. Yetki kontrolu
+                // 2. Yetki kontrolü
                 var business = await _businessRepository.GetByIdAsync(session.BusinessId, cancellationToken);
                 if (business is null)
                     return Result<CashSessionCloseResult>.Failure(
-                        Error.NotFoundById("Isletme", session.BusinessId));
+                        Error.NotFoundById("İşletme", session.BusinessId));
 
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
                     return Result<CashSessionCloseResult>.Failure(
                         Error.Forbidden("Bu kasa oturumunu kapatma yetkiniz yok."));
 
-                // 3. Oturum acik olmali
+                // 3. Oturum açık olmalı
                 if (session.Status != EnumCashSessionStatus.Open)
                     return Result<CashSessionCloseResult>.Failure(
-                        Error.Conflict("Kasa oturumu zaten kapali."));
+                        Error.Conflict("Kasa oturumu zaten kapalı."));
 
-                // 4. Manuel giris/cikis toplamlari. ReferenceId dolu hareketler
-                //    bir odeme kaydindan turemistir (nakit iade ters kaydi);
-                //    bunlar asagida iade odemeleri uzerinden sayilir.
+                // 4. Manuel giriş/çıkış toplamları. ReferenceId dolu hareketler
+                //    bir ödeme kaydından türemiştir (nakit iade ters kaydı);
+                //    bunlar aşağıda iade ödemeleri üzerinden sayılır.
                 var movements = await _cashMovementRepository.FindAsync(
                     m => m.CashSessionId == session.Id && !m.IsDeleted,
                     cancellationToken);
@@ -79,7 +79,7 @@ namespace Rezervise.Application.Features.Cash.Commands.CloseCashSession
                     .Where(m => m.MovementType == EnumCashMovementType.CashOut && m.ReferenceId == null)
                     .Sum(m => m.Amount);
 
-                // 5. Oturuma bagli odemeler: nakit tahsilat ve nakit iade.
+                // 5. Oturuma bağlı ödemeler: nakit tahsilat ve nakit iade.
                 //    Kart tahsilatlar beklenen nakide dahil DEGILDIR.
                 var payments = await _paymentRepository.FindAsync(
                     p => p.CashSessionId == session.Id && !p.IsDeleted,
@@ -93,7 +93,7 @@ namespace Rezervise.Application.Features.Cash.Commands.CloseCashSession
                     .Where(p => p.IsRefund && p.PaymentMethod == EnumPaymentMethod.Cash)
                     .Sum(p => p.Amount);
 
-                // 6. Oturumu kapat; farki (sayilan - beklenen) rapola.
+                // 6. Oturumu kapat; farkı (sayılan - beklenen) rapola.
                 var now = _dateTimeService.UtcNow;
                 session.Close(
                     request.CountedCash,
@@ -121,7 +121,7 @@ namespace Rezervise.Application.Features.Cash.Commands.CloseCashSession
             catch (Exception ex)
             {
                 return Result<CashSessionCloseResult>.Failure(
-                    Error.Internal("Kasa oturumu kapatilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kasa oturumu kapatılırken bir hata oluştu.", ex.Message));
             }
         }
     }

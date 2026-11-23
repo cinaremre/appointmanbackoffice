@@ -4,15 +4,15 @@ using Microsoft.AspNetCore.Authorization;
 namespace Rezervise.BackOffice.Api.Extensions
 {
     /// <summary>
-    /// Permission tabanli yetki altyapisi (dokuman 5.3). Her policy bir
-    /// permission koduyla eslesir; cozumleme AdminPermissions matrisinden
-    /// yapilir. SuperAdmin her permission'a sahiptir.
+    /// Permission tabanlı yetki altyapısı (doküman 5.3). Her policy bir
+    /// permission koduyla eşleşir; çözümleme AdminPermissions matrisinden
+    /// yapılır. SuperAdmin her permission'a sahiptir.
     /// </summary>
     public static class PermissionPolicyExtensions
     {
         /// <summary>
-        /// Tanimli permission policy'lerini kaydeder. Controller'larda
-        /// [Authorize(Policy = AdminPermissions.X)] biciminde kullanilir.
+        /// Tanımlı permission policy'lerini kaydeder. Controller'larda
+        /// [Authorize(Policy = AdminPermissions.X)] biçiminde kullanılır.
         /// </summary>
         public static IServiceCollection AddBackOfficeAuthorization(this IServiceCollection services)
         {
@@ -56,7 +56,7 @@ namespace Rezervise.BackOffice.Api.Extensions
             return services;
         }
 
-        /// <summary>Permission koduna policy kaydeder; policy adi = permission kodu.</summary>
+        /// <summary>Permission koduna policy kaydeder; policy adı = permission kodu.</summary>
         private static void Register(AuthorizationOptions options, string permission)
             => options.AddPolicy(permission, policy => policy.Requirements.Add(new PermissionRequirement(permission)));
 
@@ -70,9 +70,9 @@ namespace Rezervise.BackOffice.Api.Extensions
         }
 
         /// <summary>
-        /// JWT rollerini AdminPermissions matrisi uzerinden cozer.
-        /// Token'da permission claim'i aranmaz: rol -> permission eslemesi
-        /// sunucu tarafinda tek kaynaktan yurutulur.
+        /// JWT rollerini AdminPermissions matrisi üzerinden çözer.
+        /// Token'da permission claim'i aranmaz: rol -> permission eşlemesi
+        /// sunucu tarafında tek kaynaktan yürütülür.
         /// </summary>
         private sealed class PermissionAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
         {
@@ -83,7 +83,7 @@ namespace Rezervise.BackOffice.Api.Extensions
                 if (context.User.Identity?.IsAuthenticated != true)
                     return Task.CompletedTask;
 
-                // Claim calismasi: her rol icin matris sorgulanir; SuperAdmin her izne sahiptir.
+                // Claim çalışması: her rol için matris sorgulanır; SuperAdmin her izne sahiptir.
                 if (context.User.Claims
                     .Where(c => string.Equals(c.Type, "role", StringComparison.OrdinalIgnoreCase)
                         || string.Equals(c.Type, "http://schemas.microsoft.com/ws/2008/06/identity/claims/role", StringComparison.Ordinal))

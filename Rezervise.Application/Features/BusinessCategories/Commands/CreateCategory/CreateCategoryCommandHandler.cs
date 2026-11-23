@@ -23,7 +23,7 @@ namespace Rezervise.Application.Features.BusinessCategories.Commands.CreateCateg
         {
             try
             {
-                // 1. Ayni isimde kategori var mi?
+                // 1. Aynı isimde kategori var mi?
                 var existingCategories = await _categoryRepository.FindAsync(
                     c => c.Name == request.Name && !c.IsDeleted,
                     cancellationToken);
@@ -31,7 +31,7 @@ namespace Rezervise.Application.Features.BusinessCategories.Commands.CreateCateg
                 if (existingCategories.Any())
                     return Result<Guid>.Failure(Error.Conflict("Bu isimde bir kategori zaten mevcut."));
 
-                // 2. Parent kategori kontrolu
+                // 2. Parent kategori kontrolü
                 BusinessCategory? parentCategory = null;
                 if (request.ParentCategoryId.HasValue)
                 {
@@ -39,10 +39,10 @@ namespace Rezervise.Application.Features.BusinessCategories.Commands.CreateCateg
                         request.ParentCategoryId.Value, cancellationToken);
 
                     if (parentCategory is null)
-                        return Result<Guid>.Failure(Error.NotFound("Ust kategori", request.ParentCategoryId.Value.ToString()));
+                        return Result<Guid>.Failure(Error.NotFound("Üst kategori", request.ParentCategoryId.Value.ToString()));
                 }
 
-                // 3. Kategori olustur
+                // 3. Kategori oluştur
                 var category = new BusinessCategory(
                     request.Name,
                     request.DisplayOrder,
@@ -72,7 +72,7 @@ namespace Rezervise.Application.Features.BusinessCategories.Commands.CreateCateg
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Kategori olusturulurken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Kategori oluşturulurken bir hata oluştu.", ex.Message));
             }
         }
     }

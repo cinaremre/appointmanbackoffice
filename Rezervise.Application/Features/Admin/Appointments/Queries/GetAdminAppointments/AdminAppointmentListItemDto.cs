@@ -2,7 +2,7 @@ using Rezervise.Domain.Enums;
 
 namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppointments
 {
-    /// <summary>Randevu listesi ogesi (dokuman Modul 12).</summary>
+    /// <summary>Randevu listesi öğesi (doküman Modül 12).</summary>
     public class AdminAppointmentListItemDto
     {
         public Guid Id { get; set; }

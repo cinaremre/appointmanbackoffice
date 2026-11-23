@@ -35,29 +35,29 @@ namespace Rezervise.Application.Features.Cash.Commands.AddCashMovement
         {
             try
             {
-                // 1. Oturum kontrolu
+                // 1. Oturum kontrolü
                 var session = await _cashSessionRepository.GetByIdAsync(request.CashSessionId, cancellationToken);
                 if (session is null)
                     return Result<Guid>.Failure(Error.NotFoundById("Kasa oturumu", request.CashSessionId));
 
-                // 2. Yetki kontrolu
+                // 2. Yetki kontrolü
                 var business = await _businessRepository.GetByIdAsync(session.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFoundById("Isletme", session.BusinessId));
+                    return Result<Guid>.Failure(Error.NotFoundById("İşletme", session.BusinessId));
 
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
                     return Result<Guid>.Failure(Error.Forbidden("Bu kasa oturumuna hareket ekleme yetkiniz yok."));
 
-                // 3. Hareket yalnizca acik oturuma eklenebilir
+                // 3. Hareket yalnızca açık oturuma eklenebilir
                 if (session.Status != EnumCashSessionStatus.Open)
                     return Result<Guid>.Failure(
-                        Error.BusinessRule("Kasa hareketi yalnizca acik oturuma eklenebilir."));
+                        Error.BusinessRule("Kasa hareketi yalnızca açık oturuma eklenebilir."));
 
-                // 4. Tutar pozitif olmali
+                // 4. Tutar pozitif olmalı
                 if (request.Amount <= 0)
-                    return Result<Guid>.Failure(Error.Validation("Kasa hareket tutari sifirdan buyuk olmalidir."));
+                    return Result<Guid>.Failure(Error.Validation("Kasa hareket tutarı sıfırdan büyük olmalıdır."));
 
-                // 5. Hareketi olustur (manuel hareket: ReferenceId bos)
+                // 5. Hareketi oluştur (manuel hareket: ReferenceId boş)
                 var movement = new CashMovement(
                     session.BusinessId,
                     session.Id,
@@ -78,7 +78,7 @@ namespace Rezervise.Application.Features.Cash.Commands.AddCashMovement
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Kasa hareketi eklenirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Kasa hareketi eklenirken bir hata oluştu.", ex.Message));
             }
         }
     }

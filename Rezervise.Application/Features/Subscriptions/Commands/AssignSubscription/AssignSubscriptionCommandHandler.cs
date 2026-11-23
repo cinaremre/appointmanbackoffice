@@ -38,23 +38,23 @@ namespace Rezervise.Application.Features.Subscriptions.Commands.AssignSubscripti
         {
             try
             {
-                // 1. Yetki: abonelik atamasi platform yoneticisi isidir.
+                // 1. Yetki: abonelik ataması platform yöneticisi işidir.
                 if (!CallerAuthorization.IsAdministrator(_currentUser))
-                    return Result<Guid>.Failure(Error.Forbidden("Abonelik atamasi yalniz platform yoneticileri icindir."));
+                    return Result<Guid>.Failure(Error.Forbidden("Abonelik ataması yalnız platform yöneticileri içindir."));
 
-                // 2. Isletme ve plan kontrolu.
+                // 2. İşletme ve plan kontrolü.
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
                 var plan = await _planRepository.GetByIdAsync(request.PlanId, cancellationToken);
                 if (plan is null)
                     return Result<Guid>.Failure(Error.NotFound("Plan", request.PlanId.ToString()));
 
                 if (!plan.IsActive)
-                    return Result<Guid>.Failure(Error.BusinessRule("Atanmak istenen plan aktif degil."));
+                    return Result<Guid>.Failure(Error.BusinessRule("Atanmak istenen plan aktif değil."));
 
-                // 3. Varsa eski aktif abonelikleri dusur.
+                // 3. Varsa eski aktif abonelikleri düşür.
                 var activeSubscriptions = await _subscriptionRepository.FindAsync(
                     s => s.BusinessId == request.BusinessId
                         && s.Status == EnumSubscriptionStatus.Active
@@ -67,7 +67,7 @@ namespace Rezervise.Application.Features.Subscriptions.Commands.AssignSubscripti
                     await _subscriptionRepository.UpdateAsync(active, cancellationToken);
                 }
 
-                // 4. Yeni abonelik olustur.
+                // 4. Yeni abonelik oluştur.
                 var subscription = new BusinessSubscription(
                     request.BusinessId,
                     request.PlanId,
@@ -77,7 +77,7 @@ namespace Rezervise.Application.Features.Subscriptions.Commands.AssignSubscripti
                 await _subscriptionRepository.AddAsync(subscription, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // 5. Denetim kaydi.
+                // 5. Denetim kaydı.
                 _auditSink.Record(
                     "Subscription.Assigned",
                     Guid.NewGuid(),
@@ -92,7 +92,7 @@ namespace Rezervise.Application.Features.Subscriptions.Commands.AssignSubscripti
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Abonelik atanirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Abonelik atanırken bir hata oluştu.", ex.Message));
             }
         }
     }

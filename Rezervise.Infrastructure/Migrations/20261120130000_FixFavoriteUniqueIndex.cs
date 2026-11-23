@@ -7,15 +7,15 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Rezervise.Infrastructure.Migrations
 {
     /// <summary>
-    /// Favorites uzerindeki (UserId, BusinessId) unique index'ini filtreli hale getirir.
-    /// Filtresiz index soft-delete edilmis kayitlarin anahtari isgal etmesine ve
-    /// "favori cikarildi" sonrasi yeniden eklemenin 409 donmesine yol aciyordu.
+    /// Favorites üzerindeki (UserId, BusinessId) unique index'ini filtreli hale getirir.
+    /// Filtresiz index soft-delete edilmiş kayıtların anahtarı işgal etmesine ve
+    /// "favori çıkarıldı" sonrası yeniden eklemenin 409 dönmesine yol açıyordu.
     /// </summary>
     [DbContext(typeof(AppDbContext))]
     [Migration("20261120130000_FixFavoriteUniqueIndex")]
     public partial class FixFavoriteUniqueIndex : Migration
     {
-        /// <inheritdoc />
+        /// <inheritdoç />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(
@@ -30,7 +30,7 @@ namespace Rezervise.Infrastructure.Migrations
                 filter: "[IsDeleted] = 0");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(

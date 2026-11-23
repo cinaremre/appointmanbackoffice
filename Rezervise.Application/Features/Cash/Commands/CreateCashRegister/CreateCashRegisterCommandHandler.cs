@@ -31,16 +31,16 @@ namespace Rezervise.Application.Features.Cash.Commands.CreateCashRegister
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFoundById("Isletme", request.BusinessId));
+                    return Result<Guid>.Failure(Error.NotFoundById("İşletme", request.BusinessId));
 
-                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde OwnerId'si değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Forbidden("Bu isletmeye kasa tanimlama yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu işletmeye kasa tanımlama yetkiniz yok."));
 
-                // 3. Kasayi olustur (ad validasyonu entity icinde)
+                // 3. Kasayı oluştur (ad validasyonu entity içinde)
                 var register = new CashRegister(request.Name, request.BusinessId);
 
                 await _cashRegisterRepository.AddAsync(register, cancellationToken);
@@ -54,7 +54,7 @@ namespace Rezervise.Application.Features.Cash.Commands.CreateCashRegister
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Kasa tanimlanirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Kasa tanımlanırken bir hata oluştu.", ex.Message));
             }
         }
     }

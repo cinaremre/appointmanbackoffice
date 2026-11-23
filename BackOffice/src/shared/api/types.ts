@@ -26,7 +26,7 @@ export interface ProblemDetails {
   errors?: Record<string, string[]>;
 }
 
-/** Liste sorgularinda ortak sayfalama parametreleri (sunucu max 200 clamp'ler). */
+/** Liste sorgularında ortak sayfalama parametreleri (sunucu max 200 clamp'ler). */
 export interface PageQuery {
   page?: number;
   pageSize?: number;

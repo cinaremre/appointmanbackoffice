@@ -10,21 +10,21 @@ namespace Rezervise.Domain.ValueObjects
         public string CountryCode { get; private set; }
         public string NationalNumber { get; private set; }
 
-        private PhoneNumber() { } // EF Core icin
+        private PhoneNumber() { } // EF Core için
 
         public PhoneNumber(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new DomainException("Telefon numarasi bos olamaz.");
+                throw new DomainException("Telefon numarası boş olamaz.");
 
             var cleaned = Regex.Replace(value, @"[^\d+]", "");
 
             if (!IsValidPhoneNumber(cleaned))
-                throw new DomainException("Gecersiz telefon numarasi formati.");
+                throw new DomainException("Geçersiz telefon numarası formatı.");
 
             Value = cleaned;
 
-            // Basit parse - gercek hayatta libphonenumber kullanilabilir
+            // Basit parse - gerçek hayatta libphonenumber kullanılabilir
             if (cleaned.StartsWith("+"))
             {
                 var match = Regex.Match(cleaned, @"^\+(\d{1,3})(\d+)$");
@@ -41,7 +41,7 @@ namespace Rezervise.Domain.ValueObjects
             }
             else
             {
-                CountryCode = "+90"; // Varsayilan Turkiye
+                CountryCode = "+90"; // Varsayılan Türkiye
                 NationalNumber = cleaned;
                 Value = CountryCode + NationalNumber;
             }
@@ -52,7 +52,7 @@ namespace Rezervise.Domain.ValueObjects
             if (string.IsNullOrWhiteSpace(phoneNumber))
                 return false;
 
-            // En az 7, en fazla 15 rakam (uluslararasi standart)
+            // En az 7, en fazla 15 rakam (uluslararası standart)
             var digits = Regex.Replace(phoneNumber, @"[^\d]", "");
             return digits.Length >= 7 && digits.Length <= 15;
         }
@@ -71,19 +71,19 @@ namespace Rezervise.Domain.ValueObjects
         }
 
         /// <summary>
-        /// Deger esitligi. Operator tanimlanmadiginda '==' referans karsilastirmasi
-        /// yaptigi icin ayni numarayi tasiyan iki PhoneNumber farkli sayiliyordu.
+        /// Değer eşitliği. Operatör tanımlanmadığında '==' referans karşılaştırması
+        /// yaptığı için aynı numarayı taşıyan iki PhoneNumber farklı sayılıyordu.
         /// </summary>
         /// <param name="left">Sol taraf.</param>
-        /// <param name="right">Sag taraf.</param>
-        /// <returns>Numaralar ayniysa true.</returns>
+        /// <param name="right">Sağ taraf.</param>
+        /// <returns>Numaralar aynıysa true.</returns>
         public static bool operator ==(PhoneNumber? left, PhoneNumber? right)
             => object.Equals(left, right);
 
-        /// <summary>Deger esitsizligi.</summary>
+        /// <summary>Değer eşitsizliği.</summary>
         /// <param name="left">Sol taraf.</param>
-        /// <param name="right">Sag taraf.</param>
-        /// <returns>Numaralar farkliysa true.</returns>
+        /// <param name="right">Sağ taraf.</param>
+        /// <returns>Numaralar farklıysa true.</returns>
         public static bool operator !=(PhoneNumber? left, PhoneNumber? right)
             => !object.Equals(left, right);
 

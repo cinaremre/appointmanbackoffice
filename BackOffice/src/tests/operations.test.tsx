@@ -6,8 +6,8 @@ import { AuthProvider } from "../app/providers/AuthContext";
 import { OperationsPage } from "../features/operations/pages/OperationsPage";
 
 /**
- * Operasyon sayfasi: saglik kartlari ve bos liste durumu. Sarmalayicilar
- * gercek uygulama provider'lariyla ayni sirada kurulur.
+ * Operasyon sayfası: sağlık kartları ve boş liste durumu. Sarmalayıcılar
+ * gerçek uygulama provider'larıyla aynı sırada kurulur.
  */
 
 function renderOperationsPage() {
@@ -72,28 +72,28 @@ describe("OperationsPage", () => {
     vi.restoreAllMocks();
   });
 
-  it("saglik kartlarinda sistem durumu ve is sayilari gorunur", async () => {
+  it("sağlık kartlarında sistem durumu ve iş sayıları görünür", async () => {
     mockFetch(healthyEnvelope, emptyListEnvelope);
 
     renderOperationsPage();
 
-    // Durum rozeti "Healthy" etiketini tasir (renk tek basina gosterge degil).
+    // Durum rozeti "Healthy" etiketini taşır (renk tek başına gösterge değil).
     await waitFor(() => {
       expect(screen.getByText("Healthy")).toBeInTheDocument();
     });
-    expect(screen.getByText("Bekleyen Is")).toBeInTheDocument();
-    expect(screen.getByText("Islenen Is")).toBeInTheDocument();
-    expect(screen.getByText("Basarisiz Is")).toBeInTheDocument();
+    expect(screen.getByText("Bekleyen İş")).toBeInTheDocument();
+    expect(screen.getByText("İşlenen İş")).toBeInTheDocument();
+    expect(screen.getByText("Başarısız İş")).toBeInTheDocument();
     expect(screen.getByText("3")).toBeInTheDocument();
   });
 
-  it("is listesi bosken EmptyState gosterilir", async () => {
+  it("iş listesi boşken EmptyState gösterilir", async () => {
     mockFetch(healthyEnvelope, emptyListEnvelope);
 
     renderOperationsPage();
 
     await waitFor(() => {
-      expect(screen.getByText("Aktarim isi bulunamadi.")).toBeInTheDocument();
+      expect(screen.getByText("Aktarım işi bulunamadı.")).toBeInTheDocument();
     });
   });
 });

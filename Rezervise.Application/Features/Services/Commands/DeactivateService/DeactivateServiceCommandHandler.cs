@@ -31,30 +31,30 @@ namespace Rezervise.Application.Features.Services.Commands.DeactivateService
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu - JWT'den cozulen isletme sahibi veya yonetici mi?
+                // 2. Yetki kontrolü - JWT'den çözülen işletme sahibi veya yönetici mi?
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
                     return Result<Guid>.Failure(Error.Unauthorized("Bu hizmeti pasif etme yetkiniz yok."));
 
-                // 3. Hizmet kontrolu
+                // 3. Hizmet kontrolü
                 var service = await _serviceRepository.GetByIdAsync(request.ServiceId, cancellationToken);
                 if (service is null)
                     return Result<Guid>.Failure(Error.NotFound("Hizmet", request.ServiceId.ToString()));
 
-                // 4. Hizmet isletmeye ait mi?
+                // 4. Hizmet işletmeye ait mi?
                 if (service.BusinessId != request.BusinessId)
-                    return Result<Guid>.Failure(Error.BusinessRule("Hizmet bu isletmeye ait degil."));
+                    return Result<Guid>.Failure(Error.BusinessRule("Hizmet bu işletmeye ait değil."));
 
                 // 5. Zaten pasif mi?
                 if (!service.IsActive)
                     return Result<Guid>.Failure(Error.Conflict("Hizmet zaten pasif."));
 
                 // 6. Pasif et
-                // Denetim kaydi da govde degil, JWT kimliginden yazilir.
+                // Denetim kaydı da gövde değil, JWT kimliğinden yazılır.
                 service.Deactivate(_currentUser.UserId?.ToString() ?? "System", request.Reason);
 
                 // 7. Kaydet
@@ -68,7 +68,7 @@ namespace Rezervise.Application.Features.Services.Commands.DeactivateService
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Hizmet pasif edilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Hizmet pasif edilirken bir hata oluştu.", ex.Message));
             }
         }
     }

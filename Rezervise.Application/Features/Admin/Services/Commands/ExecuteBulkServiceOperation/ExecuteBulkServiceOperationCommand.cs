@@ -5,16 +5,16 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Services.Commands.ExecuteBulkServiceOperation
 {
     /// <summary>
-    /// Validating/AwaitingApproval durumundaki toplu islemi yurutur
-    /// (dokuman Modul 10). Ilk surumde kayitlar senkron ama chunk'lar
-    /// halinde islenir; buyuk olcekte kuyruk tabanli islemciye tasinacak.
+    /// Validating/AwaitingApproval durumundaki toplu işlemi yürütür
+    /// (doküman Modül 10). İlk sürümde kayıtlar senkron ama chunk'lar
+    /// halinde işlenir; büyük ölçekte kuyruk tabanlı işlemciye taşınacak.
     /// </summary>
     public class ExecuteBulkServiceOperationCommand : IRequest<Result<ExecutedBulkOperationDto>>
     {
         public Guid BulkOperationId { get; set; }
     }
 
-    /// <summary>Yurutme sonucu: sayilar, son durum ve kirpilmis hata raporu.</summary>
+    /// <summary>Yürütme sonucu: sayılar, son durum ve kırpılmış hata raporu.</summary>
     public class ExecutedBulkOperationDto
     {
         public Guid Id { get; set; }

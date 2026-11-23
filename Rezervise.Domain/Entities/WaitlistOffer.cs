@@ -4,18 +4,18 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Bekleme listesi kaydina gonderilen slot teklifi (dokuman Modul 10).
-    /// Isletme onay adiminda uretilir; musteri kabul/reddeder ya da sure dolar.
+    /// Bekleme listesi kaydına gönderilen slot teklifi (doküman Modül 10).
+    /// İşletme onay adımında üretilir; müşteri kabul/reddeder ya da süre dolar.
     /// </summary>
     public class WaitlistOffer : BaseEntity
     {
         public Guid WaitlistEntryId { get; private set; }
         public Guid BusinessId { get; private set; }
 
-        /// <summary>Acilan slotun baslangic zamani (randevu saati, UTC).</summary>
+        /// <summary>Açılan slotun başlangıç zamanı (randevu saati, UTC).</summary>
         public DateTime SlotStart { get; private set; }
 
-        /// <summary>Teklifin gecerlilik bitisi; <see cref="Domain.Common.WaitlistPolicy.OfferLifetime"/> ile hesaplanir.</summary>
+        /// <summary>Teklifin geçerlilik bitişi; <see cref="Domain.Common.WaitlistPolicy.OfferLifetime"/> ile hesaplanır.</summary>
         public DateTime ExpiresAt { get; private set; }
 
         public EnumWaitlistOfferStatus Status { get; private set; }
@@ -35,10 +35,10 @@ namespace Rezervise.Domain.Entities
             : base(Guid.NewGuid())
         {
             if (waitlistEntryId == Guid.Empty)
-                throw new ArgumentException("Bekleme listesi kaydi ID bos olamaz.", nameof(waitlistEntryId));
+                throw new ArgumentException("Bekleme listesi kaydı ID boş olamaz.", nameof(waitlistEntryId));
 
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (slotStart == default)
                 throw new DomainException("Waitlist.SlotStartRequired");
@@ -52,7 +52,7 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Teklifi kabul eder. Yalnizca Pending ve suresi henuz dolmamis
+        /// Teklifi kabul eder. Yalnızca Pending ve süresi henüz dolmamış
         /// teklifler kabul edilebilir; aksi halde DomainException.
         /// </summary>
         /// <param name="now">Referans UTC zaman.</param>
@@ -69,7 +69,7 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = now;
         }
 
-        /// <summary>Suresi dolan Pending teklifi Expired isaretler.</summary>
+        /// <summary>Süresi dolan Pending teklifi Expired işaretler.</summary>
         public void Expire(DateTime now)
         {
             if (Status != EnumWaitlistOfferStatus.Pending)
@@ -80,8 +80,8 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Ayni slot icin baska bir teklif kabul edildiginde kalan Pending
-        /// teklifler Superseded yapilir.
+        /// Aynı slot için başka bir teklif kabul edildiğinde kalan Pending
+        /// teklifler Superseded yapılır.
         /// </summary>
         public void Supersede()
         {

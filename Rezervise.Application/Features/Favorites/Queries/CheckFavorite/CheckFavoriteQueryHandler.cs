@@ -30,7 +30,7 @@ namespace Rezervise.Application.Features.Favorites.Queries.CheckFavorite
             catch (Exception ex)
             {
                 return Result<bool>.Failure(
-                    Error.Internal("Favori kontrolu yapilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Favori kontrolü yapılırken bir hata oluştu.", ex.Message));
             }
         }
     }

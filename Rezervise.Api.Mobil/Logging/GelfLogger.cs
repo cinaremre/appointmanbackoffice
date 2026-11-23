@@ -14,7 +14,7 @@ namespace Rezervise.Api.Logging
         private readonly IGelfSink _sink;
 
         /// <summary>
-        /// Initialises the logger.
+        /// İnitialıses the logger.
         /// </summary>
         /// <param name="categoryName">Logger category name reported as an additional field.</param>
         /// <param name="options">Sink options.</param>
@@ -26,7 +26,7 @@ namespace Rezervise.Api.Logging
             _sink = sink;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull
         {
             // Scopes are not propagated to GELF: the middleware already adds every
@@ -35,11 +35,11 @@ namespace Rezervise.Api.Logging
             return null;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public bool IsEnabled(LogLevel logLevel)
             => _options.Enabled && logLevel != LogLevel.None;
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public void Log<TState>(
             LogLevel logLevel,
             EventId eventId,

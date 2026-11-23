@@ -57,7 +57,7 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetBusiness
             catch (Exception ex)
             {
                 return Result<IReadOnlyList<AdminFeatureOverrideDto>>.Failure(
-                    Error.Internal("Ozellik override kayitlari getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Özellik override kayıtları getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

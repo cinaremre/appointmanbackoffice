@@ -5,28 +5,28 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMySales
 {
     /// <summary>
-    /// Isletme sahibinin satis listesi. Sahiplik handler'da dogrulanir;
-    /// tarih araligi filtresi desteklenir ve filtre kapsaminin toplam
-    /// tutari yanitla birlikte doner (AdminSales deseni).
+    /// İşletme sahibinin satış listesi. Sahiplik handler'da doğrulanır;
+    /// tarih aralığı filtresi desteklenir ve filtre kapsamının toplam
+    /// tutarı yanıtla birlikte döner (AdminSales deseni).
     /// </summary>
     public class GetMySalesQuery : IRequest<Result<OwnerSalesListDto>>
     {
         public Guid BusinessId { get; set; }
 
-        /// <summary>Satis tarihi alt siniri (UTC, dahil).</summary>
+        /// <summary>Satış tarihi alt sınırı (UTC, dahil).</summary>
         public DateTime? FromDate { get; set; }
 
-        /// <summary>Satis tarihi ust siniri (UTC, dahil).</summary>
+        /// <summary>Satış tarihi üst sınırı (UTC, dahil).</summary>
         public DateTime? ToDate { get; set; }
 
-        /// <summary>1 tabanli sayfa numarasi.</summary>
+        /// <summary>1 tabanlı sayfa numarası.</summary>
         public int Page { get; set; } = 1;
 
-        /// <summary>Sayfa boyutu; handler en fazla 200'e sinirlar.</summary>
+        /// <summary>Sayfa boyutu; handler en fazla 200'e sınırlar.</summary>
         public int PageSize { get; set; } = 50;
     }
 
-    /// <summary>Sayfali satis listesi + filtre geneli toplam tutar.</summary>
+    /// <summary>Sayfalı satış listesi + filtre geneli toplam tutar.</summary>
     public class OwnerSalesListDto
     {
         public IReadOnlyList<OwnerSaleDto> Items { get; init; } = Array.Empty<OwnerSaleDto>();
@@ -37,11 +37,11 @@ namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMySales
 
         public long TotalCount { get; init; }
 
-        /// <summary>Filtreyle eslesen tum satislarin GrandTotal toplami.</summary>
+        /// <summary>Filtreyle eşleşen tüm satışların GrandTotal toplamı.</summary>
         public decimal TotalGrandTotal { get; init; }
     }
 
-    /// <summary>Owner satis satiri.</summary>
+    /// <summary>Owner satış satırı.</summary>
     public class OwnerSaleDto
     {
         public Guid Id { get; init; }
@@ -52,7 +52,7 @@ namespace Rezervise.Application.Features.Owner.Finance.Queries.GetMySales
 
         public string Currency { get; init; } = string.Empty;
 
-        /// <summary>Durum sayisal deger olarak doner (EnumSaleStatus).</summary>
+        /// <summary>Durum sayısal değer olarak döner (EnumSaleStatus).</summary>
         public EnumSaleStatus Status { get; init; }
     }
 }

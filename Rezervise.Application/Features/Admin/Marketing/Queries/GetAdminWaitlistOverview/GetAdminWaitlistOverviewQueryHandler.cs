@@ -7,9 +7,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminWaitlistOverview
 {
     /// <summary>
-    /// Uc kaynaktan (WaitlistEntry, WaitlistOffer, RecoveredSlot) sayilari
-    /// toplayip tek ozet DTO uretir. Filtre uygulanmissa yalnizca ilgili
-    /// isletmenin kayitlari sayilir.
+    /// Uç kaynaktan (WaitlistEntry, WaitlistOffer, RecoveredSlot) sayıları
+    /// toplayıp tek özet DTO üretir. Filtre uygulanmışsa yalnızca ilgili
+    /// işletmenin kayıtları sayılır.
     /// </summary>
     public class GetAdminWaitlistOverviewQueryHandler
         : IRequestHandler<GetAdminWaitlistOverviewQuery, Result<AdminWaitlistOverviewDto>>
@@ -36,19 +36,19 @@ namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminWaitlis
             {
                 var businessId = request.BusinessId;
 
-                // 1. Aktif bekleme listesi kayitlari.
+                // 1. Aktif bekleme listesi kayıtları.
                 var activeEntries = await _entryRepository.CountAsync(
                     e => !e.IsDeleted
                         && (businessId == null || e.BusinessId == businessId)
                         && e.Status == EnumWaitlistEntryStatus.Active,
                     cancellationToken);
 
-                // 2. Teklifler durum bazinda sayilir.
+                // 2. Teklifler durum bazında sayılır.
                 var offers = await _offerRepository.FindAsync(
                     o => !o.IsDeleted && (businessId == null || o.BusinessId == businessId),
                     cancellationToken);
 
-                // 3. Kurtarilan slotlar Rebooked/Lost olarak sayilir.
+                // 3. Kurtarılan slotlar Rebooked/Lost olarak sayılır.
                 var slots = await _recoveredSlotRepository.FindAsync(
                     r => !r.IsDeleted && (businessId == null || r.BusinessId == businessId),
                     cancellationToken);
@@ -67,7 +67,7 @@ namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminWaitlis
             catch (Exception ex)
             {
                 return Result<AdminWaitlistOverviewDto>.Failure(
-                    Error.Internal("Bekleme listesi ozeti getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Bekleme listesi özeti getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

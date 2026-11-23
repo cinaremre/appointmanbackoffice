@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Bekleme listesi kaydi. Ayni musteri + hizmet + Active kombinasyonu
-    /// tek kayda sinirlidir (cift kayit engeli).
+    /// Bekleme listesi kaydı. Aynı müşteri + hizmet + Active kombinasyonu
+    /// tek kayda sınırlıdır (çift kayıt engeli).
     /// </summary>
     public class WaitlistEntryConfiguration : BaseConfiguration<WaitlistEntry>
     {

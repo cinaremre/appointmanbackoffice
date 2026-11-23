@@ -7,7 +7,7 @@ namespace Rezervise.Application.Common.Exceptions
     public sealed class ForbiddenAccessException : Exception
     {
         /// <summary>
-        /// Initialises the exception with a safe message that may be surfaced to the caller.
+        /// İnitialıses the exception with a safe message that may be surfaced to the caller.
         /// </summary>
         /// <param name="message">Safe message; a generic default is used when omitted.</param>
         public ForbiddenAccessException(string? message = null)

@@ -51,18 +51,18 @@ import {
 } from "../types";
 
 /**
- * Operasyon izleme sayfasi (dokuman Modul 20): sistem sagligi, aktarim
- * isleri ve basarisiz operasyonlar. Tum sayilar API'den gelir.
+ * Operasyon izleme sayfası (doküman Modül 20): sistem sağlığı, aktarım
+ * işleri ve başarısız operasyonlar. Tüm sayılar API'den gelir.
  */
 
-/** ISO tarih -> "dd.MM.yyyy HH:mm"; gecersizse ham deger korunur. */
+/** ISO tarih -> "dd.MM.yyyy HH:mm"; geçersizse ham değer korunur. */
 function formatDateTime(value?: string | null): string {
   if (!value) return "-";
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? value : format(date, "dd.MM.yyyy HH:mm");
 }
 
-/** GUID kisaltmasi; tablolarda uzun kimlikleri okunur tutar. */
+/** GUID kısaltması; tablolarda uzun kimlikleri okunur tutar. */
 function shortId(value?: string | null): string {
   return value ? value.slice(0, 8) : "-";
 }
@@ -77,11 +77,11 @@ function jobColumns(): DataTableColumn<ImportJob>[] {
         <StatusBadge status={IMPORT_STATUS_LABELS[row.status] ?? String(row.status)} />
       ),
     },
-    { key: "total", header: "Toplam Satir", render: (row) => String(row.totalRows) },
+    { key: "total", header: "Toplam Satır", render: (row) => String(row.totalRows) },
     { key: "imported", header: "Aktarilan", render: (row) => String(row.importedRows) },
-    { key: "failed", header: "Basarisiz Satir", render: (row) => String(row.failedRows) },
-    { key: "started", header: "Baslangic", render: (row) => formatDateTime(row.startedAt) },
-    { key: "completed", header: "Bitis", render: (row) => formatDateTime(row.completedAt) },
+    { key: "failed", header: "Başarısız Satır", render: (row) => String(row.failedRows) },
+    { key: "started", header: "Başlangıç", render: (row) => formatDateTime(row.startedAt) },
+    { key: "completed", header: "Bitiş", render: (row) => formatDateTime(row.completedAt) },
   ];
 }
 
@@ -90,16 +90,16 @@ export function OperationsPage() {
   const theme = useTheme();
   const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Isler filtreleri ve sayfalama.
+  // İşler filtreleri ve sayfalama.
   const [businessId, setBusinessId] = useState("");
   const [jobStatus, setJobStatus] = useState("");
   const [jobsPage, setJobsPage] = useState(1);
   const [jobsPageSize, setJobsPageSize] = useState(50);
 
-  // Satir detay dialog'u hangi is icin acik.
+  // Satır detay dialog'u hangi iş için açık.
   const [detailJobId, setDetailJobId] = useState<string | null>(null);
 
-  // Saglik verisi 30 sn taze kabul edilir (dokuman 26.4).
+  // Sağlık verisi 30 sn taze kabul edilir (doküman 26.4).
   const health = useQuery({
     queryKey: ["operations", "health"],
     queryFn: ({ signal }) => getItem<SystemHealth>("/operations/health", signal),
@@ -139,9 +139,9 @@ export function OperationsPage() {
 
   const healthCards = health.data
     ? [
-        { label: "Bekleyen Is", value: String(health.data.pendingJobs) },
-        { label: "Islenen Is", value: String(health.data.runningJobs) },
-        { label: "Basarisiz Is", value: String(health.data.failedJobs) },
+        { label: "Bekleyen İş", value: String(health.data.pendingJobs) },
+        { label: "İşlenen İş", value: String(health.data.runningJobs) },
+        { label: "Başarısız İş", value: String(health.data.failedJobs) },
       ]
     : [];
 
@@ -149,7 +149,7 @@ export function OperationsPage() {
     <Box>
       <PageHeader title="Operasyonlar" />
 
-      {/* Saglik kartlari: durum rozeti + is sayilari. */}
+      {/* Sağlık kartları: durum rozeti + iş sayıları. */}
       {health.isLoading ? (
         <LoadingState />
       ) : health.isError ? (
@@ -187,8 +187,8 @@ export function OperationsPage() {
       )}
 
       <Tabs value={tab} onChange={(_, value: number) => setTab(value)} aria-label="operasyon sekmeleri">
-        <Tab label="Isler" />
-        <Tab label="Basarisiz" />
+        <Tab label="İşler" />
+        <Tab label="Başarısız" />
       </Tabs>
 
       <Box sx={{ mt: 2 }}>
@@ -196,7 +196,7 @@ export function OperationsPage() {
           <Box>
             <Stack direction="row" spacing={2} useFlexGap sx={{ mb: 2, flexWrap: "wrap" }}>
               <TextField
-                label="Isletme ID (UUID, opsiyonel)"
+                label="İşletme ID (UUID, opsiyonel)"
                 value={businessId}
                 onChange={(e) => {
                   setBusinessId(e.target.value);
@@ -216,7 +216,7 @@ export function OperationsPage() {
                 size="small"
                 sx={{ minWidth: { xs: "100%", sm: 170 } }}
               >
-                <MenuItem value="">Tumu</MenuItem>
+                <MenuItem value="">Tümü</MenuItem>
                 {IMPORT_STATUS_OPTIONS.map((option) => (
                   <MenuItem key={option.value} value={String(option.value)}>
                     {option.label}
@@ -235,8 +235,8 @@ export function OperationsPage() {
               totalCount={jobs.data?.pagination.totalCount ?? 0}
               onPageChange={setJobsPage}
               onPageSizeChange={setJobsPageSize}
-              emptyLabel="Aktarim isi bulunamadi."
-              ariaLabel="aktarim isleri"
+              emptyLabel="Aktarım işi bulunamadı."
+              ariaLabel="aktarım işleri"
               onRefresh={() => jobs.refetch()}
               rowActions={(row) => (
                 <Button size="small" onClick={() => setDetailJobId(row.id)}>
@@ -265,22 +265,22 @@ export function OperationsPage() {
                   totalCount={failed.data.failedJobs.length}
                   onPageChange={() => {}}
                   onPageSizeChange={() => {}}
-                  emptyLabel="Basarisiz is bulunamadi."
-                  ariaLabel="basarisiz isler"
+                  emptyLabel="Başarısız iş bulunamadı."
+                  ariaLabel="başarısız işler"
                   onRefresh={() => failed.refetch()}
                 />
                 {failed.data.failedRows.length > 0 ? (
                   <Box sx={{ mt: 3 }}>
                     <Typography variant="h6" component="h3" sx={{ mb: 1 }}>
-                      Basarisiz Satir Ornekleri (ilk 50)
+                      Başarısız Satır Ornekleri (ilk 50)
                     </Typography>
                     <TableContainer sx={{ maxHeight: 360 }}>
-                      <Table size="small" aria-label="basarisiz satirlar">
+                      <Table size="small" aria-label="başarısız satırlar">
                         <TableHead>
                           <TableRow>
-                            <TableCell>Is</TableCell>
-                            <TableCell>Satir No</TableCell>
-                            <TableCell>Kayit Anahtari</TableCell>
+                            <TableCell>İş</TableCell>
+                            <TableCell>Satır No</TableCell>
+                            <TableCell>Kayıt Anahtarı</TableCell>
                             <TableCell>Hata</TableCell>
                           </TableRow>
                         </TableHead>
@@ -300,13 +300,13 @@ export function OperationsPage() {
                 ) : null}
               </Box>
             ) : (
-              <EmptyState label="Basarisiz is bulunamadi." />
+              <EmptyState label="Başarısız iş bulunamadı." />
             )}
           </Box>
         ) : null}
       </Box>
 
-      {/* Is detay dialog'u: is ozeti + satir sonuclari (ilk 200). */}
+      {/* İş detay dialog'u: iş özeti + satır sonuçları (ilk 200). */}
       <Dialog
         open={detailJobId !== null}
         onClose={() => setDetailJobId(null)}
@@ -314,7 +314,7 @@ export function OperationsPage() {
         maxWidth="md"
         fullScreen={is_mobile}
       >
-        <DialogTitle>Aktarim Isi Detayi</DialogTitle>
+        <DialogTitle>Aktarım İşi Detayı</DialogTitle>
         <DialogContent>
           {jobDetail.isLoading ? (
             <LoadingState />
@@ -330,25 +330,25 @@ export function OperationsPage() {
                   />
                 </Typography>
                 <Typography variant="body2">
-                  Isletme: {shortId(jobDetail.data.job.businessId)}
+                  İşletme: {shortId(jobDetail.data.job.businessId)}
                 </Typography>
                 <Typography variant="body2">
-                  Satirlar: {jobDetail.data.job.importedRows} aktarilan /{" "}
-                  {jobDetail.data.job.failedRows} basarisiz / {jobDetail.data.job.totalRows} toplam
+                  Satırlar: {jobDetail.data.job.importedRows} aktarılan /{" "}
+                  {jobDetail.data.job.failedRows} başarısız / {jobDetail.data.job.totalRows} toplam
                 </Typography>
                 <Typography variant="body2">
-                  Baslangic: {formatDateTime(jobDetail.data.job.startedAt)} — Bitis:{" "}
+                  Başlangıç: {formatDateTime(jobDetail.data.job.startedAt)} — Bitiş:{" "}
                   {formatDateTime(jobDetail.data.job.completedAt)}
                 </Typography>
               </Stack>
 
               {jobDetail.data.rows.length > 0 ? (
                 <TableContainer sx={{ maxHeight: 360 }}>
-                  <Table size="small" aria-label="is satir sonuclari">
+                  <Table size="small" aria-label="iş satır sonuçları">
                     <TableHead>
                       <TableRow>
-                        <TableCell>Satir No</TableCell>
-                        <TableCell>Kayit Anahtari</TableCell>
+                        <TableCell>Satır No</TableCell>
+                        <TableCell>Kayıt Anahtarı</TableCell>
                         <TableCell>Durum</TableCell>
                         <TableCell>Hata</TableCell>
                       </TableRow>
@@ -370,7 +370,7 @@ export function OperationsPage() {
                   </Table>
                 </TableContainer>
               ) : (
-                <EmptyState label="Satir sonucu bulunamadi." />
+                <EmptyState label="Satır sonucu bulunamadı." />
               )}
             </Box>
           ) : null}

@@ -22,7 +22,7 @@ namespace Rezervise.Api.Logging
         private int _disposed;
 
         /// <summary>
-        /// Initialises the provider and starts the background delivery pump.
+        /// İnitialıses the provider and starts the background delivery pump.
         /// </summary>
         /// <param name="options">Sink options including the Graylog endpoint.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="options"/> is null.</exception>
@@ -50,7 +50,7 @@ namespace Rezervise.Api.Logging
         public ILogger CreateLogger(string categoryName)
             => new GelfLogger(categoryName, _options, this);
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public bool TryEnqueue(byte[] payload)
         {
             try
@@ -96,7 +96,7 @@ namespace Rezervise.Api.Logging
             }
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public void Dispose()
         {
             if (Interlocked.Exchange(ref _disposed, 1) != 0)

@@ -4,9 +4,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Imports.Commands.CreateImportJob
 {
     /// <summary>
-    /// Musteri CSV dosyasi icin aktarim isi olusturur.
-    /// Satirlar parse edilip sayilir; satir kayitlari (ImportRowResult)
-    /// bu asamada olusturulmaz, is kolon eslesmesi (Mapping) bekler.
+    /// Müşteri CSV dosyası için aktarım isi oluşturur.
+    /// Satırlar parse edilip sayılır; satır kayıtları (ImportRowResult)
+    /// bu aşamada oluşturulmaz, is kolon eşleşmesi (Mapping) bekler.
     /// </summary>
     public class CreateImportJobCommand : IRequest<Result<Guid>>
     {
@@ -16,7 +16,7 @@ namespace Rezervise.Application.Features.Imports.Commands.CreateImportJob
         public string SourceSystem { get; set; } = string.Empty;
         public string FileName { get; set; } = string.Empty;
 
-        /// <summary>Ham CSV icerigi (RFC4180; tirnakli alanlar desteklenir).</summary>
+        /// <summary>Ham CSV içeriği (RFC4180; tırnaklı alanlar desteklenir).</summary>
         public string CsvContent { get; set; } = string.Empty;
     }
 }

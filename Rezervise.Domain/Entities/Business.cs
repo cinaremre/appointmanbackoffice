@@ -79,10 +79,10 @@ namespace Rezervise.Domain.Entities
         public void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new DomainException("Isletme adi bos olamaz.");
+                throw new DomainException("İşletme adı boş olamaz.");
 
             if (name.Length < 2 || name.Length > 100)
-                throw new DomainException("Isletme adi 2-100 karakter arasinda olmalidir.");
+                throw new DomainException("İşletme adı 2-100 karakter arasında olmalıdır.");
 
             var oldName = Name;
             Name = name;
@@ -99,7 +99,7 @@ namespace Rezervise.Domain.Entities
         public void SetDescription(string? description)
         {
             if (description != null && description.Length > 500)
-                throw new DomainException("A�iklama 500 karakterden uzun olamaz.");
+                throw new DomainException("Açiklama 500 karakterden uzun olamaz.");
 
             var oldDescription = Description;
             Description = description;
@@ -218,10 +218,10 @@ namespace Rezervise.Domain.Entities
         public void ChangeOwner(Guid newOwnerId, string? changedBy = null)
         {
             if (newOwnerId == Guid.Empty)
-                throw new ArgumentException("Yeni sahip ID bos olamaz.", nameof(newOwnerId));
+                throw new ArgumentException("Yeni sahip ID boş olamaz.", nameof(newOwnerId));
 
             if (OwnerId == newOwnerId)
-                throw new DomainException("Isletme zaten bu kullaniciya ait.");
+                throw new DomainException("İşletme zaten bu kullanıcıya ait.");
 
             var oldOwnerId = OwnerId;
             OwnerId = newOwnerId;
@@ -270,10 +270,10 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(entry));
 
             if (entry.BusinessId != Id)
-                throw new DomainException("Kara liste kaydi bu isletmeye ait degil.");
+                throw new DomainException("Kara liste kaydı bu işletmeye ait değil.");
 
             if (_blacklistEntries.Any(b => b.UserId == entry.UserId && !b.IsDeleted))
-                throw new DomainException("Bu kullanici zaten kara listede.");
+                throw new DomainException("Bu kullanıcı zaten kara listede.");
 
             _blacklistEntries.Add(entry);
             UpdatedAt = DateTime.UtcNow;
@@ -306,10 +306,10 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(serviceCategory));
 
             if (!serviceCategory.IsRoot())
-                throw new DomainException("Isletmeye sadece root kategori eklenebilir.");
+                throw new DomainException("İşletmeye sadece root kategori eklenebilir.");
 
             if (_serviceCategories.Any(sc => sc.ServiceCategoryId == serviceCategory.Id && !sc.IsDeleted))
-                throw new DomainException("Bu kategori zaten isletmeye eklenmis.");
+                throw new DomainException("Bu kategori zaten işletmeye eklenmiş.");
 
             var businessServiceCategory = new BusinessServiceCategory(Id, serviceCategory.Id);
             _serviceCategories.Add(businessServiceCategory);
@@ -325,7 +325,7 @@ namespace Rezervise.Domain.Entities
                 .FirstOrDefault(sc => sc.ServiceCategoryId == serviceCategory.Id && !sc.IsDeleted);
 
             if (businessServiceCategory is null)
-                throw new DomainException("Bu kategori isletmede bulunamadi.");
+                throw new DomainException("Bu kategori işletmede bulunamadı.");
 
             _serviceCategories.Remove(businessServiceCategory);
             UpdatedAt = DateTime.UtcNow;
@@ -349,10 +349,10 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(employee));
 
             if (employee.BusinessId != Id)
-                throw new DomainException("�alisan bu isletmeye ait degil.");
+                throw new DomainException("Çalisan bu işletmeye ait değil.");
 
             if (_employees.Any(e => e.GetFullName() == employee.GetFullName() && !e.IsDeleted))
-                throw new DomainException("Bu isimde bir �alisan zaten mevcut.");
+                throw new DomainException("Bu isimde bir çalisan zaten mevcut.");
 
             _employees.Add(employee);
             UpdatedAt = DateTime.UtcNow;
@@ -364,7 +364,7 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(employee));
 
             if (!_employees.Contains(employee))
-                throw new DomainException("Bu �alisan isletmede bulunamadi.");
+                throw new DomainException("Bu çalisan işletmede bulunamadı.");
 
             _employees.Remove(employee);
             UpdatedAt = DateTime.UtcNow;
@@ -404,14 +404,14 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(service));
 
             if (service.BusinessId != Id)
-                throw new DomainException("Hizmet bu isletmeye ait degil.");
+                throw new DomainException("Hizmet bu işletmeye ait değil.");
 
             if (_services.Any(s => s.Name == service.Name && !s.IsDeleted))
                 throw new DomainException("Bu isimde bir hizmet zaten mevcut.");
 
             var serviceCategoryRoot = service.ServiceCategory?.GetRootCategory();
             if (serviceCategoryRoot != null && !HasServiceCategory(serviceCategoryRoot.Id))
-                throw new DomainException("Hizmetin kategorisi isletmeye ekli degil.");
+                throw new DomainException("Hizmetin kategorisi işletmeye ekli değil.");
 
             _services.Add(service);
             UpdatedAt = DateTime.UtcNow;
@@ -427,7 +427,7 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(service));
 
             if (!_services.Contains(service))
-                throw new DomainException("Bu hizmet isletmede bulunamadi.");
+                throw new DomainException("Bu hizmet işletmede bulunamadı.");
 
             _services.Remove(service);
             UpdatedAt = DateTime.UtcNow;
@@ -455,10 +455,10 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(workingHour));
 
             if (workingHour.BusinessId != Id)
-                throw new DomainException("�alisma saati bu isletmeye ait degil.");
+                throw new DomainException("Çalisma saati bu işletmeye ait değil.");
 
             if (_workingHours.Any(w => w.DayOfWeek == workingHour.DayOfWeek && !w.IsDeleted))
-                throw new DomainException($"{workingHour.DayOfWeek} g�n� i�in zaten �alisma saati tanimli.");
+                throw new DomainException($"{workingHour.DayOfWeek} günü için zaten çalisma saati tanımlı.");
 
             _workingHours.Add(workingHour);
             UpdatedAt = DateTime.UtcNow;
@@ -474,13 +474,13 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(workingHour));
 
             if (!_workingHours.Contains(workingHour))
-                throw new DomainException("Bu �alisma saati isletmede bulunamadi.");
+                throw new DomainException("Bu çalisma saati işletmede bulunamadı.");
 
             _workingHours.Remove(workingHour);
             UpdatedAt = DateTime.UtcNow;
 
             var updatedEvent = new BusinessUpdatedEvent(Id, Name, OwnerId, BusinessType);
-            updatedEvent.AddChange("WorkingHourRemoved", workingHour.DayOfWeek, $"{workingHour.DayOfWeek} �alisma saati silindi");
+            updatedEvent.AddChange("WorkingHourRemoved", workingHour.DayOfWeek, $"{workingHour.DayOfWeek} çalisma saati silindi");
             AddDomainEvent(updatedEvent);
         }
 
@@ -499,8 +499,8 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Araligin tamaminin o gunun mesai saatleri icinde kaldigini kontrol eder.
-        /// Nokta kontrolu yerine kullanilir; aralik yerel duvar saatinde verilir.
+        /// Aralığın tamamının o günün mesai saatleri içinde kaldığını kontrol eder.
+        /// Nokta kontrolü yerine kullanılır; aralık yerel duvar saatinde verilir.
         /// </summary>
         public bool IsOpenDuring(DateTime start, DateTime end)
         {
@@ -516,7 +516,7 @@ namespace Rezervise.Domain.Entities
         public void UpdateRating(decimal newRating)
         {
             if (newRating < 0 || newRating > 5)
-                throw new DomainException("Puan 0-5 arasinda olmalidir.");
+                throw new DomainException("Puan 0-5 arasında olmalıdır.");
 
             var oldRating = Rating ?? 0;
             Rating = Math.Round(newRating, 1);
@@ -561,10 +561,10 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(favorite));
 
             if (favorite.BusinessId != Id)
-                throw new DomainException("Favori bu isletmeye ait degil.");
+                throw new DomainException("Favori bu işletmeye ait değil.");
 
             if (_favorites.Any(f => f.UserId == favorite.UserId && !f.IsDeleted))
-                throw new DomainException("Bu isletme zaten favorilerde.");
+                throw new DomainException("Bu işletme zaten favorilerde.");
 
             _favorites.Add(favorite);
             UpdatedAt = DateTime.UtcNow;
@@ -578,7 +578,7 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(favorite));
 
             if (!_favorites.Contains(favorite))
-                throw new DomainException("Bu favori bulunamadi.");
+                throw new DomainException("Bu favori bulunamadı.");
 
             _favorites.Remove(favorite);
             UpdatedAt = DateTime.UtcNow;
@@ -592,7 +592,7 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(appointment));
 
             if (appointment.BusinessId != Id)
-                throw new DomainException("Randevu bu isletmeye ait degil.");
+                throw new DomainException("Randevu bu işletmeye ait değil.");
 
             _appointments.Add(appointment);
             UpdatedAt = DateTime.UtcNow;
@@ -617,7 +617,7 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(review));
 
             if (review.BusinessId != Id)
-                throw new DomainException("Yorum bu isletmeye ait degil.");
+                throw new DomainException("Yorum bu işletmeye ait değil.");
 
             IncrementTotalReviews();
             AddDomainEvent(new BusinessReviewReceivedEvent(

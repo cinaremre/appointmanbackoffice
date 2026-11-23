@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Push cihaz token kayitlari. Ayni kullanici + token cifti tektir;
-    /// pasif token'lar kayit olarak kalir (soft delete yerine IsActive bayragi).
+    /// Push cihaz token kayıtları. Aynı kullanıcı + token çifti tektir;
+    /// pasif token'lar kayıt olarak kalır (soft delete yerine IsActive bayrağı).
     /// </summary>
     public class DeviceTokenConfiguration : BaseConfiguration<DeviceToken>
     {

@@ -23,29 +23,29 @@ namespace Rezervise.Application.Features.Users.Commands.ChangePassword
         {
             try
             {
-                // 1. Kullanici kontrolu. Silinmis hesap uzerinde sifre degistirilemez.
+                // 1. Kullanıcı kontrolü. Silinmiş hesap üzerinde şifre değiştirilemez.
                 var users = await _userRepository.FindAsync(
                     u => u.Id == request.UserId && !u.IsDeleted, cancellationToken);
 
                 var user = users.FirstOrDefault();
                 if (user is null)
-                    return Result<Guid>.Failure(Error.NotFound("Kullanici", request.UserId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Kullanıcı", request.UserId.ToString()));
 
-                // 2. Mevcut sifre dogrulamasi
+                // 2. Mevcut şifre doğrulaması
                 if (!BCryptNet.Verify(request.CurrentPassword, user.PasswordHash))
-                    return Result<Guid>.Failure(Error.Unauthorized("Mevcut sifre yanlis."));
+                    return Result<Guid>.Failure(Error.Unauthorized("Mevcut şifre yanlış."));
 
-                // 3. Yeni sifreyi hashle ve kaydet
+                // 3. Yeni şifreyi haşhle ve kaydet
                 user.SetPasswordHash(BCryptNet.HashPassword(request.NewPassword));
 
-                // 4. Degisiklikleri kaydet
+                // 4. Değişiklikleri kaydet
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 return Result<Guid>.Success(user.Id);
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Sifre degistirilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Şifre değiştirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

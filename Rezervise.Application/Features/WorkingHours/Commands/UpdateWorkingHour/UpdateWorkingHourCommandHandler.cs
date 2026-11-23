@@ -31,25 +31,25 @@ namespace Rezervise.Application.Features.WorkingHours.Commands.UpdateWorkingHour
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde OwnerId'si değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Unauthorized("Bu calisma saatini guncelleme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Unauthorized("Bu çalışma saatini güncelleme yetkiniz yok."));
 
-                // 3. Calisma saati kontrolu
+                // 3. Çalışma saati kontrolü
                 var workingHour = await _workingHourRepository.GetByIdAsync(request.WorkingHourId, cancellationToken);
                 if (workingHour is null)
-                    return Result<Guid>.Failure(Error.NotFound("Calisma saati", request.WorkingHourId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Çalışma saati", request.WorkingHourId.ToString()));
 
-                // 4. Calisma saati isletmeye ait mi?
+                // 4. Çalışma saati işletmeye ait mi?
                 if (workingHour.BusinessId != request.BusinessId)
-                    return Result<Guid>.Failure(Error.BusinessRule("Calisma saati bu isletmeye ait degil."));
+                    return Result<Guid>.Failure(Error.BusinessRule("Çalışma saati bu işletmeye ait değil."));
 
-                // 5. Guncelle
+                // 5. Güncelle
                 workingHour.SetWorkingHours(request.StartTime, request.EndTime);
 
                 if (request.IsClosed)
@@ -68,7 +68,7 @@ namespace Rezervise.Application.Features.WorkingHours.Commands.UpdateWorkingHour
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Calisma saati guncellenirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Çalışma saati güncellenirken bir hata oluştu.", ex.Message));
             }
         }
     }

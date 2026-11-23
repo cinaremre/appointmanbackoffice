@@ -32,15 +32,15 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetBusiness
         {
             try
             {
-                // 1. Isletmenin silinmemis abonelikleri.
+                // 1. İşletmenin silinmemiş abonelikleri.
                 var subscriptions = await _subscriptionRepository.FindAsync(
                     s => s.BusinessId == request.BusinessId && !s.IsDeleted,
                     cancellationToken);
 
                 var now = DateTime.UtcNow;
 
-                // 2. Gecerli abonelik: once tarih penceresi icinde aktif olan,
-                //    yoksa ileride baslayacak en son atanan kayit.
+                // 2. Geçerli abonelik: önce tarih penceresi içinde aktif olan,
+                //    yoksa ileride başlayacak en son atanan kayıt.
                 var subscription = subscriptions
                     .Where(s => s.IsActiveAt(now))
                     .OrderByDescending(s => s.StartAt)
@@ -50,11 +50,11 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetBusiness
                         .OrderByDescending(s => s.StartAt)
                         .FirstOrDefault();
 
-                // 3. Abonelik yoksa bos basari: bu isletme icin normal durum.
+                // 3. Abonelik yoksa boş başarı: bu işletme için normal durum.
                 if (subscription is null)
                     return Result<AdminBusinessSubscriptionDto?>.Success(null);
 
-                // 4. Plan bilgisi ve ozellik listesi.
+                // 4. Plan bilgisi ve özellik listesi.
                 var plan = await _planRepository.GetByIdAsync(subscription.PlanId, cancellationToken);
                 var planFeatures = await _planFeatureRepository.FindAsync(
                     pf => pf.PlanId == subscription.PlanId && !pf.IsDeleted,
@@ -89,7 +89,7 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetBusiness
             catch (Exception ex)
             {
                 return Result<AdminBusinessSubscriptionDto?>.Failure(
-                    Error.Internal("Isletme aboneligi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("İşletme aboneliği getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

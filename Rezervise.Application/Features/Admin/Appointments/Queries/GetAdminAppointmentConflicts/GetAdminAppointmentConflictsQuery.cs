@@ -4,17 +4,17 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppointmentConflicts
 {
     /// <summary>
-    /// Belirli bir isletmenin belirli bir gunundeki (UTC) calisan cakismalarini
-    /// listeler (dokuman Modul 12). Ayni calisana ayni randevu saatinde birden
-    /// fazla aktif randevu varsa kayit doner. DuplicateKey index'i bu durumu
-    /// zaten engeller; sorgu yalnizca tespit/raporlama amaclidir.
+    /// Belirli bir işletmenin belirli bir günündeki (UTC) çalışan çakışmalarını
+    /// listeler (doküman Modül 12). Aynı çalışana aynı randevu saatinde birden
+    /// fazla aktif randevu varsa kayıt döner. DuplicateKey index'i bu durumu
+    /// zaten engeller; sorgu yalnızca tespit/raporlama amaçlıdır.
     /// </summary>
     public class GetAdminAppointmentConflictsQuery : IRequest<Result<IReadOnlyList<AdminAppointmentConflictDto>>>
     {
-        /// <summary>Cakismanin arandigi isletme.</summary>
+        /// <summary>Çakışmanın arandığı işletme.</summary>
         public Guid BusinessId { get; set; }
 
-        /// <summary>Cakismanin arandigi gun (UTC; saat bilgisi yok sayilir).</summary>
+        /// <summary>Çakışmanın arandığı gün (UTC; saat bilgisi yok sayılır).</summary>
         public DateTime Date { get; set; }
     }
 }

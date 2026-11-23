@@ -8,15 +8,15 @@ namespace Rezervise.Application.Features.Services.Queries.SearchServices
         {
             RuleFor(x => x.SearchTerm)
                 .MaximumLength(100)
-                .WithMessage("Arama terimi en fazla 100 karakter olmalidir.");
+                .WithMessage("Arama terimi en fazla 100 karakter olmalıdır.");
 
             RuleFor(x => x.PageNumber)
                 .GreaterThanOrEqualTo(1)
-                .WithMessage("Sayfa numarasi 1 veya daha buyuk olmalidir.");
+                .WithMessage("Sayfa numarası 1 veya daha büyük olmalıdır.");
 
             RuleFor(x => x.PageSize)
                 .InclusiveBetween(1, 100)
-                .WithMessage("Sayfa boyutu 1-100 arasinda olmalidir.");
+                .WithMessage("Sayfa boyutu 1-100 arasında olmalıdır.");
         }
     }
 }

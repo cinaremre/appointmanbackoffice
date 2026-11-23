@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Iptal edilen randevudan aciga cikan slot. Kurtarilan kapasite
-    /// raporlari bu kayitlardan uretilir.
+    /// İptal edilen randevudan açığa çıkan slot. Kurtarılan kapasite
+    /// raporları bu kayıtlardan üretilir.
     /// </summary>
     public class RecoveredSlotConfiguration : BaseConfiguration<RecoveredSlot>
     {

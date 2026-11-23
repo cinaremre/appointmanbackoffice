@@ -28,8 +28,8 @@ namespace Rezervise.Application.Features.Reviews.Queries.GetByBusiness
         {
             try
             {
-                // 1. Gizli yorumlar sadece isletme sahibi veya yoneticiye acik.
-                //    Silinmis yorumlar hicbir zaman listelenmez.
+                // 1. Gizli yorumlar sadece işletme sahibi veya yöneticiye açık.
+                //    Silinmiş yorumlar hiçbir zaman listelenmez.
                 var canSeeHidden = CallerAuthorization.IsAdministrator(_currentUser);
                 if (!canSeeHidden)
                 {
@@ -38,7 +38,7 @@ namespace Rezervise.Application.Features.Reviews.Queries.GetByBusiness
                         && CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId);
                 }
 
-                // 2. Isletmenin gorunur yorumlarini getir
+                // 2. İşletmenin görünür yorumlarını getir
                 var reviews = await _reviewRepository.FindAsync(
                     r => r.BusinessId == request.BusinessId
                          && !r.IsDeleted
@@ -52,7 +52,7 @@ namespace Rezervise.Application.Features.Reviews.Queries.GetByBusiness
                     .Take(request.PageSize)
                     .ToList();
 
-                // 4. DTO'ya donustur
+                // 4. DTO'ya dönüştür
                 var dtos = pagedReviews.Select(r => new ReviewDto
                 {
                     Id = r.Id,
@@ -72,9 +72,9 @@ namespace Rezervise.Application.Features.Reviews.Queries.GetByBusiness
             }
             catch (Exception)
             {
-                // Beklenmeyen hata detayi istemciye sizdirilmaz.
+                // Beklenmeyen hata detayı istemciye sızdırılmaz.
                 return Result<List<ReviewDto>>.Failure(
-                    Error.Internal("Yorumlar getirilirken bir hata olustu."));
+                    Error.Internal("Yorumlar getirilirken bir hata oluştu."));
             }
         }
     }

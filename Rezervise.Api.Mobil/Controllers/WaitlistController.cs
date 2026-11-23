@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Bekleme listesi islemleri (dokuman Modul 10, yarim otomatik mod):
-    /// kayit olma, isletmenin slot teklifi uretmesi, teklif kabul/iptal.
+    /// Bekleme listesi işlemleri (doküman Modül 10, yarım otomatik mod):
+    /// kayıt olma, işletmenin slot teklifi üretmesi, teklif kabul/iptal.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -29,7 +29,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Caller kimligi her zaman JWT'den cozulur; govde degerleri yetki kaynagi degildir.
+        /// Caller kimliği her zaman JWT'den çözülür; gövde değerleri yetki kaynağı değildir.
         /// </summary>
         private IActionResult? ResolveCurrentUserId(out Guid userId)
         {
@@ -44,11 +44,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Bekleme listesine kayit olur. Musteri kendi adina; isletme sahibi
-        /// isterse baskasi adina kayit acabilir.
+        /// Bekleme listesine kayıt olur. Müşteri kendi adına; işletme sahibi
+        /// isterse başkası adına kayıt açabilir.
         /// </summary>
-        /// <param name="command">Kayit bilgileri</param>
-        /// <returns>Olusturulan kaydin ID'si</returns>
+        /// <param name="command">Kayıt bilgileri</param>
+        /// <returns>Oluşturulan kaydın ID'si</returns>
         [HttpPost("join")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
@@ -66,11 +66,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Acilan slot icin uygun bekleme listesi kayitlarina Pending teklifler
-        /// uretir. Yetki: isletme sahibi (onay adimi).
+        /// Açılan slot için uygun bekleme listesi kayıtlarına Pending teklifler
+        /// üretir. Yetki: işletme sahibi (onay adımı).
         /// </summary>
-        /// <param name="command">Slot ve teklif sayisi bilgileri</param>
-        /// <returns>Uretilen tekliflerin ID listesi</returns>
+        /// <param name="command">Slot ve teklif sayısı bilgileri</param>
+        /// <returns>Üretilen tekliflerin ID listesi</returns>
         [HttpPost("offers")]
         [ProducesResponseType(typeof(Result<List<Guid>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<List<Guid>>), StatusCodes.Status400BadRequest)]
@@ -88,8 +88,8 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Bekleme listesi teklifini kabul eder. Musteri kimligi teklifin
-        /// kaydindan cozulur; govdeye guvenilmez.
+        /// Bekleme listesi teklifini kabul eder. Müşteri kimliği teklifin
+        /// kaydından çözülür; gövdeye güvenilmez.
         /// </summary>
         /// <param name="command">Teklif bilgisi</param>
         /// <returns>Kabul edilen teklifin ID'si</returns>
@@ -110,11 +110,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Bekleme listesi kaydini iptal eder. Yetki: musterinin kendisi
-        /// veya isletme sahibi.
+        /// Bekleme listesi kaydını iptal eder. Yetki: müşterinin kendisi
+        /// veya işletme sahibi.
         /// </summary>
-        /// <param name="command">Kayit bilgisi</param>
-        /// <returns>Iptal edilen kaydin ID'si</returns>
+        /// <param name="command">Kayıt bilgisi</param>
+        /// <returns>İptal edilen kaydın ID'si</returns>
         [HttpPost("cancel")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]

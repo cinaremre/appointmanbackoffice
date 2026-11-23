@@ -4,9 +4,9 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Paket hak hareketi (dokuman Modul 5). Her hareket tek bir randevuya
-    /// baglanir: Reserve ile hak ayrilir, Consume ile tuketilir, Release ile
-    /// iptal edilen randevunun hakki geri verilir.
+    /// Paket hak hareketi (doküman Modül 5). Her hareket tek bir randevuya
+    /// bağlanır: Reserve ile hak ayrılır, Consume ile tüketilir, Release ile
+    /// iptal edilen randevunun hakkı geri verilir.
     /// </summary>
     public class PackageUsage : BaseEntity
     {
@@ -29,13 +29,13 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (customerPackageId == Guid.Empty)
-                throw new ArgumentException("Musteri paketi ID bos olamaz.", nameof(customerPackageId));
+                throw new ArgumentException("Müşteri paketi ID boş olamaz.", nameof(customerPackageId));
 
             if (serviceId == Guid.Empty)
-                throw new ArgumentException("Hizmet ID bos olamaz.", nameof(serviceId));
+                throw new ArgumentException("Hizmet ID boş olamaz.", nameof(serviceId));
 
             if (appointmentId == Guid.Empty)
-                throw new ArgumentException("Randevu ID bos olamaz.", nameof(appointmentId));
+                throw new ArgumentException("Randevu ID boş olamaz.", nameof(appointmentId));
 
             CustomerPackageId = customerPackageId;
             ServiceId = serviceId;
@@ -46,7 +46,7 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Randevu icin paketten hak ayirir (aktif rezervasyon hareketi).
+        /// Randevu için paketten hak ayırır (aktif rezervasyon hareketi).
         /// </summary>
         public static PackageUsage Reserve(
             Guid customerPackageId,
@@ -64,8 +64,8 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Tamamlanan randevu icin ayridigi hakki tuketim hareketine cevirir.
-        /// Cagrilmadan once ayni randevunun aktif Reservation hareketi
+        /// Tamamlanan randevu için ayrıdığı hakkı tüketim hareketine çevirir.
+        /// Çağrılmadan önce aynı randevunun aktif Reservation hareketi
         /// <see cref="Cancel"/> ile iptal edilmelidir.
         /// </summary>
         public static PackageUsage Consume(
@@ -84,9 +84,9 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Aktif hareketi iptal eder; hak yeniden kullanilabilir olur.
-        /// Tuketim (Consume) hareketi, Reservation hareketinin yerine gecmeden
-        /// once bu metotla eski hareket iptal edilir.
+        /// Aktif hareketi iptal eder; hak yeniden kullanılabilir olur.
+        /// Tüketim (Consume) hareketi, Reservation hareketinin yerine geçmeden
+        /// önce bu metotla eski hareket iptal edilir.
         /// </summary>
         public void Cancel(DateTime now)
         {
@@ -98,8 +98,8 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Randevu iptalinde aktif Reservation hareketini Release'e cevirir:
-        /// hareket turu Release, durumu Cancelled olur ve kalan hak hesabina
+        /// Randevu iptalinde aktif Reservation hareketini Release'e çevirir:
+        /// hareket turu Release, durumu Cancelled olur ve kalan hak hesabına
         /// bir daha girmez.
         /// </summary>
         public void Release(DateTime now)

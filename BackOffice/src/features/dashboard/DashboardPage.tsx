@@ -4,8 +4,8 @@ import { getItem } from "../../shared/api/client";
 import { ErrorState, LoadingState, PageHeader } from "../../shared/components/states";
 
 /**
- * Platform dashboard (dokuman 8): KPI'lar API'den gelir; frontend
- * hesaplama yeniden uretmez (dokuman 19.3).
+ * Platform dashboard (doküman 8): KPI'lar API'den gelir; frontend
+ * hesaplama yeniden üretmez (doküman 19.3).
  */
 interface PlatformOverview {
   totalBusinesses: number;
@@ -41,14 +41,14 @@ export function DashboardPage() {
   const mrr = revenue.data?.mrr;
 
   const cards: Array<{ label: string; value: string }> = [
-    { label: "Toplam Isletme", value: String(data.totalBusinesses) },
-    { label: "Aktif Isletme", value: String(data.activeBusinesses) },
-    { label: "Askidaki Isletme", value: String(data.suspendedBusinesses) },
-    { label: "Yeni Kayit (30 gun)", value: String(data.newRegistrations30Days) },
+    { label: "Toplam İşletme", value: String(data.totalBusinesses) },
+    { label: "Aktif İşletme", value: String(data.activeBusinesses) },
+    { label: "Askıdaki İşletme", value: String(data.suspendedBusinesses) },
+    { label: "Yeni Kayıt (30 gün)", value: String(data.newRegistrations30Days) },
     { label: "Toplam Randevu", value: String(data.totalAppointments) },
     { label: "Tamamlanan Randevu", value: String(data.completedAppointments) },
-    { label: "Iptal Orani", value: `%${(data.cancellationRate ?? 0).toFixed(1)}` },
-    { label: "No-Show Orani", value: `%${(data.noShowRate ?? 0).toFixed(1)}` },
+    { label: "İptal Oranı", value: `%${(data.cancellationRate ?? 0).toFixed(1)}` },
+    { label: "No-Show Oranı", value: `%${(data.noShowRate ?? 0).toFixed(1)}` },
     { label: "MRR", value: mrr !== undefined ? `${mrr.toLocaleString("tr-TR")} TL` : "-" },
   ];
 

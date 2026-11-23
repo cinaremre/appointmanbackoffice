@@ -11,7 +11,7 @@ namespace Rezervise.Application.Common.Services
     /// <summary>
     /// Randevu domain event'lerini gerçek iş akışı yan etkilerine bağlar:
     /// yapılandırılmış denetim kaydı, müşteriye e-posta kuyruğu ve mobil push
-    /// kuyruğu. Event kimliği ile dedupe yapılır; aynı olay iki kez yan etki üretmez.
+    /// kuyruğu. Event kimliği ile dedüpe yapılır; aynı olay iki kez yan etki üretmez.
     /// </summary>
     public sealed class AppointmentEventSideEffectHandler : INotificationHandler<DomainEventNotification>
     {
@@ -75,9 +75,9 @@ namespace Rezervise.Application.Common.Services
                 TextBody = plan.TextBody
             });
 
-            // Mobil push: ayni icerigin kisa bicimi kuyruga verilir. Cihazi
-            // olmayan kullaniciya hic kuyruk yazilmaz; gonderim kuyruga alinir,
-            // istek thread'i saglayici beklemez.
+            // Mobil push: aynı içeriğin kısa biçimi kuyruğa verilir. Cihazı
+            // olmayan kullanıcıya hiç kuyruk yazılmaz; gönderim kuyruğa alınır,
+            // istek thread'i sağlayıcı beklemez.
             var tokens = await _deviceTokens.FindAsync(
                 t => t.UserId == user.Id && t.IsActive,
                 cancellationToken);
@@ -89,13 +89,13 @@ namespace Rezervise.Application.Common.Services
                     Token = token.Token,
                     UserId = user.Id,
                     Title = plan.Subject,
-                    // HTML govdeden etiketleri soyarak kisa bildirim metni uret.
+                    // HTML gövdeden etiketleri soyarak kısa bildirim metni üret.
                     Body = ToPlainBody(plan.HtmlBody)
                 });
             }
         }
 
-        /// <summary>E-posta govdesinden push icin kisa duz metin uretir.</summary>
+        /// <summary>E-posta gövdesinden push için kısa düz metin üretir.</summary>
         private static string ToPlainBody(string htmlBody)
         {
             var plain = HtmlTagPattern.Replace(htmlBody, " ").Trim();
@@ -116,12 +116,12 @@ namespace Rezervise.Application.Common.Services
         {
             return domainEvent switch
             {
-                AppointmentCreatedEvent e => $"Olusturuldu: {e.AppointmentDate:dd.MM.yyyy HH:mm}",
-                AppointmentConfirmedEvent e => $"Onaylandi: {e.AppointmentDate:dd.MM.yyyy HH:mm}",
-                AppointmentCancelledEvent e => $"Iptal edildi: {e.AppointmentDate:dd.MM.yyyy HH:mm}",
-                AppointmentRescheduledEvent e => $"Yeniden planlandi: {e.OldDate:dd.MM.yyyy HH:mm} -> {e.NewDate:dd.MM.yyyy HH:mm}",
-                AppointmentCompletedEvent e => $"Tamamlandi: {e.AppointmentDate:dd.MM.yyyy HH:mm}",
-                AppointmentEmployeeReassignedEvent e => $"Calisan degisti: {e.OldEmployeeId} -> {e.NewEmployeeId}",
+                AppointmentCreatedEvent e => $"Oluşturuldu: {e.AppointmentDate:dd.MM.yyyy HH:mm}",
+                AppointmentConfirmedEvent e => $"Onaylandı: {e.AppointmentDate:dd.MM.yyyy HH:mm}",
+                AppointmentCancelledEvent e => $"İptal edildi: {e.AppointmentDate:dd.MM.yyyy HH:mm}",
+                AppointmentRescheduledEvent e => $"Yeniden planlandı: {e.OldDate:dd.MM.yyyy HH:mm} -> {e.NewDate:dd.MM.yyyy HH:mm}",
+                AppointmentCompletedEvent e => $"Tamamlandı: {e.AppointmentDate:dd.MM.yyyy HH:mm}",
+                AppointmentEmployeeReassignedEvent e => $"Çalışan değişti: {e.OldEmployeeId} -> {e.NewEmployeeId}",
                 AppointmentStatusChangedEvent e => $"Status: {e.OldStatus} -> {e.NewStatus}",
                 _ => domainEvent.GetType().Name
             };

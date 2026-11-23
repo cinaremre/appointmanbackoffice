@@ -25,15 +25,15 @@ namespace Rezervise.Application.Features.Reviews.Queries.GetByUser
         {
             try
             {
-                // 0. Aktor kimligi imzali token'dan gelir; baskasinin yorumlari
-                //    sadece yonetici tarafindan goruntulenebilir (IDOR korumasi).
+                // 0. Aktör kimliği imzalı token'dan gelir; başkasının yorumları
+                //    sadece yönetici tarafından görüntülenebilir (IDOR koruması).
                 if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
                     return Result<List<ReviewDto>>.Failure(Error.Unauthorized("Auth.InvalidUser"));
 
                 if (!CallerAuthorization.CanActAsUser(_currentUser, request.UserId))
-                    return Result<List<ReviewDto>>.Failure(Error.Forbidden("Baska kullanicinin yorumlarini goruntuleme yetkiniz yok."));
+                    return Result<List<ReviewDto>>.Failure(Error.Forbidden("Başka kullanıcının yorumlarını görüntüleme yetkiniz yok."));
 
-                // 1. Kullanicinin tum yorumlarini getir
+                // 1. Kullanıcının tüm yorumlarını getir
                 var reviews = await _reviewRepository.FindAsync(
                     r => r.UserId == request.UserId && !r.IsDeleted,
                     cancellationToken);
@@ -45,7 +45,7 @@ namespace Rezervise.Application.Features.Reviews.Queries.GetByUser
                     .Take(request.PageSize)
                     .ToList();
 
-                // 3. DTO'ya donustur
+                // 3. DTO'ya dönüştür
                 var dtos = pagedReviews.Select(r => new ReviewDto
                 {
                     Id = r.Id,
@@ -65,9 +65,9 @@ namespace Rezervise.Application.Features.Reviews.Queries.GetByUser
             }
             catch (Exception)
             {
-                // Beklenmeyen hata detayi istemciye sizdirilmaz.
+                // Beklenmeyen hata detayı istemciye sızdırılmaz.
                 return Result<List<ReviewDto>>.Failure(
-                    Error.Internal("Yorumlar getirilirken bir hata olustu."));
+                    Error.Internal("Yorumlar getirilirken bir hata oluştu."));
             }
         }
     }

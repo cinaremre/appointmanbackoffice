@@ -40,7 +40,7 @@ namespace Rezervise.Application.Features.Businesses.Queries.GetBusinessesByOwner
                     .Take(request.PageSize)
                     .ToList();
 
-                // DTO'ya donustur
+                // DTO'ya dönüştür
                 var dtos = pagedBusinesses.Select(b => new BusinessDto
                 {
                     Id = b.Id,
@@ -65,7 +65,7 @@ namespace Rezervise.Application.Features.Businesses.Queries.GetBusinessesByOwner
             catch (Exception ex)
             {
                 return Result<List<BusinessDto>>.Failure(
-                    Error.Internal("Isletmeler getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("İşletmeler getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

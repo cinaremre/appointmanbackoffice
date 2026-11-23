@@ -12,11 +12,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers
 {
     /// <summary>
-    /// Hizmet katalogu ve toplu islemler (dokuman Modul 10).
-    /// Toplu islem akisi: once POST bulk-operations ile onizleme/kayit,
-    /// sonra execute ile yurutme; baslamayan isler cancel ile iptal edilir.
-    /// Not: ASP.NET Core sinif seviyesi route'lari birlesmedigi icin
-    /// tam prefix burada tekrar yazilir.
+    /// Hizmet kataloğu ve toplu işlemler (doküman Modül 10).
+    /// Toplu işlem akışı: önce POST bulk-operations ile onizleme/kayıt,
+    /// sonra execute ile yürütme; başlamayan işler cancel ile iptal edilir.
+    /// Not: ASP.NET Core sınıf seviyesi route'lari birleşmediği için
+    /// tam prefix burada tekrar yazılır.
     /// </summary>
     [Authorize]
     [Route("api/v1/admin/services")]
@@ -29,7 +29,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             _mediator = mediator;
         }
 
-        /// <summary>Hizmet katalogunu sayfali listeler (max 200, default 50).</summary>
+        /// <summary>Hizmet kataloğunu sayfalı listeler (max 200, default 50).</summary>
         [HttpGet]
         [Authorize(Policy = AdminPermissions.ServiceRead)]
         public async Task<IActionResult> GetServices(
@@ -64,7 +64,7 @@ namespace Rezervise.BackOffice.Api.Controllers
                 value.TotalCount);
         }
 
-        /// <summary>Platform admin'i hizmet ad/fiyat/sure bilgisi gunceller.</summary>
+        /// <summary>Platform admin'i hizmet ad/fiyat/süre bilgisi günceller.</summary>
         [HttpPatch("{id:guid}")]
         [Authorize(Policy = AdminPermissions.ServiceUpdate)]
         public async Task<IActionResult> UpdateService(
@@ -82,9 +82,9 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Toplu islem kaydi olusturur. dryRun=true (varsayilan) onizleme:
-        /// etkilenecek kayit sayisi ve gecersiz ID'ler doner, yurutulemez.
-        /// dryRun=false gercek islem kaydi: execute ile yurutulur.
+        /// Toplu işlem kaydı oluşturur. dryRun=true (varsayılan) onizleme:
+        /// etkilenecek kayıt sayısı ve geçersiz ID'ler döner, yürütülemez.
+        /// dryRun=false gerçek işlem kaydı: execute ile yürütülür.
         /// </summary>
         [HttpPost("bulk-operations")]
         [Authorize(Policy = AdminPermissions.ServiceBulkUpdate)]
@@ -100,8 +100,8 @@ namespace Rezervise.BackOffice.Api.Controllers
         }
 
         /// <summary>
-        /// Validating/AwaitingApproval durumundaki islemi yurutur.
-        /// Ilk surumde en fazla 2000 kayit; asimi Conflict.
+        /// Validating/AwaitingApproval durumundaki işlemi yürütür.
+        /// İlk sürümde en fazla 2000 kayıt; asımı Conflict.
         /// </summary>
         [HttpPost("bulk-operations/{id:guid}/execute")]
         [Authorize(Policy = AdminPermissions.ServiceBulkUpdate)]
@@ -118,7 +118,7 @@ namespace Rezervise.BackOffice.Api.Controllers
                 : result.ToProblem(Response.Headers["X-Correlation-ID"].ToString());
         }
 
-        /// <summary>Baslamamis toplu islemi iptal eder; Running+ durumlar Conflict.</summary>
+        /// <summary>Başlamamış toplu işlemi iptal eder; Running+ durumlar Conflict.</summary>
         [HttpPost("bulk-operations/{id:guid}/cancel")]
         [Authorize(Policy = AdminPermissions.ServiceBulkUpdate)]
         public async Task<IActionResult> CancelBulkOperation(

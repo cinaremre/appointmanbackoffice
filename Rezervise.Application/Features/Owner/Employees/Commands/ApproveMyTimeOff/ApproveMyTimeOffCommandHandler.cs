@@ -9,12 +9,12 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Employees.Commands.ApproveMyTimeOff
 {
     /// <summary>
-    /// Isletme sahibinin izin onayi. Bu handler kendi onay algoritmasini
-    /// yazmaz: sahiplik ve kapsam dogrulamasi yapar (izin, sahibin
-    /// isletmesinin calisanina ait olmali), ardindan islemi mevcut
-    /// <see cref="ApproveTimeOffCommand"/> ile IMediator uzerinden gercek
-    /// handler'a delege eder. Randevu cakisma kurallari boylece tek
-    /// kaynaktan yurutulur. Basari sonrasi denetim kaydi yazilir
+    /// İşletme sahibinin izin onayı. Bu handler kendi onay algorıtmasını
+    /// yazmaz: sahiplik ve kapsam doğrulaması yapar (izin, sahibin
+    /// işletmesinin çalışanına ait olmalı), ardından işlemi mevcut
+    /// <see cref="ApproveTimeOffCommand"/> ile IMediator üzerinden gerçek
+    /// handler'a delege eder. Randevu çakışma kuralları böylece tek
+    /// kaynaktan yürütülür. Başarı sonrası denetim kaydı yazılır
     /// (Action=OwnerApproveTimeOff).
     /// </summary>
     public class ApproveMyTimeOffCommandHandler : IRequestHandler<ApproveMyTimeOffCommand, Result<Guid>>
@@ -51,42 +51,42 @@ namespace Rezervise.Application.Features.Owner.Employees.Commands.ApproveMyTimeO
         {
             try
             {
-                // 1. Sahip kimligi JWT'den cozulur.
+                // 1. Sahip kimliği JWT'den çözülür.
                 if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
                     return Result<Guid>.Failure(Error.Unauthorized("Auth.Unauthorized"));
 
                 var actorId = _currentUser.UserId.Value;
                 var actorRole = _currentUser.Roles.FirstOrDefault() ?? "BusinessOwner";
 
-                // 2. Isletme sahipligi: owner kapsaminin tek kapisi.
+                // 2. İşletme sahipliği: owner kapsamının tek kapısı.
                 var owned = await OwnerScope.FindOwnedBusinessAsync(
                     _businessRepository, _currentUser, request.BusinessId, cancellationToken);
 
                 if (owned.IsFailure)
                     return Result<Guid>.Failure(owned.Error!);
 
-                // 3. Izin kaydi: EmployeeTimeOff BusinessId tasimadigindan
-                //    kapsam calisan uzerinden dogrulanir.
+                // 3. İzin kaydı: EmployeeTimeOff BusinessId taşımadığından
+                //    kapsam çalışan üzerinden doğrulanır.
                 var timeOff = await _timeOffRepository.GetByIdAsync(
                     request.TimeOffId, cancellationToken);
 
                 if (timeOff is null || timeOff.IsDeleted)
-                    return Result<Guid>.Failure(Error.NotFoundById("Izin", request.TimeOffId));
+                    return Result<Guid>.Failure(Error.NotFoundById("İzin", request.TimeOffId));
 
                 var employee = await _employeeRepository.GetByIdAsync(
                     timeOff.EmployeeId, cancellationToken);
 
                 if (employee is null)
-                    return Result<Guid>.Failure(Error.NotFoundById("Calisan", timeOff.EmployeeId));
+                    return Result<Guid>.Failure(Error.NotFoundById("Çalışan", timeOff.EmployeeId));
 
                 if (employee.BusinessId != request.BusinessId)
-                    return Result<Guid>.Failure(Error.Forbidden("Bu izin isletmenizin kapsaminda degil."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu izin işletmenizin kapsamında değil."));
 
                 var oldStatus = timeOff.IsApproved ? "Approved" : "Pending";
 
-                // 4. Domain onayi: mevcut ApproveTimeOffCommand ile gercek
-                //    handler'a delege edilir. RequesterId JWT kimligidir;
-                //    cakisma ve yetki kontrolleri tek kaynaktan yurur.
+                // 4. Domain onayı: mevcut ApproveTimeOffCommand ile gerçek
+                //    handler'a delege edilir. RequesterId JWT kimliğidir;
+                //    çakışma ve yetki kontrolleri tek kaynaktan yürür.
                 var approveResult = await _mediator.Send(
                     new ApproveTimeOffCommand
                     {
@@ -95,12 +95,12 @@ namespace Rezervise.Application.Features.Owner.Employees.Commands.ApproveMyTimeO
                     },
                     cancellationToken);
 
-                // 5. Domain onayi basarisizsa ayni hatayi dondur; denetim
-                //    kaydi yazilmaz.
+                // 5. Domain onayı başarısızsa aynı hatayı döndür; denetim
+                //    kaydı yazılmaz.
                 if (approveResult.IsFailure)
                     return approveResult;
 
-                // 6. Basari sonrasi denetim kaydi.
+                // 6. Başarı sonrası denetim kaydı.
                 await _auditSink.RecordAsync(
                     actorId,
                     actorRole,
@@ -120,7 +120,7 @@ namespace Rezervise.Application.Features.Owner.Employees.Commands.ApproveMyTimeO
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(Error.Internal(
-                    "Izin isletme sahibi onayi sirasinda bir hata olustu.", ex.Message));
+                    "İzin işletme sahibi onayı sırasında bir hata oluştu.", ex.Message));
             }
         }
     }

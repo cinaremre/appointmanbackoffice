@@ -18,8 +18,8 @@ namespace Rezervise.Application.Common.DTOs
         public int BusinessCount { get; set; }
 
         /// <summary>
-        /// Alt kategoriler. Yalnizca ana kategorilerde doludur; her alt kategori
-        /// kendi sayaclarini tasir.
+        /// Alt kategoriler. Yalnızca ana kategorilerde doludur; her alt kategori
+        /// kendi sayaçlarını taşır.
         /// </summary>
         public List<BusinessCategoryDto> SubCategories { get; set; } = new();
     }

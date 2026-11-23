@@ -7,9 +7,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Subscriptions.Commands.GrantFeatureOverrideByAdmin
 {
     /// <summary>
-    /// GrantFeatureOverrideCommand'i IMediator ile sarmalar. Icerdeki
-    /// handler admin rol kontrolunu ve IWorkflowAuditSink kaydini yaptigi
-    /// icin burada yalnizca AdminAuditLogs kaydi eklenir.
+    /// GrantFeatureOverrideCommand'i IMediator ile sarmalar. İçerdeki
+    /// handler admin rol kontrolünü ve IWorkflowAuditSink kaydını yaptığı
+    /// için burada yalnızca AdminAuditLogs kaydı eklenir.
     /// </summary>
     public class GrantFeatureOverrideByAdminCommandHandler
         : IRequestHandler<GrantFeatureOverrideByAdminCommand, Result<Guid>>
@@ -37,7 +37,7 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Commands.GrantFeatu
         {
             try
             {
-                // 1. Domain komutuna cevir; kurallar icerdeki handler'dadir.
+                // 1. Domain komutuna çevir; kurallar içerdeki handler'dadır.
                 var command = new GrantFeatureOverrideCommand
                 {
                     BusinessId = request.BusinessId,
@@ -54,7 +54,7 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Commands.GrantFeatu
                 if (result.IsFailure)
                     return Result<Guid>.Failure(result.Error!);
 
-                // 2. Kritik islem denetimi: isletme + ozellik + gecerlilik ozeti.
+                // 2. Kritik işlem denetimi: işletme + özellik + geçerlilik özeti.
                 await AdminAuditRecorder.RecordAsync(
                     _adminAuditSink,
                     _adminAuditContext,
@@ -75,7 +75,7 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Commands.GrantFeatu
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(
-                    Error.Internal("Admin ozellik override sirasinda bir hata olustu.", ex.Message));
+                    Error.Internal("Admin özellik override sırasında bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -9,15 +9,15 @@ using System.Linq.Expressions;
 namespace Rezervise.Application.Features.Admin.Users.Queries.GetAdminUsers
 {
     /// <summary>
-    /// Kullanici listesini filtreler ve sayfalar (dokuman Modul 11).
-    /// Arama alanimlari ad, soyad ve e-postadir; gizli alanlar donmez.
+    /// Kullanıcı listesini filtreler ve sayfalar (doküman Modül 11).
+    /// Arama alanımları ad, soyad ve e-postadır; gizli alanlar dönmez.
     /// </summary>
     public class GetAdminUsersQueryHandler : IRequestHandler<GetAdminUsersQuery, Result<AdminPagedResult<AdminUserListItemDto>>>
     {
-        /// <summary>Izin verilen en buyuk sayfa boyutu (dokuman 7.4).</summary>
+        /// <summary>İzin verilen en büyük sayfa boyutu (doküman 7.4).</summary>
         public const int MaxPageSize = 200;
 
-        /// <summary>pageSize verilmediginde kullanilan varsayilan.</summary>
+        /// <summary>pageSize verilmediğinde kullanılan varsayılan.</summary>
         public const int DefaultPageSize = 50;
 
         private readonly IRepository<User> _userRepository;
@@ -33,15 +33,15 @@ namespace Rezervise.Application.Features.Admin.Users.Queries.GetAdminUsers
         {
             try
             {
-                // 1. Sayfa degerleri tek yerden sinirlanir: sayfa en az 1,
-                //    sayfa boyutu [1, MaxPageSize] araligina cekilir.
+                // 1. Sayfa değerleri tek yerden sınırlanır: sayfa en az 1,
+                //    sayfa boyutu [1, MaxPageSize] aralığına çekilir.
                 var page = Math.Max(request.Page, 1);
                 var pageSize = Math.Clamp(
                     request.PageSize <= 0 ? DefaultPageSize : request.PageSize,
                     1,
                     MaxPageSize);
 
-                // 2. Filtreler ifade uzerinde kurulur; EF tarafi parametrelendirir.
+                // 2. Filtreler ifade üzerinde kurulur; EF tarafı parametrelendirir.
                 var search = Normalize(request.Search);
                 var email = Normalize(request.Email);
                 var isActive = request.IsActive;
@@ -50,7 +50,7 @@ namespace Rezervise.Application.Features.Admin.Users.Queries.GetAdminUsers
                     BuildPredicate(search, email, isActive),
                     cancellationToken);
 
-                // 3. En yeni kayit once olacak sekilde sirala ve sayfala.
+                // 3. En yeni kayıt önce olacak şekilde sırala ve sayfala.
                 var ordered = users
                     .OrderByDescending(u => u.CreatedAt)
                     .ThenBy(u => u.Id)
@@ -73,13 +73,13 @@ namespace Rezervise.Application.Features.Admin.Users.Queries.GetAdminUsers
             catch (Exception ex)
             {
                 return Result.Failure<AdminPagedResult<AdminUserListItemDto>>(
-                    Error.Internal("Kullanicilar listelenirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kullanıcılar listelenirken bir hata oluştu.", ex.Message));
             }
         }
 
         /// <summary>
         /// Arama, e-posta ve hesap durumu filtrelerini tek ifadeye toplar.
-        /// Null filtreler kisayol degerlendirmesiyle atlanir.
+        /// Null filtreler kısayol değerlendirmesiyle atlanır.
         /// </summary>
         private static Expression<Func<User, bool>> BuildPredicate(
             string? search,
@@ -96,11 +96,11 @@ namespace Rezervise.Application.Features.Admin.Users.Queries.GetAdminUsers
                         ? u.AccountStatus == EnumAccountStatus.Active
                         : u.AccountStatus != EnumAccountStatus.Active));
 
-        /// <summary>Filtre metnini kucuk harfe cevirir; bos ise null doner.</summary>
+        /// <summary>Filtre metnini küçük harfe çevirir; boş ise null döner.</summary>
         private static string? Normalize(string? value)
             => string.IsNullOrWhiteSpace(value) ? null : value.Trim().ToLowerInvariant();
 
-        /// <summary>Entity'yi gizli alanlari tasimayan liste ogesine cevirir.</summary>
+        /// <summary>Entity'yi gizli alanları taşımayan liste öğesine çevirir.</summary>
         private static AdminUserListItemDto ToListItem(User user) => new()
         {
             Id = user.Id,
@@ -109,8 +109,8 @@ namespace Rezervise.Application.Features.Admin.Users.Queries.GetAdminUsers
             Email = user.Email,
             PhoneNumber = user.PhoneNumber?.Value,
             Role = user.Role,
-            // Kilit bayragi iki kaynakta aranir: yonetici kilidi (AccountStatus)
-            // ve brute force korumasindan kalan LockoutEndUtc.
+            // Kilit bayrağı iki kaynakta aranır: yönetici kilidi (AccountStatus)
+            // ve brute force korumasından kalan LockoutEndUtc.
             IsLockedOut = user.AccountStatus == EnumAccountStatus.Locked || user.IsLockedOut,
             CreatedAt = user.CreatedAt
         };

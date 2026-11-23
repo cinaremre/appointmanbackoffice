@@ -18,7 +18,7 @@ namespace Rezervise.Api.Middleware
         private readonly ILogger<CorrelationIdMiddleware> _logger;
 
         /// <summary>
-        /// Initialises the middleware.
+        /// İnitialıses the middleware.
         /// </summary>
         /// <param name="next">Next delegate in the pipeline.</param>
         /// <param name="logger">Logger used to open the correlation scope.</param>

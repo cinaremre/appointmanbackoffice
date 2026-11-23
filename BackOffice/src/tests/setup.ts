@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 
-// jsdom'da matchMedia eksiktir; MUI duyarli bilesenler icin stub.
+// jsdom'da matchMedia eksiktir; MUI duyarlı bileşenler için stub.
 Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: (query: string) => ({

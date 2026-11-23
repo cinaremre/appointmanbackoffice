@@ -8,19 +8,19 @@ using Microsoft.Extensions.Logging;
 namespace Rezervise.Infrastructure.Extensions
 {
     /// <summary>
-    /// Telefon dogrulama (OTP) hattinin kayit yardimcilari.
-    /// SMS saglayicisi henuz baglanmadigi icin log tabanli tasima secilir.
+    /// Telefon doğrulama (OTP) hattının kayıt yardımcıları.
+    /// SMS sağlayıcısı henüz bağlanmadığı için log tabanlı taşıma seçilir.
     /// </summary>
     public static class SmsServiceCollectionExtensions
     {
         /// <summary>
-        /// OTP ayarlarini, kod servisini ve SMS tasimasini kaydeder.
+        /// OTP ayarlarını, kod servisini ve SMS taşımasını kaydeder.
         /// </summary>
         /// <param name="services">Servis koleksiyonu.</param>
-        /// <param name="configuration">Uygulama yapilandirmasi ("Otp" bolumu).</param>
-        /// <param name="isDevelopment">Ortam Development mi; kod govdesinin loglanmasini belirler.</param>
-        /// <returns>Zincirleme icin ayni koleksiyon.</returns>
-        /// <exception cref="ArgumentNullException">Zorunlu arguman null oldugunda firlatilir.</exception>
+        /// <param name="configuration">Uygulama yapılandırması ("Otp" bölümü).</param>
+        /// <param name="isDevelopment">Ortam Development mi; kod gövdesinin loğlanmasını belirler.</param>
+        /// <returns>Zincirleme için aynı koleksiyon.</returns>
+        /// <exception cref="ArgumentNullException">Zorunlu argüman null öldüğünda fırlatılır.</exception>
         public static IServiceCollection AddSmsInfrastructure(
             this IServiceCollection services,
             IConfiguration configuration,
@@ -34,7 +34,7 @@ namespace Rezervise.Infrastructure.Extensions
 
             services.AddSingleton<IOtpCodeService, OtpCodeService>();
 
-            // Kod govdesi yalnizca Development ortaminda loglanir.
+            // Kod gövdesi yalnızca Development ortamında loğlanır.
             services.AddSingleton<ISmsCodeSender>(sp => new LogSmsCodeSender(
                 sp.GetRequiredService<ILogger<LogSmsCodeSender>>(),
                 isDevelopment));

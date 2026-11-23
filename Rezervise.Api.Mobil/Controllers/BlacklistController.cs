@@ -11,7 +11,7 @@ using System.Security.Claims;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Kara liste islemlerini yonetir.
+    /// Kara liste işlemlerini yönetir.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -48,7 +48,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Isletmenin kara listesini getirir.
+        /// İşletmenin kara listesini getirir.
         /// </summary>
         [HttpGet("business/{businessId}")]
         [ProducesResponseType(typeof(Result<List<BlacklistEntryDto>>), StatusCodes.Status200OK)]
@@ -82,7 +82,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Kullaniciyi kara listeden cikarir (soft delete).
+        /// Kullanıcıyı kara listeden çıkarır (soft delete).
         /// </summary>
         [HttpPost("{id}/remove")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]

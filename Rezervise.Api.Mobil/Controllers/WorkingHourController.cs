@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Isletme calisma saatleri ile ilgili islemleri yonetir.
+    /// İşletme çalışma saatleri ile ilgili işlemleri yönetir.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -32,7 +32,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Sahip ID'si her zaman JWT'den cozulur; govde OwnerId degeri yetki kaynagi degildir.
+        /// Sahip ID'si her zaman JWT'den çözülür; gövde OwnerId değeri yetki kaynağı değildir.
         /// </summary>
         private IActionResult? ResolveCurrentUserId(out Guid userId)
         {
@@ -47,22 +47,22 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Isletmenin tum calisma saatlerini getirir.
+        /// İşletmenin tüm çalışma saatlerini getirir.
         /// </summary>
-        /// <param name="businessId">Isletme ID'si</param>
-        /// <returns>Calisma saati listesi</returns>
+        /// <param name="businessId">İşletme ID'si</param>
+        /// <returns>Çalışma saati listesi</returns>
         [HttpGet("business/{businessId}")]
         [ProducesResponseType(typeof(Result<List<WorkingHourDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<List<WorkingHourDto>>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByBusiness(Guid businessId)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetWorkingHoursByBusinessQuery { BusinessId = businessId };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -70,23 +70,23 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Belirli bir gunun calisma saatini getirir.
+        /// Belirli bir günün çalışma saatini getirir.
         /// </summary>
-        /// <param name="businessId">Isletme ID'si</param>
-        /// <param name="day">Gun (0=Pazar, 1=Pazartesi, ...)</param>
-        /// <returns>Calisma saati detayi</returns>
+        /// <param name="businessId">İşletme ID'si</param>
+        /// <param name="day">Gün (0=Pazar, 1=Pazartesi, ...)</param>
+        /// <returns>Çalışma saati detayı</returns>
         [HttpGet("business/{businessId}/day/{day}")]
         [ProducesResponseType(typeof(Result<WorkingHourDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<WorkingHourDto>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByDay(Guid businessId, DayOfWeek day)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetWorkingHourByDayQuery { BusinessId = businessId, Day = day };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -94,25 +94,25 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Yeni calisma saati ekler.
+        /// Yeni çalışma saati ekler.
         /// </summary>
-        /// <param name="command">Calisma saati bilgileri</param>
-        /// <returns>Olusturulan calisma saatinin ID'si</returns>
+        /// <param name="command">Çalışma saati bilgileri</param>
+        /// <returns>Oluşturulan çalışma saatinin ID'si</returns>
         [HttpPost]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Add([FromBody] AddWorkingHourCommand command)
         {
-            // 1. OwnerId JWT'den gelir; govde degerine guvenilmez.
+            // 1. OwnerId JWT'den gelir; gövde değerine güvenilmez.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
             command.OwnerId = userId;
 
-            // 2. Command'i mediator ile gonder
+            // 2. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -120,25 +120,25 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Calisma saatini gunceller.
+        /// Çalışma saatini günceller.
         /// </summary>
-        /// <param name="command">Guncelleme bilgileri</param>
-        /// <returns>Guncellenen calisma saatinin ID'si</returns>
+        /// <param name="command">Güncelleme bilgileri</param>
+        /// <returns>Güncellenen çalışma saatinin ID'si</returns>
         [HttpPut]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update([FromBody] UpdateWorkingHourCommand command)
         {
-            // 1. OwnerId JWT'den gelir; govde degerine guvenilmez.
+            // 1. OwnerId JWT'den gelir; gövde değerine güvenilmez.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
             command.OwnerId = userId;
 
-            // 2. Command'i mediator ile gonder
+            // 2. Command'i mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 2. Sonuca gore cevap dondur
+            // 2. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -146,27 +146,27 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Calisma saatini siler.
+        /// Çalışma saatini siler.
         /// </summary>
-        /// <param name="id">Calisma saati ID'si</param>
+        /// <param name="id">Çalışma saati ID'si</param>
         /// <param name="command">Silme bilgileri</param>
-        /// <returns>Silinen calisma saatinin ID'si</returns>
+        /// <returns>Silinen çalışma saatinin ID'si</returns>
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Remove(Guid id, [FromBody] RemoveWorkingHourCommand command)
         {
-            // 1. ID ve sahip kimligi guvenilir kaynaklardan alinir.
+            // 1. ID ve sahip kimliği güvenilir kaynaklardan alınır.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
             command.WorkingHourId = id;
             command.OwnerId = userId;
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -174,27 +174,27 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Gunu kapali olarak isaretler.
+        /// Günü kapalı olarak işaretler.
         /// </summary>
-        /// <param name="id">Calisma saati ID'si</param>
+        /// <param name="id">Çalışma saati ID'si</param>
         /// <param name="command">Kapatma bilgileri</param>
-        /// <returns>Guncellenen calisma saatinin ID'si</returns>
+        /// <returns>Güncellenen çalışma saatinin ID'si</returns>
         [HttpPost("{id}/close")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> SetClosed(Guid id, [FromBody] SetClosedCommand command)
         {
-            // 1. ID ve sahip kimligi guvenilir kaynaklardan alinir.
+            // 1. ID ve sahip kimliği güvenilir kaynaklardan alınır.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
             command.WorkingHourId = id;
             command.OwnerId = userId;
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -202,27 +202,27 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Gunu acik olarak isaretler.
+        /// Günü açık olarak işaretler.
         /// </summary>
-        /// <param name="id">Calisma saati ID'si</param>
-        /// <param name="command">Acma bilgileri</param>
-        /// <returns>Guncellenen calisma saatinin ID'si</returns>
+        /// <param name="id">Çalışma saati ID'si</param>
+        /// <param name="command">Açma bilgileri</param>
+        /// <returns>Güncellenen çalışma saatinin ID'si</returns>
         [HttpPost("{id}/open")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> SetOpen(Guid id, [FromBody] SetOpenCommand command)
         {
-            // 1. ID ve sahip kimligi guvenilir kaynaklardan alinir.
+            // 1. ID ve sahip kimliği güvenilir kaynaklardan alınır.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
             command.WorkingHourId = id;
             command.OwnerId = userId;
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(command);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 

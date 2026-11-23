@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Veri aktarim satir sonucu. SourceRecordKey normalize telefon
-    /// degeridir; deterministik mukerrer kontrolunde kullanilir.
+    /// Veri aktarım satır sonucu. SourceRecordKey normalize telefon
+    /// değeridir; deterministik mükerrer kontrolünde kullanılır.
     /// </summary>
     public class ImportRowResultConfiguration : BaseConfiguration<ImportRowResult>
     {

@@ -5,14 +5,14 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetAdminFeatureDefinitions
 {
     /// <summary>
-    /// Platformda tanimli tum ozellikleri listeler (dokuman Modul 13).
-    /// Plan ve override uclarinda ozellik secimi bu listeden yapilir.
+    /// Platformda tanımlı tüm özellikleri listeler (doküman Modül 13).
+    /// Plan ve override uçlarında özellik seçimi bu listeden yapılır.
     /// </summary>
     public class GetAdminFeatureDefinitionsQuery : IRequest<Result<IReadOnlyList<AdminFeatureDefinitionDto>>>
     {
     }
 
-    /// <summary>Ozellik taniminin admin gorunumu.</summary>
+    /// <summary>Özellik tanımının admin görünümü.</summary>
     public class AdminFeatureDefinitionDto
     {
         public Guid Id { get; set; }

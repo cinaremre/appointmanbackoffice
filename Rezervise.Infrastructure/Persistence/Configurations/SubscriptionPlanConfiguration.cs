@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Abonelik plani. Plan ozellikleri PlanFeature kayitlariyla belirlenir.
+    /// Abonelik planı. Plan özellikleri PlanFeature kayıtlarıyla belirlenir.
     /// </summary>
     public class SubscriptionPlanConfiguration : BaseConfiguration<SubscriptionPlan>
     {

@@ -20,7 +20,7 @@ namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminSales
         {
             try
             {
-                // 1. Sayfalama kurallari: varsayilan 50, ust sinir 200.
+                // 1. Sayfalama kuralları: varsayılan 50, üst sınır 200.
                 var page = AdminPagination.ClampPage(request.Page);
                 var pageSize = AdminPagination.ClampPageSize(request.PageSize);
 
@@ -28,7 +28,7 @@ namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminSales
                 var fromDate = request.FromDate;
                 var toDate = request.ToDate;
 
-                // 2. Filtre: isletme ve tarih araligi (her ikisi de dahil).
+                // 2. Filtre: işletme ve tarih aralığı (her ikisi de dahil).
                 var sales = await _saleRepository.FindAsync(
                     s => !s.IsDeleted
                         && (businessId == null || s.BusinessId == businessId)
@@ -36,7 +36,7 @@ namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminSales
                         && (toDate == null || s.SoldAt <= toDate),
                     cancellationToken);
 
-                // 3. Sirala, sayfala ve toplam tutari filtre geneli uzerinden hesapla.
+                // 3. Sırala, sayfala ve toplam tutarı filtre geneli üzerinden hesapla.
                 var ordered = sales.OrderByDescending(s => s.SoldAt).ToList();
 
                 var items = ordered
@@ -69,7 +69,7 @@ namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminSales
             catch (Exception ex)
             {
                 return Result<AdminSalesListDto>.Failure(
-                    Error.Internal("Satis listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Satış listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

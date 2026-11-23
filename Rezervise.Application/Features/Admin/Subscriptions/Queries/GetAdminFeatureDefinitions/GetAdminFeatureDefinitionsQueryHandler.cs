@@ -43,7 +43,7 @@ namespace Rezervise.Application.Features.Admin.Subscriptions.Queries.GetAdminFea
             catch (Exception ex)
             {
                 return Result<IReadOnlyList<AdminFeatureDefinitionDto>>.Failure(
-                    Error.Internal("Ozellik tanimlari getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Özellik tanımları getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

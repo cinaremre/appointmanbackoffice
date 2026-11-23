@@ -1,15 +1,15 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Paket hak hareketinin durumu. Yalnizca "Active" hareketler
-    /// kalan hak hesabina girer; iptal edilen hareketler serbest birakilir.
+    /// Paket hak hareketinin durumu. Yalnızca "Active" hareketler
+    /// kalan hak hesabına girer; iptal edilen hareketler serbest bırakılır.
     /// </summary>
     public enum EnumPackageUsageStatus
     {
-        /// <summary>Hareket gecerli; kalan hak hesabinda yer alir.</summary>
+        /// <summary>Hareket geçerli; kalan hak hesabında yer alır.</summary>
         Active = 0,
 
-        /// <summary>Hareket iptal edildi; hak yeniden kullanilabilir.</summary>
+        /// <summary>Hareket iptal edildi; hak yeniden kullanılabilir.</summary>
         Cancelled = 1
     }
 }

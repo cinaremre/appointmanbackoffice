@@ -22,10 +22,10 @@ namespace Rezervise.Application.Features.ServiceCategories.Queries.GetTree
         {
             try
             {
-                // 1. Tum kategorileri getir.
-                //    Translations yuklenmezse GetName() "Unknown" doner; SubCategories/Services
-                //    yuklenmezse IsLeaf(), GetSubCategoryCount() ve GetServiceCount() yanlis olur.
-                //    Tum kategoriler tek sorguda geldigi icin EF fixup hiyerarsiyi de baglar.
+                // 1. Tüm kategorileri getir.
+                //    Translations yüklenmezse GetName() "Unknown" döner; SubCategories/Services
+                //    yüklenmezse IsLeaf(), GetSubCategoryCount() ve GetServiceCount() yanlış olur.
+                //    Tüm kategoriler tek sorguda geldiği için EF fixup hiyerarşiyi de bağlar.
                 var allCategories = await _categoryRepository.FindWithIncludesAsync(
                     c => !c.IsDeleted && (!request.OnlyActive || c.IsActive),
                     new[]
@@ -45,7 +45,7 @@ namespace Rezervise.Application.Features.ServiceCategories.Queries.GetTree
                     .OrderBy(c => c.DisplayOrder)
                     .ToList();
 
-                // 3. Her root icin recursive tree olustur
+                // 3. Her root için recursive tree oluştur
                 var tree = rootCategories
                     .Select(c => BuildTree(c, categoryList, request.LanguageCode))
                     .ToList();
@@ -55,7 +55,7 @@ namespace Rezervise.Application.Features.ServiceCategories.Queries.GetTree
             catch (Exception ex)
             {
                 return Result<List<ServiceCategoryDto>>.Failure(
-                    Error.Internal("Kategori agaci getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kategori ağacı getirilirken bir hata oluştu.", ex.Message));
             }
         }
 

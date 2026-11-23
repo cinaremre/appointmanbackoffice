@@ -8,10 +8,10 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Users.Commands.LockAdminUser
 {
     /// <summary>
-    /// Kullanici hesabini kilitler. Kilit islemi domain'deki mevcut
-    /// <see cref="User.LockAccount"/> metoduyla yapilir; yeni bir domain
-    /// metodu eklenmez. Kritik islem oldugu icin denetim kaydina yazilir
-    /// (Action=LockUser, gerekce zorunlu).
+    /// Kullanıcı hesabını kilitler. Kilit işlemi domain'deki mevcut
+    /// <see cref="User.LockAccount"/> metoduyla yapılır; yeni bir domain
+    /// metodu eklenmez. Kritik işlem öldüğü için denetim kaydına yazılır
+    /// (Action=LockUser, gerekçe zorunlu).
     /// </summary>
     public class LockAdminUserCommandHandler : IRequestHandler<LockAdminUserCommand, Result>
     {
@@ -39,32 +39,32 @@ namespace Rezervise.Application.Features.Admin.Users.Commands.LockAdminUser
         {
             try
             {
-                // 1. Yonetici kimligi JWT'den cozulur; govdedeki degerler gecersizdir.
+                // 1. Yönetici kimliği JWT'den çözülür; gövdedeki değerler geçersizdir.
                 if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
                     return Result.Failure(Error.Unauthorized("Auth.Unauthorized"));
 
                 var actorId = _currentUser.UserId.Value;
                 var actorRole = _currentUser.Roles.FirstOrDefault() ?? "Unknown";
 
-                // 2. Gerekce zorunludur: kritik islemler gerekcesiz yapilamaz.
+                // 2. Gerekçe zorunludur: kritik işlemler gerekçesiz yapılamaz.
                 var reason = request.Reason?.Trim();
                 if (string.IsNullOrEmpty(reason))
-                    return Result.Failure(Error.Validation("Kilit gerekcesi zorunludur."));
+                    return Result.Failure(Error.Validation("Kilit gerekçesi zorunludur."));
 
-                // 3. Kullaniciyi yukle; yoksa NotFound.
+                // 3. Kullanıcıyı yükle; yoksa NotFound.
                 var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
                 if (user is null)
-                    return Result.Failure(Error.NotFoundById("Kullanici", request.UserId));
+                    return Result.Failure(Error.NotFoundById("Kullanıcı", request.UserId));
 
                 // 4. Domain kilidi: mevcut LockAccount metodu AccountStatus'u
-                //    Locked yapar ve UserAccountLockedEvent uretir.
+                //    Locked yapar ve UserAccountLockedEvent üretir.
                 var oldStatus = user.AccountStatus;
                 user.LockAccount(reason, $"Admin:{actorId}");
 
                 // 5. Kaydet.
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // 6. Denetim kaydi: correlation ve IP baglamdan tasinir.
+                // 6. Denetim kaydı: correlation ve IP bağlamdan taşınır.
                 await _auditSink.RecordAsync(
                     actorId,
                     actorRole,
@@ -84,7 +84,7 @@ namespace Rezervise.Application.Features.Admin.Users.Commands.LockAdminUser
             catch (Exception ex)
             {
                 return Result.Failure(Error.Internal(
-                    "Kullanici kilitleme sirasinda bir hata olustu.", ex.Message));
+                    "Kullanıcı kilitleme sırasında bir hata oluştu.", ex.Message));
             }
         }
     }

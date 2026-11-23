@@ -8,16 +8,16 @@ using System.Text.Json;
 namespace Rezervise.Api.Middleware
 {
     /// <summary>
-    /// Tum istisnalari tek noktada HTTP yanitina cevirir ve lokalizasyon
-    /// anahtarlarini aktif kulturde cozer. Istemciye istisna tipi veya
-    /// stack trace sizdirilmaz; <c>Detail</c> yalnizca gelistirme ortaminda dolar.
-    /// Yakalanan her istisna yapilandirilmis alanlarla loglanir; stack trace
-    /// GELF uzerinden Graylog'a iletilir.
+    /// Tüm istisnaları tek noktada HTTP yanıtına çevirir ve lokalizasyon
+    /// anahtarlarını aktif kültürde çözer. İstemciye istisna tipi veya
+    /// stack trace sızdırılmaz; <c>Detail</c> yalnızca geliştirme ortamında dolar.
+    /// Yakalanan her istisna yapılandırılmış alanlarla loğlanır; stack trace
+    /// GELF üzerinden Graylog'a iletilir.
     /// </summary>
     public class GlobalExceptionMiddleware
     {
         /// <summary>
-        /// Hata log semasi. Placeholder'lar GELF alanlarina donusur
+        /// Hata log şeması. Placeholder'lar GELF alanlarına dönüşür
         /// (<c>_correlationId</c>, <c>_requestBody</c>, ...).
         /// </summary>
         private const string LogTemplate =
@@ -33,12 +33,12 @@ namespace Rezervise.Api.Middleware
         private readonly IWebHostEnvironment _environment;
 
         /// <summary>
-        /// Middleware'i bagimliliklariyla olusturur.
+        /// Middleware'i bağımlılıklarıyla oluşturur.
         /// </summary>
         /// <param name="next">Sonraki middleware.</param>
-        /// <param name="logger">Hata kaydi.</param>
+        /// <param name="logger">Hata kaydı.</param>
         /// <param name="localizer">Anahtar cozen lokalizasyon servisi.</param>
-        /// <param name="environment">Detail alaninin doldurulacagi ortam bilgisi.</param>
+        /// <param name="environment">Detail alanının doldurulacağı ortam bilgisi.</param>
         public GlobalExceptionMiddleware(
             RequestDelegate next,
             ILogger<GlobalExceptionMiddleware> logger,
@@ -52,9 +52,9 @@ namespace Rezervise.Api.Middleware
         }
 
         /// <summary>
-        /// Istegi calistirir ve olusan istisnalari lokalize edilmis yanita cevirir.
+        /// İsteği çalıştırır ve oluşan istisnaları lokalize edilmiş yanıta çevirir.
         /// </summary>
-        /// <param name="context">Gecerli HTTP baglami.</param>
+        /// <param name="context">Geçerli HTTP bağlamı.</param>
         public async Task InvokeAsync(HttpContext context)
         {
             try
@@ -68,19 +68,19 @@ namespace Rezervise.Api.Middleware
             }
             catch (DuplicateKeyException ex)
             {
-                // Veritabani tekillik kisiti ihlali: 500 yerine 409 Conflict.
+                // Veritabanı tekillik kısıtı ihlali: 500 yerine 409 Conflict.
                 LogException(context, LogLevel.Warning, (int)HttpStatusCode.Conflict, ex);
                 await HandleDomainExceptionAsync(context, HttpStatusCode.Conflict, "duplicate_key", ex);
             }
             catch (ConcurrencyConflictException ex)
             {
-                // Es zamanli guncelleme cakismasi: istemci tekrar denemeli.
+                // Es zamanlı güncelleme çakışması: istemci tekrar denemeli.
                 LogException(context, LogLevel.Warning, (int)HttpStatusCode.Conflict, ex);
                 await HandleDomainExceptionAsync(context, HttpStatusCode.Conflict, "concurrency_conflict", ex);
             }
             catch (ForbiddenAccessException ex)
             {
-                // Kaynak sahipligi ihlali: 403 Forbidden.
+                // Kaynak sahipliği ihlali: 403 Forbidden.
                 LogException(context, LogLevel.Warning, (int)HttpStatusCode.Forbidden, ex);
                 await HandleSimpleAsync(context, HttpStatusCode.Forbidden, "forbidden", "Error.Forbidden");
             }
@@ -91,13 +91,13 @@ namespace Rezervise.Api.Middleware
             }
             catch (KeyNotFoundException ex)
             {
-                // Bulunamayan kaynak: 404 NotFound (varlik sizintisini onlemek icin 403 yerine tercih edilir).
+                // Bulunamayan kaynak: 404 NotFound (varlık sızıntısını önlemek için 403 yerine tercih edilir).
                 LogException(context, LogLevel.Warning, (int)HttpStatusCode.NotFound, ex);
                 await HandleSimpleAsync(context, HttpStatusCode.NotFound, "not_found", "Error.NotFound");
             }
             catch (DomainException ex)
             {
-                // Is kurali ihlali: istemci hatasi (400).
+                // İs kuralı ihlali: istemci hatası (400).
                 LogException(context, LogLevel.Warning, (int)HttpStatusCode.BadRequest, ex);
                 await HandleDomainExceptionAsync(context, HttpStatusCode.BadRequest, "business_rule", ex);
             }
@@ -110,12 +110,12 @@ namespace Rezervise.Api.Middleware
         }
 
         /// <summary>
-        /// Istisnayi yapilandirilmis alanlarla loglar. Loglama hatasi yanit uretimini engellemez.
+        /// İstisnayı yapılandırılmış alanlarla loglar. Loglama hatası yanıt üretimini engellemez.
         /// </summary>
-        /// <param name="context">Gecerli HTTP baglami.</param>
-        /// <param name="level">Kullanilacak log seviyesi (4xx icin Warning, 5xx icin Error).</param>
-        /// <param name="statusCode">Istemciye donulecek HTTP durum kodu.</param>
-        /// <param name="exception">Yakalanan istisna; stack trace loglanir.</param>
+        /// <param name="context">Geçerli HTTP bağlamı.</param>
+        /// <param name="level">Kullanılacak log seviyesi (4xx için Warning, 5xx için Error).</param>
+        /// <param name="statusCode">İstemciye dönülecek HTTP durum kodu.</param>
+        /// <param name="exception">Yakalanan istisna; stack trace loğlanır.</param>
         private void LogException(HttpContext context, LogLevel level, int statusCode, Exception exception)
         {
             try
@@ -135,15 +135,15 @@ namespace Rezervise.Api.Middleware
             }
             catch
             {
-                // Loglama best effort: hata yanitini asla bozmaz.
+                // Loglama best effort: hata yanıtını asla bozmaz.
             }
         }
 
         /// <summary>
-        /// Correlation id'yi korelasyon middleware'inin biraktigi degerden okur.
+        /// Correlation id'yi korelasyon middleware'inin bıraktığı değerden okur.
         /// </summary>
-        /// <param name="context">Gecerli HTTP baglami.</param>
-        /// <returns>Istek icin kullanilan correlation id.</returns>
+        /// <param name="context">Geçerli HTTP bağlamı.</param>
+        /// <returns>İstek için kullanılan correlation id.</returns>
         private static string ResolveCorrelationId(HttpContext context)
         {
             if (context.Items.TryGetValue(CorrelationIdMiddleware.ItemKey, out var value)
@@ -157,10 +157,10 @@ namespace Rezervise.Api.Middleware
         }
 
         /// <summary>
-        /// Cagirici kimligini token claim'lerinden okur.
+        /// Çağırıcı kimliğini token claim'lerinden okur.
         /// </summary>
-        /// <param name="context">Gecerli HTTP baglami.</param>
-        /// <returns>Kullanici kimligi; anonim isteklerde bos metin.</returns>
+        /// <param name="context">Geçerli HTTP bağlamı.</param>
+        /// <returns>Kullanıcı kimliği; anonim isteklerde boş metin.</returns>
         private static string ResolveUserId(HttpContext context)
         {
             var principal = context.User;
@@ -174,10 +174,10 @@ namespace Rezervise.Api.Middleware
         }
 
         /// <summary>
-        /// Istek/yanit loglama middleware'inin biraktigi maskeli govdeyi okur.
+        /// İstek/yanıt loglama middleware'inin bıraktığı maskeli gövdeyi okur.
         /// </summary>
-        /// <param name="context">Gecerli HTTP baglami.</param>
-        /// <returns>Maskelenmis istek govdesi; yoksa bos metin.</returns>
+        /// <param name="context">Geçerli HTTP bağlamı.</param>
+        /// <returns>Maskelenmiş istek gövdesi; yoksa boş metin.</returns>
         private static string ResolveRequestBody(HttpContext context)
         {
             if (context.Items.TryGetValue(RequestResponseLoggingMiddleware.RequestBodyItemKey, out var value)
@@ -190,12 +190,12 @@ namespace Rezervise.Api.Middleware
         }
 
         /// <summary>
-        /// Anahtar tasiyan domain istisnalarini lokalize edilmis yanita cevirir.
+        /// Anahtar taşıyan domain istisnalarını lokalize edilmiş yanıta çevirir.
         /// </summary>
-        /// <param name="context">Gecerli HTTP baglami.</param>
-        /// <param name="statusCode">Donulecek HTTP durum kodu.</param>
-        /// <param name="code">Istemciye donulecek hata kodu.</param>
-        /// <param name="exception">Anahtar tasiyan istisna.</param>
+        /// <param name="context">Geçerli HTTP bağlamı.</param>
+        /// <param name="statusCode">Dönülecek HTTP durum kodu.</param>
+        /// <param name="code">İstemciye dönülecek hata kodu.</param>
+        /// <param name="exception">Anahtar taşıyan istisna.</param>
         private Task HandleDomainExceptionAsync(
             HttpContext context,
             HttpStatusCode statusCode,
@@ -214,12 +214,12 @@ namespace Rezervise.Api.Middleware
         }
 
         /// <summary>
-        /// Sabit anahtarli basit hata yaniti uretir.
+        /// Sabit anahtarlı basit hata yanıtı üretir.
         /// </summary>
-        /// <param name="context">Gecerli HTTP baglami.</param>
-        /// <param name="statusCode">Donulecek HTTP durum kodu.</param>
-        /// <param name="code">Istemciye donulecek hata kodu.</param>
-        /// <param name="key">Lokalizasyon anahtari.</param>
+        /// <param name="context">Geçerli HTTP bağlamı.</param>
+        /// <param name="statusCode">Dönülecek HTTP durum kodu.</param>
+        /// <param name="code">İstemciye dönülecek hata kodu.</param>
+        /// <param name="key">Lokalizasyon anahtarı.</param>
         private Task HandleSimpleAsync(
             HttpContext context,
             HttpStatusCode statusCode,
@@ -236,10 +236,10 @@ namespace Rezervise.Api.Middleware
         }
 
         /// <summary>
-        /// Validasyon hatalarini alan bazinda lokalize edilmis sozluge cevirir.
+        /// Validasyon hatalarını alan bazında lokalize edilmiş sözlüğe çevirir.
         /// </summary>
-        /// <param name="context">Gecerli HTTP baglami.</param>
-        /// <param name="exception">FluentValidation istisnasi.</param>
+        /// <param name="context">Geçerli HTTP bağlamı.</param>
+        /// <param name="exception">FluentValidation istisnası.</param>
         private Task HandleValidationExceptionAsync(HttpContext context, ValidationException exception)
         {
             var errors = exception.Errors
@@ -260,32 +260,32 @@ namespace Rezervise.Api.Middleware
         }
 
         /// <summary>
-        /// Validator mesajini cozer. Mesaj zaten lokalize edilmis bir cumleyse
-        /// oldugu gibi birakilir; aksi halde anahtar olarak kataloga bakilir.
+        /// Validatör mesajını çözer. Mesaj zaten lokalize edilmiş bir cümleyse
+        /// öldüğü gibi bırakılır; aksi halde anahtar olarak kataloga bakılır.
         /// </summary>
-        /// <param name="message">Validator'un urettigi mesaj.</param>
-        /// <returns>Istemciye donen mesaj.</returns>
+        /// <param name="message">Validatör'un ürettiği mesaj.</param>
+        /// <returns>İstemciye dönen mesaj.</returns>
         private string ResolveValidationMessage(string message)
         {
             if (string.IsNullOrWhiteSpace(message))
                 return _localizer.Get("Error.Unexpected");
 
-            // Validatorlar cogu zaman zaten lokalize edilmis cumle uretir. Cumleyi
-            // anahtar gibi tekrar cozmek katalogda bulunamayip "Unexpected" mesajina
-            // dusuruyordu (DateOfBirth hatasinin kok nedeni).
+            // Validatorlar çoğu zaman zaten lokalize edilmiş cümle üretir. Cümleyi
+            // anahtar gibi tekrar çözmek katalogda bulunamayıp "Unexpected" mesajına
+            // düşürüyordu (DateOfBirth hatasının kök nedeni).
             var looksLikeKey = !message.Any(char.IsWhiteSpace) && message.Contains('.');
 
             return looksLikeKey ? ResolveMessage(message, message) : message;
         }
 
         /// <summary>
-        /// Beklenmeyen hatalar icin genel hata yaniti uretir.
+        /// Beklenmeyen hatalar için genel hata yanıtı üretir.
         /// </summary>
-        /// <param name="context">Gecerli HTTP baglami.</param>
+        /// <param name="context">Geçerli HTTP bağlamı.</param>
         /// <param name="exception">Yakalanan istisna.</param>
         private Task HandleUnexpectedAsync(HttpContext context, Exception exception)
         {
-            // Istisna detayi yalnizca gelistirme ortaminda istemciye doner.
+            // İstisna detayı yalnızca geliştirme ortamında istemciye döner.
             var detail = _environment.IsDevelopment() ? exception.Message : null;
 
             return WriteAsync(context, HttpStatusCode.InternalServerError, new
@@ -299,12 +299,12 @@ namespace Rezervise.Api.Middleware
         }
 
         /// <summary>
-        /// Anahtari aktif kulturde cozer; anahtar katalogda yoksa yedek metne,
-        /// o da yoksa genel hata mesajina duser.
+        /// Anahtarı aktif kültürde çözer; anahtar katalogda yoksa yedek metne,
+        /// o da yoksa genel hata mesajına düşer.
         /// </summary>
-        /// <param name="key">Lokalizasyon anahtari (bos olabilir).</param>
-        /// <param name="fallbackMessage">Anahtar cozulemezse kullanilacak metin.</param>
-        /// <returns>Istemciye gosterilecek metin.</returns>
+        /// <param name="key">Lokalizasyon anahtarı (boş olabilir).</param>
+        /// <param name="fallbackMessage">Anahtar çözülemezse kullanılacak metin.</param>
+        /// <returns>İstemciye gösterilecek metin.</returns>
         private string ResolveMessage(string? key, string? fallbackMessage)
         {
             if (!string.IsNullOrWhiteSpace(key))

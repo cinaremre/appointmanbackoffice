@@ -4,22 +4,22 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Reports.Queries.GetFeatureAdoption
 {
     /// <summary>
-    /// Ozellik benimseme raporu (dokuman Modul 18). FeatureDefinition kodu
-    /// bazinda kac isletmenin ozelligi acik (aktif override) oldugunu doner.
+    /// Özellik benimseme raporu (doküman Modül 18). FeatureDefinition kodu
+    /// bazında kaç işletmenin özelliği açık (aktif override) öldüğünü döner.
     /// </summary>
     public class GetFeatureAdoptionQuery : IRequest<Result<List<FeatureAdoptionDto>>>
     {
     }
 
-    /// <summary>Tek bir ozelligin benimseme satiri.</summary>
+    /// <summary>Tek bir özelliğin benimseme satırı.</summary>
     public class FeatureAdoptionDto
     {
-        /// <summary>Ozellik tanim kodu (orn. "WHATSAPP_REMINDER").</summary>
+        /// <summary>Özellik tanım kodu (orn. "WHATSAPP_REMINDER").</summary>
         public string FeatureCode { get; init; } = string.Empty;
 
         public string FeatureName { get; init; } = string.Empty;
 
-        /// <summary>Ozelligi acik isletme sayisi.</summary>
+        /// <summary>Özelliği açık işletme sayısı.</summary>
         public int BusinessCount { get; init; }
     }
 }

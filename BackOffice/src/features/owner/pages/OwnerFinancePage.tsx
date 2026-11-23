@@ -22,14 +22,14 @@ import {
 } from "../types";
 
 /**
- * Owner finans sayfasi. Tamami salt okunur: tutar duzeltmeleri domain
- * komutlariyla yapilir, arayuzden veri degistirilmez. Sekmeler:
- * Satislar / Tahsilatlar / Kasa. Filtreler (sekme, tarih, tur, durum)
- * URL query ile senkron; para bicimleri tr-TR.
+ * Owner finans sayfası. Tamami salt okunur: tutar düzeltmeleri domain
+ * komutlarıyla yapılır, arayüzden veri değiştirilmez. Sekmeler:
+ * Satışlar / Tahsilatlar / Kasa. Filtreler (sekme, tarih, tür, durum)
+ * URL query ile senkron; para biçimleri tr-TR.
  */
 
 const FINANCE_TABS = [
-  { key: "sales", label: "Satislar" },
+  { key: "sales", label: "Satışlar" },
   { key: "payments", label: "Tahsilatlar" },
   { key: "cash", label: "Kasa" },
 ] as const;
@@ -37,9 +37,9 @@ const FINANCE_TABS = [
 type FinanceTab = (typeof FINANCE_TABS)[number]["key"];
 
 const REFUND_OPTIONS = [
-  { value: "", label: "Tumu" },
+  { value: "", label: "Tümü" },
   { value: "false", label: "Tahsilatlar" },
-  { value: "true", label: "Iadeler" },
+  { value: "true", label: "İadeler" },
 ] as const;
 
 function GuidText({ value }: { value: string }) {
@@ -57,7 +57,7 @@ export function OwnerFinancePage() {
   const businesses = businessesQuery.data?.items ?? [];
   const [selectedId, setSelectedId] = useState("");
 
-  // Tek isletme otomatik secilir.
+  // Tek işletme otomatik seçilir.
   const businessId = selectedId || businesses[0]?.id || "";
 
   const rawTab = searchParams.get("tab") ?? "sales";
@@ -71,7 +71,7 @@ export function OwnerFinancePage() {
   const page = Math.max(1, Number(searchParams.get("page")) || 1);
   const pageSize = Math.min(200, Math.max(25, Number(searchParams.get("pageSize")) || 50));
 
-  /** URL query guncellemesi; filtre degisiklikleri sayfayi 1'e cevirir. */
+  /** URL query güncellemesi; filtre değişiklikleri sayfayı 1'e çevirir. */
   const updateParams = (patch: Record<string, string | null>, resetPage = true) => {
     const next = new URLSearchParams(searchParams);
     for (const [key, value] of Object.entries(patch)) {
@@ -86,7 +86,7 @@ export function OwnerFinancePage() {
   const cashStatus =
     cashStatusParam === "0" || cashStatusParam === "1" ? Number(cashStatusParam) : undefined;
 
-  // === Sorgular: her sekme yalnizca acildiginda cekilir ===
+  // === Sorgular: her sekme yalnızca açıldığında çekilir ===
   const salesQuery = useQuery({
     queryKey: ["owner", "finance", "sales", businessId, { fromDate, toDate, page, pageSize }],
     queryFn: ({ signal }) =>
@@ -133,7 +133,7 @@ export function OwnerFinancePage() {
   const onPageChange = (nextPage: number) => updateParams({ page: String(nextPage) }, false);
   const onPageSizeChange = (nextPageSize: number) => updateParams({ pageSize: String(nextPageSize) });
 
-  // === Sutun tanimlari ===
+  // === Sütun tanımları ===
   const salesColumns: DataTableColumn<OwnerSaleListItem>[] = [
     { key: "soldAt", header: "Tarih", render: (row) => formatDateTime(row.soldAt) },
     {
@@ -150,28 +150,28 @@ export function OwnerFinancePage() {
 
   const paymentColumns: DataTableColumn<OwnerPaymentListItem>[] = [
     { key: "paidAt", header: "Tarih", render: (row) => formatDateTime(row.paidAt) },
-    { key: "saleId", header: "Satis", render: (row) => <GuidText value={row.saleId} /> },
+    { key: "saleId", header: "Satış", render: (row) => <GuidText value={row.saleId} /> },
     {
       key: "paymentMethod",
-      header: "Odeme Yontemi",
+      header: "Ödeme Yöntemi",
       render: (row) => paymentMethodLabel(row.paymentMethod),
     },
     { key: "amount", header: "Tutar", render: (row) => formatMoney(row.amount, row.currency) },
     {
       key: "kind",
-      header: "Tur",
-      render: (row) => <StatusBadge status={row.isRefund ? "Iade" : "Tahsilat"} />,
+      header: "Tür",
+      render: (row) => <StatusBadge status={row.isRefund ? "İade" : "Tahsilat"} />,
     },
   ];
 
   const cashColumns: DataTableColumn<OwnerCashSessionListItem>[] = [
-    { key: "openedAt", header: "Acilis", render: (row) => formatDateTime(row.openedAt) },
+    { key: "openedAt", header: "Açılış", render: (row) => formatDateTime(row.openedAt) },
     {
       key: "closedAt",
-      header: "Kapanis",
+      header: "Kapanış",
       render: (row) => (row.closedAt ? formatDateTime(row.closedAt) : "-"),
     },
-    { key: "openingCash", header: "Acilis Nakit", render: (row) => formatMoney(row.openingCash) },
+    { key: "openingCash", header: "Açılış Nakit", render: (row) => formatMoney(row.openingCash) },
     {
       key: "expectedCash",
       header: "Beklenen",
@@ -182,7 +182,7 @@ export function OwnerFinancePage() {
     },
     {
       key: "countedCash",
-      header: "Sayilan",
+      header: "Sayılan",
       render: (row) =>
         row.countedCash === null || row.countedCash === undefined
           ? "-"
@@ -195,7 +195,7 @@ export function OwnerFinancePage() {
         if (row.difference === null || row.difference === undefined) {
           return <Typography color="text.secondary">Kapanmadi</Typography>;
         }
-        // Fark isaretle birlikte verilir; pozitif yesil, negatif kirmizi.
+        // Fark işaretle birlikte verilir; pozitif yeşil, negatif kırmızı.
         const color =
           row.difference > 0 ? "success.main" : row.difference < 0 ? "error.main" : "text.primary";
         return (
@@ -218,7 +218,7 @@ export function OwnerFinancePage() {
     const sales = salesQuery.data;
     tableContent = (
       <DataTable<OwnerSaleListItem>
-        ariaLabel="satis listesi"
+        ariaLabel="satış listesi"
         columns={salesColumns}
         rows={sales?.items}
         loading={salesQuery.isPending}
@@ -228,7 +228,7 @@ export function OwnerFinancePage() {
         totalCount={sales?.pagination.totalCount ?? 0}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
-        emptyLabel="Bu filtrelerle satis kaydi bulunamadi."
+        emptyLabel="Bu filtrelerle satış kaydı bulunamadı."
         onRefresh={() => void salesQuery.refetch()}
       />
     );
@@ -246,7 +246,7 @@ export function OwnerFinancePage() {
         totalCount={payments?.pagination.totalCount ?? 0}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
-        emptyLabel="Bu filtrelerle tahsilat kaydi bulunamadi."
+        emptyLabel="Bu filtrelerle tahsilat kaydı bulunamadı."
         onRefresh={() => void paymentsQuery.refetch()}
       />
     );
@@ -264,7 +264,7 @@ export function OwnerFinancePage() {
         totalCount={sessions?.pagination.totalCount ?? 0}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
-        emptyLabel="Bu filtrelerle kasa oturumu bulunamadi."
+        emptyLabel="Bu filtrelerle kasa oturumu bulunamadı."
         onRefresh={() => void cashQuery.refetch()}
       />
     );
@@ -276,7 +276,7 @@ export function OwnerFinancePage() {
     return (
       <Box>
         <PageHeader title="Finans" />
-        <EmptyState label="Size ait isletme bulunamadi." />
+        <EmptyState label="Size ait işletme bulunamadı." />
       </Box>
     );
   }
@@ -291,7 +291,7 @@ export function OwnerFinancePage() {
       </Tabs>
       <Divider />
 
-      {/* Ortak filtre cubugu: isletme secimi + sekmeye ozel filtreler */}
+      {/* Ortak filtre çubuğu: işletme seçimi + sekmeye özel filtreler */}
       <Stack
         direction={{ xs: "column", md: "row" }}
         spacing={2}
@@ -300,7 +300,7 @@ export function OwnerFinancePage() {
         <TextField
           select
           size="small"
-          label="Isletme"
+          label="İşletme"
           value={businessId}
           onChange={(e) => setSelectedId(e.target.value)}
           disabled={businesses.length <= 1}
@@ -315,7 +315,7 @@ export function OwnerFinancePage() {
         {tab === "sales" ? (
           <>
             <TextField
-              label="Baslangic Tarihi"
+              label="Başlangıç Tarihi"
               type="date"
               size="small"
               sx={{ minWidth: 180 }}
@@ -324,7 +324,7 @@ export function OwnerFinancePage() {
               slotProps={{ inputLabel: { shrink: true } }}
             />
             <TextField
-              label="Bitis Tarihi"
+              label="Bitiş Tarihi"
               type="date"
               size="small"
               sx={{ minWidth: 180 }}
@@ -337,7 +337,7 @@ export function OwnerFinancePage() {
         {tab === "payments" ? (
           <TextField
             select
-            label="Odeme Turu"
+            label="Ödeme Türü"
             size="small"
             sx={{ minWidth: 160 }}
             value={refundParam}
@@ -359,7 +359,7 @@ export function OwnerFinancePage() {
             value={cashStatusParam}
             onChange={(e) => updateParams({ status: e.target.value })}
           >
-            <MenuItem value="">Tumu</MenuItem>
+            <MenuItem value="">Tümü</MenuItem>
             {CASH_SESSION_STATUS_OPTIONS.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}

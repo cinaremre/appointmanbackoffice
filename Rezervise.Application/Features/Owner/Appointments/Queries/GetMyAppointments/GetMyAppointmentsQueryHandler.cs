@@ -11,8 +11,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Appointments.Queries.GetMyAppointments
 {
     /// <summary>
-    /// Isletme sahibinin randevu listesi. Sahiplik OwnerScope ile
-    /// dogrulanir; randevular yalnizca istenen isletmenin kayitlarindan
+    /// İşletme sahibinin randevu listesi. Sahiplik OwnerScope ile
+    /// doğrulanır; randevular yalnızca istenen işletmenin kayıtlarından
     /// gelir.
     /// </summary>
     public class GetMyAppointmentsQueryHandler
@@ -38,14 +38,14 @@ namespace Rezervise.Application.Features.Owner.Appointments.Queries.GetMyAppoint
         {
             try
             {
-                // 1. Sahiplik: isletme JWT sahibine ait olmali.
+                // 1. Sahiplik: işletme JWT sahibine ait olmalı.
                 var owned = await OwnerScope.FindOwnedBusinessAsync(
                     _businessRepository, _currentUser, request.BusinessId, cancellationToken);
 
                 if (owned.IsFailure)
                     return Result<AdminPagedResult<OwnerAppointmentListItemDto>>.Failure(owned.Error!);
 
-                // 2. Sayfalama kurallari backoffice ortak sinirlarindan gelir.
+                // 2. Sayfalama kuralları backoffice ortak sınırlarından gelir.
                 var page = AdminPaging.NormalizePage(request.Page);
                 var pageSize = AdminPaging.ClampPageSize(request.PageSize);
 
@@ -54,7 +54,7 @@ namespace Rezervise.Application.Features.Owner.Appointments.Queries.GetMyAppoint
                 var fromDate = request.FromDate;
                 var toDate = request.ToDate;
 
-                // 3. Filtre: isletme + durum + tarih araligi (dahil).
+                // 3. Filtre: işletme + durum + tarih aralığı (dahil).
                 var appointments = await _appointmentRepository.FindAsync(
                     a => a.BusinessId == businessId
                         && !a.IsDeleted
@@ -63,7 +63,7 @@ namespace Rezervise.Application.Features.Owner.Appointments.Queries.GetMyAppoint
                         && (toDate == null || a.AppointmentDate <= toDate),
                     cancellationToken);
 
-                // 4. En yeni randevu once; karisikligi onlemek icin Id sirasi.
+                // 4. En yeni randevu önce; karışıklığı önlemek için Id sırası.
                 var ordered = appointments
                     .OrderByDescending(a => a.AppointmentDate)
                     .ThenBy(a => a.Id)
@@ -96,7 +96,7 @@ namespace Rezervise.Application.Features.Owner.Appointments.Queries.GetMyAppoint
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<OwnerAppointmentListItemDto>>.Failure(
-                    Error.Internal("Randevular listelenirken bir hata olustu.", ex.Message));
+                    Error.Internal("Randevular listelenirken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -6,20 +6,20 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Notifications.Queries.GetAdminNotificationStats
 {
     /// <summary>
-    /// Son 30 gunun bildirimlerini tek sorguda ceker, okunma ve tip kirilimlarini
-    /// bellekte hesaplar. Saglayici bazli gonderim maliyeti raporu (SMS/e-posta)
-    /// bildirim saglayici entegrasyonu sonrasinda eklenecektir; ilk surum
-    /// yalnizca uygulama ici bildirimleri sayar.
+    /// Son 30 günün bildirimlerini tek sorguda çeker, okunma ve tip kırılımlarını
+    /// bellekte hesaplar. Sağlayıcı bazlı gönderim maliyeti raporu (SMS/e-posta)
+    /// bildirim sağlayıcı entegrasyonu sonrasında eklenecektir; ilk sürüm
+    /// yalnızca uygulama içi bildirimleri sayar.
     /// </summary>
     public class GetAdminNotificationStatsQueryHandler
         : IRequestHandler<GetAdminNotificationStatsQuery, Result<AdminNotificationStatsDto>>
     {
-        /// <summary>Istatistik penceresi uzunlugu.</summary>
+        /// <summary>İstatistik penceresi uzunluğu.</summary>
         private const int WindowDays = 30;
 
-        /// <summary>Saglayici entegrasyonu sonrasina kadar maliyet kirilimi yok.</summary>
+        /// <summary>Sağlayıcı entegrasyonu sonrasına kadar maliyet kırılımı yok.</summary>
         private const string CostNoteText =
-            "Saglayici bazli gonderim maliyeti raporu bildirim saglayici (SMS/e-posta) entegrasyonu sonrasinda eklenecek; bu surumde yalnizca uygulama ici bildirimler sayilir.";
+            "Sağlayıcı bazlı gönderim maliyeti raporu bildirim sağlayıcı (SMS/e-posta) entegrasyonu sonrasında eklenecek; bu sürümde yalnızca uygulama içi bildirimler sayılır.";
 
         private readonly IRepository<Notification> _notificationRepository;
 
@@ -66,7 +66,7 @@ namespace Rezervise.Application.Features.Admin.Notifications.Queries.GetAdminNot
             catch (Exception ex)
             {
                 return Result<AdminNotificationStatsDto>.Failure(
-                    Error.Internal("Bildirim istatistikleri hesaplanirken bir hata olustu.", ex.Message));
+                    Error.Internal("Bildirim istatistikleri hesaplanırken bir hata oluştu.", ex.Message));
             }
         }
     }

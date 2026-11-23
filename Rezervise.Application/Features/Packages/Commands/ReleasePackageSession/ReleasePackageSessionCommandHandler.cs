@@ -47,19 +47,19 @@ namespace Rezervise.Application.Features.Packages.Commands.ReleasePackageSession
 
                 var reservation = reservations.FirstOrDefault();
                 if (reservation is null)
-                    return Result<Guid>.Failure(Error.Conflict("Bu randevu icin aktif paket rezervasyonu bulunamadi."));
+                    return Result<Guid>.Failure(Error.Conflict("Bu randevu için aktif paket rezervasyonu bulunamadı."));
 
-                // 2. Paket uzerinden yetki: isletme sahibi veya paketin musterisi.
+                // 2. Paket üzerinden yetki: işletme sahibi veya paketin müşterisi.
                 var customerPackage = await _customerPackageRepository.GetByIdAsync(
                     reservation.CustomerPackageId, cancellationToken);
                 if (customerPackage is null)
-                    return Result<Guid>.Failure(Error.NotFound("Musteri paketi", reservation.CustomerPackageId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Müşteri paketi", reservation.CustomerPackageId.ToString()));
 
                 if (!await CanActOnPackageAsync(customerPackage, cancellationToken))
-                    return Result<Guid>.Failure(Error.Forbidden("Bu paket uzerinde islem yapma yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu paket üzerinde işlem yapma yetkiniz yok."));
 
-                // 3. Rezervasyonu Release'e cevir; hareket artik kalan hak
-                //    hesabina girmez.
+                // 3. Rezervasyonu Release'e çevir; hareket artık kalan hak
+                //    hesabına girmez.
                 var now = _dateTime.UtcNow;
                 reservation.Release(now);
 
@@ -74,11 +74,11 @@ namespace Rezervise.Application.Features.Packages.Commands.ReleasePackageSession
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Paket hakki serbest birakilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Paket hakkı serbest bırakılırken bir hata oluştu.", ex.Message));
             }
         }
 
-        /// <summary>Caller paketin sahibi isletmenin mi, yoksa paket musterisinin kendisi mi?</summary>
+        /// <summary>Caller paketin sahibi işletmenin mi, yoksa paket müşterisinin kendisi mi?</summary>
         private async Task<bool> CanActOnPackageAsync(CustomerPackage customerPackage, CancellationToken cancellationToken)
         {
             if (CallerAuthorization.CanActAsUser(_currentUser, customerPackage.CustomerId))

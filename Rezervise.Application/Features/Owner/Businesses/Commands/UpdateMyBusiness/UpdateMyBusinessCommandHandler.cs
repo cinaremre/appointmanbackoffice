@@ -10,9 +10,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Businesses.Commands.UpdateMyBusiness
 {
     /// <summary>
-    /// Isletme sahibinin kendi isletme bilgilerini gunceller. Alan
-    /// degisikligi Business entity'nin Set metotlariyla yapilir; basari
-    /// sonrasi denetim kaydina "OwnerUpdateBusiness" aksiyonu yazilir.
+    /// İşletme sahibinin kendi işletme bilgilerini günceller. Alan
+    /// değişikliği Business entity'nin Set metotlarıyla yapılır; başarı
+    /// sonrası denetim kaydına "OwnerUpdateBusiness" aksiyonu yazılır.
     /// </summary>
     public class UpdateMyBusinessCommandHandler : IRequestHandler<UpdateMyBusinessCommand, Result<Guid>>
     {
@@ -42,15 +42,15 @@ namespace Rezervise.Application.Features.Owner.Businesses.Commands.UpdateMyBusin
         {
             try
             {
-                // 1. En az bir alan gonderilmeli (PATCH semasi).
+                // 1. En az bir alan gönderilmeli (PATCH şeması).
                 var hasName = !string.IsNullOrWhiteSpace(request.Name);
                 var hasDescription = request.Description is not null;
 
                 if (!hasName && !hasDescription)
                     return Result<Guid>.Failure(
-                        Error.Validation("Guncellenecek en az bir alan (Name veya Description) gereklidir."));
+                        Error.Validation("Güncellenecek en az bir alan (Name veya Description) gereklidir."));
 
-                // 2. Sahiplik: isletme JWT sahibine ait olmali.
+                // 2. Sahiplik: işletme JWT sahibine ait olmalı.
                 var owned = await OwnerScope.FindOwnedBusinessAsync(
                     _businessRepository, _currentUser, request.BusinessId, cancellationToken);
 
@@ -59,14 +59,14 @@ namespace Rezervise.Application.Features.Owner.Businesses.Commands.UpdateMyBusin
 
                 var business = owned.Value!;
 
-                // 3. Onceki degerler denetim kaydi icin yakalanir.
+                // 3. Önceki değerler denetim kaydı için yakalanır.
                 var oldValues = JsonSerializer.Serialize(new
                 {
                     business.Name,
                     business.Description
                 });
 
-                // 4. Entity'nin kendi guncelleme metotlari kullanilir.
+                // 4. Entity'nin kendi güncelleme metotları kullanılır.
                 if (hasName)
                     business.SetName(request.Name!.Trim());
 
@@ -75,7 +75,7 @@ namespace Rezervise.Application.Features.Owner.Businesses.Commands.UpdateMyBusin
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // 5. Denetim kaydi: actor JWT kimliginden cozulur.
+                // 5. Denetim kaydı: actor JWT kimliğinden çözülür.
                 await _auditSink.RecordAsync(
                     _currentUser.UserId!.Value,
                     ResolveActorRole(),
@@ -99,13 +99,13 @@ namespace Rezervise.Application.Features.Owner.Businesses.Commands.UpdateMyBusin
             catch (Exception ex)
             {
                 return Result<Guid>.Failure(
-                    Error.Internal("Isletme guncellenirken bir hata olustu.", ex.Message));
+                    Error.Internal("İşletme güncellenirken bir hata oluştu.", ex.Message));
             }
         }
 
         /// <summary>
-        /// Denetim kaydina yazilacak rol: bilinen ilk rol; roller cozulemiyorsa
-        /// geriye donuk uyumluluk icin "BusinessOwner" sabiti.
+        /// Denetim kaydına yazılacak rol: bilinen ilk rol; roller çözülemiyorsa
+        /// geriye dönük uyumluluk için "BusinessOwner" sabiti.
         /// </summary>
         private string ResolveActorRole()
             => _currentUser.Roles.FirstOrDefault() ?? "BusinessOwner";

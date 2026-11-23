@@ -35,13 +35,13 @@ import { APPOINTMENT_STATUSES, appointmentStatusLabel } from "../types";
 import type { AppointmentConflict, AppointmentDetail, AppointmentListItem, AppointmentStatus } from "../types";
 
 /**
- * Randevular (dokuman 13): filtreler URL query ile senkron. Iptal
- * aksiyonunda domain kurallari SUNUCUDA uygulanir (dokuman 13.3);
- * frontend durum kurallari belirlemez, 409/400 hatalari acik gosterilir.
+ * Randevular (doküman 13): filtreler URL query ile senkron. İptal
+ * aksiyonunda domain kuralları SUNUCUDA uygulanır (doküman 13.3);
+ * frontend durum kuralları belirlemez, 409/400 hataları açık gösterilir.
  */
 
 const CANCEL_IMPACT =
-  "Randevu iptali sunucudaki domain kurallarina gore uygulanir; uygun olmayan durumlar sunucu tarafindan 409/400 ile reddedilir ve hata burada gosterilir. Iptal geri alinamaz. Gerekceniz denetim kaydina yazilir.";
+  "Randevu iptali sunucudaki domain kurallarına göre uygulanır; uygun olmayan durumlar sunucu tarafından 409/400 ile reddedilir ve hata burada gösterilir. İptal geri alınamaz. Gerekçeniz denetim kaydına yazılır.";
 
 function formatDate(value?: string | null): string {
   if (!value) return "-";
@@ -49,15 +49,15 @@ function formatDate(value?: string | null): string {
   return Number.isNaN(date.getTime()) ? "-" : date.toLocaleString("tr-TR");
 }
 
-/** ApiError'dan kullaniciya uygun mesaj + traceId uretir. */
+/** ApiError'dan kullanıcıya uygun mesaj + traceId üretir. */
 function errorText(error: unknown): string {
   if (error instanceof ApiError) {
     return error.traceId ? `${error.userMessage} (traceId: ${error.traceId})` : error.userMessage;
   }
-  return "Islem basarisiz. Lutfen tekrar deneyin.";
+  return "İşlem başarısız. Lütfen tekrar deneyin.";
 }
 
-/** Uzun GUID'leri tablo icinde tek satirda kisaltarak gosterir. */
+/** Uzun GUID'leri tablo içinde tek satırda kısaltarak gösterir. */
 function IdText({ value }: { value: string }) {
   return (
     <Typography variant="body2" noWrap title={value} sx={{ maxWidth: 180 }}>
@@ -80,7 +80,7 @@ function AppointmentDetailDialog({ appointmentId, onClose }: { appointmentId: st
 
   return (
     <Dialog open={appointmentId !== null} onClose={onClose} maxWidth="sm" fullWidth fullScreen={is_mobile}>
-      <DialogTitle>Randevu Detayi</DialogTitle>
+      <DialogTitle>Randevu Detayı</DialogTitle>
       <DialogContent>
         {detailQuery.isLoading ? (
           <LoadingState />
@@ -91,9 +91,9 @@ function AppointmentDetailDialog({ appointmentId, onClose }: { appointmentId: st
             <Stack spacing={0.5}>
               <Typography variant="subtitle2">Randevu</Typography>
               <Typography>Randevu No: {detail.id}</Typography>
-              <Typography>Isletme: {detail.businessId}</Typography>
-              <Typography>Kullanici: {detail.userId}</Typography>
-              <Typography>Calisan: {detail.employeeId}</Typography>
+              <Typography>İşletme: {detail.businessId}</Typography>
+              <Typography>Kullanıcı: {detail.userId}</Typography>
+              <Typography>Çalışan: {detail.employeeId}</Typography>
               <Typography>Hizmet: {detail.serviceId}</Typography>
               <Typography>Tarih: {formatDate(detail.appointmentDate)}</Typography>
               <Typography>
@@ -103,16 +103,16 @@ function AppointmentDetailDialog({ appointmentId, onClose }: { appointmentId: st
             </Stack>
             <Box>
               <Typography variant="subtitle2" gutterBottom>
-                Gecmis
+                Geçmiş
               </Typography>
               {detail.history.length === 0 ? (
-                <Typography color="text.secondary">Kayit yok.</Typography>
+                <Typography color="text.secondary">Kayıt yok.</Typography>
               ) : (
                 detail.history.map((entry, index) => (
                   <Typography key={`${entry.action}-${entry.changedAt}-${index}`}>
                     {formatDate(entry.changedAt)} - {entry.action}
                     {entry.note ? ` - ${entry.note}` : ""}
-                    {entry.actorId ? ` (aktor: ${entry.actorId})` : ""}
+                    {entry.actorId ? ` (aktör: ${entry.actorId})` : ""}
                   </Typography>
                 ))
               )}
@@ -125,15 +125,15 @@ function AppointmentDetailDialog({ appointmentId, onClose }: { appointmentId: st
 }
 
 export function AppointmentsPage() {
-  // Filtreler URL query'de yasir: paylasilabilir baglantilar ve geri
-  // tusu davranisi dogru olur.
+  // Filtreler URL query'de yasir: paylaşılabilir bağlantılar ve geri
+  // tuşu davranışı doğru olur.
   const [searchParams, setSearchParams] = useSearchParams();
   const { has_permission } = useAuth();
   const queryClient = useQueryClient();
   const canCancel = has_permission(PERMISSIONS.appointmentCancel);
 
   const rawStatus = searchParams.get("status") ?? "";
-  // URL'e elle yazilan gecersiz durumlarini secimde gosterme.
+  // URL'e elle yazılan geçersiz durumlarını seçimde gösterme.
   const status: string = (APPOINTMENT_STATUSES as readonly string[]).includes(rawStatus) ? rawStatus : "";
   const fromDate = searchParams.get("fromDate") ?? "";
   const toDate = searchParams.get("toDate") ?? "";
@@ -147,7 +147,7 @@ export function AppointmentsPage() {
         const next = new URLSearchParams(prev);
         if (value === "") next.delete(key);
         else next.set(key, value);
-        // Filtre degisince sayfa bastan baslar.
+        // Filtre değişince sayfa bastan başlar.
         if (key !== "page" && key !== "pageSize") next.delete("page");
         return next;
       },
@@ -175,17 +175,17 @@ export function AppointmentsPage() {
       ),
   });
 
-  // Iptal: reason ZORUNLU; domain kurallari sunucuda uygulanir.
+  // İptal: reason ZORUNLU; domain kuralları sunucuda uygulanır.
   const cancelMutation = useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
       postItem(`/appointments/${id}/cancel`, { reason }),
     onSuccess: () => {
       setPending(null);
-      setSnackbar({ severity: "success", message: "Randevu iptal istegi uygulandi." });
+      setSnackbar({ severity: "success", message: "Randevu iptal isteği uygulandı." });
       void queryClient.invalidateQueries({ queryKey: ["appointments"] });
     },
     onError: (error: unknown) => {
-      // Dialog acik kalir; kullanici gerekceyi duzeltip tekrar deneyebilir.
+      // Dialog açık kalır; kullanıcı gerekçeyi düzeltip tekrar deneyebilir.
       setSnackbar({ severity: "error", message: errorText(error) });
     },
   });
@@ -194,7 +194,7 @@ export function AppointmentsPage() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState<{ severity: "success" | "error"; message: string } | null>(null);
 
-  // Cakisma sorgusu: businessId + date ile sorgulanir, kucuk liste.
+  // Çakışma sorgusu: businessId + date ile sorgulanır, küçük liste.
   const [conflictBusinessId, setConflictBusinessId] = useState("");
   const [conflictDate, setConflictDate] = useState("");
   const [conflictQuery, setConflictQuery] = useState<{ businessId: string; date: string } | null>(null);
@@ -214,8 +214,8 @@ export function AppointmentsPage() {
 
   const columns: DataTableColumn<AppointmentListItem>[] = [
     { key: "date", header: "Tarih", render: (row) => formatDate(row.appointmentDate) },
-    { key: "business", header: "Isletme", render: (row) => <IdText value={row.businessId} /> },
-    { key: "employee", header: "Calisan", render: (row) => <IdText value={row.employeeId} /> },
+    { key: "business", header: "İşletme", render: (row) => <IdText value={row.businessId} /> },
+    { key: "employee", header: "Çalışan", render: (row) => <IdText value={row.employeeId} /> },
     { key: "service", header: "Hizmet", render: (row) => <IdText value={row.serviceId} /> },
     { key: "status", header: "Durum", render: (row) => <StatusBadge status={appointmentStatusLabel(row.status)} /> },
     { key: "notes", header: "Notlar", render: (row) => row.notes ?? "-" },
@@ -238,7 +238,7 @@ export function AppointmentsPage() {
           onChange={(e) => setParam("status", e.target.value)}
           sx={{ minWidth: { xs: 0, sm: 160 } }}
         >
-          <MenuItem value="">Tumu</MenuItem>
+          <MenuItem value="">Tümü</MenuItem>
           {APPOINTMENT_STATUSES.map((value) => (
             <MenuItem key={value} value={value}>
               {value}
@@ -248,7 +248,7 @@ export function AppointmentsPage() {
         <TextField
           size="small"
           type="date"
-          label="Baslangic Tarihi"
+          label="Başlangıç Tarihi"
           value={fromDate}
           onChange={(e) => setParam("fromDate", e.target.value)}
           slotProps={{ inputLabel: { shrink: true } }}
@@ -257,7 +257,7 @@ export function AppointmentsPage() {
         <TextField
           size="small"
           type="date"
-          label="Bitis Tarihi"
+          label="Bitiş Tarihi"
           value={toDate}
           onChange={(e) => setParam("toDate", e.target.value)}
           slotProps={{ inputLabel: { shrink: true } }}
@@ -265,7 +265,7 @@ export function AppointmentsPage() {
         />
         <TextField
           size="small"
-          label="Isletme ID"
+          label="İşletme ID"
           value={businessId}
           onChange={(e) => setParam("businessId", e.target.value)}
           sx={{ minWidth: { xs: 0, sm: 220 } }}
@@ -285,7 +285,7 @@ export function AppointmentsPage() {
         totalCount={listQuery.data?.pagination.totalCount ?? 0}
         onPageChange={(nextPage) => setParam("page", String(nextPage))}
         onPageSizeChange={(nextSize) => setParam("pageSize", String(nextSize))}
-        emptyLabel="Randevu bulunamadi."
+        emptyLabel="Randevu bulunamadı."
         ariaLabel="randevular tablosu"
         onRefresh={() => void listQuery.refetch()}
         rowActions={(row) => (
@@ -295,7 +295,7 @@ export function AppointmentsPage() {
             </Button>
             {canCancel ? (
               <Button size="small" color="error" onClick={() => setPending({ id: row.id })}>
-                Iptal
+                İptal
               </Button>
             ) : null}
           </Stack>
@@ -306,9 +306,9 @@ export function AppointmentsPage() {
 
       <ReasonConfirmDialog
         open={pending !== null}
-        title={pending ? `Randevu Iptali: ${pending.id}` : ""}
+        title={pending ? `Randevu İptali: ${pending.id}` : ""}
         impact={CANCEL_IMPACT}
-        confirmLabel="Iptal Et"
+        confirmLabel="İptal Et"
         busy={cancelMutation.isPending}
         onCancel={() => setPending(null)}
         onConfirm={(reason) => {
@@ -331,11 +331,11 @@ export function AppointmentsPage() {
           sx={{ alignItems: { xs: "stretch", md: "center" } }}
         >
           <Typography variant="h6" component="h2">
-            Cakisma Sorgusu
+            Çakışma Sorgusu
           </Typography>
           <TextField
             size="small"
-            label="Isletme ID"
+            label="İşletme ID"
             value={conflictBusinessId}
             onChange={(e) => setConflictBusinessId(e.target.value)}
             sx={{ minWidth: { xs: 0, sm: 220 } }}
@@ -363,18 +363,18 @@ export function AppointmentsPage() {
         {conflictQuery ? (
           <Box sx={{ mt: 2 }}>
             {conflictsQuery.isLoading ? (
-              <LoadingState label="Cakismalar sorgulaniyor..." />
+              <LoadingState label="Çakışmalar sorgulanıyor..." />
             ) : conflictsQuery.isError ? (
               <ErrorState error={conflictsQuery.error} />
             ) : conflictsQuery.data && conflictsQuery.data.items.length > 0 ? (
               <TableContainer sx={{ maxHeight: 360 }}>
-                <Table size="small" aria-label="cakisan randevular tablosu">
+                <Table size="small" aria-label="çakışan randevular tablosu">
                   <TableHead>
                     <TableRow>
                       <TableCell sx={{ fontWeight: 600 }}>Randevu</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Calisan</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Çalışan</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Tarih</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Isletme</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>İşletme</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -396,7 +396,7 @@ export function AppointmentsPage() {
                 </Table>
               </TableContainer>
             ) : (
-              <EmptyState label="Cakisan randevu bulunamadi." />
+              <EmptyState label="Çakışan randevu bulunamadı." />
             )}
           </Box>
         ) : null}

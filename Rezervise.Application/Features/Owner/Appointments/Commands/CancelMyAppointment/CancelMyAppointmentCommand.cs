@@ -4,10 +4,10 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Appointments.Commands.CancelMyAppointment
 {
     /// <summary>
-    /// Isletme sahibinin kendi isletmesindeki randevuyu iptal etmesi.
-    /// Domain kurallari tek kaynaktan yurutulur: iptal mevcut
+    /// İşletme sahibinin kendi işletmesindeki randevuyu iptal etmesi.
+    /// Domain kuralları tek kaynaktan yürütülür: iptal mevcut
     /// <see cref="Rezervise.Application.Features.Appointments.Commands.CancelAppointment.CancelAppointmentCommand"/>
-    /// uzerinden IMediator ile gercek handler'a delege edilir.
+    /// üzerinden IMediator ile gerçek handler'a delege edilir.
     /// </summary>
     public class CancelMyAppointmentCommand : IRequest<Result<Guid>>
     {
@@ -15,12 +15,12 @@ namespace Rezervise.Application.Features.Owner.Appointments.Commands.CancelMyApp
 
         public Guid AppointmentId { get; set; }
 
-        /// <summary>Sahibin iptal gerekcesi; zorunludur, denetim kaydina yazilir.</summary>
+        /// <summary>Sahibin iptal gerekçesi; zorunludur, denetim kaydına yazılır.</summary>
         public string? Reason { get; set; }
 
         /// <summary>
-        /// Randevuya islenecek musterinin gorecegi iptal gerekcesi.
-        /// Bos ise owner gerekcesi kullanilir.
+        /// Randevuya işlenecek müşterinin göreceği iptal gerekçesi.
+        /// Boş ise owner gerekçesi kullanılır.
         /// </summary>
         public string? CancellationReason { get; set; }
     }

@@ -42,22 +42,22 @@ namespace Rezervise.Application.Features.Reviews.Commands.AddReview
         {
             try
             {
-                // 0. Aktor kimligi her zaman imzali token'dan gelir; govde UserId'si
-                //    tek basina yetki kaynagi degildir (IDOR korumasi).
+                // 0. Aktör kimliği her zaman imzalı token'dan gelir; gövde UserId'si
+                //    tek basına yetki kaynağı değildir (IDOR koruması).
                 if (!CallerAuthorization.CanActAsUser(_currentUser, request.UserId))
-                    return Result<Guid>.Failure(Error.Unauthorized("Baska kullanici adina yorum ekleme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Unauthorized("Başka kullanıcı adına yorum ekleme yetkiniz yok."));
 
-                // 1. Kullanici kontrolu
+                // 1. Kullanıcı kontrolü
                 var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
                 if (user is null)
-                    return Result<Guid>.Failure(Error.NotFound("Kullanici", request.UserId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Kullanıcı", request.UserId.ToString()));
 
-                // 2. Isletme kontrolu
+                // 2. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 3. Randevu kontrolu (zorunlu)
+                // 3. Randevu kontrolü (zorunlu)
                 if (request.AppointmentId is null)
                     return Result<Guid>.Failure(Error.Validation("Randevu ID zorunludur."));
 
@@ -66,23 +66,23 @@ namespace Rezervise.Application.Features.Reviews.Commands.AddReview
                 if (appointment is null)
                     return Result<Guid>.Failure(Error.NotFound("Randevu", appointmentId.ToString()));
 
-                // Kullanici randevuya ait mi?
+                // Kullanıcı randevuya ait mi?
                 if (appointment.UserId != request.UserId)
                     return Result<Guid>.Failure(Error.BusinessRule("Bu randevuya yorum yapma yetkiniz yok."));
 
-                // Randevu, yorum yapilan isletmeye ait mi?
+                // Randevu, yorum yapılan işletmeye ait mi?
                 if (appointment.BusinessId != request.BusinessId)
-                    return Result<Guid>.Failure(Error.BusinessRule("Randevu, yorum yapilan isletmeye ait degil."));
+                    return Result<Guid>.Failure(Error.BusinessRule("Randevu, yorum yapılan işletmeye ait değil."));
 
-                // Randevu tamamlanmis mi?
+                // Randevu tamamlanmış mi?
                 if (appointment.Status != Domain.Enums.EnumAppointmentStatus.Completed)
-                    return Result<Guid>.Failure(Error.BusinessRule("Sadece tamamlanmis randevulara yorum yapilabilir."));
+                    return Result<Guid>.Failure(Error.BusinessRule("Sadece tamamlanmış randevulara yorum yapılabilir."));
 
-                // 4. Ayni randevu icin ikinci yorum on kontrolu YAPILMAZ:
-                //    UX_Reviews_AppointmentId unique index tek dogruluk kaynagidir.
-                //    Es zamanli iki denemede ikincisi DuplicateKeyException alir.
+                // 4. Aynı randevu için ikinci yorum on kontrolü YAPILMAZ:
+                //    UX_Reviews_AppointmentId unique index tek doğruluk kaynağıdır.
+                //    Es zamanlı iki denemede ikincisi DuplicateKeyException alır.
 
-                // 5. Yorum olustur
+                // 5. Yorum oluştur
                 var review = new Review(
                     request.UserId,
                     request.BusinessId,
@@ -90,9 +90,9 @@ namespace Rezervise.Application.Features.Reviews.Commands.AddReview
                     request.Comment,
                     request.AppointmentId);
 
-                // 6-7. Yorum kaydi ve atomik puan g�ncellemesi ayni transaction'da.
-                //      Read-modify-write yerine tek UPDATE kullanilir; bir adim
-                //      basarisiz olursa yorum da geri alinir.
+                // 6-7. Yorum kaydı ve atomik puan güncellemesi aynı transaction'da.
+                //      Read-modify-write yerine tek UPDATE kullanılır; bir adım
+                //      başarısız olursa yorum da geri alınır.
                 await _unitOfWork.ExecuteInTransactionAsync(async token =>
                 {
                     await _reviewRepository.AddAsync(review, token);
@@ -117,8 +117,8 @@ namespace Rezervise.Application.Features.Reviews.Commands.AddReview
             }
             catch (Exception)
             {
-                // Beklenmeyen hata detayi istemciye sizdirilmaz.
-                return Result<Guid>.Failure(Error.Internal("Yorum eklenirken bir hata olustu."));
+                // Beklenmeyen hata detayı istemciye sızdırılmaz.
+                return Result<Guid>.Failure(Error.Internal("Yorum eklenirken bir hata oluştu."));
             }
         }
     }

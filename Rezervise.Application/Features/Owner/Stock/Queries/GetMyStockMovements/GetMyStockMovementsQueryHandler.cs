@@ -10,9 +10,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyStockMovements
 {
     /// <summary>
-    /// Isletme sahibinin stok hareket listesi. Sahiplik OwnerScope ile
-    /// dogrulanir; defter kayitlari urun ve tarih filtreleriyle listelenir
-    /// (GetAdminStockMovements deseniyle ayni).
+    /// İşletme sahibinin stok hareket listesi. Sahiplik OwnerScope ile
+    /// doğrulanır; defter kayıtları ürün ve tarih filtreleriyle listelenir
+    /// (GetAdminStockMovements deseniyle aynı).
     /// </summary>
     public class GetMyStockMovementsQueryHandler
         : IRequestHandler<GetMyStockMovementsQuery, Result<AdminPagedResult<OwnerStockMovementDto>>>
@@ -37,14 +37,14 @@ namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyStockMovements
         {
             try
             {
-                // 1. Sahiplik: isletme JWT sahibine ait olmali.
+                // 1. Sahiplik: işletme JWT sahibine ait olmalı.
                 var owned = await OwnerScope.FindOwnedBusinessAsync(
                     _businessRepository, _currentUser, request.BusinessId, cancellationToken);
 
                 if (owned.IsFailure)
                     return Result<AdminPagedResult<OwnerStockMovementDto>>.Failure(owned.Error!);
 
-                // 2. Sayfalama kurallari.
+                // 2. Sayfalama kuralları.
                 var page = AdminPaging.NormalizePage(request.Page);
                 var pageSize = AdminPaging.ClampPageSize(request.PageSize);
 
@@ -53,7 +53,7 @@ namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyStockMovements
                 var fromDate = request.FromDate;
                 var toDate = request.ToDate;
 
-                // 3. Filtre: isletme + urun + tarih araligi.
+                // 3. Filtre: işletme + ürün + tarih aralığı.
                 var movements = await _stockMovementRepository.FindAsync(
                     m => m.BusinessId == businessId
                         && !m.IsDeleted
@@ -62,7 +62,7 @@ namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyStockMovements
                         && (toDate == null || m.OccurredAt <= toDate),
                     cancellationToken);
 
-                // 4. En yeni hareket once.
+                // 4. En yeni hareket önce.
                 var ordered = movements
                     .OrderByDescending(m => m.OccurredAt)
                     .ThenBy(m => m.Id)
@@ -96,7 +96,7 @@ namespace Rezervise.Application.Features.Owner.Stock.Queries.GetMyStockMovements
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<OwnerStockMovementDto>>.Failure(
-                    Error.Internal("Stok hareket listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Stok hareket listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

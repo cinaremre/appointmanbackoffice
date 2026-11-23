@@ -7,29 +7,29 @@ using Rezervise.Domain.Entities;
 namespace Rezervise.Infrastructure.Services.Sms
 {
     /// <summary>
-    /// Telefon dogrulama kodunu uretir ve dogrular. Ham kod saklanmaz;
-    /// e-posta dogrulama token'i ile ayni hash deseni (SHA-256) kullanilir.
+    /// Telefon doğrulama kodunu üretir ve doğrular. Ham kod saklanmaz;
+    /// e-posta doğrulama token'i ile aynı hash deseni (SHA-256) kullanılır.
     /// </summary>
     public sealed class OtpCodeService : IOtpCodeService
     {
         private readonly OtpOptions _options;
 
         /// <summary>
-        /// Servisi yapilandirma ile olusturur.
+        /// Servisi yapılandırma ile oluşturur.
         /// </summary>
-        /// <param name="options">OTP ayarlari.</param>
-        /// <exception cref="ArgumentNullException">Ayarlar null oldugunda firlatilir.</exception>
+        /// <param name="options">OTP ayarları.</param>
+        /// <exception cref="ArgumentNullException">Ayarlar null öldüğünda fırlatılır.</exception>
         public OtpCodeService(OtpOptions options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public string IssueCode(User user, DateTime utcNow)
         {
             ArgumentNullException.ThrowIfNull(user);
 
-            // Saglayici baglanana kadar sabit kod kullanilabilir; yapilandirilmamissa rastgele uretilir.
+            // Sağlayıcı bağlanana kadar sabit kod kullanılabilir; yapılandırılmamışsa rastgele üretilir.
             var code = _options.HasFixedCode ? _options.FixedCode! : GenerateCode(_options.CodeLength);
 
             user.IssuePhoneVerificationCode(
@@ -40,7 +40,7 @@ namespace Rezervise.Infrastructure.Services.Sms
             return code;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public (bool Success, string? ErrorKey) VerifyCode(User user, string code, DateTime utcNow)
         {
             ArgumentNullException.ThrowIfNull(user);
@@ -76,7 +76,7 @@ namespace Rezervise.Infrastructure.Services.Sms
 
         private static string GenerateCode(int length)
         {
-            // Kriptografik rastgelelik: tahmin edilebilir kod uretilmez.
+            // Kriptografik rastgelelik: tahmin edilebilir kod üretilmez.
             var max = (int)Math.Pow(10, Math.Clamp(length, 4, 8));
             var value = RandomNumberGenerator.GetInt32(0, max);
 

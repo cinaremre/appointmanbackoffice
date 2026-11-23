@@ -5,16 +5,16 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Rezervise.BackOffice.Api.Extensions
 {
     /// <summary>
-    /// Backoffice istekleri icin <see cref="ICurrentUserService"/> kaydi.
-    /// Program.cs dokunulmadan birakildigi icin ayri bir dosyada sunulur;
-    /// host'ta tek satirlik baglanti gerektirir:
+    /// Backoffice istekleri için <see cref="ICurrentUserService"/> kaydı.
+    /// Program.cs dokunulmadan bırakıldığı için ayrı bir dosyada sunulur;
+    /// hoşt'ta tek satırlık bağlantı gerektirir:
     /// builder.Services.AddBackOfficeCurrentUser();
     /// </summary>
     public static class CurrentUserServiceExtensions
     {
         /// <summary>
-        /// HttpContext claim'lerinden okunan yonetici kimligini kaydeder.
-        /// Backoffice JWT'lerinde rol claim tipi "role" olarak cozulur.
+        /// HttpContext claim'lerinden okunan yönetici kimliğini kaydeder.
+        /// Backoffice JWT'lerinde rol claim tipi "role" olarak çözülür.
         /// </summary>
         public static IServiceCollection AddBackOfficeCurrentUser(this IServiceCollection services)
         {
@@ -25,8 +25,8 @@ namespace Rezervise.BackOffice.Api.Extensions
     }
 
     /// <summary>
-    /// Imzali token'dan yonetici kimligini cozer. Kimlik asla istek
-    /// govdesinden degil, yalnizca claim'lerden turetilir.
+    /// İmzalı token'dan yönetici kimliğini çözer. Kimlik asla istek
+    /// gövdesinden değil, yalnızca claim'lerden türetilir.
     /// </summary>
     public sealed class BackOfficeCurrentUserService : ICurrentUserService
     {
@@ -40,7 +40,7 @@ namespace Rezervise.BackOffice.Api.Extensions
                 ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public Guid? UserId
         {
             get
@@ -57,11 +57,11 @@ namespace Rezervise.BackOffice.Api.Extensions
             }
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public bool IsAuthenticated
             => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated == true;
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public IReadOnlyCollection<string> Roles
         {
             get
@@ -71,8 +71,8 @@ namespace Rezervise.BackOffice.Api.Extensions
                 if (principal is null)
                     return Array.Empty<string>();
 
-                // Backoffice tokenlarinda rol claim tipi "role" olarak ayarlanir;
-                // bazi istemciler varsayilan ClaimTypes.Role da gonderebilir.
+                // Backoffice tökenlarında rol claim tipi "role" olarak ayarlanır;
+                // bazı istemciler varsayılan ClaimTypes.Role da gönderebilir.
                 return principal.FindAll("role")
                     .Concat(principal.FindAll(ClaimTypes.Role))
                     .Select(claim => claim.Value)
@@ -81,7 +81,7 @@ namespace Rezervise.BackOffice.Api.Extensions
             }
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public bool IsInRole(string role)
             => Roles.Contains(role, StringComparer.OrdinalIgnoreCase);
     }

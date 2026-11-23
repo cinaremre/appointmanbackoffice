@@ -7,9 +7,9 @@ using MediatR;
 namespace Rezervise.Application.Features.BusinessCategories.Queries.GetAll
 {
     /// <summary>
-    /// Isletme kategorilerini ana/alt kategori hiyerarsisi olarak dondurur.
-    /// Sayaclar iliskiler uzerinden hesaplanir; boylece subCategoryCount ve
-    /// businessCount her zaman gercek degerleri yansitir.
+    /// İşletme kategorilerini ana/alt kategori hiyerarşisi olarak döndürür.
+    /// Sayaçlar ilişkiler üzerinden hesaplanır; böylece subCategoryCount ve
+    /// businessCount her zaman gerçek değerleri yansıtır.
     /// </summary>
     public class GetAllCategoriesQueryHandler
         : IRequestHandler<GetAllCategoriesQuery, Result<List<BusinessCategoryDto>>>
@@ -27,8 +27,8 @@ namespace Rezervise.Application.Features.BusinessCategories.Queries.GetAll
         {
             try
             {
-                // Sayaclar ve parent adi icin iliskiler tek sorguda yuklenir;
-                // aksi halde navigation koleksiyonlari bos gelir ve sayaclar 0 doner.
+                // Sayaçlar ve parent adı için ilişkiler tek sorguda yüklenir;
+                // aksi halde navigation koleksiyonları boş gelir ve sayaçlar 0 döner.
                 var categories = await _categoryRepository.FindWithIncludesAsync(
                     c => !c.IsDeleted,
                     new[] { "ParentCategory", "SubCategories", "Businesses" },
@@ -54,7 +54,7 @@ namespace Rezervise.Application.Features.BusinessCategories.Queries.GetAll
                         BusinessCount = c.GetBusinessCount()
                     });
 
-                // Alt kategoriler ana kategorilerin altina yerlestirilir.
+                // Alt kategoriler ana kategorilerin altına yerleştirilir.
                 foreach (var dto in dtosById.Values.Where(d => d.ParentCategoryId.HasValue).ToList())
                 {
                     if (dtosById.TryGetValue(dto.ParentCategoryId!.Value, out var parent))
@@ -69,7 +69,7 @@ namespace Rezervise.Application.Features.BusinessCategories.Queries.GetAll
 
                 foreach (var root in roots)
                 {
-                    // Filtre sonrasi gercek alt kategori sayisi ve sirasi.
+                    // Filtre sonrası gerçek alt kategori sayısı ve sırası.
                     root.SubCategories = root.SubCategories
                         .OrderBy(s => s.DisplayOrder)
                         .ThenBy(s => s.Name)
@@ -83,7 +83,7 @@ namespace Rezervise.Application.Features.BusinessCategories.Queries.GetAll
             catch (Exception ex)
             {
                 return Result<List<BusinessCategoryDto>>.Failure(
-                    Error.Internal("Kategoriler getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kategoriler getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -3,32 +3,32 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Isletmenin geri cagirma (reengagement) kurali (dokuman Modul 13).
-    /// Kural bir hizmete baglanabilir; ServiceId null ise isletmedeki
-    /// tum hizmetler icin degerlendirilir.
-    /// TemplateMessage degiskenleri: {{CustomerName}} {{BusinessName}}
-    /// {{ServiceName}} {{LastVisitDate}} {{BookingUrl}} - gercek doldurma
-    /// gonderim aninda yapilir.
+    /// İşletmenin geri çağırma (reengagement) kuralı (doküman Modül 13).
+    /// Kural bir hizmete bağlanabilir; ServiceId null ise işletmedeki
+    /// tüm hizmetler için değerlendirilir.
+    /// TemplateMessage değişkenleri: {{CustomerName}} {{BusinessName}}
+    /// {{ServiceName}} {{LastVisitDate}} {{BookingUrl}} - gerçek doldurma
+    /// gönderim anında yapılır.
     /// </summary>
     public class BusinessReengagementRule : BaseEntity
     {
         public Guid BusinessId { get; private set; }
 
-        /// <summary>Null = tum hizmetler icin gecerli.</summary>
+        /// <summary>Null = tüm hizmetler için geçerli.</summary>
         public Guid? ServiceId { get; private set; }
 
         public string TemplateMessage { get; private set; }
 
-        /// <summary>Kac gun randevusuz gecen musteri aday olur (> 0).</summary>
+        /// <summary>Kaç gün randevusuz geçen müşteri aday olur (> 0).</summary>
         public int IntervalDays { get; private set; }
 
-        /// <summary>IntervalDays'e kac gun onceden aday listesine girer (>= 0).</summary>
+        /// <summary>IntervalDays'e kaç gün önceden aday listesine girer (>= 0).</summary>
         public int LeadDays { get; private set; }
 
-        /// <summary>Bir dongrede gonderilebilecek azami mesaj (>= 1).</summary>
+        /// <summary>Bir döngrede gönderilebilecek azami mesaj (>= 1).</summary>
         public int MaxMessagesPerCycle { get; private set; }
 
-        /// <summary>Ayni musteriye tekrar mesaj icin beklenen gun (>= 0).</summary>
+        /// <summary>Aynı müşteriye tekrar mesaj için beklenen gün (>= 0).</summary>
         public int CooldownDays { get; private set; }
 
         public bool IsEnabled { get; private set; }
@@ -51,27 +51,27 @@ namespace Rezervise.Domain.Entities
             : base(Guid.NewGuid())
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (serviceId == Guid.Empty)
-                throw new ArgumentException("Hizmet ID bos olamaz.", nameof(serviceId));
+                throw new ArgumentException("Hizmet ID boş olamaz.", nameof(serviceId));
 
             SetTemplateMessage(templateMessage);
 
             if (intervalDays <= 0)
-                throw new DomainException("Geri cagirma araligi 1 gunden buyuk olmali.");
+                throw new DomainException("Geri çağırma aralığı 1 günden büyük olmalı.");
 
             if (leadDays < 0)
-                throw new DomainException("On baslangic gunu negatif olamaz.");
+                throw new DomainException("On başlangıç günü negatif olamaz.");
 
             if (leadDays > intervalDays)
-                throw new DomainException("On baslangic gunu araligi asamaz.");
+                throw new DomainException("On başlangıç günü aralığı aşamaz.");
 
             if (maxMessagesPerCycle < 1)
-                throw new DomainException("Bir dongrede en az 1 mesaja izin verilmeli.");
+                throw new DomainException("Bir döngrede en az 1 mesaja izin verilmeli.");
 
             if (cooldownDays < 0)
-                throw new DomainException("Bekleme suresi negatif olamaz.");
+                throw new DomainException("Bekleme süresi negatif olamaz.");
 
             BusinessId = businessId;
             ServiceId = serviceId;
@@ -85,12 +85,12 @@ namespace Rezervise.Domain.Entities
         public void SetTemplateMessage(string templateMessage)
         {
             if (string.IsNullOrWhiteSpace(templateMessage))
-                throw new DomainException("Sablon mesaji bos olamaz.");
+                throw new DomainException("Şablon mesajı boş olamaz.");
 
             templateMessage = templateMessage.Trim();
 
             if (templateMessage.Length > 1000)
-                throw new DomainException("Sablon mesaji 1000 karakterden uzun olamaz.");
+                throw new DomainException("Şablon mesajı 1000 karakterden uzun olamaz.");
 
             TemplateMessage = templateMessage;
             UpdatedAt = DateTime.UtcNow;

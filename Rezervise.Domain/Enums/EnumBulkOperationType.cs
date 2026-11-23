@@ -1,9 +1,9 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Backoffice'te toplu uygulanabilecek hizmet islemi turleri
-    /// (dokuman Modul 10). ChangeServiceCategory ilk surumde entity'deki
-    /// SetServiceCategory metodu uzerinden desteklenir.
+    /// Backoffice'te toplu uygulanabilecek hizmet işlemi türleri
+    /// (doküman Modül 10). ChangeServiceCategory ilk sürümde entity'deki
+    /// SetServiceCategory metodu üzerinden desteklenir.
     /// </summary>
     public enum EnumBulkOperationType
     {
@@ -13,7 +13,7 @@ namespace Rezervise.Domain.Enums
         /// <summary>Hizmetleri aktife getir.</summary>
         ActivateServices = 1,
 
-        /// <summary>Hizmetlerin kategorisini degistir.</summary>
+        /// <summary>Hizmetlerin kategorisini değiştir.</summary>
         ChangeServiceCategory = 2
     }
 }

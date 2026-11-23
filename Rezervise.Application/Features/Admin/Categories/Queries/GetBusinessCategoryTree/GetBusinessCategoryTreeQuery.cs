@@ -4,19 +4,19 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Categories.Queries.GetBusinessCategoryTree
 {
     /// <summary>
-    /// Isletme kategori agacinin tam listesi (dokuman Modul 9).
-    /// Agac duz liste + ParentId ile doner; frontend hiyerarsiyi kendisi kurar.
+    /// İşletme kategori ağacının tam listesi (doküman Modül 9).
+    /// Ağaç düz liste + ParentId ile döner; frontend hiyerarşiyi kendisi kurar.
     /// </summary>
     public class GetBusinessCategoryTreeQuery : IRequest<Result<List<AdminBusinessCategoryTreeNodeDto>>>
     {
         /// <summary>
-        /// True ise pasif (arsivlenmis) kategoriler de listeye dahil edilir.
-        /// Yonetici agaci default olarak tam gorur.
+        /// True ise pasif (arşivlenmiş) kategoriler de listeye dahil edilir.
+        /// Yönetici ağacı default olarak tam görür.
         /// </summary>
         public bool IncludeInactive { get; set; } = true;
     }
 
-    /// <summary>Duz liste agac dugumu; hiyerarsi ParentId ile kurulur.</summary>
+    /// <summary>Düz liste ağaç düğümü; hiyerarşi ParentId ile kurulur.</summary>
     public class AdminBusinessCategoryTreeNodeDto
     {
         public Guid Id { get; set; }

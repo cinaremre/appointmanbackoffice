@@ -11,12 +11,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Adres hiyerarsisi ile ilgili tum listeleme islemlerini yonetir.
-    /// Zincir: Il -> Ilce -> Locality -> Mahalle.
+    /// Adres hiyerarşisi ile ilgili tüm listeleme işlemlerini yönetir.
+    /// Zincir: İl -> İlçe -> Locality -> Mahalle.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
-    // Adres hiyerarsisi kimligi dogrulanmis kullanicilara aciktir; anonim erisim kapalidir.
+    // Adres hiyerarşisi kimliği doğrulanmış kullanıcılara açıktır; anonim erişim kapalıdır.
     [Authorize]
     public class AddressController : ControllerBase
     {
@@ -28,22 +28,22 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Tum illeri getirir.
+        /// Tüm illeri getirir.
         /// </summary>
         /// <param name="onlyActive">Sadece aktif iller mi? (opsiyonel)</param>
-        /// <returns>Il listesi</returns>
+        /// <returns>İl listesi</returns>
         [HttpGet("cities")]
         [ProducesResponseType(typeof(Result<List<CityDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<List<CityDto>>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCities([FromQuery] bool? onlyActive = null)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetCitiesQuery { OnlyActive = onlyActive };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -51,27 +51,27 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Bir ilin ilcelerini getirir.
+        /// Bir ilin ilçelerini getirir.
         /// </summary>
-        /// <param name="cityId">Il ID'si (plaka kodu)</param>
-        /// <param name="onlyActive">Sadece aktif ilceler mi? (opsiyonel)</param>
-        /// <returns>Ilce listesi</returns>
+        /// <param name="cityId">İl ID'si (plaka kodu)</param>
+        /// <param name="onlyActive">Sadece aktif ilçeler mi? (opsiyonel)</param>
+        /// <returns>İlçe listesi</returns>
         [HttpGet("districts/{cityId}")]
         [ProducesResponseType(typeof(Result<List<DistrictDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<List<DistrictDto>>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetDistricts(int cityId, [FromQuery] bool? onlyActive = null)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetDistrictsByCityQuery
             {
                 CityId = cityId,
                 OnlyActive = onlyActive
             };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -79,27 +79,27 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Bir ilcenin locality (semt) kayitlarini getirir.
+        /// Bir ilçenin locality (semt) kayıtlarını getirir.
         /// </summary>
-        /// <param name="districtId">Ilce ID'si</param>
-        /// <param name="onlyActive">Sadece aktif kayitlar mi? (opsiyonel)</param>
+        /// <param name="districtId">İlçe ID'si</param>
+        /// <param name="onlyActive">Sadece aktif kayıtlar mi? (opsiyonel)</param>
         /// <returns>Locality listesi</returns>
         [HttpGet("localities/{districtId}")]
         [ProducesResponseType(typeof(Result<List<LocalityDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<List<LocalityDto>>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetLocalities(int districtId, [FromQuery] bool? onlyActive = null)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetLocalitiesByDistrictQuery
             {
                 DistrictId = districtId,
                 OnlyActive = onlyActive
             };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 
@@ -117,17 +117,17 @@ namespace Rezervise.Api.Controllers
         [ProducesResponseType(typeof(Result<List<NeighborhoodDto>>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetNeighborhoods(int localityId, [FromQuery] bool? onlyActive = null)
         {
-            // 1. Query'yi olustur
+            // 1. Query'yi oluştur
             var query = new GetNeighborhoodsByLocalityQuery
             {
                 LocalityId = localityId,
                 OnlyActive = onlyActive
             };
 
-            // 2. Mediator ile gonder
+            // 2. Mediator ile gönder
             var result = await _mediator.Send(query);
 
-            // 3. Sonuca gore cevap dondur
+            // 3. Sonuça göre cevap döndür
             if (result.IsSuccess)
                 return Ok(result);
 

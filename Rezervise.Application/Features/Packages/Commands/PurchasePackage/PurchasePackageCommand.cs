@@ -4,9 +4,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Packages.Commands.PurchasePackage
 {
     /// <summary>
-    /// Musteriye paket satisi kaydeder (dokuman Modul 5). Gecerlilik bitisi
-    /// satin alma anindan itibaren paketin ValidityDays gun sonrasidir.
-    /// Yetki: isletme sahibi satisi kaydeder.
+    /// Müşteriye paket satışı kaydeder (doküman Modül 5). Geçerlilik bitişi
+    /// satın alma anından itibaren paketin ValidityDays gün sonrasıdır.
+    /// Yetki: işletme sahibi satışı kaydeder.
     /// </summary>
     public class PurchasePackageCommand : IRequest<Result<Guid>>
     {

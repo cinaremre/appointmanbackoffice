@@ -1,23 +1,23 @@
 /**
- * Abonelik ve ozellik yonetimi tipleri (dokuman Modul 14-15).
+ * Abonelik ve özellik yönetimi tipleri (doküman Modül 14-15).
  *
- * Backend ucleri AdminSubscriptionController uzerinden camelCase JSON doner.
- * Enum'lar varsayilan System.TextJson davranisiyla SAYISAL serilestirilir
- * (0=Monthly, 1=Yearly gibi); okuma tarafinda hem sayi hem string kabul
- * eden toleransli cozumleyiciler kullanilir, yazma tarafinda ise sayisal
- * deger gonderilir.
+ * Backend uçları AdminSubscriptionController üzerinden camelCase JSON döner.
+ * Enum'lar varsayılan System.TextJson davranışıyla SAYISAL serileştirilir
+ * (0=Monthly, 1=Yearly gibi); okuma tarafında hem sayı hem string kabul
+ * eden toleranslı çözümleyiciler kullanılır, yazma tarafında ise sayısal
+ * değer gönderilir.
  */
 
 export type BillingPeriod = "Monthly" | "Yearly";
 
-/** Plana dahil tek ozellik satiri. includedQuota null = sinirsiz. */
+/** Plana dahil tek özellik satırı. includedQuota null = sınırsız. */
 export interface AdminPlanFeatureDto {
   featureCode: string;
   isEnabled: boolean;
   includedQuota: number | null;
 }
 
-/** AdminSubscriptionController GET /subscription-plans tek satiri. */
+/** AdminSubscriptionController GET /subscription-plans tek satırı. */
 export interface SubscriptionPlanDto {
   id: string;
   name: string;
@@ -28,7 +28,7 @@ export interface SubscriptionPlanDto {
   features: AdminPlanFeatureDto[];
 }
 
-/** GET /features tek satiri: platform ozellik katalogu. */
+/** GET /features tek satırı: platform özellik katalogu. */
 export interface FeatureDefinitionDto {
   id: string;
   code: string;
@@ -37,22 +37,22 @@ export interface FeatureDefinitionDto {
   isActive: boolean;
 }
 
-/** GET /businesses/{id}/features tek override kaydi. */
+/** GET /businesses/{id}/features tek override kaydı. */
 export interface FeatureOverrideDto {
   id: string;
   featureId: string;
   featureCode: string;
   isEnabled: boolean;
-  /** Null ise plan kotasi gecerli kalir. */
+  /** Null ise plan kotası geçerli kalır. */
   quotaOverride?: number | null;
   validFrom: string;
-  /** UTC gecerlilik sonu; null = belirsiz sure. */
+  /** UTC geçerlilik sonu; null = belirsiz süre. */
   validUntil?: string | null;
   reason?: string | null;
   grantedBy: string;
 }
 
-/** Isletme aboneligine dahil plan ozelligi. */
+/** İşletme aboneliğine dahil plan özelliği. */
 export interface BusinessPlanFeatureDto {
   featureCode: string;
   isEnabled: boolean;
@@ -71,17 +71,17 @@ export interface BusinessSubscriptionDto {
 }
 
 export const BILLING_PERIOD_LABELS: Record<BillingPeriod, string> = {
-  Monthly: "Aylik",
-  Yearly: "Yillik",
+  Monthly: "Aylık",
+  Yearly: "Yıllık",
 };
 
-/** POST govdesinde enum sayisal gonderilir (0=Monthly, 1=Yearly). */
+/** POST gövdesinde enum sayısal gönderilir (0=Monthly, 1=Yearly). */
 export const BILLING_PERIOD_VALUES: Record<BillingPeriod, number> = {
   Monthly: 0,
   Yearly: 1,
 };
 
-/** Enum sayi veya string gelebilir; toleransli cozer, taninmayanda Monthly. */
+/** Enum sayı veya string gelebilir; toleranslı çözer, tanınmayanda Monthly. */
 export function toBillingPeriod(raw: unknown): BillingPeriod {
   if (raw === 1 || raw === "1" || raw === "Yearly") return "Yearly";
   return "Monthly";
@@ -90,8 +90,8 @@ export function toBillingPeriod(raw: unknown): BillingPeriod {
 /** EnumSubscriptionStatus: 0=Active, 1=Expired, 2=Cancelled. */
 export const SUBSCRIPTION_STATUS_LABELS: Record<number, string> = {
   0: "Aktif",
-  1: "Sure Doldu",
-  2: "Iptal",
+  1: "Süre Doldu",
+  2: "İptal",
 };
 
 export function subscriptionStatusLabel(raw: unknown): string {
@@ -100,20 +100,20 @@ export function subscriptionStatusLabel(raw: unknown): string {
   return "-";
 }
 
-/** Basit GUID dogrulamasi: isletme kimligi girisi icin. */
+/** Basit GUID doğrulaması: işletme kimliği girişi için. */
 export function isGuid(value: string): boolean {
   return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
     value.trim(),
   );
 }
 
-/** Fiyat/tutar etiketi: tr-TR bicimi + TRY icin "TL" kisa adi. */
+/** Fiyat/tutar etiketi: tr-TR biçimi + TRY için "TL" kısa adı. */
 export function formatPrice(value: number, currency: string): string {
   return `${value.toLocaleString("tr-TR")} ${currency === "TRY" ? "TL" : currency}`;
 }
 
-/** Kota etiketi; null/undefined = sinirsiz (plan kotasi gecerli). */
+/** Kota etiketi; null/undefined = sınırsız (plan kotası geçerli). */
 export function quotaLabel(quota: number | null | undefined): string {
-  if (quota === null || quota === undefined) return "Sinirsiz";
+  if (quota === null || quota === undefined) return "Sınırsız";
   return String(quota);
 }

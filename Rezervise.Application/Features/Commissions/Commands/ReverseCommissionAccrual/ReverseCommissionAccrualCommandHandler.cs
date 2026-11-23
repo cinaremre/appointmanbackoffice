@@ -31,22 +31,22 @@ namespace Rezervise.Application.Features.Commissions.Commands.ReverseCommissionA
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde OwnerId'si değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Forbidden("Bu isletmenin prim tahakkukunu ters cevirme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu işletmenin prim tahakkukunu ters çevirme yetkiniz yok."));
 
-                // 3. Tahakkuk kontrolu: kayit isletmeye ait olmali.
+                // 3. Tahakkuk kontrolü: kayıt işletmeye ait olmalı.
                 var accrual = await _accrualRepository.GetByIdAsync(request.AccrualId, cancellationToken);
                 if (accrual is null || accrual.BusinessId != request.BusinessId)
                     return Result<Guid>.Failure(Error.NotFound("Prim tahakkuku", request.AccrualId.ToString()));
 
-                // 4. Ters cevir: Accrued -> Reversed. Paid veya Reversed durumlarinda
-                //    entity DomainException firlatir ve asagidaki catch reddeder.
+                // 4. Ters çevir: Accrued -> Reversed. Paid veya Reversed durumlarında
+                //    entity DomainException fırlatır ve aşağıdaki catch reddeder.
                 accrual.Reverse();
 
                 // 5. Kaydet
@@ -61,7 +61,7 @@ namespace Rezervise.Application.Features.Commissions.Commands.ReverseCommissionA
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Prim tahakkuku ters cevrilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Prim tahakkuku ters çevrilirken bir hata oluştu.", ex.Message));
             }
         }
     }

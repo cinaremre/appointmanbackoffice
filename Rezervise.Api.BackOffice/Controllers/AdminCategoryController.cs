@@ -14,10 +14,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers
 {
     /// <summary>
-    /// Kategori yonetimi (dokuman Modul 9). Tum isletme kategori agaci
-    /// uzerinde okuma/olusturma/guncelleme/tasima/arsivleme islemleri.
-    /// Not: ASP.NET Core sinif seviyesi route'lari birlesmedigi icin
-    /// tam prefix burada tekrar yazilir.
+    /// Kategori yönetimi (doküman Modül 9). Tüm işletme kategori ağacı
+    /// üzerinde okuma/oluşturma/güncelleme/taşıma/arşivleme işlemleri.
+    /// Not: ASP.NET Core sınıf seviyesi route'lari birleşmediği için
+    /// tam prefix burada tekrar yazılır.
     /// </summary>
     [Authorize]
     [Route("api/v1/admin/categories")]
@@ -30,7 +30,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             _mediator = mediator;
         }
 
-        /// <summary>Tum kategori agaci; duz liste + ParentId (frontend agaci kurar).</summary>
+        /// <summary>Tüm kategori ağacı; düz liste + ParentId (frontend ağacı kurar).</summary>
         [HttpGet]
         [Authorize(Policy = AdminPermissions.CategoryRead)]
         public async Task<IActionResult> GetTree(
@@ -46,7 +46,7 @@ namespace Rezervise.BackOffice.Api.Controllers
                 : result.ToProblem(Response.Headers["X-Correlation-ID"].ToString());
         }
 
-        /// <summary>Yeni kategori olusturur; ayni adli aktif kardes Conflict doner.</summary>
+        /// <summary>Yeni kategori oluşturur; aynı adli aktif kardeş Conflict döner.</summary>
         [HttpPost]
         [Authorize(Policy = AdminPermissions.CategoryCreate)]
         public async Task<IActionResult> Create(
@@ -60,7 +60,7 @@ namespace Rezervise.BackOffice.Api.Controllers
                 : result.ToProblem(Response.Headers["X-Correlation-ID"].ToString());
         }
 
-        /// <summary>Kategori ad/sira/durum alanlarini gunceller.</summary>
+        /// <summary>Kategori ad/sıra/durum alanlarını günceller.</summary>
         [HttpPatch("{id:guid}")]
         [Authorize(Policy = AdminPermissions.CategoryUpdate)]
         public async Task<IActionResult> Update(
@@ -77,7 +77,7 @@ namespace Rezervise.BackOffice.Api.Controllers
                 : result.ToProblem(Response.Headers["X-Correlation-ID"].ToString());
         }
 
-        /// <summary>Kategoriyi baska bir uste tasir; dongu korumasi vardir.</summary>
+        /// <summary>Kategoriyi başka bir üste taşır; döngü koruması vardır.</summary>
         [HttpPost("{id:guid}/move")]
         [Authorize(Policy = AdminPermissions.CategoryUpdate)]
         public async Task<IActionResult> Move(
@@ -94,7 +94,7 @@ namespace Rezervise.BackOffice.Api.Controllers
                 : result.ToProblem(Response.Headers["X-Correlation-ID"].ToString());
         }
 
-        /// <summary>Kategoriyi arsivler; reason zorunlu, aktif cocuk varsa Conflict.</summary>
+        /// <summary>Kategoriyi arşivler; reason zorunlu, aktif çocuk varsa Conflict.</summary>
         [HttpPost("{id:guid}/archive")]
         [Authorize(Policy = AdminPermissions.CategoryArchive)]
         public async Task<IActionResult> Archive(
@@ -111,7 +111,7 @@ namespace Rezervise.BackOffice.Api.Controllers
                 : result.ToProblem(Response.Headers["X-Correlation-ID"].ToString());
         }
 
-        /// <summary>Kategoriye bagli isletme sayisi; arsiv oncesi etki analizi.</summary>
+        /// <summary>Kategoriye bağlı işletme sayısı; arşiv öncesi etki analizi.</summary>
         [HttpGet("{id:guid}/usage")]
         [Authorize(Policy = AdminPermissions.CategoryRead)]
         public async Task<IActionResult> GetUsage(

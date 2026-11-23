@@ -5,23 +5,23 @@ using MediatR;
 namespace Rezervise.Application.Features.Sales.Commands.CreateSale
 {
     /// <summary>
-    /// Yeni satis olusturur. Ilk surumde satis tek adimda tamamlanir:
-    /// kayit Completed durumuyla olusur.
+    /// Yeni satış oluşturur. İlk sürümde satış tek adımda tamamlanır:
+    /// kayıt Completed durumuyla oluşur.
     /// </summary>
     public class CreateSaleCommand : IRequest<Result<Guid>>
     {
         public Guid BusinessId { get; set; }
 
-        /// <summary>Satisa baglanacak (tamamlanmis) randevu; opsiyonel.</summary>
+        /// <summary>Satışa bağlanacak (tamamlanmış) randevu; opsiyonel.</summary>
         public Guid? AppointmentId { get; set; }
 
-        /// <summary>Musteri kullanici ID; opsiyonel.</summary>
+        /// <summary>Müşteri kullanıcı ID; opsiyonel.</summary>
         public Guid? CustomerId { get; set; }
 
-        /// <summary>Para birimi; bos ise "TRY" kullanilir.</summary>
+        /// <summary>Para birimi; boş ise "TRY" kullanılır.</summary>
         public string? Currency { get; set; }
 
-        /// <summary>Siparis seviyesi indirim; satir indirimlerinden ayri dusulur.</summary>
+        /// <summary>Sipariş seviyesi indirim; satır indirimlerinden ayrı düşülür.</summary>
         public decimal DiscountTotal { get; set; }
 
         public List<SaleLineInput> Lines { get; set; } = new();

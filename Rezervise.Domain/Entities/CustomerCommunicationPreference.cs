@@ -5,9 +5,9 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Musteri x kanal x amac bazinda guncel iletisim izni (dokuman Modul 16).
-    /// Tek kayit per (BusinessId, CustomerId, Channel, Purpose); handler upsert yapar.
-    /// Gecmis ConsentHistory kayitlarindan izlenir.
+    /// Müşteri x kanal x amaç bazında güncel iletişim izni (doküman Modül 16).
+    /// Tek kayıt per (BusinessId, CustomerId, Channel, Purpose); handler upsert yapar.
+    /// Geçmiş ConsentHistory kayıtlarından izlenir.
     /// </summary>
     public class CustomerCommunicationPreference : BaseEntity
     {
@@ -16,10 +16,10 @@ namespace Rezervise.Domain.Entities
         public EnumConsentChannel Channel { get; private set; }
         public EnumConsentPurpose Purpose { get; private set; }
 
-        /// <summary>KVKK/acik riza gerekcesi (orn. "consent_form", "legitimate_interest").</summary>
+        /// <summary>KVKK/açık rıza gerekçesi (orn. "consent_form", "legitimate_interest").</summary>
         public string? LegalBasis { get; private set; }
 
-        /// <summary>Izni ispatlayan referans (form ID, import kayit ID vb.).</summary>
+        /// <summary>İzni ispatlayan referans (form ID, import kayıt ID vb.).</summary>
         public string? EvidenceReference { get; private set; }
 
         public bool IsAllowed { get; private set; }
@@ -41,10 +41,10 @@ namespace Rezervise.Domain.Entities
             : base(Guid.NewGuid())
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (customerId == Guid.Empty)
-                throw new ArgumentException("Musteri ID bos olamaz.", nameof(customerId));
+                throw new ArgumentException("Müşteri ID boş olamaz.", nameof(customerId));
 
             BusinessId = businessId;
             CustomerId = customerId;
@@ -60,10 +60,10 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Izni gunceller. Mevcut deger ayniysa hicbir degisiklik ve event uretilmez.
-        /// Degisirse CommunicationConsentChangedEvent eklenir.
+        /// İzni günceller. Mevcut değer aynıysa hiçbir değişiklik ve event üretilmez.
+        /// Değişirse CommunicationConsentChangedEvent eklenir.
         /// </summary>
-        /// <returns>Degisiklik olduysa true; deger ayniysa false.</returns>
+        /// <returns>Değişiklik olduysa true; değer aynıysa false.</returns>
         public bool Set(
             bool isAllowed,
             string? legalBasis = null,

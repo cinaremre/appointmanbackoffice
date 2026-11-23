@@ -6,9 +6,9 @@ using Rezervise.Domain.Events;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Mahalle (ornek: Caferaga, Moda).
-    /// Her mahallenin bir locality'si vardir.
-    /// Zincir: Il -> Ilce -> Locality -> Mahalle.
+    /// Mahalle (örnek: Caferağa, Moda).
+    /// Her mahallenin bir locality'si vardır.
+    /// Zincir: İl -> İlçe -> Locality -> Mahalle.
     /// </summary>
     public class Neighborhood : IAggregateRoot
     {
@@ -42,9 +42,9 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Seed verisi icin ID'li kurucu.
-        /// Kaynak verideki mahalle ID'si korunur; referans veri aktariminda
-        /// ID'lerin degismemesi gerekir.
+        /// Seed verişi için ID'li kurucu.
+        /// Kaynak verideki mahalle ID'si korunur; referans veri aktarımında
+        /// ID'lerin değişmemesi gerekir.
         /// </summary>
         public Neighborhood(int id, int localityId, string name)
         {

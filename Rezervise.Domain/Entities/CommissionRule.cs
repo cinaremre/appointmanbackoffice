@@ -4,30 +4,30 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Prim (komisyon) kurali. Kural bir calisana, bir hizmete/urune veya
-    /// isletme geneline uygulanabilir; kapsam alanlari (EmployeeId, ServiceId,
-    /// ProductId) hepsi bossa genel kuraldir. Uygulama penceresi
-    /// EffectiveFrom/EffectiveTo ile sinirlidir (UTC).
+    /// Prim (komisyon) kuralı. Kural bir çalışana, bir hizmete/ürüne veya
+    /// işletme geneline uygulanabilir; kapsam alanları (EmployeeId, ServiceId,
+    /// ProductId) hepsi bossa genel kuraldır. Uygulama penceresi
+    /// EffectiveFrom/EffectiveTo ile sınırlıdır (UTC).
     /// </summary>
     public class CommissionRule : BaseEntity
     {
         public Guid BusinessId { get; private set; }
 
-        /// <summary>Bos ise kural isletme geneli/gecerli hizmet-urun kuralidir.</summary>
+        /// <summary>Boş ise kural işletme geneli/geçerli hizmet-ürün kuralıdır.</summary>
         public Guid? EmployeeId { get; private set; }
 
-        /// <summary>Bos ise kural hizmet-ozel degildir.</summary>
+        /// <summary>Boş ise kural hizmet-özel değildir.</summary>
         public Guid? ServiceId { get; private set; }
 
-        /// <summary>Bos ise kural urun-ozel degildir.</summary>
+        /// <summary>Boş ise kural ürün-özel değildir.</summary>
         public Guid? ProductId { get; private set; }
 
         public EnumCommissionCalculationType CalculationType { get; private set; }
 
-        /// <summary>Yuzde tipleri icin 0-1 arasi oran (orn. %20 = 0.20).</summary>
+        /// <summary>Yüzde tipleri için 0-1 arası oran (orn. %20 = 0.20).</summary>
         public decimal Rate { get; private set; }
 
-        /// <summary>FixedPerService tipi icin hizmet basina sabit tutar.</summary>
+        /// <summary>FixedPerService tipi için hizmet basına sabit tutar.</summary>
         public decimal FixedAmount { get; private set; }
 
         public DateTime EffectiveFrom { get; private set; }
@@ -36,7 +36,7 @@ namespace Rezervise.Domain.Entities
 
         public bool IsActive { get; private set; }
 
-        private CommissionRule() { } // EF Core icin
+        private CommissionRule() { } // EF Core için
 
         public CommissionRule(
             Guid businessId,
@@ -67,13 +67,13 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (effectiveFrom == default)
-                throw new DomainException("Kural baslangic tarihi bos olamaz.");
+                throw new DomainException("Kural başlangıç tarihi boş olamaz.");
 
             if (effectiveTo.HasValue && effectiveTo.Value < effectiveFrom)
-                throw new DomainException("Kural bitis tarihi baslangic tarihinden once olamaz.");
+                throw new DomainException("Kural bitiş tarihi başlangıç tarihinden önce olamaz.");
 
             ValidateAmounts(calculationType, rate, fixedAmount);
 
@@ -97,23 +97,23 @@ namespace Rezervise.Domain.Entities
             decimal fixedAmount)
         {
             if (rate < 0 || rate > 1)
-                throw new DomainException("Komisyon orani 0-1 arasinda olmalidir (orn. %20 icin 0.20).");
+                throw new DomainException("Komisyon oranı 0-1 arasında olmalıdır (orn. %20 için 0.20).");
 
             if (fixedAmount < 0)
-                throw new DomainException("Sabit prim tutari negatif olamaz.");
+                throw new DomainException("Sabit prim tutarı negatif olamaz.");
 
             if (fixedAmount > 99999999.99m)
-                throw new DomainException("Sabit prim tutari cok yuksek.");
+                throw new DomainException("Sabit prim tutarı çok yüksek.");
 
             if (calculationType == EnumCommissionCalculationType.FixedPerService && fixedAmount <= 0)
-                throw new DomainException("Sabit primli kuralda sabit tutar sifirdan buyuk olmalidir.");
+                throw new DomainException("Sabit primli kuralda sabit tutar sıfırdan büyük olmalıdır.");
 
             if (calculationType != EnumCommissionCalculationType.FixedPerService && rate <= 0)
-                throw new DomainException("Yuzdeli kuralda oran sifirdan buyuk olmalidir.");
+                throw new DomainException("Yüzdeli kuralda oran sıfırdan büyük olmalıdır.");
         }
 
         /// <summary>
-        /// Kural verilen UTC aninda uygulamada mi? Aktif ve pencere icinde olmali.
+        /// Kural verilen UTC anında uygulamada mi? Aktif ve pencere içinde olmalı.
         /// </summary>
         public bool IsEffectiveAt(DateTime utcNow)
             => IsActive
@@ -121,18 +121,18 @@ namespace Rezervise.Domain.Entities
                && utcNow >= EffectiveFrom
                && (EffectiveTo is null || utcNow <= EffectiveTo.Value);
 
-        /// <summary>Yuzde tabanli hesap mi?</summary>
+        /// <summary>Yüzde tabanlı hesap mi?</summary>
         public bool IsPercentBased
             => CalculationType != EnumCommissionCalculationType.FixedPerService;
 
         /// <summary>
-        /// Verilen baz tutar uzerinden prim tutarini hesaplar.
-        /// Yuzde tiplerinde BaseAmount * Rate, sabit tipte FixedAmount doner.
+        /// Verilen baz tutar üzerinden prim tutarını hesaplar.
+        /// Yüzde tiplerinde BaseAmount * Rate, sabit tipte FixedAmount döner.
         /// </summary>
         public decimal Calculate(decimal baseAmount)
         {
             if (baseAmount < 0)
-                throw new DomainException("Prim baz tutari negatif olamaz.");
+                throw new DomainException("Prim baz tutarı negatif olamaz.");
 
             if (IsPercentBased)
                 return Math.Round(baseAmount * Rate, 2);

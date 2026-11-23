@@ -33,7 +33,7 @@ namespace Rezervise.Domain.Entities
     : base(id)
         {
             if (userId == Guid.Empty)
-                throw new ArgumentException("Kullanici ID bos olamaz.", nameof(userId));
+                throw new ArgumentException("Kullanıcı ID boş olamaz.", nameof(userId));
 
             UserId = userId;
             Type = type;
@@ -50,10 +50,10 @@ namespace Rezervise.Domain.Entities
         public void SetTitle(string title)
         {
             if (string.IsNullOrWhiteSpace(title))
-                throw new DomainException("Baslik bos olamaz.");
+                throw new DomainException("Başlık boş olamaz.");
 
             if (title.Length > 200)
-                throw new DomainException("Baslik 200 karakterden uzun olamaz.");
+                throw new DomainException("Başlık 200 karakterden uzun olamaz.");
 
             Title = title;
             UpdatedAt = DateTime.UtcNow;
@@ -62,7 +62,7 @@ namespace Rezervise.Domain.Entities
         public void SetMessage(string message)
         {
             if (string.IsNullOrWhiteSpace(message))
-                throw new DomainException("Mesaj bos olamaz.");
+                throw new DomainException("Mesaj boş olamaz.");
 
             if (message.Length > 1000)
                 throw new DomainException("Mesaj 1000 karakterden uzun olamaz.");
@@ -94,7 +94,7 @@ namespace Rezervise.Domain.Entities
         public void AddMetadata(string key, string value)
         {
             if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("Metadata key bos olamaz.", nameof(key));
+                throw new ArgumentException("Metadata key boş olamaz.", nameof(key));
 
             Metadata[key] = value;
             UpdatedAt = DateTime.UtcNow;
@@ -109,13 +109,13 @@ namespace Rezervise.Domain.Entities
             AddDomainEvent(new NotificationDeletedEvent(Id, UserId, Type, Title, deletedBy));
         }
 
-        // Okunmamis mi kontrol et
+        // Okunmamış mi kontrol et
         public bool IsUnread()
         {
             return !IsRead;
         }
 
-        // Bildirim �zeti
+        // Bildirim özeti
         public string GetSummary()
         {
             return $"{SentAt:dd.MM.yyyy HH:mm} - {Title} ({(IsRead ? "Okundu" : "Okunmadi")})";

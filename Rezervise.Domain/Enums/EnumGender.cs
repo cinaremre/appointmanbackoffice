@@ -1,7 +1,7 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Kullanici cinsiyeti
+    /// Kullanıcı cinsiyeti
     /// </summary>
     public enum EnumGender
     {
@@ -11,17 +11,17 @@ namespace Rezervise.Domain.Enums
         Male = 0,
 
         /// <summary>
-        /// Kadin
+        /// Kadın
         /// </summary>
         Female = 1,
 
         /// <summary>
-        /// Diger / Belirtmek Istemiyor
+        /// Diğer / Belirtmek İstemiyor
         /// </summary>
         Other = 2,
 
         /// <summary>
-        /// Belirtmek Istemiyor
+        /// Belirtmek İstemiyor
         /// </summary>
         PreferNotToSay = 3
     }

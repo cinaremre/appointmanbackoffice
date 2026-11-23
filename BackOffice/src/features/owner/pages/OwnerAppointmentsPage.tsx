@@ -16,19 +16,19 @@ import type { OwnerAppointmentListItem } from "../types";
 import { APPOINTMENT_STATUS_OPTIONS, appointmentStatusLabel, formatDateTime, shortId } from "../types";
 
 /**
- * Owner randevulari: isletme kapsaminda liste + iptal. Filtreler URL query
- * ile senkron (paylasilabilir baglanti, geri tusu dogru davranis). Iptal
- * gerekcesi ZORUNLU; domain kurallari SUNUCUDA uygulanir (dokuman 13.3).
+ * Owner randevuları: işletme kapsamında liste + iptal. Filtreler URL query
+ * ile senkron (paylaşılabilir bağlantı, geri tuşu doğru davranış). İptal
+ * gerekçesi ZORUNLU; domain kuralları SUNUCUDA uygulanır (doküman 13.3).
  */
 
 const CANCEL_IMPACT =
-  "Randevu iptali sunucudaki domain kurallarina gore uygulanir; uygun olmayan durumlar sunucu tarafindan 409/400 ile reddedilir ve hata burada gosterilir. Iptal geri alinamaz. Gerekceniz denetim kaydina yazilir.";
+  "Randevu iptali sunucudaki domain kurallarına göre uygulanır; uygun olmayan durumlar sunucu tarafından 409/400 ile reddedilir ve hata burada gösterilir. İptal geri alınamaz. Gerekçeniz denetim kaydına yazılır.";
 
 function errorText(error: unknown): string {
   if (error instanceof ApiError) {
     return error.traceId ? `${error.userMessage} (traceId: ${error.traceId})` : error.userMessage;
   }
-  return "Islem basarisiz. Lutfen tekrar deneyin.";
+  return "İşlem başarısız. Lütfen tekrar deneyin.";
 }
 
 function GuidText({ value }: { value: string }) {
@@ -49,7 +49,7 @@ export function OwnerAppointmentsPage() {
   const businesses = businessesQuery.data?.items ?? [];
   const [selectedId, setSelectedId] = useState("");
 
-  // Tek isletme otomatik secilir; acik secim yoksa ilk isletme kullanilir.
+  // Tek işletme otomatik seçilir; açık seçim yoksa ilk işletme kullanılır.
   const businessId = selectedId || businesses[0]?.id || "";
 
   const rawStatus = searchParams.get("status") ?? "";
@@ -72,7 +72,7 @@ export function OwnerAppointmentsPage() {
         const next = new URLSearchParams(prev);
         if (value === "") next.delete(key);
         else next.set(key, value);
-        // Filtre degisince sayfa bastan baslar.
+        // Filtre değişince sayfa bastan başlar.
         if (key !== "page" && key !== "pageSize") next.delete("page");
         return next;
       },
@@ -100,25 +100,25 @@ export function OwnerAppointmentsPage() {
     enabled: businessId !== "",
   });
 
-  // Iptal: reason ZORUNLU; domain kurallari sunucuda uygulanir.
+  // İptal: reason ZORUNLU; domain kuralları sunucuda uygulanır.
   const cancelMutation = useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
       ownerPostItem(`/businesses/${businessId}/appointments/${id}/cancel`, { reason }),
     onSuccess: () => {
       setPending(null);
-      setSnackbar({ severity: "success", message: "Randevu iptal istegi uygulandi." });
+      setSnackbar({ severity: "success", message: "Randevu iptal isteği uygulandı." });
       void queryClient.invalidateQueries({ queryKey: ["owner", "appointments"] });
     },
     onError: (error: unknown) => {
-      // Dialog acik kalir; kullanici gerekceyi duzeltip tekrar deneyebilir.
+      // Dialog açık kalır; kullanıcı gerekçeyi düzeltip tekrar deneyebilir.
       setSnackbar({ severity: "error", message: errorText(error) });
     },
   });
 
   const columns: DataTableColumn<OwnerAppointmentListItem>[] = [
     { key: "date", header: "Tarih", render: (row) => formatDateTime(row.appointmentDate) },
-    { key: "user", header: "Musteri", render: (row) => <GuidText value={row.userId} /> },
-    { key: "employee", header: "Calisan", render: (row) => <GuidText value={row.employeeId} /> },
+    { key: "user", header: "Müşteri", render: (row) => <GuidText value={row.userId} /> },
+    { key: "employee", header: "Çalışan", render: (row) => <GuidText value={row.employeeId} /> },
     { key: "service", header: "Hizmet", render: (row) => <GuidText value={row.serviceId} /> },
     {
       key: "status",
@@ -134,7 +134,7 @@ export function OwnerAppointmentsPage() {
     return (
       <Box>
         <PageHeader title="Randevular" />
-        <EmptyState label="Size ait isletme bulunamadi." />
+        <EmptyState label="Size ait işletme bulunamadı." />
       </Box>
     );
   }
@@ -151,7 +151,7 @@ export function OwnerAppointmentsPage() {
         <TextField
           select
           size="small"
-          label="Isletme"
+          label="İşletme"
           value={businessId}
           onChange={(e) => setSelectedId(e.target.value)}
           disabled={businesses.length <= 1}
@@ -171,7 +171,7 @@ export function OwnerAppointmentsPage() {
           onChange={(e) => setParam("status", e.target.value)}
           sx={{ minWidth: 160 }}
         >
-          <MenuItem value="">Tumu</MenuItem>
+          <MenuItem value="">Tümü</MenuItem>
           {APPOINTMENT_STATUS_OPTIONS.map((option) => (
             <MenuItem key={option.value} value={option.value}>
               {option.label}
@@ -181,7 +181,7 @@ export function OwnerAppointmentsPage() {
         <TextField
           size="small"
           type="date"
-          label="Baslangic Tarihi"
+          label="Başlangıç Tarihi"
           value={fromDate}
           onChange={(e) => setParam("fromDate", e.target.value)}
           slotProps={{ inputLabel: { shrink: true } }}
@@ -190,7 +190,7 @@ export function OwnerAppointmentsPage() {
         <TextField
           size="small"
           type="date"
-          label="Bitis Tarihi"
+          label="Bitiş Tarihi"
           value={toDate}
           onChange={(e) => setParam("toDate", e.target.value)}
           slotProps={{ inputLabel: { shrink: true } }}
@@ -211,14 +211,14 @@ export function OwnerAppointmentsPage() {
         totalCount={listQuery.data?.pagination.totalCount ?? 0}
         onPageChange={(nextPage) => setParam("page", String(nextPage))}
         onPageSizeChange={(nextSize) => setParam("pageSize", String(nextSize))}
-        emptyLabel="Randevu bulunamadi."
-        ariaLabel="isletme randevulari tablosu"
+        emptyLabel="Randevu bulunamadı."
+        ariaLabel="işletme randevuları tablosu"
         onRefresh={() => void listQuery.refetch()}
         rowActions={
           canCancel
             ? (row) => (
                 <Button size="small" color="error" onClick={() => setPending({ id: row.id })}>
-                  Iptal
+                  İptal
                 </Button>
               )
             : undefined
@@ -227,9 +227,9 @@ export function OwnerAppointmentsPage() {
 
       <ReasonConfirmDialog
         open={pending !== null}
-        title={pending ? `Randevu Iptali: ${shortId(pending.id)}` : ""}
+        title={pending ? `Randevu İptali: ${shortId(pending.id)}` : ""}
         impact={CANCEL_IMPACT}
-        confirmLabel="Iptal Et"
+        confirmLabel="İptal Et"
         busy={cancelMutation.isPending}
         onCancel={() => setPending(null)}
         onConfirm={(reason) => {

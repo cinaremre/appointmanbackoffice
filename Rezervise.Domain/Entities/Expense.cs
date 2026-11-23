@@ -4,9 +4,9 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Isletme gider kaydi (kira, fatura, mal alimi vb.).
-    /// Durum alani EnumSaleStatus degerlerini paylasir
-    /// (Pending = onaylanmamis, Completed = kesinlesen gider).
+    /// İşletme gider kaydı (kıra, fatura, mal alımı vb.).
+    /// Durum alani EnumSaleStatus değerlerini paylaşır
+    /// (Pending = onaylanmamış, Completed = kesinleşen gider).
     /// </summary>
     public class Expense : BaseEntity
     {
@@ -37,13 +37,13 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (amount <= 0)
-                throw new DomainException("Gider tutari sifirdan buyuk olmalidir.");
+                throw new DomainException("Gider tutarı sıfırdan büyük olmalıdır.");
 
             if (description is not null && description.Length > 500)
-                throw new DomainException("Gider aciklamasi 500 karakterden uzun olamaz.");
+                throw new DomainException("Gider açıklaması 500 karakterden uzun olamaz.");
 
             SetCurrency(currency);
             BusinessId = businessId;
@@ -58,10 +58,10 @@ namespace Rezervise.Domain.Entities
         public void SetCurrency(string currency)
         {
             if (string.IsNullOrWhiteSpace(currency))
-                throw new DomainException("Para birimi bos olamaz.");
+                throw new DomainException("Para birimi boş olamaz.");
 
             if (currency.Length != 3)
-                throw new DomainException("Para birimi 3 karakter olmalidir.");
+                throw new DomainException("Para birimi 3 karakter olmalıdır.");
 
             Currency = currency.ToUpperInvariant();
             UpdatedAt = DateTime.UtcNow;

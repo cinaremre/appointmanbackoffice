@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 namespace Rezervise.Api.Email
 {
     /// <summary>
-    /// E-posta kuyrugunu arka planda bosaltir. Istek thread'ini SMTP beklemesinden
-    /// kurtarir. Tek bir mesajin hatasi donguyu durdurmaz.
+    /// E-posta kuyruğunu arka planda boşaltır. İstek thread'ini SMTP beklemesinden
+    /// kurtarır. Tek bir mesajın hatası döngüyü durdurmaz.
     /// </summary>
     public sealed class EmailBackgroundService : BackgroundService
     {
@@ -18,9 +18,9 @@ namespace Rezervise.Api.Email
         private readonly IEmailService _emailService;
         private readonly ILogger<EmailBackgroundService> _logger;
 
-        /// <param name="queue">Bosaltilacak kuyruk.</param>
-        /// <param name="emailService">Secilen tasima (SMTP veya log).</param>
-        /// <param name="logger">Tanilama kaydedicisi.</param>
+        /// <param name="queue">Boşaltılacak kuyruk.</param>
+        /// <param name="emailService">Seçilen taşıma (SMTP veya log).</param>
+        /// <param name="logger">Tanılama kaydedicisi.</param>
         public EmailBackgroundService(
             IEmailQueueReader queue,
             IEmailService emailService,
@@ -32,10 +32,10 @@ namespace Rezervise.Api.Email
         }
 
         /// <summary>
-        /// Kuyruktan gelen mesajlari sirayla gonderir. Her gonderim yeniden deneme
-        /// ve dead-letter kaydiyla sonuclanir; tek mesajin hatasi donguyu durdurmaz.
+        /// Kuyruktan gelen mesajları sırayla gönderir. Her gönderim yeniden deneme
+        /// ve dead-letter kaydıyla sonuçlanır; tek mesajın hatası döngüyü durdurmaz.
         /// </summary>
-        /// <param name="stoppingToken">Host kapanis belirteci.</param>
+        /// <param name="stoppingToken">Hoşt kapanış belirteci.</param>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             try
@@ -54,17 +54,17 @@ namespace Rezervise.Api.Email
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
-                // Uygulama kapaniyor; normal akis.
+                // Uygulama kapanıyor; normal akış.
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "E-posta arka plan servisi beklenmedik sekilde durdu.");
+                _logger.LogError(ex, "E-posta arka plan servisi beklenmedik şekilde durdu.");
             }
         }
 
         /// <summary>
-        /// Gecici hatalarda yeniden dener; tum denemeler tukenince mesaji
-        /// dead-letter olarak yapilandirilmis loga yazar ve kuyrugu boslamaya devam eder.
+        /// Geçici hatalarda yeniden dener; tüm denemeler tükenince mesajı
+        /// dead-letter olarak yapılandırılmış loga yazar ve kuyruğu boşlamaya devam eder.
         /// </summary>
         private async Task SendWithRetryAsync(EmailMessage message, CancellationToken cancellationToken)
         {
@@ -94,7 +94,7 @@ namespace Rezervise.Api.Email
 
                     _logger.LogWarning(
                         ex,
-                        "E-posta gonderimi basarisiz, yeniden denenecek. Attempt={Attempt} To={To}",
+                        "E-posta gönderimi başarısız, yeniden denenecek. Attempt={Attempt} To={To}",
                         attempt,
                         message.To);
 

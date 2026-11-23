@@ -32,25 +32,25 @@ namespace Rezervise.Application.Features.Imports.Queries.GetImportJobResult
         {
             try
             {
-                // 1. Is kontrolu
+                // 1. İs kontrolü
                 var job = await _importJobRepository.GetByIdAsync(request.ImportJobId, cancellationToken);
                 if (job is null)
-                    return Result<ImportJobResultDto>.Failure(Error.NotFound("Aktarim isi", request.ImportJobId.ToString()));
+                    return Result<ImportJobResultDto>.Failure(Error.NotFound("Aktarım isi", request.ImportJobId.ToString()));
 
-                // 2. Yetki kontrolu: isin isletmesi uzerinden JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: işin işletmesi üzerinden JWT kimliği esas alınır.
                 var business = await _businessRepository.GetByIdAsync(job.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<ImportJobResultDto>.Failure(Error.NotFound("Isletme", job.BusinessId.ToString()));
+                    return Result<ImportJobResultDto>.Failure(Error.NotFound("İşletme", job.BusinessId.ToString()));
 
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<ImportJobResultDto>.Failure(Error.Unauthorized("Bu aktarim isinin sonucunu goruntuleme yetkiniz yok."));
+                    return Result<ImportJobResultDto>.Failure(Error.Unauthorized("Bu aktarım işinin sonucunu görüntüleme yetkiniz yok."));
 
-                // 3. Satir sonuclarini getir.
+                // 3. Satır sonuçlarını getir.
                 var rows = await _rowResultRepository.FindAsync(
                     r => r.ImportJobId == job.Id && !r.IsDeleted,
                     cancellationToken);
 
-                // 4. DTO olustur.
+                // 4. DTO oluştur.
                 var dto = new ImportJobResultDto
                 {
                     ImportJobId = job.Id,
@@ -81,7 +81,7 @@ namespace Rezervise.Application.Features.Imports.Queries.GetImportJobResult
             catch (Exception ex)
             {
                 return Result<ImportJobResultDto>.Failure(
-                    Error.Internal("Aktarim sonucu getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Aktarım sonucu getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

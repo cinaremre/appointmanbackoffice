@@ -19,9 +19,9 @@ namespace Rezervise.Application.Features.Favorites.Queries.GetByUser
         {
             try
             {
-                // 1. Kullanicinin favorilerini getir.
+                // 1. Kullanıcının favorilerini getir.
                 //    Business ve adresi include edilmezse DTO'daki BusinessName ve BusinessAddress
-                //    null kalir. Address bir navigation oldugu icin ic ice yol gerekiyor.
+                //    null kalır. Address bir navigation öldüğü için iç ice yol gerekiyor.
                 var favorites = await _favoriteRepository.FindWithIncludesAsync(
                     f => f.UserId == request.UserId && !f.IsDeleted,
                     new[]
@@ -38,7 +38,7 @@ namespace Rezervise.Application.Features.Favorites.Queries.GetByUser
                     .Take(request.PageSize)
                     .ToList();
 
-                // 3. DTO'ya donustur
+                // 3. DTO'ya dönüştür
                 var dtos = pagedFavorites.Select(f => new FavoriteDto
                 {
                     Id = f.Id,
@@ -55,7 +55,7 @@ namespace Rezervise.Application.Features.Favorites.Queries.GetByUser
             catch (Exception ex)
             {
                 return Result<List<FavoriteDto>>.Failure(
-                    Error.Internal("Favoriler getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Favoriler getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -39,7 +39,7 @@ namespace Rezervise.Domain.Entities
         public void SetIconUrl(string? iconUrl)
         {
             if (iconUrl != null && !Uri.IsWellFormedUriString(iconUrl, UriKind.Absolute))
-                throw new DomainException("Gecersiz ikon URL formati.");
+                throw new DomainException("Geçersiz ikon URL formatı.");
 
             IconUrl = iconUrl;
             UpdatedAt = DateTime.UtcNow;
@@ -50,7 +50,7 @@ namespace Rezervise.Domain.Entities
             if (colorHex != null)
             {
                 if (!colorHex.StartsWith("#") || (colorHex.Length != 7 && colorHex.Length != 4))
-                    throw new DomainException("Gecersiz renk formati. Ornek: #FF5722 veya #F52");
+                    throw new DomainException("Geçersiz renk formatı. Örnek: #FF5722 veya #F52");
             }
 
             ColorHex = colorHex;
@@ -60,7 +60,7 @@ namespace Rezervise.Domain.Entities
         public void SetDisplayOrder(int order)
         {
             if (order < 0)
-                throw new DomainException("Siralama numarasi negatif olamaz.");
+                throw new DomainException("Sıralama numarası negatif olamaz.");
 
             DisplayOrder = order;
             UpdatedAt = DateTime.UtcNow;
@@ -83,16 +83,16 @@ namespace Rezervise.Domain.Entities
         public void SetParentCategory(ServiceCategory? parentCategory)
         {
             if (parentCategory != null && parentCategory.Id == Id)
-                throw new DomainException("Kategori kendisinin ust kategorisi olamaz.");
+                throw new DomainException("Kategori kendisinin üst kategorisi olamaz.");
 
             if (parentCategory != null && parentCategory.ParentCategoryId == Id)
-                throw new DomainException("Dongusel kategori iliskisi olusturulamaz.");
+                throw new DomainException("Döngüsel kategori ilişkisi oluşturulamaz.");
 
             if (parentCategory != null && _subCategories.Any())
-                throw new DomainException("Alt kategorisi olan bir kategori baska bir kategoriye baglanamaz.");
+                throw new DomainException("Alt kategorisi olan bir kategori başka bir kategoriye bağlanamaz.");
 
             if (parentCategory != null && _services.Any())
-                throw new DomainException("Hizmeti olan bir kategori baska bir kategoriye baglanamaz.");
+                throw new DomainException("Hizmeti olan bir kategori başka bir kategoriye bağlanamaz.");
 
             if (ParentCategory != null)
             {
@@ -113,10 +113,10 @@ namespace Rezervise.Domain.Entities
         public void AddTranslation(string languageCode, string name, string? description = null)
         {
             if (string.IsNullOrWhiteSpace(languageCode))
-                throw new DomainException("Dil kodu bos olamaz.");
+                throw new DomainException("Dil kodu boş olamaz.");
 
             if (_translations.Any(t => t.LanguageCode.Equals(languageCode.Trim().ToLowerInvariant(), StringComparison.OrdinalIgnoreCase)))
-                throw new DomainException($"'{languageCode}' dili icin zaten ceviri mevcut.");
+                throw new DomainException($"'{languageCode}' dili için zaten çeviri mevcut.");
 
             var translation = new ServiceCategoryTranslation(Id, languageCode, name, description);
             _translations.Add(translation);
@@ -132,7 +132,7 @@ namespace Rezervise.Domain.Entities
                 t.LanguageCode.Equals(normalized, StringComparison.OrdinalIgnoreCase));
 
             if (translation is null)
-                throw new DomainException($"'{languageCode}' dili icin ceviri bulunamadi.");
+                throw new DomainException($"'{languageCode}' dili için çeviri bulunamadı.");
 
             translation.Update(name, description);
             UpdatedAt = DateTime.UtcNow;
@@ -147,10 +147,10 @@ namespace Rezervise.Domain.Entities
                 t.LanguageCode.Equals(normalized, StringComparison.OrdinalIgnoreCase));
 
             if (translation is null)
-                throw new DomainException($"'{languageCode}' dili icin ceviri bulunamadi.");
+                throw new DomainException($"'{languageCode}' dili için çeviri bulunamadı.");
 
             if (_translations.Count == 1)
-                throw new DomainException("En az bir ceviri bulunmalidir.");
+                throw new DomainException("En az bir çeviri bulunmalıdır.");
 
             _translations.Remove(translation);
             UpdatedAt = DateTime.UtcNow;
@@ -221,7 +221,7 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(service));
 
             if (service.ServiceCategoryId != Id)
-                throw new DomainException("Hizmet bu kategoriye ait degil.");
+                throw new DomainException("Hizmet bu kategoriye ait değil.");
 
             if (!IsLeaf())
                 throw new DomainException("Sadece leaf kategorilere hizmet eklenebilir.");
@@ -236,7 +236,7 @@ namespace Rezervise.Domain.Entities
                 throw new ArgumentNullException(nameof(service));
 
             if (!_services.Contains(service))
-                throw new DomainException("Bu hizmet kategoride bulunamadi.");
+                throw new DomainException("Bu hizmet kategoride bulunamadı.");
 
             _services.Remove(service);
             UpdatedAt = DateTime.UtcNow;

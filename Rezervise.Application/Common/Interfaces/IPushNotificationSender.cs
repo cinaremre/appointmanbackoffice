@@ -3,17 +3,17 @@ using Rezervise.Application.Common.Models;
 namespace Rezervise.Application.Common.Interfaces
 {
     /// <summary>
-    /// Tek bir push bildiriminin gonderim sonucu.
+    /// Tek bir push bildiriminin gönderim sonucu.
     /// </summary>
     public record PushSendResult
     {
-        /// <summary>Gonderim FCM tarafindan kabul edildi mi?</summary>
+        /// <summary>Gönderim FCM tarafından kabul edildi mi?</summary>
         public bool Success { get; init; }
 
-        /// <summary>FCM token'i gecersiz/iliskisi kaldirilmis bildirir (UNREGISTERED).</summary>
+        /// <summary>FCM token'i geçersiz/ilişkisi kaldırılmış bildirir (UNREGISTERED).</summary>
         public bool InvalidToken { get; init; }
 
-        /// <summary>Basarisizlikta saglayici mesaji (log icin).</summary>
+        /// <summary>Başarısızlıkta sağlayıcı mesajı (log için).</summary>
         public string? Error { get; init; }
 
         public static PushSendResult Ok => new() { Success = true };
@@ -23,34 +23,34 @@ namespace Rezervise.Application.Common.Interfaces
     }
 
     /// <summary>
-    /// Push bildirimi tasimasi soyutlamasi (SMS/e-posta deseni ile ayni):
-    /// somut saglayici FCM'dir; yapilandirma yoksa log tasimasi kullanilir.
+    /// Push bildirimi taşıması soyutlaması (SMS/e-posta deseni ile aynı):
+    /// somut sağlayıcı FCM'dir; yapılandırma yoksa log taşıması kullanılır.
     /// </summary>
     public interface IPushNotificationSender
     {
-        /// <summary>Tek cihaza bildirim gonderir; tasima hatasi istisna DEGIL, sonuc doner.</summary>
-        /// <param name="message">Gonderilecek bildirim.</param>
-        /// <param name="cancellationToken">Iptal token'i.</param>
-        /// <returns>Gonderim sonucu.</returns>
+        /// <summary>Tek cihaza bildirim gönderir; taşıma hatası istisna DEGIL, sonuç döner.</summary>
+        /// <param name="message">Gönderilecek bildirim.</param>
+        /// <param name="cancellationToken">İptal token'i.</param>
+        /// <returns>Gönderim sonucu.</returns>
         Task<PushSendResult> SendAsync(PushMessage message, CancellationToken cancellationToken = default);
     }
 
     /// <summary>
-    /// Uretim tarafinin yazdigi push kuyrugu. Istek thread'i asla beklemez.
+    /// Üretim tarafının yazdığı push kuyruğu. İstek thread'i asla beklemez.
     /// </summary>
     public interface IPushQueue
     {
-        /// <summary>Bildirimi kuyruga alir; kuyruk doluysa reddeder.</summary>
-        /// <param name="message">Kuyruga alinacak bildirim.</param>
+        /// <summary>Bildirimi kuyruğa alır; kuyruk doluysa reddeder.</summary>
+        /// <param name="message">Kuyruğa alınacak bildirim.</param>
         /// <returns>Kabul edilirse true.</returns>
         bool TryEnqueue(PushMessage message);
     }
 
-    /// <summary>Arka plan servislerinin okudugu push kuyrugu.</summary>
+    /// <summary>Arka plan servislerinin okuduğu push kuyruğu.</summary>
     public interface IPushQueueReader
     {
-        /// <summary>Kuyrugu sonlandirilincaya kadar sirayla okur.</summary>
-        /// <param name="cancellationToken">Iptal token'i.</param>
+        /// <summary>Kuyruğu sonlandırılıncaya kadar sırayla okur.</summary>
+        /// <param name="cancellationToken">İptal token'i.</param>
         /// <returns>Arka arkaya bildirimler.</returns>
         IAsyncEnumerable<PushMessage> ReadAllAsync(CancellationToken cancellationToken = default);
     }

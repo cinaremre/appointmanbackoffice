@@ -4,21 +4,21 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Businesses.Commands.UpdateMyBusiness
 {
     /// <summary>
-    /// Isletme sahibinin kendi isletme bilgilerini guncellemesi.
-    /// Sahiplik handler'da dogrulanir; degisiklik entity'nin kendi
-    /// Set metotlariyla yapilir ve denetim kaydina yazilir.
+    /// İşletme sahibinin kendi işletme bilgilerini güncellemesi.
+    /// Sahiplik handler'da doğrulanır; değişiklik entity'nin kendi
+    /// Set metotlarıyla yapılır ve denetim kaydına yazılır.
     /// </summary>
     public class UpdateMyBusinessCommand : IRequest<Result<Guid>>
     {
         public Guid BusinessId { get; set; }
 
-        /// <summary>Yeni isletme adi; gonderildiyse guncellenir.</summary>
+        /// <summary>Yeni işletme adı; gönderildiyse güncellenir.</summary>
         public string? Name { get; set; }
 
-        /// <summary>Yeni aciklama; gonderildiyse guncellenir.</summary>
+        /// <summary>Yeni açıklama; gönderildiyse güncellenir.</summary>
         public string? Description { get; set; }
 
-        /// <summary>Opsiyonel islem gerekcesi; denetim kaydina yazilir.</summary>
+        /// <summary>Opsiyonel işlem gerekçesi; denetim kaydına yazılır.</summary>
         public string? Reason { get; set; }
     }
 }

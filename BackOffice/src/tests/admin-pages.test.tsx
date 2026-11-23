@@ -8,8 +8,8 @@ import { AppointmentsPage } from "../features/appointments/pages/AppointmentsPag
 import { SubscriptionsPage } from "../features/subscriptions/pages/SubscriptionsPage";
 
 /**
- * Admin sayfalarinin smoke testleri: sahte oturum + fetch mock ile
- * sayfanin veriyi render ettigi dogrulanir (dokuman 28.2 component tests).
+ * Admin sayfalarının smoke testleri: sahte oturum + fetch mock ile
+ * sayfanın veriyi render ettigi doğrulanır (doküman 28.2 component tests).
  */
 
 function seedAuth(role = "SuperAdmin") {
@@ -37,7 +37,7 @@ function jsonEnvelope(data: unknown, pagination?: unknown) {
   return { data, pagination: pagination ?? null, meta: { correlationId: "t" } };
 }
 
-describe("Admin sayfalari (smoke)", () => {
+describe("Admin sayfaları (smoke)", () => {
   afterEach(() => {
     sessionStorage.clear();
     vi.restoreAllMocks();
@@ -52,7 +52,7 @@ describe("Admin sayfalari (smoke)", () => {
           JSON.stringify(
             jsonEnvelope(
               [
-                { id: "s1", businessId: "b1", name: "Sac Kesimi", price: 500, currency: "TRY", durationMinutes: 30, isActive: true },
+                { id: "s1", businessId: "b1", name: "Saç Kesimi", price: 500, currency: "TRY", durationMinutes: 30, isActive: true },
               ],
               { page: 1, pageSize: 50, totalCount: 1, totalPages: 1, hasMore: false },
             ),
@@ -64,10 +64,10 @@ describe("Admin sayfalari (smoke)", () => {
 
     renderPage(<ServicesPage />);
 
-    expect(await screen.findByText("Sac Kesimi")).toBeInTheDocument();
+    expect(await screen.findByText("Saç Kesimi")).toBeInTheDocument();
   });
 
-  it("AppointmentsPage durum etiketini Turkce gosterir", async () => {
+  it("AppointmentsPage durum etiketini Türkçe gösterir", async () => {
     seedAuth();
     vi.stubGlobal(
       "fetch",
@@ -88,12 +88,12 @@ describe("Admin sayfalari (smoke)", () => {
 
     renderPage(<AppointmentsPage />);
 
-    // status 1 -> Confirmed; sayisal kod ham gosterilmemeli.
+    // status 1 -> Confirmed; sayısal kod ham gösterilmemeli.
     expect(await screen.findByText("Confirmed")).toBeInTheDocument();
     expect(screen.queryByText(/^1$/)).not.toBeInTheDocument();
   });
 
-  it("SubscriptionsPage bos plan listesi icin EmptyState gosterir", async () => {
+  it("SubscriptionsPage boş plan listesi için EmptyState gösterir", async () => {
     seedAuth();
     vi.stubGlobal(
       "fetch",
@@ -104,6 +104,6 @@ describe("Admin sayfalari (smoke)", () => {
 
     renderPage(<SubscriptionsPage />);
 
-    expect(await screen.findByText(/Henuz abonelik plani tanimlanmamis/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Henüz abonelik planı tanımlanmamış/i)).toBeInTheDocument();
   });
 });

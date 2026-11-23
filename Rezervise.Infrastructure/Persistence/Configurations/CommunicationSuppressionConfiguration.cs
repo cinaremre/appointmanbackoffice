@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Kanal bazli tam gonderim engeli. Amac fark etmeksizin o kanal
-    /// kapatilir; yeni izin verildiginde silinir.
+    /// Kanal bazlı tam gönderim engeli. Amaç fark etmeksizin o kanal
+    /// kapatılır; yeni izin verildiğinde silinir.
     /// </summary>
     public class CommunicationSuppressionConfiguration : BaseConfiguration<CommunicationSuppression>
     {
@@ -31,8 +31,8 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
                 .IsRequired(false)
                 .HasMaxLength(200);
 
-            // Iliskiler acikca Restrict: convention cascade SQL Server'da
-            // multiple cascade path hatasi uretir.
+            // İlişkiler açıkça Restrict: convention cascade SQL Server'da
+            // multiple cascade path hatası üretir.
             builder.HasOne(x => x.Business)
                 .WithMany()
                 .HasForeignKey(x => x.BusinessId)

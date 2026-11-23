@@ -6,17 +6,17 @@ namespace Rezervise.Domain.Enums
     public enum EnumNotificationType
     {
         /// <summary>
-        /// Randevu Hatirlatma - Randevu �ncesi hatirlatma bildirimi
+        /// Randevu Hatırlatma - Randevu öncesi hatırlatma bildirimi
         /// </summary>
         AppointmentReminder = 0,
 
         /// <summary>
-        /// Randevu Onayi - Randevu onaylandi bildirimi
+        /// Randevu Onayı - Randevu onaylandı bildirimi
         /// </summary>
         AppointmentConfirmation = 1,
 
         /// <summary>
-        /// Randevu Iptali - Randevu iptal edildi bildirimi
+        /// Randevu İptali - Randevu iptal edildi bildirimi
         /// </summary>
         AppointmentCancellation = 2,
 
@@ -31,62 +31,62 @@ namespace Rezervise.Domain.Enums
         Promotional = 4,
 
         /// <summary>
-        /// Sistem - Sistem kaynakli bildirimler
+        /// Sistem - Sistem kaynaklı bildirimler
         /// </summary>
         System = 5,
 
         /// <summary>
-        /// Yorum Istegi - Randevu sonrasi yorum talebi
+        /// Yorum İsteği - Randevu sonrası yorum talebi
         /// </summary>
         ReviewRequest = 6,
 
         /// <summary>
-        /// Isletme Dogrulama - Isletme onaylandi bildirimi
+        /// İşletme Doğrulama - İşletme onaylandı bildirimi
         /// </summary>
         BusinessVerification = 7,
 
         /// <summary>
-        /// Randevu Tamamlama - Randevu tamamlandi bildirimi
+        /// Randevu Tamamlama - Randevu tamamlandı bildirimi
         /// </summary>
         AppointmentCompleted = 8,
 
         /// <summary>
-        /// Randevu Gelmedi - M�steri randevuya gelmedi bildirimi
+        /// Randevu Gelmedi - Müsteri randevuya gelmedi bildirimi
         /// </summary>
         AppointmentNoShow = 9,
 
         /// <summary>
-        /// �deme Hatirlatma - �deme hatirlatma bildirimi
+        /// Ödeme Hatırlatma - Ödeme hatırlatma bildirimi
         /// </summary>
         PaymentReminder = 10,
 
         /// <summary>
-        /// �deme Onayi - �deme basarili bildirimi
+        /// Ödeme Onayı - Ödeme başarılı bildirimi
         /// </summary>
         PaymentConfirmation = 11,
 
         /// <summary>
-        /// �deme Iptali - �deme iptal bildirimi
+        /// Ödeme İptali - Ödeme iptal bildirimi
         /// </summary>
         PaymentCancellation = 12,
 
         /// <summary>
-        /// Yeni Yorum - Isletmeye yeni yorum yapildi bildirimi
+        /// Yeni Yorum - İşletmeye yeni yorum yapıldı bildirimi
         /// </summary>
         NewReview = 13,
 
         /// <summary>
-        /// Favori Hatirlatma - Favori isletmede kampanya bildirimi
+        /// Favori Hatırlatma - Favori işletmede kampanya bildirimi
         /// </summary>
         FavoriteReminder = 14,
 
         /// <summary>
-        /// Isletme Takip - Isletme takip bildirimi
+        /// İşletme Takip - İşletme takip bildirimi
         /// </summary>
         BusinessFollow = 15,
 
         /// <summary>
-        /// G�venlik - G�venlik kaynakli bildirimler
+        /// Güvenlik - Güvenlik kaynaklı bildirimler
         /// </summary>
         Security = 16,
 
@@ -96,22 +96,22 @@ namespace Rezervise.Domain.Enums
         NewMessage = 17,
 
         /// <summary>
-        /// Randevu Iptal Uyarisi - Yakin randevu iptal uyarisi
+        /// Randevu İptal Uyarısı - Yakın randevu iptal uyarısı
         /// </summary>
         CancellationWarning = 18,
 
         /// <summary>
-        /// Abonelik - Abonelik kaynakli bildirimler
+        /// Abonelik - Abonelik kaynaklı bildirimler
         /// </summary>
         Subscription = 19,
 
         /// <summary>
-        /// �zel G�n - Dogum g�n� vb. �zel g�n bildirimleri
+        /// Özel Gün - Doğum günü vb. özel gün bildirimleri
         /// </summary>
         SpecialDay = 20,
 
         /// <summary>
-        /// Acil Durum - Acil durum bildirimleri
+        /// Açıl Durum - Açıl durum bildirimleri
         /// </summary>
         Emergency = 21,
 

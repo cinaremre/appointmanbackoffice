@@ -14,7 +14,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.RescheduleAppoint
 {
     public class RescheduleAppointmentCommandHandler : IRequestHandler<RescheduleAppointmentCommand, Result<Guid>>
     {
-        private const string BlacklistMessage = "Randevunuz olusturulamiyor, l�tfen isletme ile iletisime ge�iniz.";
+        private const string BlacklistMessage = "Randevunuz oluşturulamıyor, lütfen işletme ile iletişime geçiniz.";
 
         private readonly IRepository<Appointment> _appointmentRepository;
         private readonly IRepository<Business> _businessRepository;
@@ -60,31 +60,31 @@ namespace Rezervise.Application.Features.Appointments.Commands.RescheduleAppoint
 
                 var now = _dateTimeService.UtcNow;
 
-                // Butun kontroller ve mutation ayni SERIALIZABLE transaction icinde.
+                // Bütün kontroller ve mutation aynı SERIALIZABLE transaction içinde.
                 var result = await _unitOfWork.ExecuteInTransactionAsync(async token =>
                 {
-                    // 1. Randevu kontrolu
+                    // 1. Randevu kontrolü
                     var appointment = await _appointmentRepository.GetByIdAsync(request.AppointmentId, token);
                     if (appointment is null)
                         return Result<Guid>.Failure(Error.NotFound("Randevu", request.AppointmentId.ToString()));
 
-                    // 2. Yetki kontrolu, isletme ve calisan bilgisi yuklendikten sonra
-                    //    (4b) numarali adimda yapilir; boylece isletme sahibi ve randevunun
-                    //    calisani da randevuyu yeniden planlayabilir.
+                    // 2. Yetki kontrolü, işletme ve çalışan bilgisi yüklendikten sonra
+                    //    (4b) numaralı adımda yapılır; böylece işletme sahibi ve randevunun
+                    //    çalışanı da randevuyu yeniden planlayabilir.
 
-                    // 3. Isletme kontrolu
+                    // 3. İşletme kontrolü
                     var business = await _businessRepository.GetByIdWithIncludesAsync(
                         appointment.BusinessId,
                         token,
                         b => b.WorkingHours);
 
                     if (business is null)
-                        return Result<Guid>.Failure(Error.NotFound("Isletme", appointment.BusinessId.ToString()));
+                        return Result<Guid>.Failure(Error.NotFound("İşletme", appointment.BusinessId.ToString()));
 
                     if (!business.IsActive)
-                        return Result<Guid>.Failure(Error.BusinessRule("Isletme aktif degil."));
+                        return Result<Guid>.Failure(Error.BusinessRule("İşletme aktif değil."));
 
-                    // 4. Calisan kontrolu (degisebilir veya ayni kalir)
+                    // 4. Çalışan kontrolü (değişebilir veya aynı kalır)
                     var employeeId = request.NewEmployeeId ?? appointment.EmployeeId;
 
                     var employee = await _employeeRepository.GetByIdWithIncludesAsync(
@@ -95,18 +95,18 @@ namespace Rezervise.Application.Features.Appointments.Commands.RescheduleAppoint
                         e => e.TimeOffs);
 
                     if (employee is null)
-                        return Result<Guid>.Failure(Error.NotFound("Calisan", employeeId.ToString()));
+                        return Result<Guid>.Failure(Error.NotFound("Çalışan", employeeId.ToString()));
 
                     if (!employee.IsActive)
-                        return Result<Guid>.Failure(Error.BusinessRule("Calisan aktif degil."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Çalışan aktif değil."));
 
                     if (!employee.IsAvailableForBooking)
-                        return Result<Guid>.Failure(Error.BusinessRule("Calisan su anda randevu kabul etmiyor."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Çalışan su anda randevu kabul etmiyor."));
 
                     if (employee.BusinessId != appointment.BusinessId)
-                        return Result<Guid>.Failure(Error.BusinessRule("Calisan bu isletmeye ait degil."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Çalışan bu işletmeye ait değil."));
 
-                    // 4b. Yetki kontrolu - randevu sahibi musteri, isletme sahibi veya atanmis calisan.
+                    // 4b. Yetki kontrolü - randevu sahibi müşteri, işletme sahibi veya atanmış çalışan.
                     var isBusinessSide =
                         CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId) ||
                         employee.IsLinkedToUser(_currentUser.UserId.Value);
@@ -114,24 +114,24 @@ namespace Rezervise.Application.Features.Appointments.Commands.RescheduleAppoint
                     if (!isBusinessSide && !CallerAuthorization.CanActAsUser(_currentUser, appointment.UserId))
                         return Result<Guid>.Failure(Error.Forbidden("Bu randevuyu yeniden planlama yetkiniz yok."));
 
-                    // 4c. Musteri son 2 saatte degisiklik yapamaz; isletme ve calisan muaf.
+                    // 4c. Müşteri son 2 saatte değişiklik yapamaz; işletme ve çalışan muaf.
                     if (!isBusinessSide && appointment.IsWithinCustomerCutoff(now))
                         return Result<Guid>.Failure(Error.BusinessRule(
-                            $"Randevuya {Appointment.CustomerChangeCutoffHours} saatten az kaldigi icin degistirilemez."));
+                            $"Randevuya {Appointment.CustomerChangeCutoffHours} saatten az kaldığı için değiştirilemez."));
 
-                    // 5. Hizmet kontrolu
+                    // 5. Hizmet kontrolü
                     var service = await _serviceRepository.GetByIdAsync(appointment.ServiceId, token);
                     if (service is null)
                         return Result<Guid>.Failure(Error.NotFound("Hizmet", appointment.ServiceId.ToString()));
 
                     if (!service.IsActive)
-                        return Result<Guid>.Failure(Error.BusinessRule("Hizmet aktif degil."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Hizmet aktif değil."));
 
-                    // 6. Calisan bu hizmeti verebiliyor mu?
+                    // 6. Çalışan bu hizmeti verebiliyor mü?
                     if (!employee.CanProvideService(appointment.ServiceId))
-                        return Result<Guid>.Failure(Error.BusinessRule("Calisan bu hizmeti veremiyor."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Çalışan bu hizmeti veremiyor."));
 
-                    // 7. Calisma saati kontrolu - UTC anini isletme yerel zamanina cevir.
+                    // 7. Çalışma saati kontrolü - UTC anını işletme yerel zamanına çevir.
                     var start = request.NewAppointmentDate;
                     var durationMinutes = service.DurationInMinutes;
                     var end = start.AddMinutes(durationMinutes);
@@ -139,17 +139,17 @@ namespace Rezervise.Application.Features.Appointments.Commands.RescheduleAppoint
                     var localEnd = localStart.AddMinutes(durationMinutes);
 
                     if (!business.IsOpenDuring(localStart, localEnd))
-                        return Result<Guid>.Failure(Error.BusinessRule("Isletme bu saatte calismiyor."));
+                        return Result<Guid>.Failure(Error.BusinessRule("İşletme bu saatte çalışmıyor."));
 
                     if (!employee.IsWorkingDuring(localStart, localEnd))
-                        return Result<Guid>.Failure(Error.BusinessRule("Calisan bu saatte calismiyor."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Çalışan bu saatte çalışmıyor."));
 
                     if (employee.IsOnApprovedTimeOff(localStart, localEnd))
-                        return Result<Guid>.Failure(Error.BusinessRule("Calisan bu tarihte izinde."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Çalışan bu tarihte izinde."));
 
-                    // 8. Cakisma kontrolu. Domain overlap formulu:
+                    // 8. Çakışma kontrolü. Domain overlap formülü:
                     //    appointment.EndTime ?? appointment.AppointmentDate.AddMinutes(service.DurationInMinutes)
-                    //    DB tarafinda a.Service.DurationInMinutes kullanilmadan fallback sure ile uygulanir.
+                    //    DB tarafında a.Service.DurationInMinutes kullanılmadan fallback süre ile uygulanır.
                     var hasConflict = await _bookingGuard.HasConflictAsync(
                         employeeId,
                         start,
@@ -159,13 +159,13 @@ namespace Rezervise.Application.Features.Appointments.Commands.RescheduleAppoint
                         cancellationToken: token);
 
                     if (hasConflict)
-                        return Result<Guid>.Failure(Error.Conflict("Calisanin bu saatte baska bir randevusu var."));
+                        return Result<Guid>.Failure(Error.Conflict("Çalışanın bu saatte başka bir randevusu var."));
 
-                    // 9. Kara liste tekrar kontrolu (bu islemde yeni kayit olusturulmaz).
+                    // 9. Kara liste tekrar kontrolü (bu işlemde yeni kayıt oluşturulmaz).
                     if (await IsBlacklistedAsync(request.UserId, appointment.BusinessId, token))
                         return Result<Guid>.Failure(Error.BusinessRule(BlacklistMessage));
 
-                    // 10. Aktif randevu limiti, yeniden planlanan randevu haric.
+                    // 10. Aktif randevu limiti, yeniden planlanan randevu hariç.
                     var activeAppointmentCount = await CountActiveAppointmentsAsync(
                         request.UserId, appointment.BusinessId, appointment.Id, now, token);
 
@@ -173,12 +173,12 @@ namespace Rezervise.Application.Features.Appointments.Commands.RescheduleAppoint
                         return Result<Guid>.Failure(
                             Error.BusinessRule("Aktif randevu limiti nedeniyle yeniden planlanamaz."));
 
-                    // 11. Calisan degisikligi kalici uygulanir; ayni calisansa domain no-op yapar.
+                    // 11. Çalışan değişikliği kalıcı uygulanır; aynı çalışansa domain no-op yapar.
                     var changedBy = request.RescheduledBy ?? "User";
                     if (request.NewEmployeeId.HasValue)
                         appointment.ReassignEmployee(request.NewEmployeeId.Value, changedBy, now);
 
-                    // 12. Randevuyu yeni tarihe tasir ve bitis saatini servis suresinden yazar.
+                    // 12. Randevuyu yeni tarihe taşır ve bitiş saatini servis süresinden yazar.
                     appointment.Reschedule(start, changedBy, now);
                     appointment.SetEndTime(end);
 
@@ -196,7 +196,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.RescheduleAppoint
             }
             catch (Exception)
             {
-                return Result<Guid>.Failure(Error.Internal("Randevu yeniden planlanirken bir hata olustu."));
+                return Result<Guid>.Failure(Error.Internal("Randevu yeniden planlanırken bir hata oluştu."));
             }
         }
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Anonim takip olayi. Append-only defterdir; kisisel veri icermez.
+    /// Anonim takip olayı. Append-only defterdir; kişisel veri içermez.
     /// </summary>
     public class TrackingEventConfiguration : BaseConfiguration<TrackingEvent>
     {

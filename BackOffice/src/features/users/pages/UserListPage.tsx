@@ -27,11 +27,11 @@ import { PERMISSIONS } from "../../../shared/constants/permissions";
 import type { UserDetail, UserListItem, UserManageAction } from "../types";
 
 /**
- * Kullanici listesi (dokuman 12): server-side sayfalama + filtreler,
- * detay diyalogu (profil + uyelikler) ve gerekceli yonetim aksiyonlari.
- * Yonetim butonlari admin.user.manage izni olmadan RENDER EDILMEZ;
- * nihai yetki kontrolu yine sunucudadir. Sifre/hash alani API'de
- * bulunmadigi icin UI'da hicbir yerde gosterilmez.
+ * Kullanıcı listesi (doküman 12): server-side sayfalama + filtreler,
+ * detay diyalogu (profil + üyelikler) ve gerekçeli yönetim aksiyonları.
+ * Yönetim butonları admin.user.manage izni olmadan RENDER EDİLMEZ;
+ * nihai yetki kontrolü yine sunucudadır. Şifre/hash alanı API'de
+ * bulunmadigi için UI'da hicbir yerde gösterilmez.
  */
 
 type PendingManage = { userId: string; action: UserManageAction; userLabel: string };
@@ -43,15 +43,15 @@ const ACTION_ENDPOINTS: Record<UserManageAction, string> = {
 };
 
 const ACTION_TITLES: Record<UserManageAction, string> = {
-  lock: "Kullanicinin kilitlenmesi",
-  unlock: "Kullanici kilidinin acilmasi",
-  "revoke-sessions": "Oturumlarin sonlandirilmasi",
+  lock: "Kullanıcının kilitlenmesi",
+  unlock: "Kullanıcı kilidinin açılması",
+  "revoke-sessions": "Oturumların sonlandırılması",
 };
 
 const IMPACT_TEXTS: Record<UserManageAction, string> = {
-  lock: "Kullanicinin hesabi kilitlenir ve sisteme girisi engellenir. Nihai kontrol sunucudadir; gerekceniz denetim kaydina yazilir.",
-  unlock: "Kullanicinin hesap kilidi acilir ve girisi yeniden mumkun olur. Nihai kontrol sunucudadir; gerekceniz denetim kaydina yazilir.",
-  "revoke-sessions": "Kullanicinin tum aktif oturumlari aninda sonlandirilir; acik sekmelerde tekrar giris istenecek. Gerekceniz denetim kaydina yazilir.",
+  lock: "Kullanıcının hesabı kilitlenir ve sisteme girişi engellenir. Nihai kontrol sunucudadır; gerekçeniz denetim kaydına yazılır.",
+  unlock: "Kullanıcının hesap kilidi açılır ve girişi yeniden mümkün olur. Nihai kontrol sunucudadır; gerekçeniz denetim kaydına yazılır.",
+  "revoke-sessions": "Kullanıcının tüm aktif oturumları anında sonlandırılır; açık sekmelerde tekrar giriş istenecek. Gerekçeniz denetim kaydına yazılır.",
 };
 
 function formatDate(value?: string | null): string {
@@ -60,15 +60,15 @@ function formatDate(value?: string | null): string {
   return Number.isNaN(date.getTime()) ? "-" : date.toLocaleString("tr-TR");
 }
 
-/** ApiError'dan kullaniciya uygun mesaj + traceId uretir. */
+/** ApiError'dan kullanıcıya uygun mesaj + traceId üretir. */
 function errorText(error: unknown): string {
   if (error instanceof ApiError) {
     return error.traceId ? `${error.userMessage} (traceId: ${error.traceId})` : error.userMessage;
   }
-  return "Islem basarisiz. Lutfen tekrar deneyin.";
+  return "İşlem başarısız. Lütfen tekrar deneyin.";
 }
 
-/** Detay diyalogu: GET /users/{id} — profil, uyelikler ve pozisyonlar. */
+/** Detay diyalogu: GET /users/{id} — profil, üyelikler ve pozisyonlar. */
 function UserDetailDialog({ userId, onClose }: { userId: string | null; onClose: () => void }) {
   const theme = useTheme();
   const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -82,7 +82,7 @@ function UserDetailDialog({ userId, onClose }: { userId: string | null; onClose:
 
   return (
     <Dialog open={userId !== null} onClose={onClose} maxWidth="sm" fullWidth fullScreen={is_mobile}>
-      <DialogTitle>Kullanici Detayi</DialogTitle>
+      <DialogTitle>Kullanıcı Detayı</DialogTitle>
       <DialogContent>
         {detailQuery.isLoading ? (
           <LoadingState />
@@ -101,15 +101,15 @@ function UserDetailDialog({ userId, onClose }: { userId: string | null; onClose:
               <Typography>
                 Durum: {detail.isLockedOut ? <StatusBadge status="Locked" /> : <StatusBadge status="Active" />}
               </Typography>
-              <Typography>Son Giris: {formatDate(detail.lastLoginDate)}</Typography>
-              <Typography>Kayit Tarihi: {formatDate(detail.createdAt)}</Typography>
+              <Typography>Son Giriş: {formatDate(detail.lastLoginDate)}</Typography>
+              <Typography>Kayıt Tarihi: {formatDate(detail.createdAt)}</Typography>
             </Stack>
             <Box>
               <Typography variant="subtitle2" gutterBottom>
-                Sahip Olunan Isletmeler
+                Sahip Olunan İşletmeler
               </Typography>
               {detail.ownedBusinesses.length === 0 ? (
-                <Typography color="text.secondary">Kayit yok.</Typography>
+                <Typography color="text.secondary">Kayıt yok.</Typography>
               ) : (
                 detail.ownedBusinesses.map((business) => (
                   <Typography key={business.id}>
@@ -120,14 +120,14 @@ function UserDetailDialog({ userId, onClose }: { userId: string | null; onClose:
             </Box>
             <Box>
               <Typography variant="subtitle2" gutterBottom>
-                Calisan Pozisyonlari
+                Çalışan Pozisyonları
               </Typography>
               {detail.employeePositions.length === 0 ? (
-                <Typography color="text.secondary">Kayit yok.</Typography>
+                <Typography color="text.secondary">Kayıt yok.</Typography>
               ) : (
                 detail.employeePositions.map((position) => (
                   <Typography key={`${position.employeeId}-${position.businessId}`}>
-                    Calisan {position.employeeId} - Isletme {position.businessId}
+                    Çalışan {position.employeeId} - İşletme {position.businessId}
                   </Typography>
                 ))
               )}
@@ -144,7 +144,7 @@ export function UserListPage() {
   const queryClient = useQueryClient();
   const canManage = has_permission(PERMISSIONS.userManage);
 
-  // Filtre girisleri ayri tutulur; "Filtrele" ile uygulanir.
+  // Filtre girişleri ayrı tutulur; "Filtrele" ile uygulanır.
   const [searchInput, setSearchInput] = useState("");
   const [emailInput, setEmailInput] = useState("");
   const [isActiveInput, setIsActiveInput] = useState("");
@@ -171,13 +171,13 @@ export function UserListPage() {
       ),
   });
 
-  // Tum yonetim aksiyonlari body {reason} ile gider; gerekce zorunludur.
+  // Tüm yönetim aksiyonları body {reason} ile gider; gerekçe zorunludur.
   const manageMutation = useMutation({
     mutationFn: ({ userId, action, reason }: PendingManage & { reason: string }) =>
       postItem(`/users/${userId}/${ACTION_ENDPOINTS[action]}`, { reason }),
     onSuccess: () => {
       setPending(null);
-      setSnackbar({ severity: "success", message: "Islem uygulandi ve denetim kaydina yazildi." });
+      setSnackbar({ severity: "success", message: "İşlem uygulandı ve denetim kaydına yazıldı." });
       void queryClient.invalidateQueries({ queryKey: ["users"] });
     },
     onError: (error: unknown) => {
@@ -198,7 +198,7 @@ export function UserListPage() {
       header: "Durum",
       render: (row) => (row.isLockedOut ? <StatusBadge status="Locked" /> : <StatusBadge status="Active" />),
     },
-    { key: "lastLogin", header: "Son Giris", render: (row) => formatDate(row.lastLoginDate) },
+    { key: "lastLogin", header: "Son Giriş", render: (row) => formatDate(row.lastLoginDate) },
   ];
 
   const applyFilters = () => {
@@ -208,7 +208,7 @@ export function UserListPage() {
 
   return (
     <Box>
-      <PageHeader title="Kullanicilar" />
+      <PageHeader title="Kullanıcılar" />
 
       <Stack
         direction={{ xs: "column", md: "row" }}
@@ -237,7 +237,7 @@ export function UserListPage() {
           onChange={(e) => setIsActiveInput(e.target.value)}
           sx={{ minWidth: { xs: 0, sm: 160 } }}
         >
-          <MenuItem value="">Tumu</MenuItem>
+          <MenuItem value="">Tümü</MenuItem>
           <MenuItem value="true">Aktif</MenuItem>
           <MenuItem value="false">Aktif Olmayan</MenuItem>
         </TextField>
@@ -259,8 +259,8 @@ export function UserListPage() {
           setPageSize(nextSize);
           setPage(1);
         }}
-        emptyLabel="Kayitli kullanici bulunamadi."
-        ariaLabel="kullanicilar tablosu"
+        emptyLabel="Kayıtlı kullanıcı bulunamadı."
+        ariaLabel="kullanıcılar tablosu"
         onRefresh={() => void listQuery.refetch()}
         rowActions={(row) => {
           const userLabel = `${row.firstName} ${row.lastName}`;
@@ -277,7 +277,7 @@ export function UserListPage() {
                       color="primary"
                       onClick={() => setPending({ userId: row.id, action: "unlock", userLabel })}
                     >
-                      Ac
+                      Aç
                     </Button>
                   ) : (
                     <Button
@@ -293,7 +293,7 @@ export function UserListPage() {
                     color="error"
                     onClick={() => setPending({ userId: row.id, action: "revoke-sessions", userLabel })}
                   >
-                    Oturumlari Sonlandir
+                    Oturumları Sonlandır
                   </Button>
                 </>
               ) : null}

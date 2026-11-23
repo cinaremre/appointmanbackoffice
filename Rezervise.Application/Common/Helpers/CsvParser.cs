@@ -3,17 +3,17 @@ using System.Text;
 namespace Rezervise.Application.Common.Helpers
 {
     /// <summary>
-    /// Mini RFC4180 CSV parser. Tirnakli alanlari, alan icindeki virgul ve
-    /// satir sonlarini ve iki katli tirnak kacisini ("") destekler.
-    /// Harici paket kullanilmaz; test edilebilir saf static siniftir.
+    /// Mini RFC4180 CSV parser. Tırnaklı alanları, alan içindeki virgül ve
+    /// satır sonlarını ve iki katlı tırnak kaçışını ("") destekler.
+    /// Harici paket kullanılmaz; test edilebilir saf static sınıftır.
     /// </summary>
     public static class CsvParser
     {
         /// <summary>
-        /// CSV icerigini satir ve kolonlara ayirir. Tamamen bos satirlar atlanir.
+        /// CSV içeriğini satır ve kolonlara ayırır. Tamamen boş satırlar atlanır.
         /// </summary>
         /// <param name="content">Ham CSV metni.</param>
-        /// <returns>Her ogesi bir satirin alanlari olan liste.</returns>
+        /// <returns>Her öğesi bir satırın alanları olan liste.</returns>
         public static List<string[]> Parse(string content)
         {
             var rows = new List<string[]>();
@@ -34,7 +34,7 @@ namespace Rezervise.Application.Common.Helpers
                 {
                     if (c == '"')
                     {
-                        // Iki katli tirnak kacisi: "" -> tek tirnak.
+                        // İki katlı tırnak kaçışı: "" -> tek tırnak.
                         if (i + 1 < content.Length && content[i + 1] == '"')
                         {
                             current.Append('"');
@@ -67,7 +67,7 @@ namespace Rezervise.Application.Common.Helpers
                         break;
 
                     case '\r':
-                        // \r\n tek satir sonu sayilir.
+                        // \r\n tek satır sonu sayılır.
                         if (i + 1 < content.Length && content[i + 1] == '\n')
                             i++;
                         FlushRow(rows, fields, current, ref hasAnyField);
@@ -84,14 +84,14 @@ namespace Rezervise.Application.Common.Helpers
                 }
             }
 
-            // Sondaki alani/satiri da ekle (son satirnova'siz bitmis olabilir).
+            // Sondaki alani/satırı da ekle (son satırnova'siz bitmiş olabilir).
             FlushRow(rows, fields, current, ref hasAnyField);
 
             return rows;
         }
 
         /// <summary>
-        /// Bekleyen alani satira cevirir. Hic alan yoksa (bos satir) atlar.
+        /// Bekleyen alani satıra çevirir. Hiç alan yoksa (boş satır) atlar.
         /// </summary>
         private static void FlushRow(List<string[]> rows, List<string> fields, StringBuilder current, ref bool hasAnyField)
         {

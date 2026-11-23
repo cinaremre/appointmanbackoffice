@@ -32,7 +32,7 @@ namespace Rezervise.Application.Features.Users.Commands.RefreshToken
         {
             try
             {
-                // 1. Eski access token'dan kimligi al (imza, issuer ve audience hala dogrulanir).
+                // 1. Eski access token'dan kimliği al (imza, issuer ve audience hala doğrulanır).
                 var principal = _tokenService.GetPrincipalFromExpiredToken(request.AccessToken);
                 if (principal is null)
                 {
@@ -40,7 +40,7 @@ namespace Rezervise.Application.Features.Users.Commands.RefreshToken
                     return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Auth.InvalidToken"));
                 }
 
-                // 2. Kullanici kimligini coz; bozuk claim 500 degil 401 uretir.
+                // 2. Kullanıcı kimliğini çöz; bozuk claim 500 değil 401 üretir.
                 var userIdClaim = principal.FindFirst("userId")?.Value
                     ?? principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -50,7 +50,7 @@ namespace Rezervise.Application.Features.Users.Commands.RefreshToken
                     return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Auth.InvalidToken"));
                 }
 
-                // 3. Kullaniciyi bul
+                // 3. Kullanıcıyı bul
                 var users = await _userRepository.FindAsync(
                     u => u.Id == userId && !u.IsDeleted,
                     cancellationToken);
@@ -63,8 +63,8 @@ namespace Rezervise.Application.Features.Users.Commands.RefreshToken
                     return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Auth.InvalidToken"));
                 }
 
-                // 4. Reuse detection: daha once rotate edilmis bir token tekrar sunulursa
-                //    token hirsizligi varsayilir ve tum oturumlar iptal edilir.
+                // 4. Reuse detection: daha önce rotate edilmiş bir token tekrar sunulursa
+                //    token hırsızlığı varsayılır ve tüm oturumlar iptal edilir.
                 if (RefreshTokenHasher.Matches(request.RefreshToken, user.PreviousRefreshTokenHash))
                 {
                     user.RevokeRefreshToken(DateTime.UtcNow);
@@ -75,7 +75,7 @@ namespace Rezervise.Application.Features.Users.Commands.RefreshToken
                     return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Auth.RefreshTokenReused"));
                 }
 
-                // 5. Aktif token dogrulugu: iptal edilmemis, suresi gecmemis ve hash eslesmeli.
+                // 5. Aktif token doğruluğu: iptal edilmemiş, süresi geçmemiş ve hash eşleşmeli.
                 var isActiveToken = user.RefreshTokenRevokedAtUtc is null
                     && user.RefreshTokenExpiresAtUtc.HasValue
                     && user.RefreshTokenExpiresAtUtc.Value > DateTime.UtcNow
@@ -94,7 +94,7 @@ namespace Rezervise.Application.Features.Users.Commands.RefreshToken
                     return Result<RefreshTokenResponse>.Failure(Error.Unauthorized("Auth.InvalidRefreshToken"));
                 }
 
-                // 6. Rotasyon: yeni cift uretilir, eski hash onceki slota tasinir.
+                // 6. Rotasyon: yeni çift üretilir, eski hash önceki slota taşınır.
                 var newAccessToken = _tokenService.GenerateAccessToken(user);
                 var newRefreshToken = _tokenService.GenerateRefreshToken();
 

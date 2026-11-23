@@ -9,9 +9,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Owner.Businesses.Queries.GetMyBusinesses
 {
     /// <summary>
-    /// Isletme sahibinin kendi isletmelerini listeler. Sahiplik kosulu
-    /// sorgunun kendisinde tasir (OwnerId == currentUser.UserId); baska
-    /// kullanilarin isletmeleri hicbir kosulda sonuca giremez.
+    /// İşletme sahibinin kendi işletmelerini listeler. Sahiplik koşulu
+    /// sorgunun kendisinde taşır (OwnerId == currentUser.UserId); başka
+    /// kullanıların işletmeleri hiçbir koşulda sonuça giremez.
     /// </summary>
     public class GetMyBusinessesQueryHandler
         : IRequestHandler<GetMyBusinessesQuery, Result<AdminPagedResult<OwnerBusinessListItemDto>>>
@@ -33,18 +33,18 @@ namespace Rezervise.Application.Features.Owner.Businesses.Queries.GetMyBusinesse
         {
             try
             {
-                // 1. Kimlik cozumlenmisse owner portali hicbir sey acamaz.
+                // 1. Kimlik çözümlenmişse owner portalı hiçbir şey açamaz.
                 if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
                     return Result<AdminPagedResult<OwnerBusinessListItemDto>>.Failure(
                         Error.Unauthorized("Auth.Unauthorized"));
 
                 var ownerId = _currentUser.UserId.Value;
 
-                // 2. Sayfalama kurallari backoffice ortak sinirlarindan gelir.
+                // 2. Sayfalama kuralları backoffice ortak sınırlarından gelir.
                 var page = AdminPaging.NormalizePage(request.Page);
                 var pageSize = AdminPaging.ClampPageSize(request.PageSize);
 
-                // 3. Sahibe ait, silinmemis isletmeler; ad sirali.
+                // 3. Sahibe ait, silinmemiş işletmeler; ad sıralı.
                 var businesses = await _businessRepository.FindAsync(
                     b => b.OwnerId == ownerId && !b.IsDeleted,
                     cancellationToken);
@@ -82,7 +82,7 @@ namespace Rezervise.Application.Features.Owner.Businesses.Queries.GetMyBusinesse
             catch (Exception ex)
             {
                 return Result<AdminPagedResult<OwnerBusinessListItemDto>>.Failure(
-                    Error.Internal("Isletme listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("İşletme listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

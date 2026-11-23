@@ -22,8 +22,8 @@ namespace Rezervise.Application.Features.ServiceCategories.Queries.GetById
         {
             try
             {
-                // Translations yuklenmezse GetName() "Unknown" doner; SubCategories/Services
-                // yuklenmezse IsLeaf(), GetSubCategoryCount() ve GetServiceCount() yanlis olur.
+                // Translations yüklenmezse GetName() "Unknown" döner; SubCategories/Services
+                // yüklenmezse IsLeaf(), GetSubCategoryCount() ve GetServiceCount() yanlış olur.
                 var matches = await _categoryRepository.FindWithIncludesAsync(
                     c => c.Id == request.CategoryId && !c.IsDeleted,
                     new[]
@@ -62,7 +62,7 @@ namespace Rezervise.Application.Features.ServiceCategories.Queries.GetById
             catch (Exception ex)
             {
                 return Result<ServiceCategoryDto>.Failure(
-                    Error.Internal("Kategori getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kategori getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

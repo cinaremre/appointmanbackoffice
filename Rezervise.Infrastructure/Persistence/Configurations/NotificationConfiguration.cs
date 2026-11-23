@@ -43,7 +43,7 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
                 .IsRequired(false)
                 .HasMaxLength(500);
 
-            // Metadata için Value Converter
+            // Metadata iÃ§in Value Converter
             builder.Property(x => x.Metadata)
                 .IsRequired(false)
                 .HasConversion(

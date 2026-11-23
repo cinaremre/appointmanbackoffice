@@ -7,7 +7,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.RescheduleAppoint
     {
         public Guid AppointmentId { get; set; }
         public Guid UserId { get; set; }
-        public Guid? NewEmployeeId { get; set; }   // Opsiyonel: calisan degisebilir
+        public Guid? NewEmployeeId { get; set; }   // Opsiyonel: çalışan değişebilir
         public DateTime NewAppointmentDate { get; set; }
         public string? RescheduledBy { get; set; }
     }

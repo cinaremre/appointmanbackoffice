@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Isletme calisanlari ile ilgili islemleri yonetir.
+    /// İşletme çalışanları ile ilgili işlemleri yönetir.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -35,7 +35,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Sahip ID'si her zaman JWT'den cozulur; govde OwnerId degeri yetki kaynagi degildir.
+        /// Sahip ID'si her zaman JWT'den çözülür; gövde OwnerId değeri yetki kaynağı değildir.
         /// </summary>
         private IActionResult? ResolveCurrentUserId(out Guid userId)
         {
@@ -50,14 +50,14 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Yeni calisan olusturur.
+        /// Yeni çalışan oluşturur.
         /// </summary>
         [HttpPost]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] CreateEmployeeCommand command)
         {
-            // OwnerId JWT'den gelir; govde degerine guvenilmez.
+            // OwnerId JWT'den gelir; gövde değerine güvenilmez.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
@@ -72,14 +72,14 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Calisan bilgilerini gunceller.
+        /// Çalışan bilgilerini günceller.
         /// </summary>
         [HttpPut]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update([FromBody] UpdateEmployeeCommand command)
         {
-            // OwnerId JWT'den gelir; govde degerine guvenilmez.
+            // OwnerId JWT'den gelir; gövde değerine güvenilmez.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
@@ -94,14 +94,14 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Calisani aktif eder.
+        /// Çalışanı aktif eder.
         /// </summary>
         [HttpPost("{id}/activate")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Activate(Guid id, [FromBody] ActivateEmployeeCommand command)
         {
-            // ID ve sahip kimligi guvenilir kaynaklardan alinir.
+            // ID ve sahip kimliği güvenilir kaynaklardan alınır.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
@@ -116,14 +116,14 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Calisani pasif eder.
+        /// Çalışanı pasif eder.
         /// </summary>
         [HttpPost("{id}/deactivate")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Deactivate(Guid id, [FromBody] DeactivateEmployeeCommand command)
         {
-            // ID ve sahip kimligi guvenilir kaynaklardan alinir.
+            // ID ve sahip kimliği güvenilir kaynaklardan alınır.
             if (ResolveCurrentUserId(out var userId) is { } unauthorized)
                 return unauthorized;
 
@@ -138,7 +138,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Calisan iznini onaylar.
+        /// Çalışan iznini onaylar.
         /// </summary>
         [HttpPost("{timeOffId}/approve")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
@@ -148,7 +148,7 @@ namespace Rezervise.Api.Controllers
             Guid timeOffId,
             [FromBody] ApproveTimeOffCommand command)
         {
-            // JWT'den gelen kimlik govdeye yazilan RequesterId'nin yerine gecer.
+            // JWT'den gelen kimlik gövdeye yazılan RequesterId'nin yerine geçer.
             var requesterId = GetRequesterId();
             if (requesterId == Guid.Empty)
                 return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
@@ -165,7 +165,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Calisan iznini reddeder.
+        /// Çalışan iznini reddeder.
         /// </summary>
         [HttpPost("{timeOffId}/reject")]
         [ProducesResponseType(typeof(Result<Guid>), StatusCodes.Status200OK)]
@@ -175,7 +175,7 @@ namespace Rezervise.Api.Controllers
             Guid timeOffId,
             [FromBody] RejectTimeOffCommand command)
         {
-            // JWT'den gelen kimlik govdeye yazilan RequesterId'nin yerine gecer.
+            // JWT'den gelen kimlik gövdeye yazılan RequesterId'nin yerine geçer.
             var requesterId = GetRequesterId();
             if (requesterId == Guid.Empty)
                 return Unauthorized(Result<Guid>.Failure(Error.Unauthorized("Auth.InvalidUser")));
@@ -192,7 +192,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// ID'ye gore calisan getirir.
+        /// ID'ye göre çalışan getirir.
         /// </summary>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Result<EmployeeDto>), StatusCodes.Status200OK)]
@@ -209,7 +209,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Isletmeye gore calisanlari getirir.
+        /// İşletmeye göre çalışanları getirir.
         /// </summary>
         [HttpGet("business/{businessId}")]
         [ProducesResponseType(typeof(Result<List<EmployeeDto>>), StatusCodes.Status200OK)]
@@ -236,7 +236,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Musait calisanlari getirir (hizmet ve tarih filtreli).
+        /// Müsait çalışanları getirir (hizmet ve tarih filtreli).
         /// </summary>
         [HttpGet("business/{businessId}/available")]
         [ProducesResponseType(typeof(Result<List<EmployeeDto>>), StatusCodes.Status200OK)]
@@ -263,7 +263,7 @@ namespace Rezervise.Api.Controllers
         // ===== HELPER =====
 
         /// <summary>
-        /// AppointmentsController ile ayni sekilde JWT claim'lerinden istek sahibini okur.
+        /// AppointmentsController ile aynı şekilde JWT claim'lerinden istek sahibini okur.
         /// </summary>
         private Guid GetRequesterId()
         {

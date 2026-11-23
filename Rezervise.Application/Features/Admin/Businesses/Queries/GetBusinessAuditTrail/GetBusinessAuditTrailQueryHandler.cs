@@ -6,8 +6,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinessAuditTrail
 {
     /// <summary>
-    /// Isletme denetim kaydi handler'i (dokuman Modul 21). AdminAuditLog
-    /// append-only kayitlarindan okur; isletme bulunmasa bile liste bos doner.
+    /// İşletme denetim kaydı handler'i (doküman Modül 21). AdminAuditLog
+    /// append-only kayıtlarından okur; işletme bulunmasa bile liste boş döner.
     /// </summary>
     public class GetBusinessAuditTrailQueryHandler : IRequestHandler<GetBusinessAuditTrailQuery, Result<AdminAuditTrailResult>>
     {
@@ -22,16 +22,16 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinessAud
         {
             try
             {
-                // 1. Sayfalama kurallari diger admin listeleri ile ayni.
+                // 1. Sayfalama kuralları diğer admin listeleri ile aynı.
                 var page = AdminPagination.NormalizePage(request.Page);
                 var pageSize = AdminPagination.ClampPageSize(request.PageSize);
 
-                // 2. Isletmeye ait denetim kayitlari.
+                // 2. İşletmeye ait denetim kayıtları.
                 var businessId = request.BusinessId;
                 var logs = await _auditLogRepository.FindAsync(
                     l => l.BusinessId == businessId, cancellationToken);
 
-                // 3. En yeni kayit once; sayfalama bellek icinde uygulanir.
+                // 3. En yeni kayıt önce; sayfalama bellek içinde uygulanır.
                 var ordered = logs.OrderByDescending(l => l.CreatedAtUtc).ToList();
 
                 var totalCount = ordered.Count;
@@ -59,7 +59,7 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinessAud
             catch (Exception ex)
             {
                 return Result<AdminAuditTrailResult>.Failure(
-                    Error.Internal("Denetim kayitlari getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Denetim kayıtları getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

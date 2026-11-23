@@ -2,7 +2,7 @@ namespace Rezervise.Application.Common.Helpers
 {
     /// <summary>
     /// Translates <see cref="DayOfWeek"/> values to Turkish display names.
-    /// .NET renders the enum in English, which does not match the language of the API.
+    /// .NET renders the enüm in English, which does not match the language of the API.
     /// </summary>
     public static class DayNameHelper
     {
@@ -17,9 +17,9 @@ namespace Rezervise.Application.Common.Helpers
             return dayOfWeek switch
             {
                 DayOfWeek.Monday => "Pazartesi",
-                DayOfWeek.Tuesday => "Sali",
-                DayOfWeek.Wednesday => "�arsamba",
-                DayOfWeek.Thursday => "Persembe",
+                DayOfWeek.Tuesday => "Salı",
+                DayOfWeek.Wednesday => "Çarsamba",
+                DayOfWeek.Thursday => "Perşembe",
                 DayOfWeek.Friday => "Cuma",
                 DayOfWeek.Saturday => "Cumartesi",
                 DayOfWeek.Sunday => "Pazar",

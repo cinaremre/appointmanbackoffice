@@ -7,8 +7,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Audit.Queries.GetAdminAuditLogs
 {
     /// <summary>
-    /// Denetim kayitlarini filtreler ve CreatedAtUtc tersten siralar.
-    /// Kayitlar append-only'dir; sorgu yalnizca okuma yapar.
+    /// Denetim kayıtlarını filtreler ve CreatedAtUtc tersten sıralar.
+    /// Kayıtlar append-only'dir; sorgu yalnızca okuma yapar.
     /// </summary>
     public class GetAdminAuditLogsQueryHandler
         : IRequestHandler<GetAdminAuditLogsQuery, Result<AdminAuditLogListDto>>
@@ -82,7 +82,7 @@ namespace Rezervise.Application.Features.Admin.Audit.Queries.GetAdminAuditLogs
             catch (Exception ex)
             {
                 return Result<AdminAuditLogListDto>.Failure(
-                    Error.Internal("Denetim kayitlari getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Denetim kayıtları getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

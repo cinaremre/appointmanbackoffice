@@ -1,30 +1,30 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Stok hareket tipleri. Giris tipleri bakiyeyi artirir,
-    /// cikis tipleri azaltir (isaret StockMovement constructor'inda belirlenir).
+    /// Stok hareket tipleri. Giriş tipleri bakiyeyi artırır,
+    /// çıkış tipleri azaltır (işaret StockMovement constructor'ında belirlenir).
     /// </summary>
     public enum EnumStockMovementType
     {
-        /// <summary>Tedarikciden satin alma girisi (+)</summary>
+        /// <summary>Tedarikçiden satın alma girişi (+)</summary>
         PurchaseIn = 0,
 
-        /// <summary>Satis cikisi (-)</summary>
+        /// <summary>Satış çıkışı (-)</summary>
         SaleOut = 1,
 
-        /// <summary>Hizmet tuketimi, randevu malzeme sarfi (-)</summary>
+        /// <summary>Hizmet tüketimi, randevu malzeme sarfi (-)</summary>
         ServiceConsumption = 2,
 
-        /// <summary>Zayi/atik (-)</summary>
+        /// <summary>Zayı/atik (-)</summary>
         Waste = 3,
 
-        /// <summary>Musteri iadesi (+)</summary>
+        /// <summary>Müşteri iadesi (+)</summary>
         CustomerReturn = 4,
 
-        /// <summary>Sayim farki duzeltmesi (isaret miktara gore)</summary>
+        /// <summary>Sayım farkı düzeltmesi (işaret miktara göre)</summary>
         StockCountAdjustment = 5,
 
-        /// <summary>Tedarikciye iade (-)</summary>
+        /// <summary>Tedarikçiye iade (-)</summary>
         SupplierReturn = 6
     }
 }

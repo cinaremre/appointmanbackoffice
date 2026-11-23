@@ -5,8 +5,8 @@ import { ThemeRoot } from "../theme";
 import { router } from "./router/routes";
 
 /**
- * Cache stratejisi (dokuman 26.4): raporlar orta, operasyon
- * verileri kisa stale time ile tazeliğini korur.
+ * Cache stratejisi (doküman 26.4): raporlar orta, operasyon
+ * verileri kısa stale time ile tazeliğini korur.
  */
 const queryClient = new QueryClient({
   defaultOptions: {

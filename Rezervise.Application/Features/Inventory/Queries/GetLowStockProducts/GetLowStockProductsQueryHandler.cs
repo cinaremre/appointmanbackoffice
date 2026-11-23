@@ -30,18 +30,18 @@ namespace Rezervise.Application.Features.Inventory.Queries.GetLowStockProducts
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
                     return Result<List<LowStockProductDto>>.Failure(
-                        Error.NotFound("Isletme", request.BusinessId.ToString()));
+                        Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: stok raporunu yalnizca isletme sahibi/yonetici gorur.
+                // 2. Yetki kontrolü: stok raporunu yalnızca işletme sahibi/yönetici görür.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
                     return Result<List<LowStockProductDto>>.Failure(
-                        Error.Forbidden("Bu isletmenin stok raporunu gorme yetkiniz yok."));
+                        Error.Forbidden("Bu işletmenin stok raporunu görme yetkiniz yok."));
 
-                // 3. Aktif urunleri ve isletmenin tum hareketlerini getir.
+                // 3. Aktif ürünleri ve işletmenin tüm hareketlerini getir.
                 var products = await _productRepository.FindAsync(
                     p => p.BusinessId == request.BusinessId && p.IsActive && !p.IsDeleted,
                     cancellationToken);
@@ -50,12 +50,12 @@ namespace Rezervise.Application.Features.Inventory.Queries.GetLowStockProducts
                     m => m.BusinessId == request.BusinessId && !m.IsDeleted,
                     cancellationToken);
 
-                // 4. Bakiye = urunun hareketlerinin toplami (isaretli miktarlar).
+                // 4. Bakiye = ürünün hareketlerinin toplamı (işaretli miktarlar).
                 var balances = movements
                     .GroupBy(m => m.ProductId)
                     .ToDictionary(g => g.Key, g => g.Sum(m => m.Quantity));
 
-                // 5. Bakiyesi kritik seviyenin altinda olanlari DTO'ya donustur.
+                // 5. Bakiyesi kritik seviyenin altında olanları DTO'ya dönüştür.
                 var dtos = products
                     .Select(p => new { Product = p, Balance = balances.GetValueOrDefault(p.Id, 0m) })
                     .Where(x => x.Balance < x.Product.MinimumStock)
@@ -79,7 +79,7 @@ namespace Rezervise.Application.Features.Inventory.Queries.GetLowStockProducts
             catch (Exception ex)
             {
                 return Result<List<LowStockProductDto>>.Failure(
-                    Error.Internal("Kritik stok raporu getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kritik stok raporu getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

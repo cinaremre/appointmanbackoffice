@@ -3,7 +3,7 @@ using FluentValidation;
 namespace Rezervise.Application.Features.Users.Commands.VerifyEmailToken
 {
     /// <summary>
-    /// Dogrulama token'inin bicimini denetler.
+    /// Doğrulama token'inin biçimini denetler.
     /// </summary>
     public class VerifyEmailTokenCommandValidator : AbstractValidator<VerifyEmailTokenCommand>
     {
@@ -11,9 +11,9 @@ namespace Rezervise.Application.Features.Users.Commands.VerifyEmailToken
         {
             RuleFor(x => x.Token)
                 .NotEmpty()
-                .WithMessage("Dogrulama token'i bos olamaz.")
+                .WithMessage("Doğrulama token'i boş olamaz.")
                 .MaximumLength(128)
-                .WithMessage("Dogrulama token'i gecersiz.");
+                .WithMessage("Doğrulama token'i geçersiz.");
         }
     }
 }

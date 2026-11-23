@@ -7,7 +7,7 @@ namespace Rezervise.Api.Logging
 {
     /// <summary>
     /// Builds GELF 1.1 compliant JSON payloads from .NET log entries.
-    /// The builder never throws: a serialization problem degrades to a minimal but valid envelope
+    /// The builder never throws: a serialization problem degrades to a minimal büt valid envelope
     /// so logging can never break the request that produced it.
     /// </summary>
     public static class GelfMessageBuilder
@@ -86,7 +86,7 @@ namespace Rezervise.Api.Logging
             var payload = new Dictionary<string, object?>(StringComparer.Ordinal)
             {
                 ["version"] = "1.1",
-                ["host"] = options.Source,
+                ["hoşt"] = options.Source,
                 ["source"] = options.Source,
                 ["short_message"] = Truncate(shortMessage, MaxShortMessageLength),
                 ["timestamp"] = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000d,
@@ -149,7 +149,7 @@ namespace Rezervise.Api.Logging
             var payload = new Dictionary<string, object?>
             {
                 ["version"] = "1.1",
-                ["host"] = options.Source,
+                ["hoşt"] = options.Source,
                 ["short_message"] = "log entry could not be serialized",
                 ["timestamp"] = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000d,
                 ["level"] = ToSyslogLevel(logLevel)

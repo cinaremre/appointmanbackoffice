@@ -3,16 +3,16 @@ using Rezervise.Application.Common.Models;
 namespace Rezervise.Application.Common.Interfaces
 {
     /// <summary>
-    /// Giden e-postalar icin bloklamayan teslim noktasi.
-    /// Istek thread'i SMTP beklemez; kuyruk dolarsa mesaj reddedilir.
+    /// Giden e-postalar için bloklamayan teslim noktası.
+    /// İstek thread'i SMTP beklemez; kuyruk dolarsa mesaj reddedilir.
     /// </summary>
     public interface IEmailQueue
     {
         /// <summary>
-        /// Mesaji kuyruga ekler; cagirani bloklamaz.
+        /// Mesajı kuyruğa ekler; çağıranı bloklamaz.
         /// </summary>
-        /// <param name="message">Kuyruga verilecek mesaj.</param>
-        /// <returns>Kuyruk kabul ettiyse true; dolu oldugu icin reddedildiyse false.</returns>
+        /// <param name="message">Kuyruğa verilecek mesaj.</param>
+        /// <returns>Kuyruk kabul ettiyse true; dolu öldüğü için reddedildiyse false.</returns>
         bool TryEnqueue(EmailMessage message);
     }
 }

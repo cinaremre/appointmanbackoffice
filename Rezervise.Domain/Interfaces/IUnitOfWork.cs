@@ -12,21 +12,21 @@ namespace Rezervise.Domain.Interfaces
         IRepository<T> Repository<T>() where T : class, IAggregateRoot;
 
         /// <summary>
-        /// Verilen isi belirtilen izolasyon seviyesinde tek bir transaction icinde
-        /// calistirir, basarili olursa commit eder, hata olursa geri alir.
-        /// Rezervasyon gibi aralik cakismasi riski tasiyan akislarda
-        /// <see cref="IsolationLevel.Serializable"/> kullanilir.
+        /// Verilen isi belirtilen izolasyon seviyesinde tek bir transaction içinde
+        /// çalıştırır, başarılı olursa commit eder, hata olursa geri alır.
+        /// Rezervasyon gibi aralık çakışması riski taşıyan akışlarda
+        /// <see cref="IsolationLevel.Serializable"/> kullanılır.
         /// </summary>
-        /// <param name="operation">Transaction icinde calistirilacak is.</param>
+        /// <param name="operation">Transaction içinde çalıştırılacak is.</param>
         /// <param name="isolationLevel">Transaction izolasyon seviyesi.</param>
-        /// <param name="cancellationToken">Iptal tokeni.</param>
-        /// <returns>Islemin sonucu.</returns>
+        /// <param name="cancellationToken">İptal tokeni.</param>
+        /// <returns>İşlemin sonucu.</returns>
         Task<T> ExecuteInTransactionAsync<T>(
             Func<CancellationToken, Task<T>> operation,
             IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,
             CancellationToken cancellationToken = default);
 
-        /// <summary>Donus degeri olmayan isler icin ayni davranis.</summary>
+        /// <summary>Dönüş değeri olmayan işler için aynı davranış.</summary>
         Task ExecuteInTransactionAsync(
             Func<CancellationToken, Task> operation,
             IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,

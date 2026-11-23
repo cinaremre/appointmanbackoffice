@@ -3,8 +3,8 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Bir abonelik planina dahil edilen ozellik ve kotasi (dokuman Modul 14).
-    /// IncludedQuota null ise ozellik sinirsiz kullanilabilir.
+    /// Bir abonelik planına dahil edilen özellik ve kotası (doküman Modül 14).
+    /// IncludedQuota null ise özellik sınırsız kullanılabilir.
     /// </summary>
     public class PlanFeature : BaseEntity
     {
@@ -12,7 +12,7 @@ namespace Rezervise.Domain.Entities
         public Guid FeatureId { get; private set; }
         public bool IsEnabled { get; private set; }
 
-        /// <summary>Donemsel kullanim siniri; null = sinirsiz.</summary>
+        /// <summary>Dönemsel kullanım sınırı; null = sınırsız.</summary>
         public int? IncludedQuota { get; private set; }
 
         // Navigation Properties
@@ -30,13 +30,13 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (planId == Guid.Empty)
-                throw new ArgumentException("Plan ID bos olamaz.", nameof(planId));
+                throw new ArgumentException("Plan ID boş olamaz.", nameof(planId));
 
             if (featureId == Guid.Empty)
-                throw new ArgumentException("Ozellik ID bos olamaz.", nameof(featureId));
+                throw new ArgumentException("Özellik ID boş olamaz.", nameof(featureId));
 
             if (includedQuota.HasValue && includedQuota.Value < 0)
-                throw new DomainException("Plan kotasi negatif olamaz.");
+                throw new DomainException("Plan kotası negatif olamaz.");
 
             PlanId = planId;
             FeatureId = featureId;
@@ -53,7 +53,7 @@ namespace Rezervise.Domain.Entities
         public void SetQuota(int? includedQuota)
         {
             if (includedQuota.HasValue && includedQuota.Value < 0)
-                throw new DomainException("Plan kotasi negatif olamaz.");
+                throw new DomainException("Plan kotası negatif olamaz.");
 
             IncludedQuota = includedQuota;
             UpdatedAt = DateTime.UtcNow;

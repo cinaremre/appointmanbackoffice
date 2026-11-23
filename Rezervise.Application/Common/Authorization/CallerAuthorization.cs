@@ -3,19 +3,19 @@ using Rezervise.Application.Common.Interfaces;
 namespace Rezervise.Application.Common.Authorization
 {
     /// <summary>
-    /// JWT uzerinden cozulen ambient kimlik icin ortak yetki kontrolleri.
-    /// Istek govdesindeki kullanici ID'leri bu kontrollerin yerine gecmez.
+    /// JWT üzerinden çözülen ambient kimlik için ortak yetki kontrolleri.
+    /// İstek gövdesindeki kullanıcı ID'leri bu kontrollerin yerine geçmez.
     /// </summary>
     public static class CallerAuthorization
     {
         private static readonly string[] AdministratorRoles = { "Admin", "SuperAdmin" };
 
-        /// <summary>Caller yonetici rollerinden birine sahip mi?</summary>
+        /// <summary>Caller yönetici rollerinden birine sahip mi?</summary>
         public static bool IsAdministrator(ICurrentUserService currentUser)
             => AdministratorRoles.Any(currentUser.IsInRole);
 
         /// <summary>
-        /// Caller kimligi dogrulanmis ve ya kendisi ya da yonetici mi?
+        /// Caller kimliği doğrulanmış ve ya kendisi ya da yönetici mi?
         /// </summary>
         public static bool CanActAsUser(ICurrentUserService currentUser, Guid userId)
         {
@@ -26,7 +26,7 @@ namespace Rezervise.Application.Common.Authorization
         }
 
         /// <summary>
-        /// Caller kimligi dogrulanmis ve verilen isletmenin sahibi veya yonetici mi?
+        /// Caller kimliği doğrulanmış ve verilen işletmenin sahibi veya yönetici mi?
         /// </summary>
         public static bool CanActForBusiness(
             ICurrentUserService currentUser,

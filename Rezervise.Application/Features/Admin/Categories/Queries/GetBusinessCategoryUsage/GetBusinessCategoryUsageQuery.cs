@@ -4,8 +4,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Categories.Queries.GetBusinessCategoryUsage
 {
     /// <summary>
-    /// Kategoriye bagli aktif isletme sayisini dondurur (dokuman Modul 9).
-    /// Arsiv oncesi etki analizi icin kullanilir.
+    /// Kategoriye bağlı aktif işletme sayısını döndürür (doküman Modül 9).
+    /// Arşiv öncesi etki analizi için kullanılır.
     /// </summary>
     public class GetBusinessCategoryUsageQuery : IRequest<Result<BusinessCategoryUsageDto>>
     {

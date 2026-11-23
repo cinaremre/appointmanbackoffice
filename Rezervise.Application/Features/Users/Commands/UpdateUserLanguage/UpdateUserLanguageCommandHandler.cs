@@ -24,7 +24,7 @@ namespace Rezervise.Application.Features.Users.Commands.UpdateUserLanguage
         {
             try
             {
-                // 1. Kullanici kontrolu. Silinmis hesap uzerinde islem yapilamaz.
+                // 1. Kullanıcı kontrolü. Silinmiş hesap üzerinde işlem yapılamaz.
                 var users = await _userRepository.FindAsync(
                     u => u.Id == request.UserId && !u.IsDeleted, cancellationToken);
 
@@ -32,7 +32,7 @@ namespace Rezervise.Application.Features.Users.Commands.UpdateUserLanguage
                 if (user is null)
                     return Result<Guid>.Failure(Error.NotFound("User.NotFound", request.UserId.ToString()));
 
-                // 2. Domain kurali ile dil kodunu dogrula ve uygula
+                // 2. Domain kuralı ile dil kodunu doğrula ve uygula
                 user.SetLanguageCode(request.LanguageCode);
 
                 // 3. Kaydet
@@ -42,7 +42,7 @@ namespace Rezervise.Application.Features.Users.Commands.UpdateUserLanguage
             }
             catch (ConcurrencyConflictException)
             {
-                // Rowversion uyusmazligi: baska bir islem ayni kullaniciyi guncelledi.
+                // Rowversion uyuşmazlığı: başka bir işlem aynı kullanıcıyı güncelledi.
                 return Result<Guid>.Failure(ConcurrencyErrors.ConcurrencyConflict());
             }
             catch (DomainException ex)

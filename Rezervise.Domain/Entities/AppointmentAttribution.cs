@@ -4,9 +4,9 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Bir randevunun pazarlama kaynagina atfi.
-    /// Bir randevu icin tek aktif atif kaydi vardir; cift atif
-    /// handler tarafindan Conflict ile engellenir (DuplicateKey korumasi).
+    /// Bir randevunun pazarlama kaynağına atfi.
+    /// Bir randevu için tek aktif atıf kaydı vardır; çift atıf
+    /// handler tarafından Conflict ile engellenir (DuplicateKey koruması).
     /// </summary>
     public class AppointmentAttribution : BaseEntity
     {
@@ -16,15 +16,15 @@ namespace Rezervise.Domain.Entities
         public Guid? CampaignId { get; private set; }
         public Guid? TrackingLinkId { get; private set; }
 
-        /// <summary>Bilinen ilk temas kaynagi (qr/whatsapp/instagram vb.).</summary>
+        /// <summary>Bilinen ilk temas kaynağı (qr/whatsapp/ınstagram vb.).</summary>
         public string? FirstTouchSource { get; private set; }
 
-        /// <summary>Son temas kaynagi.</summary>
+        /// <summary>Son temas kaynağı.</summary>
         public string? LastTouchSource { get; private set; }
 
         public EnumAttributionModel AttributionModel { get; private set; }
 
-        /// <summary>Atfin yapildigi an.</summary>
+        /// <summary>Atfin yapıldığı an.</summary>
         public DateTime AttributedAt { get; private set; }
 
         private AppointmentAttribution() { }
@@ -39,16 +39,16 @@ namespace Rezervise.Domain.Entities
             string? lastTouchSource = null)
         {
             if (appointmentId == Guid.Empty)
-                throw new ArgumentException("Randevu ID bos olamaz.", nameof(appointmentId));
+                throw new ArgumentException("Randevu ID boş olamaz.", nameof(appointmentId));
 
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             if (campaignId == Guid.Empty)
-                throw new ArgumentException("Kampanya ID bos olamaz.", nameof(campaignId));
+                throw new ArgumentException("Kampanya ID boş olamaz.", nameof(campaignId));
 
             if (trackingLinkId == Guid.Empty)
-                throw new ArgumentException("Takip linki ID bos olamaz.", nameof(trackingLinkId));
+                throw new ArgumentException("Takip linki ID boş olamaz.", nameof(trackingLinkId));
 
             SetSource(ref firstTouchSource);
             SetSource(ref lastTouchSource);
@@ -63,7 +63,7 @@ namespace Rezervise.Domain.Entities
             AttributedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Ortak kaynak etiketi dogrulamasi (maks. 50 karakter).</summary>
+        /// <summary>Ortak kaynak etiketi doğrulaması (maks. 50 karakter).</summary>
         private static void SetSource(ref string? source)
         {
             if (source != null && source.Length > 50)

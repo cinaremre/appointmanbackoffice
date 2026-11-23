@@ -4,23 +4,23 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Appointments.Commands.CancelAppointmentByAdmin
 {
     /// <summary>
-    /// Yonetici iptali (dokuman Modul 12.2). Domain kontrolu tek kaynaktan
-    /// yurutulur: iptal, mevcut CancelAppointmentCommand uzerinden
-    /// gercek CancelAppointmentCommandHandler'a delege edilir.
+    /// Yönetici iptali (doküman Modül 12.2). Domain kontrolü tek kaynaktan
+    /// yürütülür: iptal, mevcut CancelAppointmentCommand üzerinden
+    /// gerçek CancelAppointmentCommandHandler'a delege edilir.
     ///
-    /// DOKUMAN 12.3: appointment.override (gecmis/randevu kurallarini asarak
-    /// iptal) ilk surumde kapsam disidir; ayri bir komutla eklenecektir.
+    /// DOKUMAN 12.3: appointment.override (geçmiş/randevu kurallarını aşarak
+    /// iptal) ilk sürümde kapsam dışıdır; ayrı bir komutla eklenecektir.
     /// </summary>
     public class CancelAppointmentByAdminCommand : IRequest<Result<Guid>>
     {
         public Guid AppointmentId { get; set; }
 
-        /// <summary>Yoneticinin iptal gerekcesi; zorunludur, denetim kaydina yazilir.</summary>
+        /// <summary>Yöneticinin iptal gerekçesi; zorunludur, denetim kaydına yazılır.</summary>
         public string? Reason { get; set; }
 
         /// <summary>
-        /// Randevuya islenecek musterinin gorecegi iptal gerekcesi.
-        /// Bos ise admin gerekcesi kullanilir.
+        /// Randevuya işlenecek müşterinin göreceği iptal gerekçesi.
+        /// Boş ise admin gerekçesi kullanılır.
         /// </summary>
         public string? CancellationReason { get; set; }
     }

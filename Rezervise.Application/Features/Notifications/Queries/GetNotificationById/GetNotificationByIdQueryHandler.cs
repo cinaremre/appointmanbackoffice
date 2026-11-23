@@ -24,28 +24,28 @@ namespace Rezervise.Application.Features.Notifications.Queries.GetNotificationBy
         {
             try
             {
-                // 1. Bildirimi ID'ye gore getir (silinmis kayitlar haric)
+                // 1. Bildirimi ID'ye göre getir (silinmiş kayıtlar hariç)
                 var notifications = await _notificationRepository.FindAsync(
                     n => n.Id == request.NotificationId && !n.IsDeleted,
                     cancellationToken);
 
                 var notification = notifications.FirstOrDefault();
 
-                // 2. Bildirim bulunamadiysa hata dondur
+                // 2. Bildirim bulunamadıysa hata döndür
                 if (notification is null)
                     return Result<NotificationDto>.Failure(Error.NotFound("Bildirim", request.NotificationId.ToString()));
 
-                // 3. Yetki kontrolu.
-                //    Aktor kimligi her zaman imzali token'dan gelir; istekteki hicbir alan
-                //    kullaniciyi temsil etmez. Aksi halde istemci baskasinin bildirimini okur.
+                // 3. Yetki kontrolü.
+                //    Aktör kimliği her zaman imzalı token'dan gelir; istekteki hiçbir alan
+                //    kullanıcıyı temsil etmez. Aksi halde istemci başkasının bildirimini okur.
                 var currentUserId = _currentUser.UserId;
                 if (currentUserId is null)
                     return Result<NotificationDto>.Failure(Error.Unauthorized("Auth.InvalidUser"));
 
                 if (notification.UserId != currentUserId.Value)
-                    return Result<NotificationDto>.Failure(Error.Unauthorized("Bu bildirimi goruntuleme yetkiniz yok."));
+                    return Result<NotificationDto>.Failure(Error.Unauthorized("Bu bildirimi görüntüleme yetkiniz yok."));
 
-                // 4. DTO'ya donustur
+                // 4. DTO'ya dönüştür
                 var dto = new NotificationDto
                 {
                     Id = notification.Id,
@@ -64,7 +64,7 @@ namespace Rezervise.Application.Features.Notifications.Queries.GetNotificationBy
             }
             catch (Exception ex)
             {
-                return Result<NotificationDto>.Failure(Error.Internal("Bildirim bilgileri getirilirken bir hata olustu.", ex.Message));
+                return Result<NotificationDto>.Failure(Error.Internal("Bildirim bilgileri getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

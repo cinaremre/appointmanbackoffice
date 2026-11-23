@@ -4,20 +4,20 @@ using MediatR;
 namespace Rezervise.Application.Features.Reengagement.Commands.MarkReengagementNotified
 {
     /// <summary>
-    /// Aday listesinden secilen musteri icin bildirim gonderildi isareti ekler
-    /// (dokuman Modul 13). Yeni ReengagementAttempt kaydi Notified durumunda olusur.
+    /// Aday listesinden seçilen müşteri için bildirim gönderildi işareti ekler
+    /// (doküman Modül 13). Yeni ReengagementAttempt kaydı Notified durumunda oluşur.
     /// </summary>
     public class MarkReengagementNotifiedCommand : IRequest<Result<Guid>>
     {
         public Guid BusinessId { get; set; }
 
-        /// <summary>Musterinin User ID'si.</summary>
+        /// <summary>Müşterinin User ID'si.</summary>
         public Guid CustomerId { get; set; }
 
         public Guid ServiceId { get; set; }
         public Guid RuleId { get; set; }
 
-        /// <summary>Gonderim varsa bildirim kaydinin ID'si.</summary>
+        /// <summary>Gönderim varsa bildirim kaydının ID'si.</summary>
         public Guid? NotificationId { get; set; }
     }
 }

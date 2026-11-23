@@ -23,12 +23,12 @@ namespace Rezervise.Application.Features.BusinessCategories.Commands.UpdateCateg
         {
             try
             {
-                // 1. Kategori kontrolu
+                // 1. Kategori kontrolü
                 var category = await _categoryRepository.GetByIdAsync(request.CategoryId, cancellationToken);
                 if (category is null)
                     return Result<Guid>.Failure(Error.NotFound("Kategori", request.CategoryId.ToString()));
 
-                // 2. Ayni isimde baska kategori var mi?
+                // 2. Aynı isimde başka kategori var mi?
                 var existingCategories = await _categoryRepository.FindAsync(
                     c => c.Name == request.Name && c.Id != request.CategoryId && !c.IsDeleted,
                     cancellationToken);
@@ -36,21 +36,21 @@ namespace Rezervise.Application.Features.BusinessCategories.Commands.UpdateCateg
                 if (existingCategories.Any())
                     return Result<Guid>.Failure(Error.Conflict("Bu isimde bir kategori zaten mevcut."));
 
-                // 3. Parent kategori kontrolu
+                // 3. Parent kategori kontrolü
                 BusinessCategory? parentCategory = null;
                 if (request.ParentCategoryId.HasValue)
                 {
                     if (request.ParentCategoryId.Value == request.CategoryId)
-                        return Result<Guid>.Failure(Error.BusinessRule("Kategori kendisinin ust kategorisi olamaz."));
+                        return Result<Guid>.Failure(Error.BusinessRule("Kategori kendisinin üst kategorisi olamaz."));
 
                     parentCategory = await _categoryRepository.GetByIdAsync(
                         request.ParentCategoryId.Value, cancellationToken);
 
                     if (parentCategory is null)
-                        return Result<Guid>.Failure(Error.NotFound("Ust kategori", request.ParentCategoryId.Value.ToString()));
+                        return Result<Guid>.Failure(Error.NotFound("Üst kategori", request.ParentCategoryId.Value.ToString()));
                 }
 
-                // 4. Guncelle
+                // 4. Güncelle
                 category.SetName(request.Name);
 
                 if (!string.IsNullOrEmpty(request.Description))
@@ -71,7 +71,7 @@ namespace Rezervise.Application.Features.BusinessCategories.Commands.UpdateCateg
 
                 if (request.CorrespondingBusinessType.HasValue)
                 {
-                    // BusinessType guncelleme
+                    // BusinessType güncelleme
                 }
 
                 if (parentCategory is not null)
@@ -90,7 +90,7 @@ namespace Rezervise.Application.Features.BusinessCategories.Commands.UpdateCateg
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Kategori guncellenirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Kategori güncellenirken bir hata oluştu.", ex.Message));
             }
         }
     }

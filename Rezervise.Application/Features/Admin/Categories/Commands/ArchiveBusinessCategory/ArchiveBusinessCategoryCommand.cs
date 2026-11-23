@@ -4,16 +4,16 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Categories.Commands.ArchiveBusinessCategory
 {
     /// <summary>
-    /// Kategoriyi arsivler (dokuman Modul 9). Arsivleme = entity'deki pasif
-    /// mekanizma (Deactivate): kategori agacta gorunur kalir ama IsActive
-    /// false olur. Gerekce (reason) zorunludur ve denetim kaydina yazilir.
-    /// Aktif alt kategorisi olan kategori arsivlenemez.
+    /// Kategoriyi arşivler (doküman Modül 9). Arşivleme = entity'deki pasif
+    /// mekanizma (Deactivate): kategori ağaçta görünür kalır ama IsActive
+    /// false olur. Gerekçe (reason) zorunludur ve denetim kaydına yazılır.
+    /// Aktif alt kategorisi olan kategori arşivlenemez.
     /// </summary>
     public class ArchiveBusinessCategoryCommand : IRequest<Result<Guid>>
     {
         public Guid CategoryId { get; set; }
 
-        /// <summary>Yoneticinin arsivleme gerekcesi; zorunlu.</summary>
+        /// <summary>Yöneticinin arşivleme gerekçesi; zorunlu.</summary>
         public string Reason { get; set; } = string.Empty;
     }
 }

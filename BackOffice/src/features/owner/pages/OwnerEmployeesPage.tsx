@@ -33,8 +33,8 @@ import {
 } from "../types";
 
 /**
- * Owner calisanlari ve izin istekleri. Izin onayi/reddi gerekce diyaloguyla
- * yapilir (reason formda doldurulur); islem kurallari SUNUCUDA uygulanir.
+ * Owner çalışanları ve izin istekleri. İzin onayı/reddi gerekçe diyaloguyla
+ * yapılır (reason formda doldurulur); işlem kuralları SUNUCUDA uygulanır.
  */
 
 type EmployeesTab = "employees" | "timeoffs";
@@ -42,9 +42,9 @@ type PendingDecision = { id: string; action: "approve" | "reject" } | null;
 type Feedback = { severity: "success" | "error"; message: string } | null;
 
 const APPROVE_IMPACT =
-  "Izin istegini onaylamak calisanin ilgili gunlerde yeni randevu almasini engeller. Gerekceniz kayda gecer.";
+  "İzin isteğini onaylamak çalışanın ilgili günlerde yeni randevu almasını engeller. Gerekçeniz kayda geçer.";
 const REJECT_IMPACT =
-  "Izin istegini reddetmek istegi kapatir; calisan ilgili gunlerde randevu almaya devam eder. Gerekceniz kayda gecer.";
+  "İzin isteğini reddetmek isteği kapatır; çalışan ilgili günlerde randevu almaya devam eder. Gerekçeniz kayda geçer.";
 
 function toErrorMessage(error: unknown, fallback: string): string {
   if (error instanceof ApiError) return error.userMessage;
@@ -86,7 +86,7 @@ export function OwnerEmployeesPage() {
     enabled: businessId !== "" && tab === "employees",
   });
 
-  // Izin gecmisi yalnizca ilgili sekme acildiginda cekilir.
+  // İzin geçmişi yalnızca ilgili sekme açıldığında çekilir.
   const timeOffsQuery = useQuery({
     queryKey: ["owner", "timeoffs", businessId, statusParam],
     queryFn: ({ signal }) =>
@@ -104,12 +104,12 @@ export function OwnerEmployeesPage() {
       setPending(null);
       setFeedback({
         severity: "success",
-        message: variables.action === "approve" ? "Izin istegi onaylandi." : "Izin istegi reddedildi.",
+        message: variables.action === "approve" ? "İzin isteği onaylandı." : "İzin isteği reddedildi.",
       });
       void queryClient.invalidateQueries({ queryKey: ["owner", "timeoffs"] });
     },
     onError: (error: unknown) => {
-      setFeedback({ severity: "error", message: toErrorMessage(error, "Islem basarisiz.") });
+      setFeedback({ severity: "error", message: toErrorMessage(error, "İşlem başarısız.") });
     },
   });
 
@@ -130,12 +130,12 @@ export function OwnerEmployeesPage() {
   const timeOffColumns: DataTableColumn<OwnerTimeOffListItem>[] = [
     {
       key: "employee",
-      header: "Calisan",
+      header: "Çalışan",
       render: (row) => <GuidText value={row.employeeId} />,
     },
-    { key: "startDate", header: "Baslangic", render: (row) => formatDateTime(row.startDate) },
-    { key: "endDate", header: "Bitis", render: (row) => formatDateTime(row.endDate) },
-    { key: "reason", header: "Gerekce", render: (row) => row.reason ?? "-" },
+    { key: "startDate", header: "Başlangıç", render: (row) => formatDateTime(row.startDate) },
+    { key: "endDate", header: "Bitiş", render: (row) => formatDateTime(row.endDate) },
+    { key: "reason", header: "Gerekçe", render: (row) => row.reason ?? "-" },
     {
       key: "status",
       header: "Durum",
@@ -153,15 +153,15 @@ export function OwnerEmployeesPage() {
   if (businesses.length === 0) {
     return (
       <Box>
-        <PageHeader title="Calisanlar" />
-        <EmptyState label="Size ait isletme bulunamadi." />
+        <PageHeader title="Çalışanlar" />
+        <EmptyState label="Size ait işletme bulunamadı." />
       </Box>
     );
   }
 
   return (
     <Box>
-      <PageHeader title="Calisanlar" />
+      <PageHeader title="Çalışanlar" />
       <Stack
         direction={{ xs: "column", md: "row" }}
         spacing={2}
@@ -170,7 +170,7 @@ export function OwnerEmployeesPage() {
         <TextField
           select
           size="small"
-          label="Isletme"
+          label="İşletme"
           value={businessId}
           onChange={(e) => setSelectedId(e.target.value)}
           disabled={businesses.length <= 1}
@@ -185,8 +185,8 @@ export function OwnerEmployeesPage() {
       </Stack>
 
       <Tabs value={tab} onChange={onTabChange} sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
-        <Tab value="employees" label="Calisanlar" />
-        <Tab value="timeoffs" label="Izin Istekleri" />
+        <Tab value="employees" label="Çalışanlar" />
+        <Tab value="timeoffs" label="İzin Istekleri" />
       </Tabs>
 
       {tab === "employees" ? (
@@ -203,8 +203,8 @@ export function OwnerEmployeesPage() {
             setPageSize(nextSize);
             setPage(1);
           }}
-          emptyLabel="Calisan bulunamadi."
-          ariaLabel="isletme calisanlari tablosu"
+          emptyLabel="Çalışan bulunamadı."
+          ariaLabel="işletme çalışanları tablosu"
           onRefresh={() => void employeesQuery.refetch()}
         />
       ) : (
@@ -241,7 +241,7 @@ export function OwnerEmployeesPage() {
               setPageSize(nextSize);
               setPage(1);
             }}
-            emptyLabel="Izin istegi bulunamadi."
+            emptyLabel="İzin isteği bulunamadı."
             ariaLabel="izin istekleri tablosu"
             onRefresh={() => void timeOffsQuery.refetch()}
             rowActions={
@@ -273,7 +273,7 @@ export function OwnerEmployeesPage() {
 
       <ReasonConfirmDialog
         open={pending !== null}
-        title={pending?.action === "approve" ? "Izin Istegini Onayla" : "Izin Istegini Reddet"}
+        title={pending?.action === "approve" ? "İzin Istegini Onayla" : "İzin Istegini Reddet"}
         impact={pending?.action === "approve" ? APPROVE_IMPACT : REJECT_IMPACT}
         confirmLabel={pending?.action === "approve" ? "Onayla" : "Reddet"}
         busy={decideMutation.isPending}

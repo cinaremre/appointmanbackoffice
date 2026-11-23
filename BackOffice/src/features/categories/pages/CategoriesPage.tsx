@@ -36,18 +36,18 @@ import { useAuth } from "../../../app/providers/AuthContext";
 import type { CategoryDto, CategoryNode, CategoryUsageDto } from "../types";
 
 /**
- * Kategori yonetimi (dokuman 10). Backend duz liste doner; frontend
- * kucuk agaci kurar ve MUI List icinde girintiyle gosterir.
+ * Kategori yönetimi (doküman 10). Backend düz liste döner; frontend
+ * küçük ağacı kurar ve MUI List içinde girintiyle gösterir.
  */
 
 type NotifySeverity = "success" | "warning" | "error";
 type Notify = (message: string, severity?: NotifySeverity) => void;
 
 function errorMessage(error: unknown): string {
-  return error instanceof ApiError ? error.userMessage : "Beklenmedik bir hata olustu. Lutfen tekrar deneyin.";
+  return error instanceof ApiError ? error.userMessage : "Beklenmedik bir hata oluştu. Lütfen tekrar deneyin.";
 }
 
-/** Duz listeden agac kurar: root'lar once, cocuklar parent'in altinda sirali. */
+/** Duz listeden ağaç kurar: root'lar önce, çocuklar parent'in altında sıralı. */
 function buildCategoryTree(items: CategoryDto[]): CategoryNode[] {
   const nodes = new Map<string, CategoryNode>();
   for (const item of items) {
@@ -67,7 +67,7 @@ function buildCategoryTree(items: CategoryDto[]): CategoryNode[] {
   };
   sortNodes(roots);
 
-  // Render icin duz sirayla (DFS) derinlik bilgisiyle dondur.
+  // Render için düz sırayla (DFS) derinlik bilgisiyle döndür.
   const flat: CategoryNode[] = [];
   const walk = (list: CategoryNode[], depth: number) => {
     for (const node of list) {
@@ -80,22 +80,22 @@ function buildCategoryTree(items: CategoryDto[]): CategoryNode[] {
   return flat;
 }
 
-/** Olusturma ve duzenleme formlarinin ortak semasi (react-hook-form + zod). */
+/** Oluşturma ve düzenleme formlarinin ortak şeması (react-hook-form + zod). */
 const categoryFormSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(2, "Kategori adi en az 2 karakter olmali.")
-    .max(100, "Kategori adi en fazla 100 karakter olabilir."),
+    .min(2, "Kategori adı en az 2 karakter olmalı.")
+    .max(100, "Kategori adı en fazla 100 karakter olabilir."),
   displayOrder: z
     .string()
     .trim()
-    .refine((value) => value === "" || /^[0-9]+$/.test(value), "Gosterim sirasi yalnizca sayi olmali."),
+    .refine((value) => value === "" || /^[0-9]+$/.test(value), "Gosterim sırası yalnızca sayı olmalı."),
   isActive: z.boolean(),
 });
 type CategoryFormValues = z.infer<typeof categoryFormSchema>;
 
-/** Yeni kategori / alt kategori formu. Mount aninda taze baslar. */
+/** Yeni kategori / alt kategori formu. Mount anında taze başlar. */
 function CreateCategoryForm({
   parent,
   onClose,
@@ -122,7 +122,7 @@ function CreateCategoryForm({
       postItem<CategoryDto>("/categories", payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["categories"] });
-      notify("Kategori olusturuldu.");
+      notify("Kategori oluşturuldu.");
       onClose();
     },
     onError: (error: unknown) => notify(errorMessage(error), "error"),
@@ -147,10 +147,10 @@ function CreateCategoryForm({
       <form onSubmit={submit} noValidate>
         <DialogContent>
           {parent ? (
-            <TextField label="Ust Kategori" value={parent.name} fullWidth margin="dense" disabled />
+            <TextField label="Üst Kategori" value={parent.name} fullWidth margin="dense" disabled />
           ) : null}
           <TextField
-            label="Kategori Adi"
+            label="Kategori Adı"
             fullWidth
             margin="dense"
             error={!!errors.name}
@@ -158,17 +158,17 @@ function CreateCategoryForm({
             {...register("name")}
           />
           <TextField
-            label="Gosterim Sirasi (opsiyonel)"
+            label="Gosterim Sırası (opsiyonel)"
             fullWidth
             margin="dense"
             error={!!errors.displayOrder}
-            helperText={errors.displayOrder?.message ?? "Ayni seviyede kucuk deger ustte gorunur."}
+            helperText={errors.displayOrder?.message ?? "Ayni seviyede küçük değer üstte görünür."}
             {...register("displayOrder")}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} disabled={createMutation.isPending}>
-            Vazgec
+            Vazgeç
           </Button>
           <Button type="submit" variant="contained" disabled={createMutation.isPending}>
             {createMutation.isPending ? "Kaydediliyor..." : "Kaydet"}
@@ -179,7 +179,7 @@ function CreateCategoryForm({
   );
 }
 
-/** Kategori duzenleme formu (PATCH). Degerler dugumden ilk deger olarak gelir. */
+/** Kategori düzenleme formu (PATCH). Değerler dugumden ilk değer olarak gelir. */
 function EditCategoryForm({
   node,
   onClose,
@@ -211,7 +211,7 @@ function EditCategoryForm({
       patchItem<CategoryDto>(`/categories/${node.id}`, payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["categories"] });
-      notify("Kategori guncellendi.");
+      notify("Kategori güncellendi.");
       onClose();
     },
     onError: (error: unknown) => notify(errorMessage(error), "error"),
@@ -234,11 +234,11 @@ function EditCategoryForm({
       fullWidth
       fullScreen={is_mobile}
     >
-      <DialogTitle>Kategoriyi Duzenle: {node.name}</DialogTitle>
+      <DialogTitle>Kategoriyi Düzenle: {node.name}</DialogTitle>
       <form onSubmit={submit} noValidate>
         <DialogContent>
           <TextField
-            label="Kategori Adi"
+            label="Kategori Adı"
             fullWidth
             margin="dense"
             error={!!errors.name}
@@ -246,7 +246,7 @@ function EditCategoryForm({
             {...register("name")}
           />
           <TextField
-            label="Gosterim Sirasi"
+            label="Gosterim Sırası"
             fullWidth
             margin="dense"
             error={!!errors.displayOrder}
@@ -266,7 +266,7 @@ function EditCategoryForm({
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} disabled={updateMutation.isPending}>
-            Vazgec
+            Vazgeç
           </Button>
           <Button type="submit" variant="contained" disabled={updateMutation.isPending}>
             {updateMutation.isPending ? "Kaydediliyor..." : "Kaydet"}
@@ -277,7 +277,7 @@ function EditCategoryForm({
   );
 }
 
-/** Tasima dialog'u: hedef parent secimi. Dongu icin alt agac secilemez. */
+/** Taşıma dialog'u: hedef parent seçimi. Dongu için alt ağaç seçilemez. */
 function MoveCategoryForm({
   node,
   flat,
@@ -294,7 +294,7 @@ function MoveCategoryForm({
   const theme = useTheme();
   const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Tasinan dugum ve tum alt agaci hedef olarak secilemez (dongu korumasi).
+  // Tasinan düğüm ve tüm alt ağacı hedef olarak seçilemez (dongu korumasi).
   const excludedIds = useMemo(() => {
     const ids = new Set<string>();
     const collect = (current: CategoryNode) => {
@@ -312,7 +312,7 @@ function MoveCategoryForm({
       postItem(`/categories/${node.id}/move`, { targetParentId }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["categories"] });
-      notify("Kategori tasinildi.");
+      notify("Kategori taşınıldı.");
       onClose();
     },
     onError: (error: unknown) => notify(errorMessage(error), "error"),
@@ -326,17 +326,17 @@ function MoveCategoryForm({
       fullWidth
       fullScreen={is_mobile}
     >
-      <DialogTitle>Tasi: {node.name}</DialogTitle>
+      <DialogTitle>Taşı: {node.name}</DialogTitle>
       <DialogContent>
         <FormControl fullWidth margin="dense">
-          <InputLabel id="move-target-label">Hedef Ust Kategori</InputLabel>
+          <InputLabel id="move-target-label">Hedef Üst Kategori</InputLabel>
           <Select
             labelId="move-target-label"
-            label="Hedef Ust Kategori"
+            label="Hedef Üst Kategori"
             value={target}
             onChange={(event) => setTarget(event.target.value)}
           >
-            <MenuItem value="">Kok seviye (ust kategori yok)</MenuItem>
+            <MenuItem value="">Kök seviye (üst kategori yok)</MenuItem>
             {options.map((item) => (
               <MenuItem key={item.id} value={item.id}>
                 {`${"-".repeat(item.depth)} ${item.name}`}
@@ -345,26 +345,26 @@ function MoveCategoryForm({
           </Select>
         </FormControl>
         <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
-          Kategori, sectiginiz ust kategorinin altina tasinir. Kendi alt agaci hedef secilemez.
+          Kategori, seçtiğiniz üst kategorinin altına taşınır. Kendi alt ağacı hedef seçilemez.
         </Typography>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} disabled={moveMutation.isPending}>
-          Vazgec
+          Vazgeç
         </Button>
         <Button
           variant="contained"
           disabled={moveMutation.isPending}
           onClick={() => moveMutation.mutate(target === "" ? null : target)}
         >
-          {moveMutation.isPending ? "Tasiniyor..." : "Tasi"}
+          {moveMutation.isPending ? "Taşınıyor..." : "Taşı"}
         </Button>
       </DialogActions>
     </Dialog>
   );
 }
 
-/** Arsivleme onayi: gerekce zorunlu; etki metni acikca yazilir (dokuman 24). */
+/** Arşivleme onayı: gerekçe zorunlu; etki metni açıkça yazılır (doküman 24). */
 function ArchiveCategoryDialog({
   node,
   onClose,
@@ -380,7 +380,7 @@ function ArchiveCategoryDialog({
     mutationFn: (reason: string) => postItem(`/categories/${node.id}/archive`, { reason }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["categories"] });
-      notify("Kategori arsivlendi.");
+      notify("Kategori arşivlendi.");
       onClose();
     },
     onError: (error: unknown) => notify(errorMessage(error), "error"),
@@ -388,15 +388,15 @@ function ArchiveCategoryDialog({
 
   const hasActiveChildren = node.children.some((child) => child.isActive);
   const impact = hasActiveChildren
-    ? "Arsivlenen kategori listelerden kaybolur ve yeni atamalarda secilemez. Dikkat: bu kategorinin aktif cocuk kategorileri var; sunucu bu islemi reddeder. Once cocuklari arsivleyin."
-    : "Arsivlenen kategori listelerden kaybolur ve yeni atamalarda secilemez. Aktif cocuk kategorisi varsa sunucu islemi reddeder (409).";
+    ? "Arşivlenen kategori listelerden kaybolur ve yeni atamalarda seçilemez. Dikkat: bu kategorinin aktif çocuk kategorileri var; sunucu bu işlemi reddeder. Önce çocukları arşivleyin."
+    : "Arşivlenen kategori listelerden kaybolur ve yeni atamalarda seçilemez. Aktif çocuk kategorisi varsa sunucu işlemi reddeder (409).";
 
   return (
     <ReasonConfirmDialog
       open
-      title={`Arsivle: ${node.name}`}
+      title={`Arşivle: ${node.name}`}
       impact={impact}
-      confirmLabel="Arsivle"
+      confirmLabel="Arşivle"
       busy={archiveMutation.isPending}
       onCancel={onClose}
       onConfirm={(reason) => archiveMutation.mutate(reason)}
@@ -404,7 +404,7 @@ function ArchiveCategoryDialog({
   );
 }
 
-/** Kullanim dialog'u: kategorideki isletme sayisi (GET /categories/{id}/usage). */
+/** Kullanım dialog'u: kategorideki işletme sayısı (GET /categories/{id}/usage). */
 function UsageDialog({ categoryId, onClose }: { categoryId: string; onClose: () => void }) {
   const theme = useTheme();
   const is_mobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -415,10 +415,10 @@ function UsageDialog({ categoryId, onClose }: { categoryId: string; onClose: () 
 
   return (
     <Dialog open onClose={onClose} maxWidth="xs" fullWidth fullScreen={is_mobile}>
-      <DialogTitle>Kullanim Bilgisi</DialogTitle>
+      <DialogTitle>Kullanım Bilgisi</DialogTitle>
       <DialogContent>
         {usage.isPending ? (
-          <LoadingState label="Kullanim bilgisi yukleniyor..." />
+          <LoadingState label="Kullanım bilgisi yükleniyor..." />
         ) : usage.isError ? (
           <ErrorState error={usage.error} />
         ) : (
@@ -427,7 +427,7 @@ function UsageDialog({ categoryId, onClose }: { categoryId: string; onClose: () 
               Kategori: <strong>{usage.data?.name}</strong>
             </Typography>
             <Typography>
-              Bu kategoride <strong>{usage.data?.businessCount}</strong> isletme kayitli.
+              Bu kategoride <strong>{usage.data?.businessCount}</strong> işletme kayıtlı.
             </Typography>
           </Stack>
         )}
@@ -449,7 +449,7 @@ export function CategoriesPage() {
   const notify: Notify = (message, severity = "success") =>
     setSnackbar({ open: true, message, severity });
 
-  // undefined = kapali; null = root create; CategoryDto = alt kategori create.
+  // undefined = kapalı; null = root create; CategoryDto = alt kategori create.
   const [createParent, setCreateParent] = useState<CategoryDto | null | undefined>(undefined);
   const [editNode, setEditNode] = useState<CategoryNode | null>(null);
   const [moveNode, setMoveNode] = useState<CategoryNode | null>(null);
@@ -490,9 +490,9 @@ export function CategoriesPage() {
       ) : categoriesQuery.isError ? (
         <ErrorState error={categoriesQuery.error} />
       ) : flat.length === 0 ? (
-        <EmptyState label="Kategori bulunamadi." />
+        <EmptyState label="Kategori bulunamadı." />
       ) : (
-        <List aria-label="kategori agaci">
+        <List aria-label="kategori ağacı">
           {flat.map((node) => (
             <ListItem
               key={node.id}
@@ -512,21 +512,21 @@ export function CategoriesPage() {
                   ) : null}
                   {canUpdate ? (
                     <Button size="small" onClick={() => setEditNode(node)}>
-                      Duzenle
+                      Düzenle
                     </Button>
                   ) : null}
                   {canUpdate ? (
                     <Button size="small" onClick={() => setMoveNode(node)}>
-                      Tasi
+                      Taşı
                     </Button>
                   ) : null}
                   {canArchive ? (
                     <Button size="small" color="warning" onClick={() => setArchiveNode(node)}>
-                      Arsivle
+                      Arşivle
                     </Button>
                   ) : null}
                   <Button size="small" onClick={() => setUsageId(node.id)}>
-                    Kullanim
+                    Kullanım
                   </Button>
                 </Stack>
               }
@@ -538,7 +538,7 @@ export function CategoriesPage() {
                     <StatusBadge status={node.isActive ? "Aktif" : "Pasif"} />
                   </Stack>
                 }
-                secondary={`Sira: ${node.displayOrder} - Cocuk kategori: ${node.childCount}`}
+                secondary={`Sıra: ${node.displayOrder} - Çocuk kategori: ${node.childCount}`}
               />
             </ListItem>
           ))}

@@ -7,15 +7,15 @@ using MediatR;
 namespace Rezervise.Application.Features.DeviceTokens.Commands.UnregisterDeviceToken
 {
     /// <summary>
-    /// Cihaz token'ini gonderime kapatir (cikis / uygulama kaldirma).
-    /// Kayit silinmez; pasiflestirilir.
+    /// Cihaz token'ini gönderime kapatır (çıkış / uygulama kaldırma).
+    /// Kayıt silinmez; pasifleştirilir.
     /// </summary>
     public class UnregisterDeviceTokenCommand : IRequest<Result<bool>>
     {
-        /// <summary>Kapatilacak FCM token.</summary>
+        /// <summary>Kapatılacak FCM token.</summary>
         public string Token { get; set; } = string.Empty;
 
-        /// <summary>Token sahibi kullanici; JWT kimligiyle eslesmelidir.</summary>
+        /// <summary>Token sahibi kullanıcı; JWT kimliğiyle eşleşmelidir.</summary>
         public Guid UserId { get; set; }
     }
 
@@ -37,16 +37,16 @@ namespace Rezervise.Application.Features.DeviceTokens.Commands.UnregisterDeviceT
 
         public async Task<Result<bool>> Handle(UnregisterDeviceTokenCommand request, CancellationToken cancellationToken)
         {
-            // Token yalnizca sahibi tarafindan kapatilabilir (IDOR korumasi).
+            // Token yalnızca sahibi tarafından kapatılabilir (IDOR koruması).
             if (_currentUser.UserId is null || _currentUser.UserId != request.UserId)
-                return Result<bool>.Failure(Error.Forbidden("Cihaz kaydi yalnizca kendi hesabiniz icin kaldirilabilir."));
+                return Result<bool>.Failure(Error.Forbidden("Cihaz kaydı yalnızca kendi hesabınız için kaldırılabilir."));
 
             var existing = (await _deviceTokens.FindAsync(
                     t => t.UserId == request.UserId && t.Token == request.Token,
                     cancellationToken))
                 .FirstOrDefault();
 
-            // Bilinmeyen token: bilgi sizdirmamak icin sessiz basari.
+            // Bilinmeyen token: bilgi sızdırmamak için sessiz başarı.
             if (existing is null)
                 return Result<bool>.Success(true);
 

@@ -1,26 +1,26 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Kampanyanin yurutuldugu kanal.
+    /// Kampanyanın yürütüldüğü kanal.
     /// </summary>
     public enum EnumCampaignChannel
     {
         /// <summary>Instagram organik/reklam.</summary>
         Instagram = 0,
 
-        /// <summary>Meta (Facebook/Instagram) reklamlari.</summary>
+        /// <summary>Meta (Facebook/Instagram) reklamları.</summary>
         MetaAds = 1,
 
-        /// <summary>Google reklamlari.</summary>
+        /// <summary>Google reklamları.</summary>
         GoogleAds = 2,
 
-        /// <summary>Organik erisim.</summary>
+        /// <summary>Organik erişim.</summary>
         Organic = 3,
 
-        /// <summary>Dogrudan erisim.</summary>
+        /// <summary>Doğrudan erişim.</summary>
         Direct = 4,
 
-        /// <summary>Diger kanallar.</summary>
+        /// <summary>Diğer kanallar.</summary>
         Other = 5
     }
 }

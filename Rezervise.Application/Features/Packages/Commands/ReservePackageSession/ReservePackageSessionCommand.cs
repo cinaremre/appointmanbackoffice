@@ -4,8 +4,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Packages.Commands.ReservePackageSession
 {
     /// <summary>
-    /// Randevu icin paketten seans hakki ayirir (dokuman Modul 5).
-    /// Ayni randevu icin ikinci rezervasyon Conflict; hak asiminda Conflict.
+    /// Randevu için paketten seans hakkı ayırır (doküman Modül 5).
+    /// Aynı randevu için ikinci rezervasyon Conflict; hak asımında Conflict.
     /// </summary>
     public class ReservePackageSessionCommand : IRequest<Result<Guid>>
     {

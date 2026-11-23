@@ -8,10 +8,10 @@ namespace Rezervise.Domain.Entities
 {
     public class User : BaseEntity
     {
-        /// <summary>Desteklenen dil kodlari.</summary>
+        /// <summary>Desteklenen dil kodları.</summary>
         private static readonly string[] SupportedLanguages = { "tr", "en" };
 
-        /// <summary>Varsayilan dil kodu.</summary>
+        /// <summary>Varsayılan dil kodu.</summary>
         public const string DefaultLanguageCode = "tr";
 
         public string FirstName { get; private set; }
@@ -27,41 +27,41 @@ namespace Rezervise.Domain.Entities
         public bool IsPhoneVerified { get; private set; }
         public DateTime? LastLoginDate { get; private set; }
 
-        // Guvenlik: refresh token yalnizca hash'lenmis olarak saklanir; ham deger DB'de tutulmaz.
+        // Güvenlik: refresh token yalnızca hash'lenmiş olarak saklanır; ham değer DB'de tutulmaz.
         public string? RefreshTokenHash { get; private set; }
         public string? PreviousRefreshTokenHash { get; private set; }
         public DateTime? RefreshTokenExpiresAtUtc { get; private set; }
         public DateTime? RefreshTokenCreatedAtUtc { get; private set; }
         public DateTime? RefreshTokenRevokedAtUtc { get; private set; }
 
-        // Guvenlik: e-posta dogrulama token'i da yalnizca hash'lenmis olarak saklanir.
-        // Kullanici basina tek aktif token tutulur; yeni token eskisini gecersiz kilar.
+        // Güvenlik: e-posta doğrulama token'i da yalnızca hash'lenmiş olarak saklanır.
+        // Kullanıcı basına tek aktif token tutulur; yeni token eskisini geçersiz kılar.
         public string? EmailVerificationTokenHash { get; private set; }
         public DateTime? EmailVerificationTokenExpiresAt { get; private set; }
 
         /// <summary>
-        /// Dogrulama e-postasinin en son istendigi zaman (UTC).
-        /// Yeniden gonderme sikligini sinirlamak icin kullanilir.
+        /// Doğrulama e-postasının en son istendiği zaman (UTC).
+        /// Yeniden gönderme şıklığını sınırlamak için kullanılır.
         /// </summary>
         public DateTime? EmailVerificationRequestedAt { get; private set; }
 
-        // Guvenlik: brute force korumasi icin basarisiz giris sayaci ve kilit bitis zamani.
+        // Güvenlik: brute force koruması için başarısız giriş sayacı ve kilit bitiş zamanı.
         public int AccessFailedCount { get; private set; }
         public DateTime? LockoutEndUtc { get; private set; }
 
-        /// <summary>Hesabin su anda kilitli olup olmadigini bildirir.</summary>
+        /// <summary>Hesabın su anda kilitli olup olmadığını bildirir.</summary>
         public bool IsLockedOut => LockoutEndUtc.HasValue && LockoutEndUtc.Value > DateTime.UtcNow;
 
-        /// <summary>Son basarili giris zamani (UTC).</summary>
+        /// <summary>Son başarılı giriş zamanı (UTC).</summary>
         public DateTime? LastFailedLoginUtc { get; private set; }
 
-        // Konum: kullanicinin kayitli oldugu il / ilce.
-        // Arama kriteri bos geldiginde varsayilan konum olarak kullanilir.
+        // Konum: kullanıcının kayıtlı öldüğü il / ilçe.
+        // Arama kriteri boş geldiğinde varsayılan konum olarak kullanılır.
         public int? CityId { get; private set; }
         public int? DistrictId { get; private set; }
 
-        // Dil tercihi: "tr" veya "en". Kullaniciya donen metinlerin kulturu
-        // bu deger uzerinden belirlenir.
+        // Dil tercihi: "tr" veya "en". Kullanıcıya dönen metinlerin kültürü
+        // bu değer üzerinden belirlenir.
         public string LanguageCode { get; private set; }
 
         // Navigation Properties
@@ -86,7 +86,7 @@ namespace Rezervise.Domain.Entities
         private readonly List<BlacklistEntry> _blacklistEntries = new();
         public IReadOnlyCollection<BlacklistEntry> BlacklistEntries => _blacklistEntries.AsReadOnly();
 
-        private User() { } // EF Core i�in
+        private User() { } // EF Core için
 
         public User(string firstName, string lastName, Email email, PhoneNumber phoneNumber, EnumUserRole role)
             : this(Guid.NewGuid(), firstName, lastName, email, phoneNumber, role)
@@ -189,19 +189,19 @@ namespace Rezervise.Domain.Entities
                 return;
 
             IsEmailVerified = true;
-            // Token tek kullanimliktir: dogrulama basarili olunca temizlenir.
+            // Token tek kullanımlıktır: doğrulama başarılı olunca temizlenir.
             ClearEmailVerificationToken();
             UpdatedAt = DateTime.UtcNow;
             AddDomainEvent(new UserEmailVerifiedEvent(Id, Email, $"{FirstName} {LastName}"));
         }
 
         /// <summary>
-        /// Yeni bir e-posta dogrulama token'i kaydeder ve varsa onceki token'i gecersiz kilar.
+        /// Yeni bir e-posta doğrulama token'i kaydeder ve varsa önceki token'i geçersiz kılar.
         /// </summary>
-        /// <param name="tokenHash">Ham token'in SHA-256 hash'i; ham deger asla saklanmaz.</param>
-        /// <param name="expiresAt">Token'in mutlak bitis zamani (UTC).</param>
-        /// <param name="requestedAt">E-postanin istendigi zaman (UTC); yeniden gonderme siniri icin.</param>
-        /// <exception cref="DomainException">Token hash'i bos oldugunda firlatilir.</exception>
+        /// <param name="tokenHash">Ham token'in SHA-256 hash'i; ham değer asla saklanmaz.</param>
+        /// <param name="expiresAt">Token'in mutlak bitiş zamanı (UTC).</param>
+        /// <param name="requestedAt">E-postanın istendiği zaman (UTC); yeniden gönderme sınırı için.</param>
+        /// <exception cref="DomainException">Token hash'i boş öldüğünda fırlatılır.</exception>
         public void IssueEmailVerificationToken(string tokenHash, DateTime expiresAt, DateTime requestedAt)
         {
             if (string.IsNullOrWhiteSpace(tokenHash))
@@ -214,7 +214,7 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Aktif e-posta dogrulama token'ini temizler. Token yoksa da cagrilabilir.
+        /// Aktif e-posta doğrulama token'ini temizler. Token yoksa da çağrılabilir.
         /// </summary>
         public void ClearEmailVerificationToken()
         {
@@ -223,20 +223,20 @@ namespace Rezervise.Domain.Entities
             EmailVerificationRequestedAt = null;
         }
 
-        // Guvenlik: telefon (OTP) dogrulama kodu da yalnizca hash'lenmis olarak saklanir.
-        // Kullanici basina tek aktif kod tutulur; yeni kod eskisini gecersiz kilar.
+        // Güvenlik: telefon (OTP) doğrulama kodu da yalnızca hash'lenmiş olarak saklanır.
+        // Kullanıcı basına tek aktif kod tutulur; yeni kod eskisini geçersiz kılar.
         public string? PhoneVerificationCodeHash { get; private set; }
         public DateTime? PhoneVerificationCodeExpiresAt { get; private set; }
         public DateTime? PhoneVerificationRequestedAt { get; private set; }
         public int PhoneVerificationAttemptCount { get; private set; }
 
         /// <summary>
-        /// Yeni telefon dogrulama kodunun hash'ini kaydeder ve deneme sayacini sifirlar.
+        /// Yeni telefon doğrulama kodunun hash'ini kaydeder ve deneme sayacını sıfırlar.
         /// </summary>
         /// <param name="codeHash">Kodun SHA-256 hash'i; ham kod asla saklanmaz.</param>
-        /// <param name="expiresAt">Kodun mutlak bitis zamani (UTC).</param>
-        /// <param name="requestedAt">Kodun uretildigi zaman (UTC).</param>
-        /// <exception cref="DomainException">Hash bos oldugunda firlatilir.</exception>
+        /// <param name="expiresAt">Kodun mutlak bitiş zamanı (UTC).</param>
+        /// <param name="requestedAt">Kodun üretildiği zaman (UTC).</param>
+        /// <exception cref="DomainException">Hash boş öldüğünda fırlatılır.</exception>
         public void IssuePhoneVerificationCode(string codeHash, DateTime expiresAt, DateTime requestedAt)
         {
             if (string.IsNullOrWhiteSpace(codeHash))
@@ -249,7 +249,7 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Aktif telefon dogrulama kodunu temizler.</summary>
+        /// <summary>Aktif telefon doğrulama kodunu temizler.</summary>
         public void ClearPhoneVerificationCode()
         {
             PhoneVerificationCodeHash = null;
@@ -257,7 +257,7 @@ namespace Rezervise.Domain.Entities
             PhoneVerificationAttemptCount = 0;
         }
 
-        /// <summary>Basarisiz dogrulama denemesi sayacini arttirir.</summary>
+        /// <summary>Başarısız doğrulama denemesi sayacını arttırır.</summary>
         public void IncrementPhoneVerificationAttempt()
         {
             PhoneVerificationAttemptCount++;
@@ -281,12 +281,12 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Yeni refresh token hash'ini kaydeder ve mevcut hash'i tekrar kullanim
-        /// (reuse) tespiti icin onceki slota tasir.
+        /// Yeni refresh token hash'ini kaydeder ve mevcut hash'i tekrar kullanım
+        /// (reuse) tespiti için önceki slota taşır.
         /// </summary>
         /// <param name="refreshTokenHash">Yeni refresh token'in SHA-256 hash'i.</param>
-        /// <param name="expiresAtUtc">Yeni token'in mutlak bitis zamani (UTC).</param>
-        /// <param name="issuedAtUtc">Token'in uretildigi zaman (UTC).</param>
+        /// <param name="expiresAtUtc">Yeni token'in mutlak bitiş zamanı (UTC).</param>
+        /// <param name="issuedAtUtc">Token'in üretildiği zaman (UTC).</param>
         public void IssueRefreshToken(string refreshTokenHash, DateTime expiresAtUtc, DateTime issuedAtUtc)
         {
             if (string.IsNullOrWhiteSpace(refreshTokenHash))
@@ -301,10 +301,10 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Refresh token durumunu iptal eder. Cikis, parola degisimi ve
-        /// token tekrar kullanimi tespitinde cagrilir.
+        /// Refresh token durumunu iptal eder. Çıkış, parola değişimi ve
+        /// token tekrar kullanımı tespitinde çağrılır.
         /// </summary>
-        /// <param name="revokedAtUtc">Iptal zamani (UTC).</param>
+        /// <param name="revokedAtUtc">İptal zamanı (UTC).</param>
         public void RevokeRefreshToken(DateTime revokedAtUtc)
         {
             RefreshTokenHash = null;
@@ -315,10 +315,10 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Basarisiz giris denemesini kaydeder ve esik asildiginda hesabi kilitler.
+        /// Başarısız giriş denemesini kaydeder ve eşik asıldığında hesabı kilitler.
         /// </summary>
-        /// <param name="maxFailedAttempts">Kilit oncesi izin verilen deneme sayisi.</param>
-        /// <param name="lockoutDuration">Kilit suresi.</param>
+        /// <param name="maxFailedAttempts">Kilit öncesi izin verilen deneme sayısı.</param>
+        /// <param name="lockoutDuration">Kilit süresi.</param>
         public void RegisterFailedLogin(int maxFailedAttempts, TimeSpan lockoutDuration)
         {
             AccessFailedCount++;
@@ -331,7 +331,7 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Basarili giris sonrasi sayaci sifirlar ve son giris zamanini gunceller.
+        /// Başarılı giriş sonrası sayacı sıfırlar ve son giriş zamanını günceller.
         /// </summary>
         public void RegisterSuccessfulLogin()
         {
@@ -371,8 +371,8 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Kullanicinin kayitli konumunu (il / ilce) gunceller.
-        /// Arama sirasinda kriter bos geldiginde bu bilgi kullanilir.
+        /// Kullanıcının kayıtlı konumunu (il / ilçe) günceller.
+        /// Arama sırasında kriter boş geldiğinde bu bilgi kullanılır.
         /// </summary>
         public void UpdateLocation(int? cityId, int? districtId, string? updatedBy = null)
         {
@@ -401,8 +401,8 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Kullanicinin dil tercihini gunceller. Yalnizca desteklenen kodlar kabul edilir.
-        /// Sonraki isteklerde metinler bu dile gore cozulur.
+        /// Kullanıcının dil tercihini günceller. Yalnızca desteklenen kodlar kabul edilir.
+        /// Sonraki isteklerde metinler bu dile göre çözülür.
         /// </summary>
         /// <param name="languageCode">Dil kodu ("tr" veya "en").</param>
         public void SetLanguageCode(string languageCode)
@@ -546,7 +546,7 @@ namespace Rezervise.Domain.Entities
         private const string AnonymizedFirstName = "Anonim";
 
         /// <summary>Placeholder last name applied when an account is erased.</summary>
-        private const string AnonymizedLastName = "Kullanici";
+        private const string AnonymizedLastName = "Kullanıcı";
 
         /// <summary>
         /// Erases every personal data field on the account (KVKK anonymization) and marks
@@ -557,24 +557,24 @@ namespace Rezervise.Domain.Entities
         /// <returns>The anonymized e-mail address that replaced the original one.</returns>
         public string AnonymizeAndDelete(DateTime utcNow)
         {
-            // 1. Dogrudan tanimlayicilar
+            // 1. Doğrudan tanımlayıcılar
             FirstName = AnonymizedFirstName;
             LastName = AnonymizedLastName;
 
-            // 2. Iletisim tanimlayicilari: her kayit icin benzersiz yer tutucular.
-            //    Sabit bir deger kullanilsaydi ikinci silmede unique index ihlali olurdu.
+            // 2. İletişim tanımlayıcıları: her kayıt için benzersiz yer tutucular.
+            //    Sabit bir değer kullanılsaydı ikinci silmede unique index ihlali olurdu.
             Email = BuildAnonymizedEmail(Id);
             PhoneNumber = BuildAnonymizedPhoneNumber(Id);
 
-            // 3. Kimlik bilgisi: BCrypt bu degeri asla dogrulayamaz.
-            //    Kolon zorunlu ve 500 karakter sinirli oldugu icin yer tutucu sart.
+            // 3. Kimlik bilgisi: BCrypt bu değeri asla doğrulayamaz.
+            //    Kolon zorunlu ve 500 karakter sınırlı öldüğü için yer tutucu şart.
             PasswordHash = BuildUnusablePasswordHash();
 
-            // 4. Oturum yetenegi ve dogrulama token'lari temizlenir.
+            // 4. Oturum yeteneği ve doğrulama token'lari temizlenir.
             RevokeRefreshToken(utcNow);
             ClearEmailVerificationToken();
 
-            // 5. Davranissal ve dolayli tanimlayicilar silinir.
+            // 5. Davranışsal ve dolaylı tanımlayıcılar silinir.
             IsEmailVerified = false;
             IsPhoneVerified = false;
             DateOfBirth = null;
@@ -585,9 +585,9 @@ namespace Rezervise.Domain.Entities
             AccessFailedCount = 0;
             LockoutEndUtc = null;
 
-            // 6. Dil tercihi, rol ve hesap durumu kisisel veri degildir; korunur.
+            // 6. Dil tercihi, rol ve hesap durumu kişisel veri değildir; korunur.
 
-            // 7. Soft delete: satir referans butunlugu icin kalir.
+            // 7. Soft delete: satır referans bütünlüğü için kalır.
             IsDeleted = true;
             DeletedAt = utcNow;
             UpdatedAt = utcNow;
@@ -629,8 +629,8 @@ namespace Rezervise.Domain.Entities
         /// <returns>A normalized +905XXXXXXXXX PhoneNumber value object.</returns>
         private static PhoneNumber BuildAnonymizedPhoneNumber(Guid userId)
         {
-            // Guid baytlarindan 9 haneli sayisal govde uretilir; +905 oneki ile
-            // gecerli bir mobil numara formati elde edilir (toplam 13 karakter).
+            // Guid baytlarından 9 haneli sayısal gövde üretilir; +905 öneki ile
+            // geçerli bir mobil numara formatı elde edilir (toplam 13 karakter).
             var bytes = userId.ToByteArray();
             var seed = BitConverter.ToUInt64(bytes, 0);
             var body = (int)(seed % 1_000_000_000);
@@ -644,7 +644,7 @@ namespace Rezervise.Domain.Entities
         /// <returns>Opaque placeholder string within the 500 character column limit.</returns>
         private static string BuildUnusablePasswordHash()
         {
-            // BCrypt bu degeri asla dogrulayamaz: gecerli bir hash formati degil.
+            // BCrypt bu değeri asla doğrulayamaz: geçerli bir hash formatı değil.
             var noise = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
 
             return $"!DELETED!{noise}";

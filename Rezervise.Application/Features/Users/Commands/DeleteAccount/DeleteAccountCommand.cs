@@ -16,7 +16,7 @@ namespace Rezervise.Application.Features.Users.Commands.DeleteAccount
 
         /// <summary>
         /// Optional free-text reason supplied by the client. Accepted for audit context
-        /// but deliberately NOT persisted (no column, therefore no migration) and NOT
+        /// büt deliberately NOT persisted (no column, therefore no migration) and NOT
         /// logged, because free text may itself contain personal data.
         /// </summary>
         public string? Reason { get; set; }

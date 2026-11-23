@@ -1,23 +1,23 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Bekleme listesi slot teklifinin durumu (dokuman Modul 10).
+    /// Bekleme listesi slot teklifinin durumu (doküman Modül 10).
     /// </summary>
     public enum EnumWaitlistOfferStatus
     {
-        /// <summary>Teklif gonderildi, yanit bekleniyor.</summary>
+        /// <summary>Teklif gönderildi, yanıt bekleniyor.</summary>
         Pending = 0,
 
-        /// <summary>Musteri teklifi kabul etti.</summary>
+        /// <summary>Müşteri teklifi kabul etti.</summary>
         Accepted = 1,
 
-        /// <summary>Musteri teklifi reddetti.</summary>
+        /// <summary>Müşteri teklifi reddetti.</summary>
         Declined = 2,
 
-        /// <summary>Yanit suresi doldu.</summary>
+        /// <summary>Yanıt süresi doldu.</summary>
         Expired = 3,
 
-        /// <summary>Ayni slot icin baska bir teklif kabul edildigi icin gecersizlesti.</summary>
+        /// <summary>Aynı slot için başka bir teklif kabul edildiği için geçersizleşti.</summary>
         Superseded = 4
     }
 }

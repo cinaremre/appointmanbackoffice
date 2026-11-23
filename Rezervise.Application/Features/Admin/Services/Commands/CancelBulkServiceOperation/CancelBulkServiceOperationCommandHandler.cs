@@ -43,14 +43,14 @@ namespace Rezervise.Application.Features.Admin.Services.Commands.CancelBulkServi
 
                 if (operation is null)
                     return Result<CancelledBulkOperationDto>.Failure(
-                        Error.NotFound("Toplu islem", request.BulkOperationId.ToString()));
+                        Error.NotFound("Toplu işlem", request.BulkOperationId.ToString()));
 
-                // Islem baslamissa (Running) veya sonlanmissa iptal edilmez.
+                // İşlem başlamışsa (Running) veya sonlanmışsa iptal edilmez.
                 if (operation.Status != EnumBulkOperationStatus.Pending
                     && operation.Status != EnumBulkOperationStatus.Validating
                     && operation.Status != EnumBulkOperationStatus.AwaitingApproval)
                     return Result<CancelledBulkOperationDto>.Failure(
-                        Error.Conflict("Toplu islem bu durumda iptal edilemez.", $"Durum: {operation.Status}"));
+                        Error.Conflict("Toplu işlem bu durumda iptal edilemez.", $"Durum: {operation.Status}"));
 
                 var previousStatus = operation.Status;
                 operation.Cancel();
@@ -83,7 +83,7 @@ namespace Rezervise.Application.Features.Admin.Services.Commands.CancelBulkServi
             catch (Exception ex)
             {
                 return Result<CancelledBulkOperationDto>.Failure(
-                    Error.Internal("Toplu islem iptal edilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Toplu işlem iptal edilirken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -7,19 +7,19 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminCampaignPerformance
 {
     /// <summary>
-    /// Kampanya performans ozeti. Hesaplama deseni mevcut GetCampaignRoi
-    /// handler'iyla uyumludur: harcama toplami, atif sayisi ve atfedilen
-    /// randevularin Completed durum kontrolu. ROAS aciklamasi da ayni bicimde
-    /// doner; satis entegrasyonu sonrasi gercek ROAS hesaplanacaktir.
-    /// Yonetici gorunumu oldugu icin isletme sahibi yetki kontrolu yapilmaz;
-    /// erisim API katmanindaki MarketingRead policy ile sinirlanir.
+    /// Kampanya performans özeti. Hesaplama deseni mevcut GetCampaignRoi
+    /// handler'ıyla uyumludur: harcama toplamı, atıf sayısı ve atfedilen
+    /// randevuların Completed durum kontrolü. ROAS açıklaması da aynı biçimde
+    /// döner; satış entegrasyonu sonrası gerçek ROAS hesaplanacaktır.
+    /// Yönetici görünümü öldüğü için işletme sahibi yetki kontrolü yapılmaz;
+    /// erişim API katmanındaki MarketingRead policy ile sınırlanır.
     /// </summary>
     public class GetAdminCampaignPerformanceQueryHandler
         : IRequestHandler<GetAdminCampaignPerformanceQuery, Result<AdminCampaignPerformanceDto>>
     {
-        /// <summary>GetCampaignRoi ile ayni ROAS aciklamasi.</summary>
+        /// <summary>GetCampaignRoi ile aynı ROAS açıklaması.</summary>
         private const string RoasDescription =
-            "Satis entegrasyonu sonrasi ROAS hesaplanacak; bu surumde yalnizca atfedilen randevu sayilari raporlanir.";
+            "Satış entegrasyonu sonrası ROAS hesaplanacak; bu sürümde yalnızca atfedilen randevu sayıları raporlanır.";
 
         private readonly IRepository<MarketingCampaign> _campaignRepository;
         private readonly IRepository<CampaignSpend> _spendRepository;
@@ -44,7 +44,7 @@ namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminCampaig
         {
             try
             {
-                // 1. Kampanya kontrolu.
+                // 1. Kampanya kontrolü.
                 var campaign = await _campaignRepository.GetByIdAsync(request.CampaignId, cancellationToken);
                 if (campaign is null)
                     return Result<AdminCampaignPerformanceDto>.Failure(
@@ -90,7 +90,7 @@ namespace Rezervise.Application.Features.Admin.Marketing.Queries.GetAdminCampaig
             catch (Exception ex)
             {
                 return Result<AdminCampaignPerformanceDto>.Failure(
-                    Error.Internal("Kampanya performans raporu getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kampanya performans raporu getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

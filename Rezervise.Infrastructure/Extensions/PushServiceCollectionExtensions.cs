@@ -8,13 +8,13 @@ using Microsoft.Extensions.Logging;
 namespace Rezervise.Infrastructure.Extensions
 {
     /// <summary>
-    /// Push bildirim hattinin kayit yardimcilari (SMS/e-posta desenleri ile uyumlu).
+    /// Push bildirim hattının kayıt yardımcıları (SMS/e-posta desenleri ile uyumlu).
     /// </summary>
     public static class PushServiceCollectionExtensions
     {
         /// <summary>
-        /// FCM ayarlarini, push kuyrugunu ve secilen tasimayi kaydeder.
-        /// Yapilandirma tam degilse log tasimasi kullanilir; uygulama asla patlamaz.
+        /// FCM ayarlarını, push kuyruğunu ve seçilen taşımayı kaydeder.
+        /// Yapılandırma tam değilse log taşıması kullanılır; uygulama asla patlamaz.
         /// </summary>
         public static IServiceCollection AddPushInfrastructure(
             this IServiceCollection services,
@@ -26,7 +26,7 @@ namespace Rezervise.Infrastructure.Extensions
             var settings = PushSettings.FromConfiguration(configuration);
             services.AddSingleton(settings);
 
-            // Kuyruk: tek instance hem yazar hem okur tarafina servis edilir.
+            // Kuyruk: tek instance hem yazar hem okur tarafına servis edilir.
             services.AddSingleton<PushQueue>();
             services.AddSingleton<IPushQueue>(sp => sp.GetRequiredService<PushQueue>());
             services.AddSingleton<IPushQueueReader>(sp => sp.GetRequiredService<PushQueue>());

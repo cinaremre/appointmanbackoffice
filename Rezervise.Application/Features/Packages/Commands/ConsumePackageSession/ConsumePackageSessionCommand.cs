@@ -4,9 +4,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Packages.Commands.ConsumePackageSession
 {
     /// <summary>
-    /// Tamamlanan randevunun paket rezervasyonunu tuketime cevirir
-    /// (dokuman Modul 5). Randevu Completed olmali; ayni randevunun aktif
-    /// Reservation hareketi Cancelled yapilir ve yerine Consumption eklenir.
+    /// Tamamlanan randevunun paket rezervasyonunu tüketime çevirir
+    /// (doküman Modül 5). Randevu Completed olmalı; aynı randevunun aktif
+    /// Reservation hareketi Cancelled yapılır ve yerine Consumption eklenir.
     /// </summary>
     public class ConsumePackageSessionCommand : IRequest<Result<Guid>>
     {

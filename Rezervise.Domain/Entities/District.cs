@@ -6,8 +6,8 @@ using Rezervise.Domain.Events;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Ilce (ornek: Kadikoy, Besiktas).
-    /// Her ilcenin bir ili vardir.
+    /// İlçe (örnek: Kadıkoy, Beşiktaş).
+    /// Her ilçenin bir ili vardır.
     /// </summary>
     public class District : IAggregateRoot
     {
@@ -45,9 +45,9 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Seed verisi icin ID'li kurucu.
-        /// Kaynak verideki ilce ID'si korunur; semt seed'i bu ID'ye baglanacagi
-        /// icin ID'nin degismemesi kritiktir.
+        /// Seed verişi için ID'li kurucu.
+        /// Kaynak verideki ilçe ID'si korunur; semt seed'i bu ID'ye bağlanacağı
+        /// için ID'nin değişmemesi kritiktir.
         /// </summary>
         public District(int id, int cityId, string name)
         {

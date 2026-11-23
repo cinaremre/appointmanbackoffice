@@ -10,9 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers.Owner
 {
     /// <summary>
-    /// Isletme sahibinin finans okuma uclari. Tum listeler salt okunurdur:
-    /// tutar duzeltmeleri (iade, ters kayit) domain komutlariyla yapilir,
-    /// bu controller'da veri asla degistirilmez.
+    /// İşletme sahibinin finans okuma uçları. Tüm listeler salt okunurdur:
+    /// tutar düzeltmeleri (iade, ters kayıt) domain komutlarıyla yapılır,
+    /// bu controller'da veri asla değiştirilmez.
     /// </summary>
     [ApiController]
     [Authorize(Roles = "BusinessOwner")]
@@ -27,9 +27,9 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
         }
 
         /// <summary>
-        /// Satis listesi; tarih araligi filtresiyle. Filtre kapsaminin
-        /// GrandTotal toplami yanitta tek nesne olarak doner (OkList
-        /// ekleme alan tasimadigindan liste + toplam birlikte).
+        /// Satış listesi; tarih aralığı filtresiyle. Filtre kapsamının
+        /// GrandTotal toplamı yanıtta tek nesne olarak döner (OkList
+        /// ekleme alan taşımadığından liste + toplam birlikte).
         /// </summary>
         [HttpGet("businesses/{businessId:guid}/finance/sales")]
         public async Task<IActionResult> GetMySales(
@@ -56,7 +56,7 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
             return OkEnvelope(result.Value!);
         }
 
-        /// <summary>Odeme listesi; iadeler IsRefund bayragiyla ayri listelenebilir.</summary>
+        /// <summary>Ödeme listesi; iadeler IsRefund bayrağıyla ayrı listelenebilir.</summary>
         [HttpGet("businesses/{businessId:guid}/finance/payments")]
         public async Task<IActionResult> GetMyPayments(
             Guid businessId,
@@ -84,7 +84,7 @@ namespace Rezervise.BackOffice.Api.Controllers.Owner
             return OkList(result.Value!.Items, result.Value.Page, result.Value.PageSize, result.Value.TotalCount);
         }
 
-        /// <summary>Kasa oturumu listesi; beklenen/sayilan nakit ve fark raposuyla.</summary>
+        /// <summary>Kasa oturumu listesi; beklenen/sayılan nakit ve fark raposuyla.</summary>
         [HttpGet("businesses/{businessId:guid}/finance/cash-sessions")]
         public async Task<IActionResult> GetMyCashSessions(
             Guid businessId,

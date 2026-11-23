@@ -6,7 +6,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
 {
     public class CreateAppointmentCommand : IRequest<Result<Guid>>
     {
-        // Kim olusturuyor? (JWT'den alinacak)
+        // Kim oluşturuyor? (JWT'den alınacak)
         [JsonIgnore]
         public Guid RequesterId { get; set; }
 
@@ -19,8 +19,8 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
         public string? Notes { get; set; }
 
         /// <summary>
-        /// Ayni istegin ag tekrari veya cift tiklama ile mukerrer gonderilmesini
-        /// engelleyen istemci anahtari. Header'dan okunur, govdede beklenmez.
+        /// Aynı isteğin ağ tekrarı veya çift tıklama ile mükerrer gönderilmesini
+        /// engelleyen istemci anahtarı. Header'dan okunur, gövdede beklenmez.
         /// </summary>
         [JsonIgnore]
         public string? IdempotencyKey { get; set; }

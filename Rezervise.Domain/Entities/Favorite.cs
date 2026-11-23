@@ -24,10 +24,10 @@ namespace Rezervise.Domain.Entities
     : base(id)
         {
             if (userId == Guid.Empty)
-                throw new ArgumentException("Kullanici ID bos olamaz.", nameof(userId));
+                throw new ArgumentException("Kullanıcı ID boş olamaz.", nameof(userId));
 
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             UserId = userId;
             BusinessId = businessId;

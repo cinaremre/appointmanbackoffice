@@ -5,39 +5,39 @@ using System.Threading.Tasks;
 namespace Rezervise.Application.Common.Abstractions
 {
     /// <summary>
-    /// Isletme puan ve yorum sayaci alanlarini tek SQL ifadesiyle gunceller.
-    /// Read-modify-write deseni yerine atomik guncelleme kullanildigi icin
-    /// es zamanli yorum ekleme/silme islemlerinde sayac kaybi (lost update) olusmaz.
+    /// İşletme puan ve yorum sayacı alanlarını tek SQL ifadesiyle günceller.
+    /// Read-modify-write deseni yerine atomik güncelleme kullanıldığı için
+    /// es zamanlı yorum ekleme/silme işlemlerinde sayaç kaybı (lost update) oluşmaz.
     /// </summary>
     public interface IBusinessRatingUpdater
     {
         /// <summary>
-        /// Yeni bir puan eklendiginde toplam yorum sayisini ve ortalama puani
-        /// tek bir UPDATE ifadesiyle gunceller.
+        /// Yeni bir puan eklendiğinde toplam yorum sayısını ve ortalama puanı
+        /// tek bir UPDATE ifadesiyle günceller.
         /// </summary>
-        /// <param name="businessId">Isletme kimligi.</param>
+        /// <param name="businessId">İşletme kimliği.</param>
         /// <param name="score">Eklenen puan (1-5).</param>
-        /// <param name="cancellationToken">Iptal tokeni.</param>
-        /// <returns>Guncellenen satir sayisi.</returns>
+        /// <param name="cancellationToken">İptal tokeni.</param>
+        /// <returns>Güncellenen satır sayısı.</returns>
         Task<int> UpdateOnNewReviewAsync(Guid businessId, int score, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Bir puan silindiginde toplam yorum sayisini ve ortalama puani
-        /// tek bir UPDATE ifadesiyle gunceller.
+        /// Bir puan silindiğinde toplam yorum sayısını ve ortalama puanı
+        /// tek bir UPDATE ifadesiyle günceller.
         /// </summary>
-        /// <param name="businessId">Isletme kimligi.</param>
+        /// <param name="businessId">İşletme kimliği.</param>
         /// <param name="score">Silinen puan (1-5).</param>
-        /// <param name="cancellationToken">Iptal tokeni.</param>
-        /// <returns>Guncellenen satir sayisi.</returns>
+        /// <param name="cancellationToken">İptal tokeni.</param>
+        /// <returns>Güncellenen satır sayısı.</returns>
         Task<int> UpdateOnReviewRemovedAsync(Guid businessId, int score, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Yorum guncelleme, silme ve gorunurluk degisikliklerinden sonra
-        /// puan ve sayaci gorunur yorumlardan tek SQL ifadesiyle yeniden hesaplar.
+        /// Yorum güncelleme, silme ve görünürlük değişikliklerinden sonra
+        /// puan ve sayacı görünür yorumlardan tek SQL ifadesiyle yeniden hesaplar.
         /// </summary>
-        /// <param name="businessId">Isletme kimligi.</param>
-        /// <param name="cancellationToken">Iptal tokeni.</param>
-        /// <returns>Guncellenen satir sayisi.</returns>
+        /// <param name="businessId">İşletme kimliği.</param>
+        /// <param name="cancellationToken">İptal tokeni.</param>
+        /// <returns>Güncellenen satır sayısı.</returns>
         Task<int> RecalculateAsync(Guid businessId, CancellationToken cancellationToken = default);
     }
 }

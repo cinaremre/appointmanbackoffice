@@ -26,12 +26,12 @@ namespace Rezervise.Application.Features.Notifications.Commands.MarkAllAsRead
         {
             try
             {
-                // 0. Kimlik her zaman imzali token'dan gelir; istekteki hicbir alan kullaniciyi temsil etmez.
+                // 0. Kimlik her zaman imzalı token'dan gelir; istekteki hiçbir alan kullanıcıyı temsil etmez.
                 var currentUserId = _currentUser.UserId;
                 if (currentUserId is null)
                     return Result<int>.Failure(Error.Unauthorized("Auth.InvalidUser"));
 
-                // 1. Okunmamis bildirimleri getir
+                // 1. Okunmamış bildirimleri getir
                 var notifications = await _notificationRepository.FindAsync(
                     n => n.UserId == currentUserId.Value && !n.IsRead && !n.IsDeleted,
                     cancellationToken);
@@ -41,7 +41,7 @@ namespace Rezervise.Application.Features.Notifications.Commands.MarkAllAsRead
                 if (!notificationList.Any())
                     return Result<int>.Success(0);
 
-                // 2. Tumunu okundu olarak isaretle
+                // 2. Tümünü okundu olarak işaretle
                 foreach (var notification in notificationList)
                 {
                     notification.MarkAsRead();
@@ -54,7 +54,7 @@ namespace Rezervise.Application.Features.Notifications.Commands.MarkAllAsRead
             }
             catch (Exception ex)
             {
-                return Result<int>.Failure(Error.Internal("Bildirimler okundu isaretlenirken bir hata olustu.", ex.Message));
+                return Result<int>.Failure(Error.Internal("Bildirimler okundu işaretlenirken bir hata oluştu.", ex.Message));
             }
         }
     }

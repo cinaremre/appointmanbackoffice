@@ -6,13 +6,13 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppointmentDetail
 {
     /// <summary>
-    /// Randevuyu ve kisa durum gecmisini getirir. Gecmis kayitlari
-    /// degisiklik zamanina gore azalan sirada doner; ilk 20 kayit
-    /// yeterlidir (dokuman Modul 12).
+    /// Randevuyu ve kısa durum geçmişini getirir. Geçmiş kayıtları
+    /// değişiklik zamanına göre azalan sırada döner; ilk 20 kayıt
+    /// yeterlidir (doküman Modül 12).
     /// </summary>
     public class GetAdminAppointmentDetailQueryHandler : IRequestHandler<GetAdminAppointmentDetailQuery, Result<AdminAppointmentDetailDto>>
     {
-        /// <summary>Detayda dondurulen en fazla gecmis kayidi sayisi.</summary>
+        /// <summary>Detayda döndürülen en fazla geçmiş kayıdı sayısı.</summary>
         public const int HistoryLimit = 20;
 
         private readonly IRepository<Appointment> _appointmentRepository;
@@ -32,13 +32,13 @@ namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppo
         {
             try
             {
-                // 1. Randevuyu yukle; yoksa NotFound.
+                // 1. Randevuyu yükle; yoksa NotFound.
                 var appointment = await _appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken);
                 if (appointment is null)
                     return Result<AdminAppointmentDetailDto>.Failure(
                         Error.NotFoundById("Randevu", request.AppointmentId));
 
-                // 2. Kisa gecmis: randevunun kayitlari, en yeni degisiklik basta.
+                // 2. Kısa geçmiş: randevunun kayıtları, en yeni değişiklik başta.
                 var history = await _historyRepository.FindAsync(
                     h => h.AppointmentId == request.AppointmentId,
                     cancellationToken);
@@ -58,7 +58,7 @@ namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppo
                     })
                     .ToList();
 
-                // 3. Detayi olustur.
+                // 3. Detayı oluştur.
                 var dto = new AdminAppointmentDetailDto
                 {
                     Id = appointment.Id,
@@ -80,7 +80,7 @@ namespace Rezervise.Application.Features.Admin.Appointments.Queries.GetAdminAppo
             catch (Exception ex)
             {
                 return Result<AdminAppointmentDetailDto>.Failure(
-                    Error.Internal("Randevu detayi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Randevu detayı getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -14,13 +14,13 @@ namespace Rezervise.Application.Common.Responses
         }
 
         public static BaseResponse Ok(string? message = null)
-            => new(true, message ?? "Islem basarili.");
+            => new(true, message ?? "İşlem başarılı.");
 
         public static BaseResponse Fail(string message, List<string>? errors = null)
             => new(false, message, errors);
 
         public static BaseResponse<T> Ok<T>(T data, string? message = null)
-            => new(data, true, message ?? "Islem basarili.");
+            => new(data, true, message ?? "İşlem başarılı.");
 
         public static BaseResponse<T> Fail<T>(string message, List<string>? errors = null)
             => new(default, false, message, errors);

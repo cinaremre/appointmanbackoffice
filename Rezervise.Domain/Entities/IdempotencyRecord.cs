@@ -6,9 +6,9 @@ using Rezervise.Domain.Interfaces;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Idempotency-Key ile gelen tekrar isteklerin eslesmesini tutar.
-    /// Ayni anahtarla gelen ikinci istek yeni randevu uretmez, ilk sonucu doner.
-    /// Ag tekrari veya cift tiklama senaryolarinda mukerrer kayit olusmasini engeller.
+    /// Idempotency-Key ile gelen tekrar isteklerin eşleşmesini tutar.
+    /// Aynı anahtarla gelen ikinci istek yeni randevu üretmez, ilk sonucu döner.
+    /// Ağ tekrarı veya çift tıklama senaryolarında mükerrer kayıt oluşmasını engeller.
     /// </summary>
     public class IdempotencyRecord : IAggregateRoot
     {
@@ -17,35 +17,35 @@ namespace Rezervise.Domain.Entities
         /// <summary>Birincil anahtar.</summary>
         public int Id { get; private set; }
 
-        /// <summary>Istemciden gelen tekil istek anahtari.</summary>
+        /// <summary>İstemciden gelen tekil istek anahtarı.</summary>
         public string Key { get; private set; }
 
-        /// <summary>Istegi yapan kullanici.</summary>
+        /// <summary>İsteği yapan kullanıcı.</summary>
         public Guid UserId { get; private set; }
 
-        /// <summary>Ilk istekte olusturulan randevu.</summary>
+        /// <summary>İlk istekte oluşturulan randevu.</summary>
         public Guid AppointmentId { get; private set; }
 
-        /// <summary>Kaydin olusturulma zamani (UTC).</summary>
+        /// <summary>Kaydın oluşturulma zamanı (UTC).</summary>
         public DateTime CreatedAt { get; private set; }
 
-        /// <summary>Domain event listesi (bu varlikta kullanilmaz).</summary>
+        /// <summary>Domain event listesi (bu varlıkta kullanılmaz).</summary>
         public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
         private IdempotencyRecord() { } // EF Core
 
         /// <summary>
-        /// Yeni bir idempotency kaydi olusturur.
+        /// Yeni bir idempotency kaydı oluşturur.
         /// </summary>
-        /// <param name="key">Istemci anahtari.</param>
-        /// <param name="userId">Istegi yapan kullanici.</param>
-        /// <param name="appointmentId">Olusturulan randevu.</param>
-        /// <param name="now">Kayit zamani (UTC).</param>
-        /// <exception cref="ArgumentException">Anahtar bos ise.</exception>
+        /// <param name="key">İstemci anahtarı.</param>
+        /// <param name="userId">İsteği yapan kullanıcı.</param>
+        /// <param name="appointmentId">Oluşturulan randevu.</param>
+        /// <param name="now">Kayıt zamanı (UTC).</param>
+        /// <exception cref="ArgumentException">Anahtar boş ise.</exception>
         public IdempotencyRecord(string key, Guid userId, Guid appointmentId, DateTime now)
         {
             if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentException("Idempotency anahtari bos olamaz.", nameof(key));
+                throw new ArgumentException("Idempotency anahtarı boş olamaz.", nameof(key));
 
             Key = key.Trim();
             UserId = userId;

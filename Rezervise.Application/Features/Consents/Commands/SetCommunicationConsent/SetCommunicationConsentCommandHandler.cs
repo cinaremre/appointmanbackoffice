@@ -11,7 +11,7 @@ namespace Rezervise.Application.Features.Consents.Commands.SetCommunicationConse
 {
     public class SetCommunicationConsentCommandHandler : IRequestHandler<SetCommunicationConsentCommand, Result<Guid>>
     {
-        /// <summary>Izin degisikliginin kabul edilebilir kaynaklari.</summary>
+        /// <summary>İzin değişikliğinin kabul edilebilir kaynakları.</summary>
         private static readonly string[] AllowedSources = { "api", "import" };
 
         private readonly IRepository<Business> _businessRepository;
@@ -41,23 +41,23 @@ namespace Rezervise.Application.Features.Consents.Commands.SetCommunicationConse
         {
             try
             {
-                // 1. Isletme kontrolu.
+                // 1. İşletme kontrolü.
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki: izin kaydi isletme sahibi veya platform yoneticisi tarafindan yapilir.
+                // 2. Yetki: izin kaydı işletme sahibi veya platform yöneticisi tarafından yapılır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Unauthorized("Bu isletmenin iletisim izinlerini duzenleme yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Unauthorized("Bu işletmenin iletişim izinlerini düzenleme yetkiniz yok."));
 
-                // 3. Kaynak dogrulamasi.
+                // 3. Kaynak doğrulaması.
                 if (string.IsNullOrWhiteSpace(request.Source)
                     || !AllowedSources.Contains(request.Source.Trim(), StringComparer.OrdinalIgnoreCase))
                 {
-                    return Result<Guid>.Failure(Error.Validation("Izin kaynagi 'api' veya 'import' olmali."));
+                    return Result<Guid>.Failure(Error.Validation("İzin kaynağı 'api' veya 'import' olmalı."));
                 }
 
-                // 4. Preference upsert: (isletme, musteri, kanal, amac) icin tek kayit.
+                // 4. Preference upsert: (işletme, müşteri, kanal, amaç) için tek kayıt.
                 var preference = (await _preferenceRepository.FindAsync(
                     p => p.BusinessId == request.BusinessId
                         && p.CustomerId == request.CustomerId
@@ -80,12 +80,12 @@ namespace Rezervise.Application.Features.Consents.Commands.SetCommunicationConse
                 }
                 else
                 {
-                    // Ayni deger atanirsa Set hicbir degisiklik ve event uretmez.
+                    // Aynı değer atanırsa Set hiçbir değişiklik ve event üretmez.
                     preference.Set(request.IsAllowed, evidenceReference: request.EvidenceReference);
                     await _preferenceRepository.UpdateAsync(preference, cancellationToken);
                 }
 
-                // 5. Append-only gecmis kaydi.
+                // 5. Append-only geçmiş kaydı.
                 var history = new ConsentHistory(
                     request.BusinessId,
                     request.CustomerId,
@@ -97,8 +97,8 @@ namespace Rezervise.Application.Features.Consents.Commands.SetCommunicationConse
 
                 await _consentHistoryRepository.AddAsync(history, cancellationToken);
 
-                // 6. Pazarlama izni geri cekildiyse kanali tamamen kapat (suppression).
-                //    Izin verildiyse kanal acilsin diye mevcut suppression kaldirilir.
+                // 6. Pazarlama izni geri çekildiyse kanalı tamamen kapat (suppression).
+                //    İzin verildiyse kanal açılsın diye mevcut suppression kaldırılır.
                 var suppression = (await _suppressionRepository.FindAsync(
                     s => s.BusinessId == request.BusinessId
                         && s.CustomerId == request.CustomerId
@@ -114,7 +114,7 @@ namespace Rezervise.Application.Features.Consents.Commands.SetCommunicationConse
                             request.BusinessId,
                             request.CustomerId,
                             request.Channel,
-                            "Pazarlama izni geri cekildi.");
+                            "Pazarlama izni geri çekildi.");
 
                         await _suppressionRepository.AddAsync(newSuppression, cancellationToken);
                     }
@@ -134,7 +134,7 @@ namespace Rezervise.Application.Features.Consents.Commands.SetCommunicationConse
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Iletisim izni kaydedilirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("İletişim izni kaydedilirken bir hata oluştu.", ex.Message));
             }
         }
     }

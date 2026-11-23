@@ -49,7 +49,7 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
             builder.HasIndex(x => x.CategoryId);
             builder.HasIndex(x => x.ExpenseDate);
 
-            // Gunluk ozet sorgusu icin birlesik index.
+            // Günlük özet sorgusu için birleşik index.
             builder.HasIndex(x => new { x.BusinessId, x.ExpenseDate })
                 .HasDatabaseName("IX_Expenses_BusinessId_ExpenseDate");
         }

@@ -29,18 +29,18 @@ import type { OwnerServiceListItem } from "../types";
 import { activeText, formatMoney } from "../types";
 
 /**
- * Owner hizmetleri: isletme kapsaminda hizmet listesi. Arama/aktiflik
- * filtreleri sunucuya gonderilir; duzenleme RHF + zod ile dialog icinde
- * yapilir ve PATCH ile kaydedilir. Fiyat/sure kurallari SUNUCUDA da uygulanir.
+ * Owner hizmetleri: işletme kapsamında hizmet listesi. Arama/aktiflik
+ * filtreleri sunucuya gönderilir; düzenleme RHF + zod ile dialog içinde
+ * yapılır ve PATCH ile kaydedilir. Fiyat/süre kuralları SUNUCUDA da uygulanır.
  */
 
 const serviceEditSchema = z.object({
-  name: z.string().trim().min(2, "Hizmet adi en az 2 karakter olmali."),
+  name: z.string().trim().min(2, "Hizmet adı en az 2 karakter olmalı."),
   price: z
     .string()
     .trim()
-    .regex(/^\d+(\.\d{1,2})?$/, "Fiyat sayisal olmali (orn. 250 veya 250.50)."),
-  durationMinutes: z.string().trim().regex(/^\d+$/, "Sure tam sayi (dakika) olmali."),
+    .regex(/^\d+(\.\d{1,2})?$/, "Fiyat sayısal olmalı (orn. 250 veya 250.50)."),
+  durationMinutes: z.string().trim().regex(/^\d+$/, "Süre tam sayı (dakika) olmalı."),
 });
 
 type ServiceEditForm = z.infer<typeof serviceEditSchema>;
@@ -54,7 +54,7 @@ function toErrorMessage(error: unknown, fallback: string): string {
 }
 
 const ACTIVE_OPTIONS = [
-  { value: "", label: "Tumu" },
+  { value: "", label: "Tümü" },
   { value: "true", label: "Aktif" },
   { value: "false", label: "Pasif" },
 ] as const;
@@ -99,7 +99,7 @@ export function OwnerServicesPage() {
     defaultValues: { name: "", price: "", durationMinutes: "" },
   });
 
-  // Duzenlenecek hizmet secilince form alanlari doldurulur.
+  // Düzenlenecek hizmet seçilince form alanları doldurulur.
   useEffect(() => {
     if (!editing) return;
     reset({
@@ -118,11 +118,11 @@ export function OwnerServicesPage() {
       }),
     onSuccess: () => {
       setEditing(null);
-      setFeedback({ severity: "success", message: "Hizmet guncellendi." });
+      setFeedback({ severity: "success", message: "Hizmet güncellendi." });
       void queryClient.invalidateQueries({ queryKey: ["owner", "services"] });
     },
     onError: (error: unknown) => {
-      setFeedback({ severity: "error", message: toErrorMessage(error, "Guncelleme basarisiz.") });
+      setFeedback({ severity: "error", message: toErrorMessage(error, "Güncelleme başarısız.") });
     },
   });
 
@@ -134,7 +134,7 @@ export function OwnerServicesPage() {
   const columns: DataTableColumn<OwnerServiceListItem>[] = [
     { key: "name", header: "Hizmet", render: (row) => row.name },
     { key: "price", header: "Fiyat", render: (row) => formatMoney(row.price, row.currency) },
-    { key: "durationMinutes", header: "Sure", render: (row) => `${row.durationMinutes} dk` },
+    { key: "durationMinutes", header: "Süre", render: (row) => `${row.durationMinutes} dk` },
     {
       key: "isActive",
       header: "Durum",
@@ -148,7 +148,7 @@ export function OwnerServicesPage() {
     return (
       <Box>
         <PageHeader title="Hizmetler" />
-        <EmptyState label="Size ait isletme bulunamadi." />
+        <EmptyState label="Size ait işletme bulunamadı." />
       </Box>
     );
   }
@@ -164,7 +164,7 @@ export function OwnerServicesPage() {
         <TextField
           select
           size="small"
-          label="Isletme"
+          label="İşletme"
           value={businessId}
           onChange={(e) => setSelectedId(e.target.value)}
           disabled={businesses.length <= 1}
@@ -224,14 +224,14 @@ export function OwnerServicesPage() {
           setPageSize(nextSize);
           setPage(1);
         }}
-        emptyLabel="Hizmet bulunamadi."
-        ariaLabel="isletme hizmetleri tablosu"
+        emptyLabel="Hizmet bulunamadı."
+        ariaLabel="işletme hizmetleri tablosu"
         onRefresh={() => void servicesQuery.refetch()}
         rowActions={
           canEdit
             ? (row) => (
                 <Button size="small" onClick={() => setEditing(row)}>
-                  Duzenle
+                  Düzenle
                 </Button>
               )
             : undefined
@@ -244,7 +244,7 @@ export function OwnerServicesPage() {
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>Hizmeti Duzenle</DialogTitle>
+        <DialogTitle>Hizmeti Düzenle</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
             <Controller
@@ -252,13 +252,13 @@ export function OwnerServicesPage() {
               name="name"
               render={({ field, fieldState }) => (
                 <TextField
-                  label="Hizmet Adi"
+                  label="Hizmet Adı"
                   fullWidth
                   value={field.value}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
                   error={fieldState.error !== undefined}
-                  helperText={fieldState.error?.message ?? "Hizmetin gorunen adi."}
+                  helperText={fieldState.error?.message ?? "Hizmetin görünen adı."}
                 />
               )}
             />
@@ -273,7 +273,7 @@ export function OwnerServicesPage() {
                   onChange={field.onChange}
                   onBlur={field.onBlur}
                   error={fieldState.error !== undefined}
-                  helperText={fieldState.error?.message ?? "Satis fiyati (TL)."}
+                  helperText={fieldState.error?.message ?? "Satış fiyatı (TL)."}
                 />
               )}
             />
@@ -282,13 +282,13 @@ export function OwnerServicesPage() {
               name="durationMinutes"
               render={({ field, fieldState }) => (
                 <TextField
-                  label="Sure (dakika)"
+                  label="Süre (dakika)"
                   fullWidth
                   value={field.value}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
                   error={fieldState.error !== undefined}
-                  helperText={fieldState.error?.message ?? "Hizmetin tamamlanma suresi."}
+                  helperText={fieldState.error?.message ?? "Hizmetin tamamlanma süresi."}
                 />
               )}
             />
@@ -296,7 +296,7 @@ export function OwnerServicesPage() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditing(null)} disabled={saveMutation.isPending}>
-            Vazgec
+            Vazgeç
           </Button>
           <Button
             variant="contained"

@@ -69,7 +69,7 @@ namespace Rezervise.Api.Configuration
 
         /// <summary>
         /// Rejects the wildcard <c>AllowedHosts</c> value outside the Development environment,
-        /// which would otherwise leave the API open to host header injection.
+        /// which would otherwise leave the API open to hoşt header injection.
         /// </summary>
         /// <param name="configuration">Application configuration root.</param>
         /// <param name="environment">Current hosting environment.</param>
@@ -90,8 +90,8 @@ namespace Rezervise.Api.Configuration
             if (string.IsNullOrWhiteSpace(allowedHosts) || allowedHosts.Trim() == "*")
             {
                 throw new InvalidOperationException(
-                    $"AllowedHosts must be an explicit host list when ASPNETCORE_ENVIRONMENT is " +
-                    $"'{environment.EnvironmentName}'. Configure AllowedHosts with the concrete public host names of the API.");
+                    $"AllowedHosts must be an explicit hoşt list when ASPNETCORE_ENVIRONMENT is " +
+                    $"'{environment.EnvironmentName}'. Configure AllowedHosts with the concrete public hoşt names of the API.");
             }
         }
     }

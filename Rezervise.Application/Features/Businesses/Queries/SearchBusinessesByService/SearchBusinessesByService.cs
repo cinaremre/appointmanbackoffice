@@ -11,13 +11,13 @@ namespace Rezervise.Application.Features.Businesses.Queries.SearchBusinessesBySe
         public string? ServiceSearchTerm { get; set; }
 
         /// <summary>
-        /// Birlestirilmis arama terimi: isletme adi, hizmet adi veya sehir adindan
-        /// herhangi biri eslesirse isletme listelenir (OR).
-        /// Diger filtrelerle (kategori, konum) AND olarak birlesir.
+        /// Birleştirilmiş arama terimi: işletme adı, hizmet adı veya şehir adından
+        /// herhangi biri eşleşirse işletme listelenir (OR).
+        /// Diğer filtrelerle (kategori, konum) AND olarak birleşir.
         /// </summary>
         public string? SearchTerm { get; set; }
 
-        // Isletme filtresi (opsiyonel)
+        // İşletme filtresi (opsiyonel)
         public Guid? BusinessCategoryId { get; set; }
 
         // Konum filtresi
@@ -27,8 +27,8 @@ namespace Rezervise.Application.Features.Businesses.Queries.SearchBusinessesBySe
         public int? NeighborhoodId { get; set; }
 
         /// <summary>
-        /// Istekte konum bilgisi gelmezse kullanicinin kayitli adresini
-        /// kullanabilmek icin gonderilen kullanici ID'si.
+        /// İstekte konum bilgisi gelmezse kullanıcının kayıtlı adresini
+        /// kullanabilmek için gönderilen kullanıcı ID'si.
         /// </summary>
         public Guid? CurrentUserId { get; set; }
 

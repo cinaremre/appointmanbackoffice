@@ -1,20 +1,20 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Bekleme listesi kaydinin durumu (dokuman Modul 10).
+    /// Bekleme listesi kaydının durumu (doküman Modül 10).
     /// </summary>
     public enum EnumWaitlistEntryStatus
     {
-        /// <summary>Kayit acik; uygun slot ciktiginda teklif uretilebilir.</summary>
+        /// <summary>Kayıt açık; uygun slot çıktığında teklif üretilebilir.</summary>
         Active = 0,
 
-        /// <summary>Musteriye gonderilen teklifden biri kabul edildi.</summary>
+        /// <summary>Müşteriye gönderilen teklifden biri kabul edildi.</summary>
         Fulfilled = 1,
 
-        /// <summary>Musteri kaydini kendisi veya isletme iptal etti.</summary>
+        /// <summary>Müşteri kaydını kendisi veya işletme iptal etti.</summary>
         Cancelled = 2,
 
-        /// <summary>Kaydin gecerlilik suresi doldu.</summary>
+        /// <summary>Kaydın geçerlilik süresi doldu.</summary>
         Expired = 3
     }
 }

@@ -3,8 +3,8 @@ using Rezervise.Domain.Exceptions;
 namespace Rezervise.Domain.Entities
 {
     /// <summary>
-    /// Isletmenin sattigi seans paketi tanimi (dokuman Modul 5).
-    /// Paketin icindeki hizmetler <see cref="ServicePackageItem"/> cocuk
+    /// İşletmenin sattığı seans paketi tanımı (doküman Modül 5).
+    /// Paketin içindeki hizmetler <see cref="ServicePackageItem"/> çocuk
     /// entity'leriyle tutulur; aggregate root budur.
     /// </summary>
     public class ServicePackage : BaseEntity
@@ -31,7 +31,7 @@ namespace Rezervise.Domain.Entities
             : base(id)
         {
             if (businessId == Guid.Empty)
-                throw new ArgumentException("Isletme ID bos olamaz.", nameof(businessId));
+                throw new ArgumentException("İşletme ID boş olamaz.", nameof(businessId));
 
             SetName(name);
             SetPrice(price);
@@ -65,7 +65,7 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Para birimi. Ilk surunde yalnizca TRY desteklenir.</summary>
+        /// <summary>Para birimi. İlk süründe yalnızca TRY desteklenir.</summary>
         public void SetCurrency(string currency)
         {
             if (string.IsNullOrWhiteSpace(currency))
@@ -87,7 +87,7 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Paketi satisa acar. Zaten aktifse hicbir sey yapmaz.</summary>
+        /// <summary>Paketi satışa açar. Zaten aktifse hiçbir şey yapmaz.</summary>
         public void Activate()
         {
             if (IsActive)
@@ -97,7 +97,7 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Paketi satisa kapatir. Zaten pasifse hicbir sey yapmaz.</summary>
+        /// <summary>Paketi satışa kapatır. Zaten pasifse hiçbir şey yapmaz.</summary>
         public void Deactivate()
         {
             if (!IsActive)
@@ -107,7 +107,7 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>Pakete yeni bir hizmet kalemi ekler. Ayni hizmet iki kez eklenemez.</summary>
+        /// <summary>Pakete yeni bir hizmet kalemi ekler. Aynı hizmet iki kez eklenemez.</summary>
         public void AddItem(ServicePackageItem item)
         {
             if (item is null)
@@ -124,8 +124,8 @@ namespace Rezervise.Domain.Entities
         }
 
         /// <summary>
-        /// Pakette satin alinan toplam seans sayisi. Kalan hak hesabinin
-        /// "purchased toplam" bileseni; hareket toplamlarindan cikarilir.
+        /// Pakette satın alınan toplam seans sayısı. Kalan hak hesabının
+        /// "purchased toplam" bileşeni; hareket toplamlarından çıkarılır.
         /// </summary>
         public int GetTotalSessions()
         {

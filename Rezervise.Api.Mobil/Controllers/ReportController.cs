@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Raporlama uclari (dokuman Modul 15.1: yonetici dashboard).
+    /// Raporlama uçları (doküman Modül 15.1: yönetici dashboard).
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -22,11 +22,11 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Isletmenin bir gunluk yonetici dashboard kartlarini getirir.
+        /// İşletmenin bir günlük yönetici dashboard kartlarını getirir.
         /// </summary>
-        /// <param name="businessId">Isletme ID'si</param>
-        /// <param name="date">Raporlanacak gun (UTC; saat bilgisi yoksayilir)</param>
-        /// <returns>Gunluk kartlar</returns>
+        /// <param name="businessId">İşletme ID'si</param>
+        /// <param name="date">Raporlanacak gün (UTC; saat bilgisi yoksayılır)</param>
+        /// <returns>Günlük kartlar</returns>
         [HttpGet("dashboard")]
         [ProducesResponseType(typeof(Result<BusinessDashboardDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<BusinessDashboardDto>), StatusCodes.Status404NotFound)]

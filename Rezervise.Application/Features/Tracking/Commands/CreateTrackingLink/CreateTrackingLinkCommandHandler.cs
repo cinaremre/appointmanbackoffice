@@ -32,17 +32,17 @@ namespace Rezervise.Application.Features.Tracking.Commands.CreateTrackingLink
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<string>.Failure(Error.NotFound("Isletme", request.BusinessId.ToString()));
+                    return Result<string>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 2. Yetki kontrolu: govde OwnerId'si degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde OwnerId'si değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<string>.Failure(Error.Unauthorized("Bu isletme icin takip linki olusturma yetkiniz yok."));
+                    return Result<string>.Failure(Error.Unauthorized("Bu işletme için takip linki oluşturma yetkiniz yok."));
 
-                // 3. Benzersiz kisa kod uret. Guid tabanli oldugu icin pratikte
-                //    cakisma imkansizdir; kodun kendisi linkin kimligidir.
+                // 3. Benzersiz kısa kod üret. Guid tabanlı öldüğü için pratikte
+                //    çakışma imkansızdır; kodun kendisi linkin kimliğidir.
                 //    QR payload'i frontend bu kod ile kurar.
                 var trackingLink = new TrackingLink(
                     request.BusinessId,
@@ -65,7 +65,7 @@ namespace Rezervise.Application.Features.Tracking.Commands.CreateTrackingLink
             }
             catch (Exception ex)
             {
-                return Result<string>.Failure(Error.Internal("Takip linki olusturulurken bir hata olustu.", ex.Message));
+                return Result<string>.Failure(Error.Internal("Takip linki oluşturulurken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -44,20 +44,20 @@ namespace Rezervise.Application.Features.Sales.Commands.CreateSale
         {
             try
             {
-                // 1. Isletme kontrolu
+                // 1. İşletme kontrolü
                 var business = await _businessRepository.GetByIdAsync(request.BusinessId, cancellationToken);
                 if (business is null)
-                    return Result<Guid>.Failure(Error.NotFoundById("Isletme", request.BusinessId));
+                    return Result<Guid>.Failure(Error.NotFoundById("İşletme", request.BusinessId));
 
-                // 2. Yetki kontrolu: govde degil, JWT kimligi esas alinir.
+                // 2. Yetki kontrolü: gövde değil, JWT kimliği esas alınır.
                 if (!CallerAuthorization.CanActForBusiness(_currentUser, business.OwnerId))
-                    return Result<Guid>.Failure(Error.Forbidden("Bu isletme icin satis islemi yapma yetkiniz yok."));
+                    return Result<Guid>.Failure(Error.Forbidden("Bu işletme için satış işlemi yapma yetkiniz yok."));
 
-                // 3. Satir listesi bos olamaz
+                // 3. Satır listesi boş olamaz
                 if (request.Lines is null || request.Lines.Count == 0)
-                    return Result<Guid>.Failure(Error.Validation("Satis en az bir satir icermelidir."));
+                    return Result<Guid>.Failure(Error.Validation("Satış en az bir satır içermelidir."));
 
-                // 4. Randevu kontrolu: satis yalnizca tamamlanmis randevuya baglanabilir.
+                // 4. Randevu kontrolü: satış yalnızca tamamlanmış randevuya bağlanabilir.
                 if (request.AppointmentId.HasValue)
                 {
                     var appointment = await _appointmentRepository.GetByIdAsync(
@@ -67,15 +67,15 @@ namespace Rezervise.Application.Features.Sales.Commands.CreateSale
                         return Result<Guid>.Failure(Error.NotFoundById("Randevu", request.AppointmentId.Value));
 
                     if (appointment.BusinessId != request.BusinessId)
-                        return Result<Guid>.Failure(Error.Validation("Randevu bu isletmeye ait degil."));
+                        return Result<Guid>.Failure(Error.Validation("Randevu bu işletmeye ait değil."));
 
                     if (appointment.Status != EnumAppointmentStatus.Completed)
                         return Result<Guid>.Failure(
-                            Error.BusinessRule("Satis yalnizca tamamlanmis bir randevuya baglanabilir."));
+                            Error.BusinessRule("Satış yalnızca tamamlanmış bir randevuya bağlanabilir."));
                 }
 
-                // 5. Satisi kur; satir toplami = Quantity * UnitPrice - Discount + Tax.
-                //    Sale aggregate'i her satir eklendiginde toplamlari yeniden hesaplar:
+                // 5. Satışı kur; satır toplamı = Quantity * UnitPrice - Discount + Tax.
+                //    Sale aggregate'i her satır eklendiğinde toplamları yeniden hesaplar:
                 //    GrandTotal = Subtotal - DiscountTotal + TaxTotal.
                 var now = _dateTimeService.UtcNow;
                 var currency = string.IsNullOrWhiteSpace(request.Currency) ? "TRY" : request.Currency;
@@ -97,32 +97,32 @@ namespace Rezervise.Application.Features.Sales.Commands.CreateSale
                         line.EmployeeId));
                 }
 
-                // 6. Siparis seviyesi indirim
+                // 6. Sipariş seviyesi indirim
                 if (request.DiscountTotal > 0)
                     sale.ApplyOrderDiscount(request.DiscountTotal);
 
-                // 7. Odeme listesi bos olamaz; odeme toplami GrandTotal'i gecemez.
+                // 7. Ödeme listesi boş olamaz; ödeme toplamı GrandTotal'i geçemez.
                 if (request.Payments is null || request.Payments.Count == 0)
-                    return Result<Guid>.Failure(Error.Validation("Satis icin en az bir odeme gereklidir."));
+                    return Result<Guid>.Failure(Error.Validation("Satış için en az bir ödeme gereklidir."));
 
                 foreach (var payment in request.Payments)
                 {
                     if (payment.Amount <= 0)
-                        return Result<Guid>.Failure(Error.Validation("Odeme tutari sifirdan buyuk olmalidir."));
+                        return Result<Guid>.Failure(Error.Validation("Ödeme tutarı sıfırdan büyük olmalıdır."));
                 }
 
                 var paymentTotal = Math.Round(request.Payments.Sum(p => p.Amount), 2);
 
                 if (paymentTotal > sale.GrandTotal)
                     return Result<Guid>.Failure(Error.Validation(
-                        "Odeme toplami satis tutarini gecemez.",
-                        $"Odeme: {paymentTotal}, Satis tutari: {sale.GrandTotal}"));
+                        "Ödeme toplamı satış tutarını geçemez.",
+                        $"Ödeme: {paymentTotal}, Satış tutarı: {sale.GrandTotal}"));
 
-                // 8. Ilk surumde satis tek adimda tamamlanir.
+                // 8. İlk sürümde satış tek adımda tamamlanır.
                 sale.Complete(now);
 
-                // 9. Acik kasa oturumu: nakit odemeler oturuma baglanir ki
-                //    gun sonu beklenen nakit hesabina dahil edilsin.
+                // 9. Açık kasa oturumu: nakit ödemeler oturuma bağlanır ki
+                //    gün sonu beklenen nakit hesabına dahil edilsin.
                 var openSessions = await _cashSessionRepository.FindAsync(
                     s => s.BusinessId == request.BusinessId &&
                          s.Status == EnumCashSessionStatus.Open &&
@@ -131,7 +131,7 @@ namespace Rezervise.Application.Features.Sales.Commands.CreateSale
 
                 var openSession = openSessions.FirstOrDefault();
 
-                // 10. Odeme kayitlarini olustur
+                // 10. Ödeme kayıtlarını oluştur
                 foreach (var paymentInput in request.Payments)
                 {
                     var cashSessionId = paymentInput.PaymentMethod == EnumPaymentMethod.Cash
@@ -162,7 +162,7 @@ namespace Rezervise.Application.Features.Sales.Commands.CreateSale
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Satis olusturulurken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Satış oluşturulurken bir hata oluştu.", ex.Message));
             }
         }
     }

@@ -1,26 +1,26 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Veri aktarim isinin durumunu temsil eder.
+    /// Veri aktarım işinin durumunu temsil eder.
     /// </summary>
     public enum EnumImportStatus
     {
-        /// <summary>Dosya yuklendi, satir sayisi hesaplandi.</summary>
+        /// <summary>Dosya yüklendi, satır sayısı hesaplandı.</summary>
         Uploaded = 0,
 
-        /// <summary>Kolon eslesmesi (mapping) bekleniyor.</summary>
+        /// <summary>Kolon eşleşmesi (mapping) bekleniyor.</summary>
         Mapping = 1,
 
-        /// <summary>Eslesme onaylandi, islem onaylandi.</summary>
+        /// <summary>Eşleşme onaylandı, işlem onaylandı.</summary>
         Approved = 2,
 
-        /// <summary>Islem suruyor.</summary>
+        /// <summary>İşlem sürüyor.</summary>
         Processing = 3,
 
-        /// <summary>Islem sorunsuz tamamlandi.</summary>
+        /// <summary>İşlem sorunsuz tamamlandı.</summary>
         Completed = 4,
 
-        /// <summary>Islem hata ile sonlandi.</summary>
+        /// <summary>İşlem hata ile sonlandı.</summary>
         Failed = 5
     }
 }

@@ -12,9 +12,9 @@ namespace Rezervise.Application.Features.Users.Commands.DeleteAccount
         {
             RuleFor(x => x.CurrentPassword)
                 .NotEmpty()
-                .WithMessage("Mevcut sifre bos olamaz.")
+                .WithMessage("Mevcut şifre boş olamaz.")
                 .MaximumLength(PasswordPolicy.MaximumLength)
-                .WithMessage("Mevcut sifre en fazla 128 karakter olabilir.");
+                .WithMessage("Mevcut şifre en fazla 128 karakter olabilir.");
 
             RuleFor(x => x.Reason)
                 .MaximumLength(500)

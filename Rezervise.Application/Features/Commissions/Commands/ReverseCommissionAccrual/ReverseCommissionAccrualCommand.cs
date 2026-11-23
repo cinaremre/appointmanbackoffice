@@ -4,10 +4,10 @@ using MediatR;
 namespace Rezervise.Application.Features.Commissions.Commands.ReverseCommissionAccrual
 {
     /// <summary>
-    /// Prim tahakkukunu ters cevirir (iptal/iade). Yalnizca Accrued
-    /// durumundaki tahakkuklar ters cevrilebilir; odenmis (Paid)
+    /// Prim tahakkukunu ters çevirir (iptal/iade). Yalnızca Accrued
+    /// durumundaki tahakkuklar ters çevrilebilir; ödenmiş (Paid)
     /// tahakkuklar reddedilir.
-    /// OwnerId govdeden degil JWT'den cozulur (Api katmani set eder).
+    /// OwnerId gövdeden değil JWT'den çözülür (Api katmanı set eder).
     /// </summary>
     public class ReverseCommissionAccrualCommand : IRequest<Result<Guid>>
     {

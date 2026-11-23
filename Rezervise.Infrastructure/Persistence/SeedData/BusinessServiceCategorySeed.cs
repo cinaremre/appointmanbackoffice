@@ -11,33 +11,33 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
         {
             if (await context.BusinessServiceCategories.AnyAsync())
             {
-                logger.LogInformation("BusinessServiceCategories zaten mevcut, atlaniyor.");
+                logger.LogInformation("BusinessServiceCategories zaten mevcut, atlanıyor.");
                 return;
             }
 
-            // Her isletme icin root hizmet kategorilerini ata
+            // Her işletme için root hizmet kategorilerini ata
             var assignments = new List<(Guid BusinessId, Guid ServiceCategoryId)>
             {
-                // Kadikoy Berberi: Sac + Sakal
+                // Kadıkoy Berberi: Saç + Sakal
                 (BusinessSeed.Biz1Id, ServiceCategorySeed.HairServicesId),
                 (BusinessSeed.Biz1Id, ServiceCategorySeed.BeardShaveId),
 
-                // Besiktas Kuafor: Sac + Makyaj + Tirnak
+                // Beşiktaş Kuaför: Saç + Makyaj + Tırnak
                 (BusinessSeed.Biz2Id, ServiceCategorySeed.HairServicesId),
                 (BusinessSeed.Biz2Id, ServiceCategorySeed.MakeupId),
                 (BusinessSeed.Biz2Id, ServiceCategorySeed.NailCareId),
 
-                // Taksim Tattoo: Dovme
+                // Taksim Tattoo: Dövme
                 (BusinessSeed.Biz3Id, ServiceCategorySeed.TattooPiercingId),
 
-                // Cankaya Berber: Sac + Sakal
+                // Çankaya Berber: Saç + Sakal
                 (BusinessSeed.Biz4Id, ServiceCategorySeed.HairServicesId),
                 (BusinessSeed.Biz4Id, ServiceCategorySeed.BeardShaveId),
 
-                // Alsancak Dis: Dis
+                // Alsancak Dış: Dış
                 (BusinessSeed.Biz5Id, ServiceCategorySeed.DentalServicesId),
 
-                // Nilufer Agda: Epilasyon
+                // Nilüfer Ağda: Epilasyon
                 (BusinessSeed.Biz6Id, ServiceCategorySeed.HairRemovalId)
             };
 

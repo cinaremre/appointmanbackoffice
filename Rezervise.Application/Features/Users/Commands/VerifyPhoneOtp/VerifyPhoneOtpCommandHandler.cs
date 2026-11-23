@@ -10,8 +10,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Users.Commands.VerifyPhoneOtp
 {
     /// <summary>
-    /// Telefon OTP kodunu dogrular. Kod tek kullanimliktir ve basarili dogrulamada
-    /// temizlenir; basarisiz denemeler sayilir.
+    /// Telefon OTP kodunu doğrular. Kod tek kullanımlıktır ve başarılı doğrulamada
+    /// temizlenir; başarısız denemeler sayılır.
     /// </summary>
     public class VerifyPhoneOtpCommandHandler : IRequestHandler<VerifyPhoneOtpCommand, Result<Guid>>
     {
@@ -49,12 +49,12 @@ namespace Rezervise.Application.Features.Users.Commands.VerifyPhoneOtp
 
                 var user = users.FirstOrDefault();
                 if (user is null)
-                    return Result<Guid>.Failure(Error.NotFound("Kullanici", request.PhoneNumber));
+                    return Result<Guid>.Failure(Error.NotFound("Kullanıcı", request.PhoneNumber));
 
                 var utcNow = _dateTimeService.UtcNow;
                 var (success, errorKey) = _otpCodeService.VerifyCode(user, request.Code, utcNow);
 
-                // Basarisiz denemede sayac da guncellenir; bu yuzden her durumda kaydedilir.
+                // Başarısız denemede sayaç da güncellenir; bu yüzden her durumda kaydedilir.
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 if (!success)
@@ -69,7 +69,7 @@ namespace Rezervise.Application.Features.Users.Commands.VerifyPhoneOtp
             catch (Exception)
             {
                 return Result<Guid>.Failure(
-                    Error.Internal("Telefon dogrulamasi sirasinda bir hata olustu."));
+                    Error.Internal("Telefon doğrulaması sırasında bir hata oluştu."));
             }
         }
     }

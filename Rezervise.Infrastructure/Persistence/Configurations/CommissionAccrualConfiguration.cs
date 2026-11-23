@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Rezervise.Infrastructure.Persistence.Configurations
 {
     /// <summary>
-    /// Prim tahakkuku. Tahsilat tabanli hesaplanir; Accrued -> Paid/Reversed
-    /// yonunde tek yonlu durum degisimi yapilir.
+    /// Prim tahakkuku. Tahsilat tabanlı hesaplanır; Accrued -> Paid/Reversed
+    /// yönünde tek yönlü durum değişimi yapılır.
     /// </summary>
     public class CommissionAccrualConfiguration : BaseConfiguration<CommissionAccrual>
     {

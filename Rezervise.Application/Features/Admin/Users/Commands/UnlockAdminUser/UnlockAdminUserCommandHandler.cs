@@ -8,9 +8,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Users.Commands.UnlockAdminUser
 {
     /// <summary>
-    /// Kullanici hesabinin kilidini acar. Kilit acma domain'deki mevcut
-    /// <see cref="User.UnlockAccount"/> metoduyla yapilir. Kritik islem
-    /// oldugu icin denetim kaydina yazilir (Action=UnlockUser).
+    /// Kullanıcı hesabının kilidini açar. Kilit açma domain'deki mevcut
+    /// <see cref="User.UnlockAccount"/> metoduyla yapılır. Kritik işlem
+    /// öldüğü için denetim kaydına yazılır (Action=UnlockUser).
     /// </summary>
     public class UnlockAdminUserCommandHandler : IRequestHandler<UnlockAdminUserCommand, Result>
     {
@@ -38,32 +38,32 @@ namespace Rezervise.Application.Features.Admin.Users.Commands.UnlockAdminUser
         {
             try
             {
-                // 1. Yonetici kimligi JWT'den cozulur.
+                // 1. Yönetici kimliği JWT'den çözülür.
                 if (!_currentUser.IsAuthenticated || _currentUser.UserId is null)
                     return Result.Failure(Error.Unauthorized("Auth.Unauthorized"));
 
                 var actorId = _currentUser.UserId.Value;
                 var actorRole = _currentUser.Roles.FirstOrDefault() ?? "Unknown";
 
-                // 2. Gerekce zorunludur.
+                // 2. Gerekçe zorunludur.
                 var reason = request.Reason?.Trim();
                 if (string.IsNullOrEmpty(reason))
-                    return Result.Failure(Error.Validation("Kilit acma gerekcesi zorunludur."));
+                    return Result.Failure(Error.Validation("Kilit açma gerekçesi zorunludur."));
 
-                // 3. Kullaniciyi yukle; yoksa NotFound.
+                // 3. Kullanıcıyı yükle; yoksa NotFound.
                 var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
                 if (user is null)
-                    return Result.Failure(Error.NotFoundById("Kullanici", request.UserId));
+                    return Result.Failure(Error.NotFoundById("Kullanıcı", request.UserId));
 
-                // 4. Domain kilidi acma: mevcut UnlockAccount metodu AccountStatus'u
-                //    Active yapar ve UserAccountUnlockedEvent uretir.
+                // 4. Domain kilidi açma: mevcut UnlockAccount metodu AccountStatus'u
+                //    Active yapar ve UserAccountUnlockedEvent üretir.
                 var oldStatus = user.AccountStatus;
                 user.UnlockAccount($"Admin:{actorId}");
 
                 // 5. Kaydet.
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                // 6. Denetim kaydi.
+                // 6. Denetim kaydı.
                 await _auditSink.RecordAsync(
                     actorId,
                     actorRole,
@@ -83,7 +83,7 @@ namespace Rezervise.Application.Features.Admin.Users.Commands.UnlockAdminUser
             catch (Exception ex)
             {
                 return Result.Failure(Error.Internal(
-                    "Kullanici kilidi acilirken bir hata olustu.", ex.Message));
+                    "Kullanıcı kilidi açılırken bir hata oluştu.", ex.Message));
             }
         }
     }

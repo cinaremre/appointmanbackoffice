@@ -6,8 +6,8 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminCashSessions
 {
     /// <summary>
-    /// Kasa oturumu listesi (dokuman Modul 16). Fark (Difference) oturum
-    /// kapanirken domain tarafinda hesaplanir; burada salt okunur.
+    /// Kasa oturumu listesi (doküman Modül 16). Fark (Difference) oturum
+    /// kapanırken domain tarafında hesaplanır; burada salt okunur.
     /// </summary>
     public class GetAdminCashSessionsQuery : IRequest<Result<AdminPagedResult<AdminCashSessionDto>>>
     {
@@ -19,7 +19,7 @@ namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminCashSessi
         public int PageSize { get; set; } = 50;
     }
 
-    /// <summary>Tek kasa oturumunun admin gorunumu.</summary>
+    /// <summary>Tek kasa oturumunun admin görünümü.</summary>
     public class AdminCashSessionDto
     {
         public Guid Id { get; set; }
@@ -34,7 +34,7 @@ namespace Rezervise.Application.Features.Admin.Finance.Queries.GetAdminCashSessi
         public decimal? ExpectedCash { get; set; }
         public decimal? CountedCash { get; set; }
 
-        /// <summary>Sayilan - beklenen nakit farki; acik oturumda null.</summary>
+        /// <summary>Sayılan - beklenen nakit farkı; açık oturumda null.</summary>
         public decimal? Difference { get; set; }
 
         public EnumCashSessionStatus Status { get; set; }

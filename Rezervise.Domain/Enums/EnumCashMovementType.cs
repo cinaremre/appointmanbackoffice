@@ -5,16 +5,16 @@ namespace Rezervise.Domain.Enums
     /// </summary>
     public enum EnumCashMovementType
     {
-        /// <summary>Kasaya nakit girisi (navlon, avans iadesi vb.)</summary>
+        /// <summary>Kasaya nakit girişi (navlon, avans iadesi vb.)</summary>
         CashIn = 0,
 
-        /// <summary>Kasadan nakit cikisi (navlon, iade vb.)</summary>
+        /// <summary>Kasadan nakit çıkışı (navlon, iade vb.)</summary>
         CashOut = 1,
 
-        /// <summary>Kasa bastan sayim duzeltmesi (fiziksel nakit transferi)</summary>
+        /// <summary>Kasa baştan sayım düzeltmesi (fiziksel nakit transferi)</summary>
         CashDrop = 2,
 
-        /// <summary>Yeniden sayim duzeltmesi</summary>
+        /// <summary>Yeniden sayım düzeltmesi</summary>
         CashRecount = 3
     }
 }

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.BackOffice.Api.Controllers
 {
     /// <summary>
-    /// Platform raporlama endpoint'leri (dokuman Modul 18). Tum raporlar
+    /// Platform raporlama endpoint'leri (doküman Modül 18). Tüm raporlar
     /// ReportRead permission'i ile korunur.
     /// </summary>
     [ApiController]
@@ -25,7 +25,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             _mediator = mediator;
         }
 
-        /// <summary>Platform geneli ozet: isletme/randevu sayilari ve oranlar.</summary>
+        /// <summary>Platform geneli özet: işletme/randevu sayıları ve oranlar.</summary>
         [HttpGet("platform-overview")]
         [Authorize(Policy = AdminPermissions.ReportRead)]
         public async Task<IActionResult> GetPlatformOverview(CancellationToken cancellationToken)
@@ -39,7 +39,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkEnvelope(result.Value!);
         }
 
-        /// <summary>Abonelik geliri: aktif sayi, plan dagilimi, MRR.</summary>
+        /// <summary>Abonelik geliri: aktif sayı, plan dağılımı, MRR.</summary>
         [HttpGet("subscription-revenue")]
         [Authorize(Policy = AdminPermissions.ReportRead)]
         public async Task<IActionResult> GetSubscriptionRevenue(CancellationToken cancellationToken)
@@ -53,7 +53,7 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkEnvelope(result.Value!);
         }
 
-        /// <summary>Ozellik benimseme: kod bazinda acik isletme sayilari.</summary>
+        /// <summary>Özellik benimseme: kod bazında açık işletme sayıları.</summary>
         [HttpGet("feature-adoption")]
         [Authorize(Policy = AdminPermissions.ReportRead)]
         public async Task<IActionResult> GetFeatureAdoption(CancellationToken cancellationToken)

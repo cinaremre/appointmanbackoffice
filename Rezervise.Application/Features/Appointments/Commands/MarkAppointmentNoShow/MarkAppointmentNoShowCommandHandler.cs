@@ -11,9 +11,9 @@ using MediatR;
 namespace Rezervise.Application.Features.Appointments.Commands.MarkAppointmentNoShow
 {
     /// <summary>
-    /// Randevuyu "gelmedi" olarak isaretler.
-    /// Yetki: isletme sahibi veya randevunun atanmis calisani. Musterinin kendisi
-    /// bu islemi yapamaz; no-show karari hizmeti veren tarafa aittir.
+    /// Randevuyu "gelmedi" olarak işaretler.
+    /// Yetki: işletme sahibi veya randevunun atanmış çalışanı. Müşterinin kendisi
+    /// bu işlemi yapamaz; no-show kararı hizmeti veren tarafa aittir.
     /// </summary>
     public class MarkAppointmentNoShowCommandHandler
         : IRequestHandler<MarkAppointmentNoShowCommand, Result<Guid>>
@@ -53,7 +53,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.MarkAppointmentNo
                 if (appointment is null)
                     return Result<Guid>.Failure(Error.NotFound("Randevu", request.AppointmentId.ToString()));
 
-                // Yetki: isletme sahibi veya randevuya atanmis calisan.
+                // Yetki: işletme sahibi veya randevuya atanmış çalışan.
                 var isBusinessOwner = appointment.Business is not null &&
                                       CallerAuthorization.CanActForBusiness(
                                           _currentUser, appointment.Business.OwnerId);
@@ -63,15 +63,15 @@ namespace Rezervise.Application.Features.Appointments.Commands.MarkAppointmentNo
 
                 if (!isBusinessOwner && !isAssignedEmployee)
                     return Result<Guid>.Failure(
-                        Error.Forbidden("Bu randevuyu gelmedi olarak isaretleme yetkiniz yok."));
+                        Error.Forbidden("Bu randevuyu gelmedi olarak işaretleme yetkiniz yok."));
 
-                // Domain cagrilmadan once on kontrol: generic domain mesajina dusmeyi engeller.
-                // Tek referans zamani kullanilir; status matrisi domain'de tek kaynaktir.
+                // Domain çağrılmadan önce on kontrol: generic domain mesajına düşmeyi engeller.
+                // Tek referans zamanı kullanılır; status matrisi domain'de tek kaynaktır.
                 var now = _dateTimeService.UtcNow;
 
                 if (!appointment.CanTransitionTo(EnumAppointmentStatus.NoShow, now))
                     return Result<Guid>.Failure(Error.BusinessRule(
-                        "Sadece gecmis, bekleyen veya onaylanmis randevular gelmedi olarak isaretlenebilir."));
+                        "Sadece geçmiş, bekleyen veya onaylanmış randevular gelmedi olarak işaretlenebilir."));
 
                 appointment.MarkAsNoShow(request.ChangedBy ?? "User", now);
 
@@ -90,7 +90,7 @@ namespace Rezervise.Application.Features.Appointments.Commands.MarkAppointmentNo
             catch (Exception)
             {
                 return Result<Guid>.Failure(
-                    Error.Internal("Randevu gelmedi olarak isaretlenirken bir hata olustu."));
+                    Error.Internal("Randevu gelmedi olarak işaretlenirken bir hata oluştu."));
             }
         }
     }

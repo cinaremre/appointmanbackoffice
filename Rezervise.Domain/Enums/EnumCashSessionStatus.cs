@@ -1,14 +1,14 @@
 namespace Rezervise.Domain.Enums
 {
     /// <summary>
-    /// Kasa oturumu durumlari
+    /// Kasa oturumu durumları
     /// </summary>
     public enum EnumCashSessionStatus
     {
-        /// <summary>Acik - Oturum devam ediyor</summary>
+        /// <summary>Açık - Oturum devam ediyor</summary>
         Open = 0,
 
-        /// <summary>Kapali - Oturum kapatildi, fark rapolandi</summary>
+        /// <summary>Kapalı - Oturum kapatıldı, fark rapolandı</summary>
         Closed = 1
     }
 }

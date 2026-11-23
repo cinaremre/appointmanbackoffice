@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Rezervise.Api.Controllers
 {
     /// <summary>
-    /// Hizmet kategorileri ile ilgili islemleri yonetir.
+    /// Hizmet kategorileri ile ilgili işlemleri yönetir.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -26,7 +26,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Tum kategorileri agac yapisinda getirir.
+        /// Tüm kategorileri ağaç yapısında getirir.
         /// </summary>
         /// <param name="lang">Dil kodu (tr, en, de...)</param>
         /// <param name="onlyActive">Sadece aktif kategoriler mi?</param>
@@ -51,12 +51,12 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Tum kategorileri duz liste olarak getirir.
+        /// Tüm kategorileri düz liste olarak getirir.
         /// </summary>
         /// <param name="lang">Dil kodu</param>
         /// <param name="onlyActive">Sadece aktif kategoriler mi?</param>
         /// <param name="onlyLeaves">Sadece leaf kategoriler mi?</param>
-        /// <param name="parentCategoryId">Belirli bir ust kategorinin alt kategorileri</param>
+        /// <param name="parentCategoryId">Belirli bir üst kategorinin alt kategorileri</param>
         [HttpGet("flat")]
         [ProducesResponseType(typeof(Result<List<ServiceCategoryDto>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetFlat(
@@ -82,7 +82,7 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// ID'ye gore kategori detayi getirir.
+        /// ID'ye göre kategori detayı getirir.
         /// </summary>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Result<ServiceCategoryDto>), StatusCodes.Status200OK)]

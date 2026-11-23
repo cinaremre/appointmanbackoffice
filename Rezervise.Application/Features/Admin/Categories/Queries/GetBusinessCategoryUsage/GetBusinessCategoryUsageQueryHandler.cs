@@ -32,7 +32,7 @@ namespace Rezervise.Application.Features.Admin.Categories.Queries.GetBusinessCat
                     return Result<BusinessCategoryUsageDto>.Failure(
                         Error.NotFound("Kategori", request.CategoryId.ToString()));
 
-                // Business.CategoryId uzerinden sayim; silinmis isletmeler haric.
+                // Business.CategoryId üzerinden sayım; silinmiş işletmeler hariç.
                 var businesses = await _businessRepository.FindAsync(
                     b => b.CategoryId == request.CategoryId && !b.IsDeleted,
                     cancellationToken);
@@ -49,7 +49,7 @@ namespace Rezervise.Application.Features.Admin.Categories.Queries.GetBusinessCat
             catch (Exception ex)
             {
                 return Result<BusinessCategoryUsageDto>.Failure(
-                    Error.Internal("Kategori kullanim bilgisi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Kategori kullanım bilgisi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

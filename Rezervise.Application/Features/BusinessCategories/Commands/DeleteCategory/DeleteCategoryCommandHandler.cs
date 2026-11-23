@@ -23,7 +23,7 @@ namespace Rezervise.Application.Features.BusinessCategories.Commands.DeleteCateg
         {
             try
             {
-                // 1. Kategori kontrolu
+                // 1. Kategori kontrolü
                 var category = await _categoryRepository.GetByIdAsync(request.CategoryId, cancellationToken);
                 if (category is null)
                     return Result<Guid>.Failure(Error.NotFound("Kategori", request.CategoryId.ToString()));
@@ -34,11 +34,11 @@ namespace Rezervise.Application.Features.BusinessCategories.Commands.DeleteCateg
                     cancellationToken);
 
                 if (subCategories.Any())
-                    return Result<Guid>.Failure(Error.Conflict("Bu kategorinin alt kategorileri var. Once onlari silin."));
+                    return Result<Guid>.Failure(Error.Conflict("Bu kategorinin alt kategorileri var. Önce onları silin."));
 
-                // 3. Bu kategoriye bagli isletme var mi?
-                // Business tablosunda CategoryId ile iliskili kayitlar kontrol edilebilir
-                // Burada Business repository kullanilarak kontrol yapilabilir
+                // 3. Bu kategoriye bağlı işletme var mi?
+                // Business tablosunda CategoryId ile ilişkili kayıtlar kontrol edilebilir
+                // Burada Business repository kullanılarak kontrol yapılabilir
 
                 // 4. Kategoriyi sil
                 category.SoftDelete();
@@ -54,7 +54,7 @@ namespace Rezervise.Application.Features.BusinessCategories.Commands.DeleteCateg
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Kategori silinirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Kategori silinirken bir hata oluştu.", ex.Message));
             }
         }
     }

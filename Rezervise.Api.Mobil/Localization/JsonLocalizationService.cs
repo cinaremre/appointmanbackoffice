@@ -5,9 +5,9 @@ using Rezervise.Application.Common.Interfaces;
 namespace Rezervise.Api.Localization
 {
     /// <summary>
-    /// JSON dosyalarindan beslenen lokalizasyon servisi.
-    /// Kataloglar uygulama baslangicinda bir kez yuklenir ve bellekte tutulur;
-    /// runtime dosya izleme yapilmaz, degisiklik icin uygulama yeniden baslatilir.
+    /// JSON dosyalarından beslenen lokalizasyon servisi.
+    /// Kataloglar uygulama başlangıcında bir kez yüklenir ve bellekte tutulur;
+    /// runtime dosya izleme yapılmaz, değişiklik için uygulama yeniden başlatılır.
     /// </summary>
     public sealed class JsonLocalizationService : ILocalizationService
     {
@@ -20,24 +20,24 @@ namespace Rezervise.Api.Localization
         private readonly IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> _catalogs;
 
         /// <summary>
-        /// Kataloglari bellek yukler. Dosya eksik veya bozuksa uygulama durdurulmaz;
-        /// ilgili kultur icin bos katalog kullanilir ve cozumleme anahtari dondurur.
+        /// Katalogları bellek yükler. Dosya eksik veya bozuksa uygulama durdurulmaz;
+        /// ilgili kültür için boş katalog kullanılır ve çözümleme anahtarı döndürür.
         /// </summary>
-        /// <param name="environment">Dosya yolunu cozmek icin host ortami.</param>
-        /// <param name="logger">Uyari/hata kaydi.</param>
+        /// <param name="environment">Dosya yolunu çözmek için hoşt ortamı.</param>
+        /// <param name="logger">Uyarı/hata kaydı.</param>
         public JsonLocalizationService(IHostEnvironment environment, ILogger<JsonLocalizationService> logger)
         {
             _catalogs = LoadCatalogs(environment, logger);
             WarnOnKeyParityMismatch(logger);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public CultureInfo CurrentCulture => CultureInfo.CurrentUICulture;
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public string Get(string key) => Resolve(key, CurrentCulture.Name);
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public string Get(string key, params object[] args)
         {
             var template = Get(key);
@@ -51,16 +51,16 @@ namespace Rezervise.Api.Localization
             }
             catch (FormatException)
             {
-                // Sablon ile arguman sayisi uyusmuyorsa ham metin doner;
-                // kullaniciya format hatasi sizdirilmaz.
+                // Şablon ile argüman sayısı uyuşmuyorsa ham metin döner;
+                // kullanıcıya format hatası sızdırılmaz.
                 return template;
             }
         }
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public string Get(string key, CultureInfo culture) => Resolve(key, culture?.Name);
 
-        /// <inheritdoc />
+        /// <inheritdoç />
         public bool HasKey(string key, string cultureName)
         {
             var normalized = NormalizeCultureName(cultureName) ?? FallbackCultureName;
@@ -69,10 +69,10 @@ namespace Rezervise.Api.Localization
                    && catalog.ContainsKey(key);
         }
 
-        // ===== Fallback zinciri (tek uygulama noktasi) =====
+        // ===== Fallback zinciri (tek uygulama noktası) =====
         /// <summary>
-        /// Aktif kultur -> varsayilan kultur (tr) -> anahtarin kendisi.
-        /// Hicbir asamada exception firlatilmaz.
+        /// Aktif kültür -> varsayılan kültür (tr) -> anahtarın kendisi.
+        /// Hiçbir aşamada exception fırlatılmaz.
         /// </summary>
         private string Resolve(string key, string? cultureName)
         {
@@ -104,7 +104,7 @@ namespace Rezervise.Api.Localization
 
             var trimmed = cultureName.Trim();
 
-            // "tr-TR" gibi bolgesel adlar iki harfli kulture indirgenir.
+            // "tr-TR" gibi bölgesel adlar iki harfli kültüre indirgenir.
             if (trimmed.Length >= 2 && char.IsLetter(trimmed[0]) && char.IsLetter(trimmed[1]))
                 return trimmed[..2].ToLowerInvariant();
 
@@ -124,7 +124,7 @@ namespace Rezervise.Api.Localization
                 if (path is null)
                 {
                     logger.LogWarning(
-                        "Lokalizasyon dosyasi bulunamadi: {Culture}. Mesajlar anahtar olarak donecek.",
+                        "Lokalizasyon dosyası bulunamadı: {Culture}. Mesajlar anahtar olarak dönecek.",
                         cultureName);
 
                     catalogs[cultureName] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -139,13 +139,13 @@ namespace Rezervise.Api.Localization
                     catalogs[cultureName] = Flatten(document.RootElement, string.Empty);
 
                     logger.LogInformation(
-                        "Lokalizasyon dosyasi yuklendi: {Culture} ({Count} anahtar).",
+                        "Lokalizasyon dosyası yüklendi: {Culture} ({Count} anahtar).",
                         cultureName,
                         catalogs[cultureName].Count);
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Lokalizasyon dosyasi okunamadi: {Path}", path);
+                    logger.LogError(ex, "Lokalizasyon dosyası okunamadı: {Path}", path);
 
                     catalogs[cultureName] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 }
@@ -160,9 +160,9 @@ namespace Rezervise.Api.Localization
 
             var candidates = new[]
             {
-                // Gelistirme: proje kok dizini
+                // Geliştirme: proje kök dizini
                 Path.Combine(environment.ContentRootPath, ResourcesFolderName, ResourceFolderName, fileName),
-                // Yayinlanmis cikti
+                // Yayınlanmış çıktı
                 Path.Combine(AppContext.BaseDirectory, ResourcesFolderName, ResourceFolderName, fileName)
             };
 
@@ -170,7 +170,7 @@ namespace Rezervise.Api.Localization
         }
 
         /// <summary>
-        /// Ic ice JSON yapisini "Alan.AltAlan.Anahtar" biciminde duz sozluge indirger.
+        /// İç ice JSON yapısını "Alan.AltAlan.Anahtar" biçiminde düz sözlüğe indirger.
         /// </summary>
         private static IReadOnlyDictionary<string, string> Flatten(JsonElement element, string prefix)
         {
@@ -211,7 +211,7 @@ namespace Rezervise.Api.Localization
                 if (missing.Count > 0)
                 {
                     logger.LogWarning(
-                        "Lokalizasyon katalogunda eksik anahtarlar: {Culture} ({Count}) -> {Keys}",
+                        "Lokalizasyon kataloğunda eksik anahtarlar: {Culture} ({Count}) -> {Keys}",
                         cultureName,
                         missing.Count,
                         string.Join(", ", missing.Take(20)));

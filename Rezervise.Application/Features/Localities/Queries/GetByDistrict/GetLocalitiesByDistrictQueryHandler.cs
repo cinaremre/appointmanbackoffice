@@ -24,14 +24,14 @@ namespace Rezervise.Application.Features.Localities.Queries.GetByDistrict
             try
             {
                 if (request.DistrictId <= 0)
-                    return Result<List<LocalityDto>>.Failure(Error.BusinessRule("Ilce ID gecersiz."));
+                    return Result<List<LocalityDto>>.Failure(Error.BusinessRule("İlçe ID geçersiz."));
 
-                // 1. Ilceyi kontrol et
+                // 1. İlçeyi kontrol et
                 var districts = await _districtRepository.FindAsync(d => d.Id == request.DistrictId, cancellationToken);
                 if (districts.Count == 0)
-                    return Result<List<LocalityDto>>.Failure(Error.NotFound("Ilce", request.DistrictId.ToString()));
+                    return Result<List<LocalityDto>>.Failure(Error.NotFound("İlçe", request.DistrictId.ToString()));
 
-                // 2. Locality kayitlarini getir
+                // 2. Locality kayıtlarını getir
                 var localities = await _localityRepository.FindAsync(
                     l => l.DistrictId == request.DistrictId,
                     cancellationToken);
@@ -43,7 +43,7 @@ namespace Rezervise.Application.Features.Localities.Queries.GetByDistrict
                     filtered = filtered.Where(l => l.IsActive);
                 }
 
-                // 4. DTO'ya donustur
+                // 4. DTO'ya dönüştür
                 var dtos = filtered
                     .OrderBy(l => l.Name)
                     .Select(l => new LocalityDto
@@ -60,7 +60,7 @@ namespace Rezervise.Application.Features.Localities.Queries.GetByDistrict
             catch (Exception ex)
             {
                 return Result<List<LocalityDto>>.Failure(
-                    Error.Internal("Locality kayitlari getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Locality kayıtları getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

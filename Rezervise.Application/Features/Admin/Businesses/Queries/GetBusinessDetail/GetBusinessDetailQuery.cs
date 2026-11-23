@@ -4,15 +4,15 @@ using MediatR;
 namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinessDetail
 {
     /// <summary>
-    /// Isletme detay sorgusu (dokuman Modul 8). Temel kayit bilgilerine ek
-    /// olarak calisan, aktif hizmet ve son 30 gunun randevu sayilarini donerur.
+    /// İşletme detay sorgusu (doküman Modül 8). Temel kayıt bilgilerine ek
+    /// olarak çalışan, aktif hizmet ve son 30 günün randevu sayılarını dönerur.
     /// </summary>
     public class GetBusinessDetailQuery : IRequest<Result<AdminBusinessDetailDto>>
     {
         public Guid BusinessId { get; set; }
     }
 
-    /// <summary>Isletme detayi + operasyonel ozet sayilari.</summary>
+    /// <summary>İşletme detayı + operasyonel özet sayıları.</summary>
     public class AdminBusinessDetailDto
     {
         public Guid Id { get; init; }
@@ -42,13 +42,13 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinessDet
 
         public DateTime CreatedAt { get; init; }
 
-        /// <summary>Silinmemis calisan sayisi.</summary>
+        /// <summary>Silinmemiş çalışan sayısı.</summary>
         public int EmployeeCount { get; init; }
 
-        /// <summary>Aktif ve silinmemis hizmet sayisi.</summary>
+        /// <summary>Aktif ve silinmemiş hizmet sayısı.</summary>
         public int ActiveServiceCount { get; init; }
 
-        /// <summary>Son 30 gunde olusan randevu sayisi.</summary>
+        /// <summary>Son 30 günde oluşan randevu sayısı.</summary>
         public int RecentAppointmentCount { get; init; }
     }
 }

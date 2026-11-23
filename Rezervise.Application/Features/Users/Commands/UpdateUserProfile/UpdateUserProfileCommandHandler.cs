@@ -24,24 +24,24 @@ namespace Rezervise.Application.Features.Users.Commands.UpdateUserProfile
         {
             try
             {
-                // 1. Kullanici kontrolu.
-                //    Silinmis (anonimlestirilmis) hesap uzerinde profil guncellenemez;
-                //    aksi halde silme isleminden sonra kisisel veri geri yazilabilirdi.
+                // 1. Kullanıcı kontrolü.
+                //    Silinmiş (anonimleştirilmiş) hesap üzerinde profil güncellenemez;
+                //    aksi halde silme işleminden sonra kişisel veri geri yazılabilirdi.
                 var users = await _userRepository.FindAsync(
                     u => u.Id == request.UserId && !u.IsDeleted, cancellationToken);
 
                 var user = users.FirstOrDefault();
                 if (user is null)
-                    return Result<Guid>.Failure(Error.NotFound("Kullanici", request.UserId.ToString()));
+                    return Result<Guid>.Failure(Error.NotFound("Kullanıcı", request.UserId.ToString()));
 
-                // 2. Domain kurallari ile guncelle
+                // 2. Domain kuralları ile güncelle
                 user.UpdateProfile(
                     request.FirstName,
                     request.LastName,
                     request.DateOfBirth,
                     request.ProfilePictureUrl);
 
-                // 3. Konum bilgisi (il / ilce) - sonraki aramalarda guncel konum kullanilir
+                // 3. Konum bilgisi (il / ilçe) - sonraki aramalarda güncel konum kullanılır
                 if (request.CityId.HasValue || request.DistrictId.HasValue)
                 {
                     user.UpdateLocation(request.CityId, request.DistrictId);
@@ -54,7 +54,7 @@ namespace Rezervise.Application.Features.Users.Commands.UpdateUserProfile
             }
             catch (ConcurrencyConflictException)
             {
-                // Rowversion uyusmazligi: baska bir islem ayni kullaniciyi guncelledi.
+                // Rowversion uyuşmazlığı: başka bir işlem aynı kullanıcıyı güncelledi.
                 return Result<Guid>.Failure(ConcurrencyErrors.ConcurrencyConflict());
             }
             catch (DomainException ex)
@@ -63,7 +63,7 @@ namespace Rezervise.Application.Features.Users.Commands.UpdateUserProfile
             }
             catch (Exception ex)
             {
-                return Result<Guid>.Failure(Error.Internal("Profil guncellenirken bir hata olustu.", ex.Message));
+                return Result<Guid>.Failure(Error.Internal("Profil güncellenirken bir hata oluştu.", ex.Message));
             }
         }
     }

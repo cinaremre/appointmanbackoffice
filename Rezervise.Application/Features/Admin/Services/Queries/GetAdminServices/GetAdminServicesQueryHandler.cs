@@ -40,7 +40,7 @@ namespace Rezervise.Application.Features.Admin.Services.Queries.GetAdminServices
                         && (!isActive.HasValue || s.IsActive == isActive.Value),
                     cancellationToken);
 
-                // Kararli sayfalama: once ad, sonra Id sirasi.
+                // Kararlı sayfalama: önce ad, sonra Id sırası.
                 var ordered = services
                     .OrderBy(s => s.Name, StringComparer.OrdinalIgnoreCase)
                     .ThenBy(s => s.Id)
@@ -74,7 +74,7 @@ namespace Rezervise.Application.Features.Admin.Services.Queries.GetAdminServices
             catch (Exception ex)
             {
                 return Result<AdminServiceListResultDto>.Failure(
-                    Error.Internal("Hizmet listesi getirilirken bir hata olustu.", ex.Message));
+                    Error.Internal("Hizmet listesi getirilirken bir hata oluştu.", ex.Message));
             }
         }
     }

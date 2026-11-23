@@ -7,12 +7,12 @@ namespace Rezervise.Domain.ValueObjects
     {
         public int Value { get; private set; }
 
-        private Rating() { } // EF Core icin
+        private Rating() { } // EF Core için
 
         public Rating(int value)
         {
             if (value < 1 || value > 5)
-                throw new DomainException("Puan 1-5 arasinda olmalidir.");
+                throw new DomainException("Puan 1-5 arasında olmalıdır.");
 
             Value = value;
         }
