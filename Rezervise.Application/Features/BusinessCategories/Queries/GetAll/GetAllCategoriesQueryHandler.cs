@@ -1,6 +1,7 @@
 using Rezervise.Application.Common.DTOs;
 using Rezervise.Application.Common.Results;
 using Rezervise.Domain.Entities;
+using Rezervise.Domain.Enums;
 using Rezervise.Domain.Interfaces;
 using MediatR;
 
@@ -69,6 +70,10 @@ namespace Rezervise.Application.Features.BusinessCategories.Queries.GetAll
 
                 foreach (var root in roots)
                 {
+                    // Kök kategorilerde CorrespondingBusinessType doldurulur;
+                    // mobil hizmet ekleme akışında "Diğer" (99) varsayılanı kullanılır.
+                    root.CorrespondingBusinessType ??= EnumBusinessType.Other;
+
                     // Filtre sonrası gerçek alt kategori sayısı ve sırası.
                     root.SubCategories = root.SubCategories
                         .OrderBy(s => s.DisplayOrder)

@@ -114,18 +114,18 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
             var nodes = new List<CategoryNode>();
 
             // ===== Ana kategoriler =====
-            nodes.Add(new CategoryNode(BeautyRootId, "Güzellik ve Kişisel Bakım", "Kuaför, berber, bakım ve wellness hizmetleri", 1, null, null));
-            nodes.Add(new CategoryNode(HealthRootId, "Sağlık ve Medikal", "Sağlık, teşhis ve tedavi hizmetleri", 2, null, null));
-            nodes.Add(new CategoryNode(SportsRootId, "Spor ve Fitness", "Spor salonları, stüdyolar ve antrenman hizmetleri", 3, null, null));
-            nodes.Add(new CategoryNode(EducationRootId, "Eğitim ve Danışmanlık", "Kurs, ders ve kariyer danışmanlığı hizmetleri", 4, null, null));
-            nodes.Add(new CategoryNode(AutomotiveRootId, "Otomotiv ve Araç", "Araç bakım, onarım ve ekspertiz hizmetleri", 5, null, null));
-            nodes.Add(new CategoryNode(HomeRootId, "Ev ve Teknik", "Ev, tesisat, tadilat ve temizlik hizmetleri", 6, null, null));
-            nodes.Add(new CategoryNode(LegalRootId, "Hukuk ve Finans", "Hukuk, muhasebe ve finansal danışmanlık hizmetleri", 7, null, null));
-            nodes.Add(new CategoryNode(PhotoRootId, "Fotoğraf ve Organizasyon", "Fotoğraf, organizasyon ve etkinlik hizmetleri", 8, null, null));
-            nodes.Add(new CategoryNode(PetRootId, "Evcil Hayvan", "Veteriner, bakım ve eğitim hizmetleri", 9, null, null));
-            nodes.Add(new CategoryNode(TravelRootId, "Konaklama ve Turizm", "Konaklama, tur ve seyahat hizmetleri", 10, null, null));
-            nodes.Add(new CategoryNode(FashionRootId, "Moda ve Tasarım", "Giyim, terzi ve tasarım hizmetleri", 11, null, null));
-            nodes.Add(new CategoryNode(OtherRootId, "Diğer Hizmetler", "Diğer profesyonel ve kişisel hizmetler", 12, null, null));
+            nodes.Add(new CategoryNode(BeautyRootId, "Güzellik ve Kişisel Bakım", "Kuaför, berber, bakım ve wellness hizmetleri", 1, EnumBusinessType.Other, null));
+            nodes.Add(new CategoryNode(HealthRootId, "Sağlık ve Medikal", "Sağlık, teşhis ve tedavi hizmetleri", 2, EnumBusinessType.Other, null));
+            nodes.Add(new CategoryNode(SportsRootId, "Spor ve Fitness", "Spor salonları, stüdyolar ve antrenman hizmetleri", 3, EnumBusinessType.Other, null));
+            nodes.Add(new CategoryNode(EducationRootId, "Eğitim ve Danışmanlık", "Kurs, ders ve kariyer danışmanlığı hizmetleri", 4, EnumBusinessType.Other, null));
+            nodes.Add(new CategoryNode(AutomotiveRootId, "Otomotiv ve Araç", "Araç bakım, onarım ve ekspertiz hizmetleri", 5, EnumBusinessType.Other, null));
+            nodes.Add(new CategoryNode(HomeRootId, "Ev ve Teknik", "Ev, tesisat, tadilat ve temizlik hizmetleri", 6, EnumBusinessType.Other, null));
+            nodes.Add(new CategoryNode(LegalRootId, "Hukuk ve Finans", "Hukuk, muhasebe ve finansal danışmanlık hizmetleri", 7, EnumBusinessType.Other, null));
+            nodes.Add(new CategoryNode(PhotoRootId, "Fotoğraf ve Organizasyon", "Fotoğraf, organizasyon ve etkinlik hizmetleri", 8, EnumBusinessType.Other, null));
+            nodes.Add(new CategoryNode(PetRootId, "Evcil Hayvan", "Veteriner, bakım ve eğitim hizmetleri", 9, EnumBusinessType.Other, null));
+            nodes.Add(new CategoryNode(TravelRootId, "Konaklama ve Turizm", "Konaklama, tur ve seyahat hizmetleri", 10, EnumBusinessType.Other, null));
+            nodes.Add(new CategoryNode(FashionRootId, "Moda ve Tasarım", "Giyim, terzi ve tasarım hizmetleri", 11, EnumBusinessType.Other, null));
+            nodes.Add(new CategoryNode(OtherRootId, "Diğer Hizmetler", "Diğer profesyonel ve kişisel hizmetler", 12, EnumBusinessType.Other, null));
 
             // ===== Alt kategoriler =====
             // Mevcut 8 kayıt: Id'ler korunur, adlar yeni listeye uyarlanır,
