@@ -42,8 +42,11 @@ namespace Rezervise.Application.Common.Models
         /// <summary>Doğrulama token'inin geçerlilik süresi (saat).</summary>
         public int TokenLifetimeHours { get; set; } = 24;
 
-        /// <summary>Yeniden doğrulama e-postası istemek için beklenecek süre (dakika).</summary>
-        public int ResendCooldownMinutes { get; set; } = 2;
+        /// <summary>
+        /// Yeniden doğrulama e-postası istemek için beklenecek süre (dakika).
+        /// Varsayılan 3 dakikadır; <c>Email:ResendCooldownMinutes</c> ile değiştirilir.
+        /// </summary>
+        public int ResendCooldownMinutes { get; set; } = 3;
 
         /// <summary>Kuyruk kapasitesi. Dolu öldüğünda mesaj reddedilir ve loğlanır.</summary>
         public int QueueCapacity { get; set; } = 500;

@@ -120,23 +120,23 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Doğrulama e-postasını yeniden gönderir. Yanıt, adresin sistemde kayıtlı
-        /// olup olmadığını sızdırmamak için her durumda başarılı döner.
+        /// Doğrulama e-postasını yeniden gönderir. Bilinmeyen veya zaten doğrulanmış
+        /// adreslerde bilgi sızdırmamak için başarılı döner. Bekleme süresi (varsayılan
+        /// 3 dakika) dolmadan istek gelirse e-posta gönderilmez; yanıt 429 olur ve
+        /// gövdedeki <c>error.retryAfterSeconds</c> kalan saniyeyi verir.
         /// </summary>
         /// <param name="command">E-posta adresini taşıyan komut</param>
-        /// <returns>İstek kabul edildi bilgisi</returns>
+        /// <returns>Gönderim sonucu veya bekleme süresi hatası</returns>
         [AllowAnonymous]
         [HttpPost("resend-verification")]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status429TooManyRequests)]
         public async Task<IActionResult> ResendVerification([FromBody] ResendVerificationEmailCommand command)
         {
             var result = await _mediator.Send(command);
 
-            if (result.IsSuccess)
-                return Ok(result);
-
-            return BadRequest(result);
+            return MapResendResult(result);
         }
 
         /// <summary>
@@ -160,21 +160,42 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Telefon doğrulama kodunu yeniden gönderir. Yanıt, numaranın kayıtlı olup
-        /// olmadığını sızdırmamak için her durumda başarılı döner.
+        /// Telefon doğrulama kodunu yeniden gönderir. Bilinmeyen veya zaten doğrulanmış
+        /// numaralarda bilgi sızdırmamak için başarılı döner. Bekleme süresi (varsayılan
+        /// 180 saniye) dolmadan istek gelirse yeni kod üretilmez; yanıt 429 olur ve
+        /// gövdedeki <c>error.retryAfterSeconds</c> kalan saniyeyi verir.
         /// </summary>
         /// <param name="command">Telefon numarasını taşıyan komut</param>
-        /// <returns>İstek kabul edildi bilgisi</returns>
+        /// <returns>Gönderim sonucu veya bekleme süresi hatası</returns>
         [AllowAnonymous]
         [HttpPost("resend-phone-code")]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status429TooManyRequests)]
         public async Task<IActionResult> ResendPhoneCode([FromBody] ResendPhoneOtpCommand command)
         {
             var result = await _mediator.Send(command);
 
+            return MapResendResult(result);
+        }
+
+        /// <summary>
+        /// Yeniden gönderim sonucunu HTTP'ye eşler. Bekleme süresi hatasında
+        /// 429 döner ve standart <c>Retry-After</c> başlığını kalan saniye ile doldurur.
+        /// </summary>
+        /// <param name="result">Komut sonucu.</param>
+        /// <returns>Sarılmış sonuç.</returns>
+        private IActionResult MapResendResult(Result<bool> result)
+        {
             if (result.IsSuccess)
                 return Ok(result);
+
+            if (result.Error?.Code == "TOO_MANY_REQUESTS" &&
+                result.Error.RetryAfterSeconds is int retryAfterSeconds)
+            {
+                Response.Headers.RetryAfter = retryAfterSeconds.ToString();
+                return StatusCode(StatusCodes.Status429TooManyRequests, result);
+            }
 
             return BadRequest(result);
         }

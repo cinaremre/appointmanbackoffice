@@ -53,7 +53,9 @@ services:
       - Email__FromName=${EMAIL_FROM_NAME:-AppointMan}
       - Email__VerificationLinkBaseUrl=${EMAIL_VERIFICATION_LINK_BASE:-https://apiapp.rezervise.com/api/Auth/verify-email}
       - Email__TokenLifetimeHours=24
-      - Email__ResendCooldownMinutes=2
+      - Email__ResendCooldownMinutes=${EMAIL_RESEND_COOLDOWN_MINUTES:-3}
+      # Telefon OTP yeniden gonderim bekleme suresi (saniye): 180 = 3 dakika.
+      - Otp__ResendCooldownSeconds=${OTP_RESEND_COOLDOWN_SECONDS:-180}
     # Container, host'taki cPanel exim'e SMTPS (465) ile baglanir. TLS sertifikasinin
     # CN'i bu hostname oldugu icin adres bu sekilde verilip host gateway'e yonlendirilir.
     extra_hosts:

@@ -20,7 +20,7 @@
     "InvalidVerificationToken": "Doğrulama bağlantısı geçersiz veya daha önce kullanılmış.",
     "VerificationTokenExpired": "Doğrulama bağlantısının süresi dolmuş. Lütfen yeni bir bağlantı isteyin.",
     "EmailAlreadyVerified": "E-posta adresiniz zaten doğrulanmış.",
-    "ResendVerificationCooldown": "Yeni bir doğrulama e-postası istemek için lütfen birkaç dakika bekleyin.",
+    "ResendVerificationCooldown": "Yeni bir doğrulama e-postası istemek için lütfen {0} saniye bekleyin.",
     "AccountDeleted": "Hesabınız silindi ve kişisel bilgileriniz anonimleştirildi.",
     "CurrentPasswordInvalid": "Mevcut şifre doğrulanamadı.",
     "AccountDeletionBlockedByBusinesses": "İşletme sahibi olduğunuz için hesabınızı silemezsiniz. Lütfen önce işletmelerinizi devredin.",
@@ -33,6 +33,7 @@
     "InvalidCode": "Doğrulama kodu hatalı.",
     "Expired": "Doğrulama kodunun süresi dolmuş. Lütfen yeni kod isteyin.",
     "TooManyAttempts": "Çok fazla hatalı deneme yapıldı. Lütfen yeni kod isteyin.",
+    "ResendCooldown": "Yeni bir doğrulama kodu istemek için lütfen {0} saniye bekleyin.",
     "PhoneVerified": "Telefon numaranız doğrulandı."
   },
   "Email": {

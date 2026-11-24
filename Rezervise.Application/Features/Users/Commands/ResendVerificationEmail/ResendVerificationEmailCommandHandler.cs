@@ -11,8 +11,11 @@ using MediatR;
 namespace Rezervise.Application.Features.Users.Commands.ResendVerificationEmail
 {
     /// <summary>
-    /// Doğrulama e-postasını yeniden gönderir. Yanıt, adresin sistemde kayıtlı
-    /// olup olmadığını sızdırmamak için her durumda başarılı döner.
+    /// Doğrulama e-postasını yeniden gönderir. Adresin sistemde kayıtlı olup
+    /// olmadığını sızdırmamak için bilinmeyen/zaten doğrulanmış adreslerde sessizce
+    /// başarılı döner. Bekleme süresi (varsayılan 3 dakika, <c>Email:ResendCooldownMinutes</c>)
+    /// dolmadan gelen istekte e-posta gönderilmez ve kalan saniyeyi taşıyan
+    /// <c>TOO_MANY_REQUESTS</c> hatası döner.
     /// </summary>
     public class ResendVerificationEmailCommandHandler
         : IRequestHandler<ResendVerificationEmailCommand, Result<bool>>
@@ -22,29 +25,33 @@ namespace Rezervise.Application.Features.Users.Commands.ResendVerificationEmail
         private readonly IEmailQueue _emailQueue;
         private readonly EmailOptions _emailOptions;
         private readonly ILocalizationService _localizationService;
+        private readonly IDateTimeService _dateTimeService;
 
         /// <param name="userRepository">Kullanıcı deposu.</param>
         /// <param name="unitOfWork">Kalıcılık birimi.</param>
         /// <param name="emailQueue">Arka plan e-posta kuyruğu.</param>
         /// <param name="emailOptions">Bağ adresi ve bekleme süresi ayarları.</param>
         /// <param name="localizationService">Konu/gövde metinlerini çözer.</param>
+        /// <param name="dateTimeService">UTC saat (yeniden gönderim sınırı için).</param>
         public ResendVerificationEmailCommandHandler(
             IRepository<User> userRepository,
             IUnitOfWork unitOfWork,
             IEmailQueue emailQueue,
             EmailOptions emailOptions,
-            ILocalizationService localizationService)
+            ILocalizationService localizationService,
+            IDateTimeService dateTimeService)
         {
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
             _emailQueue = emailQueue;
             _emailOptions = emailOptions;
             _localizationService = localizationService;
+            _dateTimeService = dateTimeService;
         }
 
         /// <param name="request">E-posta adresini taşıyan komut.</param>
         /// <param name="cancellationToken">İptal belirteci.</param>
-        /// <returns>Her durumda <c>true</c>.</returns>
+        /// <returns>Gönderim yapıldıysa başarılı; bekleme süresi dolmadıysa kalan saniyeli hata.</returns>
         public async Task<Result<bool>> Handle(
             ResendVerificationEmailCommand request,
             CancellationToken cancellationToken)
@@ -66,20 +73,30 @@ namespace Rezervise.Application.Features.Users.Commands.ResendVerificationEmail
                 if (user is null || user.IsEmailVerified)
                     return Result<bool>.Success(true);
 
-                // 5. Sık gönderimi engelle: bekleme süresi dolmadıysa yeni token üretilmez.
-                if (user.EmailVerificationRequestedAt.HasValue &&
-                    DateTime.UtcNow - user.EmailVerificationRequestedAt.Value
-                        < TimeSpan.FromMinutes(_emailOptions.ResendCooldownMinutes))
+                var utcNow = _dateTimeService.UtcNow;
+                var cooldown = TimeSpan.FromMinutes(_emailOptions.ResendCooldownMinutes);
+
+                // Sık gönderimi engelle: bekleme süresi dolmadıysa yeni token
+                // üretilmez; istemcinin geri sayım gösterebilmesi için kalan saniye döner.
+                if (user.EmailVerificationRequestedAt.HasValue)
                 {
-                    return Result<bool>.Success(true);
+                    var elapsed = utcNow - user.EmailVerificationRequestedAt.Value;
+
+                    if (elapsed < cooldown)
+                    {
+                        var remainingSeconds = (int)Math.Ceiling((cooldown - elapsed).TotalSeconds);
+
+                        return Result<bool>.Failure(Error.TooManyRequests(
+                            "Auth.ResendVerificationCooldown", remainingSeconds, remainingSeconds));
+                    }
                 }
 
                 var rawToken = Guid.NewGuid().ToString("N");
 
                 user.IssueEmailVerificationToken(
                     RefreshTokenHasher.Hash(rawToken),
-                    DateTime.UtcNow.AddHours(_emailOptions.TokenLifetimeHours),
-                    DateTime.UtcNow);
+                    utcNow.AddHours(_emailOptions.TokenLifetimeHours),
+                    utcNow);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 

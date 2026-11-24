@@ -21,8 +21,11 @@ namespace Rezervise.Application.Features.Users.Commands.ResendPhoneOtp
     }
 
     /// <summary>
-    /// Yeniden gönderim akışı: kullanıcı bulunamaz veya zaten doğrulanmışsa
-    /// sessizce başarılı döner.
+    /// Telefon doğrulama kodunu yeniden gönderir. Numaranın kayıtlı olup olmadığını
+    /// sızdırmamak için bilinmeyen/zaten doğrulanmış numaralarda sessizce başarılı
+    /// döner. Bekleme süresi (varsayılan 180 saniye, <c>Otp:ResendCooldownSeconds</c>)
+    /// dolmadan gelen istekte yeni kod üretilmez ve kalan saniyeyi taşıyan
+    /// <c>TOO_MANY_REQUESTS</c> hatası döner.
     /// </summary>
     public class ResendPhoneOtpCommandHandler : IRequestHandler<ResendPhoneOtpCommand, Result<bool>>
     {
@@ -71,12 +74,22 @@ namespace Rezervise.Application.Features.Users.Commands.ResendPhoneOtp
                     return Result<bool>.Success(true);
 
                 var utcNow = _dateTimeService.UtcNow;
+                var cooldown = TimeSpan.FromSeconds(_otpOptions.ResendCooldownSeconds);
 
-                // Bekleme süresi dolmadıysa yeni kod üretilmez; yine başarılı dönülür.
-                if (user.PhoneVerificationRequestedAt.HasValue &&
-                    utcNow - user.PhoneVerificationRequestedAt.Value <
-                    TimeSpan.FromSeconds(_otpOptions.ResendCooldownSeconds))
-                    return Result<bool>.Success(true);
+                // Bekleme süresi dolmadıysa yeni kod üretilmez; istemcinin geri
+                // sayım gösterebilmesi için kalan saniye hata ile döner.
+                if (user.PhoneVerificationRequestedAt.HasValue)
+                {
+                    var elapsed = utcNow - user.PhoneVerificationRequestedAt.Value;
+
+                    if (elapsed < cooldown)
+                    {
+                        var remainingSeconds = (int)Math.Ceiling((cooldown - elapsed).TotalSeconds);
+
+                        return Result<bool>.Failure(Error.TooManyRequests(
+                            "Otp.ResendCooldown", remainingSeconds, remainingSeconds));
+                    }
+                }
 
                 var code = _otpCodeService.IssueCode(user, utcNow);
 

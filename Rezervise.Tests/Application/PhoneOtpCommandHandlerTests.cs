@@ -106,8 +106,30 @@ public class PhoneOtpCommandHandlerTests
 
         var result = await sut.Handle(new ResendPhoneOtpCommand { PhoneNumber = Phone }, CancellationToken.None);
 
-        Assert.True(result.IsSuccess);
+        // 3 dakikalik bekleme dolmadan yeni kod uretilmez; kalan sure istemciye doner.
+        Assert.True(result.IsFailure);
+        Assert.Equal("TOO_MANY_REQUESTS", result.Error!.Code);
+        Assert.True(result.Error.RetryAfterSeconds > 0);
         Assert.Equal(0, sender.SendCount);
+    }
+
+    [Fact]
+    public async Task Resend_ShouldSend_WhenCooldownHasElapsed()
+    {
+        var user = NewUser();
+        var options = CreateOptions();
+        var otp = new OtpCodeService(options);
+        otp.IssueCode(user, Now);
+        var sender = new FakeSmsCodeSender();
+
+        var sut = new ResendPhoneOtpCommandHandler(
+            new FakeRepository<User>(new[] { user }), new FakeUnitOfWork(), otp, sender,
+            new StubDateTimeService(Now.AddSeconds(181)), options);
+
+        var result = await sut.Handle(new ResendPhoneOtpCommand { PhoneNumber = Phone }, CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(1, sender.SendCount);
     }
 
     [Fact]
@@ -152,7 +174,7 @@ public class PhoneOtpCommandHandlerTests
         CodeLength = 6,
         LifetimeMinutes = 5,
         MaxAttempts = 5,
-        ResendCooldownSeconds = 60
+        ResendCooldownSeconds = 180
     };
 
     private static User NewUser()

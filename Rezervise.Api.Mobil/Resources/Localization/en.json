@@ -20,7 +20,7 @@
     "InvalidVerificationToken": "The verification link is invalid or has already been used.",
     "VerificationTokenExpired": "The verification link has expired. Please request a new one.",
     "EmailAlreadyVerified": "Your e-mail address is already verified.",
-    "ResendVerificationCooldown": "Please wait a few minutes before requesting another verification e-mail.",
+    "ResendVerificationCooldown": "Please wait {0} seconds before requesting another verification e-mail.",
     "AccountDeleted": "Your account has been deleted and your personal data anonymized.",
     "CurrentPasswordInvalid": "The current password could not be verified.",
     "AccountDeletionBlockedByBusinesses": "You cannot delete your account while you own a business. Please transfer your businesses first.",
@@ -33,6 +33,7 @@
     "InvalidCode": "The verification code is incorrect.",
     "Expired": "The verification code has expired. Please request a new code.",
     "TooManyAttempts": "Too many failed attempts. Please request a new code.",
+    "ResendCooldown": "Please wait {0} seconds before requesting another verification code.",
     "PhoneVerified": "Your phone number has been verified."
   },
   "Email": {

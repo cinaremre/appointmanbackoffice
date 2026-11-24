@@ -27,8 +27,11 @@ namespace Rezervise.Application.Common.Models
         /// <summary>Maksimum doğrulama denemesi.</summary>
         public int MaxAttempts { get; set; } = 5;
 
-        /// <summary>Yeniden kod isteme için beklenecek süre (saniye).</summary>
-        public int ResendCooldownSeconds { get; set; } = 60;
+        /// <summary>
+        /// Yeniden kod isteme için beklenecek süre (saniye). Varsayılan 180 saniye
+        /// (3 dakika); <c>Otp:ResendCooldownSeconds</c> ile değiştirilir.
+        /// </summary>
+        public int ResendCooldownSeconds { get; set; } = 180;
 
         /// <summary>Sabit kod yapılandırılmış mi?</summary>
         public bool HasFixedCode => !string.IsNullOrWhiteSpace(FixedCode);
