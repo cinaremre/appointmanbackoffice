@@ -3,6 +3,7 @@ using Rezervise.Application.Common.Interfaces;
 using Rezervise.Application.Common.Results;
 using Rezervise.Application.Common.Security;
 using Rezervise.Domain.Entities;
+using Rezervise.Domain.Enums;
 using Rezervise.Domain.Exceptions;
 using Rezervise.Domain.Interfaces;
 using Rezervise.Domain.ValueObjects;
@@ -14,17 +15,20 @@ namespace Rezervise.Application.Features.Users.Commands.Login
     public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginResponse>>
     {
         private readonly IRepository<User> _userRepository;
+        private readonly IRepository<Business> _businessRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ITokenService _tokenService;
         private readonly RezerviseMetrics _metrics;
 
         public LoginCommandHandler(
             IRepository<User> userRepository,
+            IRepository<Business> businessRepository,
             IUnitOfWork unitOfWork,
             ITokenService tokenService,
             RezerviseMetrics metrics)
         {
             _userRepository = userRepository;
+            _businessRepository = businessRepository;
             _unitOfWork = unitOfWork;
             _tokenService = tokenService;
             _metrics = metrics;
@@ -110,6 +114,19 @@ namespace Rezervise.Application.Features.Users.Commands.Login
                 var accessToken = _tokenService.GenerateAccessToken(user);
                 var refreshToken = _tokenService.GenerateRefreshToken();
 
+                // İşletme sahibi için onay durumu: onay bekleyen işletmesi varsa
+                // mobil taraf giriş sonrası uyarı ekranı gösterir. Müşteri hesaplarında
+                // sorgu atlanır (her zaman false).
+                var pendingApproval = false;
+                if (user.Role == EnumUserRole.BusinessOwner)
+                {
+                    var unapproved = await _businessRepository.FindAsync(
+                        b => b.OwnerId == user.Id && !b.IsDeleted && !b.IsApproved,
+                        cancellationToken);
+
+                    pendingApproval = unapproved.Any();
+                }
+
                 user.RegisterSuccessfulLogin();
 
                 // Only the hash is persisted: a database leak must not expose usable tokens.
@@ -132,7 +149,8 @@ namespace Rezervise.Application.Features.Users.Commands.Login
                     Role = user.Role.ToString(),
                     LanguageCode = string.IsNullOrWhiteSpace(user.LanguageCode)
                         ? User.DefaultLanguageCode
-                        : user.LanguageCode
+                        : user.LanguageCode,
+                    PendingBusinessApproval = pendingApproval
                 };
 
                 _metrics.RecordLoginAttempt("success");

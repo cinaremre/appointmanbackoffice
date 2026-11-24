@@ -102,6 +102,7 @@ public sealed class RegisterVerifyLoginFlowTests
         // 3) Login
         var loginHandler = new LoginCommandHandler(
             users,
+            new FakeRepository<Business>(),
             unitOfWork,
             new FakeTokenService(),
             metrics);
@@ -133,6 +134,7 @@ public sealed class RegisterVerifyLoginFlowTests
         var users = new FakeRepository<User>([user]);
         var sut = new LoginCommandHandler(
             users,
+            new FakeRepository<Business>(),
             new FakeUnitOfWork(),
             new FakeTokenService(),
             new RezerviseMetrics());

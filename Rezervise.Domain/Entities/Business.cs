@@ -17,6 +17,16 @@ namespace Rezervise.Domain.Entities
         public string? LogoUrl { get; private set; }
         public bool IsActive { get; private set; }
         public bool IsVerified { get; private set; }
+
+        /// <summary>
+        /// Backoffice onayı: mobil üzerinden yeni kaydolan işletmeler bu bayrak
+        /// false ile başlar ve arama sonuçlarında görünmez; backoffice onayı
+        /// sonrası true olur ve bildirim gönderilir.
+        /// </summary>
+        public bool IsApproved { get; private set; }
+
+        /// <summary>Backoffice onayının verildiği an (UTC); onaylanmamışsa null.</summary>
+        public DateTime? ApprovedAt { get; private set; }
         public decimal? Rating { get; private set; }
         public int TotalReviews { get; private set; }
         public Guid OwnerId { get; private set; }
@@ -70,6 +80,8 @@ namespace Rezervise.Domain.Entities
             OwnerId = ownerId;
             IsActive = true;
             IsVerified = false;
+            IsApproved = false;
+            ApprovedAt = null;
             Rating = 0;
             TotalReviews = 0;
 
@@ -213,6 +225,21 @@ namespace Rezervise.Domain.Entities
             IsVerified = true;
             UpdatedAt = DateTime.UtcNow;
             AddDomainEvent(new BusinessVerifiedEvent(Id, Name, OwnerId, BusinessType, verifiedBy));
+        }
+
+        /// <summary>
+        /// Backoffice onayı: işletmeyi onaylar. Bildirim (owner'a
+        /// "hoşgeldiniz" mesajı) uygulama katmanında bu metoddan sonra
+        /// oluşturulur. Zaten onaylıysa idempotenttir.
+        /// </summary>
+        public void Approve()
+        {
+            if (IsApproved)
+                return;
+
+            IsApproved = true;
+            ApprovedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void ChangeOwner(Guid newOwnerId, string? changedBy = null)

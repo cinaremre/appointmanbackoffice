@@ -54,6 +54,7 @@ namespace Rezervise.Application.Features.Businesses.Queries.GetBusinessesByOwner
                     LogoUrl = b.LogoUrl,
                     IsActive = b.IsActive,
                     IsVerified = b.IsVerified,
+                    IsApproved = b.IsApproved,
                     Rating = b.Rating,
                     TotalReviews = b.TotalReviews,
                     OwnerId = b.OwnerId,

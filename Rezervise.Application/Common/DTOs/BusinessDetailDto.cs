@@ -20,6 +20,9 @@ public class BusinessDetailDto
     public string? LogoUrl { get; set; }
     public bool IsActive { get; set; }
     public bool IsVerified { get; set; }
+
+    /// <summary>Backoffice onayı: false ise işletme henüz onaylanmamıştır.</summary>
+    public bool IsApproved { get; set; }
     public decimal? Rating { get; set; }
     public int TotalReviews { get; set; }
     public Guid OwnerId { get; set; }

@@ -36,6 +36,9 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinessDet
 
         public bool IsVerified { get; init; }
 
+        /// <summary>Backoffice onayı: false ise işletme onay beklemektedir.</summary>
+        public bool IsApproved { get; init; }
+
         public decimal? Rating { get; init; }
 
         public int TotalReviews { get; init; }

@@ -30,8 +30,8 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinesses
                 var page = AdminPagination.NormalizePage(request.Page);
                 var pageSize = AdminPagination.ClampPageSize(request.PageSize);
 
-                // 2. Durum filtresi: entity IsActive bayrağı üzerinden
-                //    "Active"/"Suspended" olarak ifade edilir.
+                // 2. Durum filtresi: gösterilen rozetle birebir aynı mantık.
+                //    Onay bekleyen işletme, aktif olsa bile "Active" sayılmaz.
                 Expression<Func<Business, bool>> predicate = b => !b.IsDeleted;
 
                 if (!string.IsNullOrWhiteSpace(request.Status))
@@ -40,16 +40,22 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinesses
 
                     if (string.Equals(status, "Active", StringComparison.OrdinalIgnoreCase))
                     {
-                        predicate = predicate.AndAlso(b => b.IsActive);
+                        predicate = predicate.AndAlso(b => b.IsApproved && b.IsActive);
                     }
                     else if (string.Equals(status, "Suspended", StringComparison.OrdinalIgnoreCase))
                     {
-                        predicate = predicate.AndAlso(b => !b.IsActive);
+                        predicate = predicate.AndAlso(b => b.IsApproved && !b.IsActive);
+                    }
+                    else if (string.Equals(status, "PendingApproval", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Onay bekleyen işletmeler: mobil üzerinden kaydolmuş, backoffice
+                        // incelemesi bekleyen kayıtlar.
+                        predicate = predicate.AndAlso(b => !b.IsApproved);
                     }
                     else
                     {
                         return Result<AdminBusinessListResult>.Failure(
-                            Error.Validation("Status filtresi yalnızca Active veya Suspended olabilir."));
+                            Error.Validation("Status filtresi yalnızca Active, Suspended veya PendingApproval olabilir."));
                     }
                 }
 
@@ -81,7 +87,11 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinesses
                     {
                         Id = b.Id,
                         Name = b.Name,
-                        Status = b.IsActive ? "Active" : "Suspended",
+                        // Onay bekleyen durum diğerlerinin önündedir: onaylanmamış işletme
+                        // aktif olsa bile halka açık olarak çalışmıyordur.
+                        Status = !b.IsApproved
+                            ? "PendingApproval"
+                            : b.IsActive ? "Active" : "Suspended",
                         CityId = b.Address?.CityId ?? 0,
                         OwnerId = b.OwnerId,
                         CreatedAt = b.CreatedAt,

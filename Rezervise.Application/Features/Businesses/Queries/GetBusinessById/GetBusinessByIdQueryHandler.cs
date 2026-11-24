@@ -57,6 +57,7 @@ namespace Rezervise.Application.Features.Businesses.Queries.GetBusinessById
                     LogoUrl = business.LogoUrl,
                     IsActive = business.IsActive,
                     IsVerified = business.IsVerified,
+                    IsApproved = business.IsApproved,
                     Rating = business.Rating,
                     TotalReviews = business.TotalReviews,
                     OwnerId = business.OwnerId,

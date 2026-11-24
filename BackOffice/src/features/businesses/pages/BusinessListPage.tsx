@@ -1,25 +1,26 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 import {
+  Alert,
   Box,
   Button,
-  FormControl,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
+  Snackbar,
+  Tab,
+  Tabs,
   TextField,
   Typography,
 } from "@mui/material";
-import type { SelectChangeEvent } from "@mui/material/Select";
-import { getList } from "../../../shared/api/client";
+import { ApiError, getList, postItem } from "../../../shared/api/client";
 import { toQueryString } from "../../../shared/api/types";
 import { DataTable } from "../../../shared/components/DataTable";
 import type { DataTableColumn } from "../../../shared/components/DataTable";
 import { PageHeader } from "../../../shared/components/states";
 import { StatusBadge } from "../../../shared/components/StatusBadge";
+import { PERMISSIONS } from "../../../shared/constants/permissions";
+import { useAuth } from "../../../app/providers/AuthContext";
 import type { BusinessListFilters, BusinessListItem } from "../types";
 
 /**
@@ -32,12 +33,21 @@ const STATUS_OPTIONS: Array<{ value: string; label: string }> = [
   { value: "", label: "Tümü" },
   { value: "Active", label: "Aktif" },
   { value: "Suspended", label: "Askıda" },
+  { value: "PendingApproval", label: "Onay Bekleyen" },
 ];
 
 function formatDate(value: string): string {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? value : format(date, "dd.MM.yyyy");
 }
+
+function toErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof ApiError) return error.userMessage;
+  if (error instanceof Error) return error.message;
+  return fallback;
+}
+
+type Feedback = { severity: "success" | "error"; message: string } | null;
 
 const COLUMNS: Array<DataTableColumn<BusinessListItem>> = [
   {
@@ -64,7 +74,10 @@ const COLUMNS: Array<DataTableColumn<BusinessListItem>> = [
 
 export function BusinessListPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { has_permission } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [feedback, setFeedback] = useState<Feedback>(null);
 
   // Doküman 22: filtreler URL'de yaşamalı; geçersiz/yok değerler "" olarak normalize edilir.
   const filters = useMemo<BusinessListFilters>(
@@ -130,14 +143,42 @@ export function BusinessListPage() {
     placeholderData: keepPreviousData,
   });
 
-  const onStatusChange = (event: SelectChangeEvent<string>) => {
-    patchParams({ status: event.target.value });
-  };
+  const canApprove = has_permission(PERMISSIONS.businessApprove);
+
+  // Onay: işletme yayına alınır ve sahibine "hoşgeldiniz" bildirimi gider.
+  // Gerekçe zorunlu değildir; denetim kaydına varsayılan metin yazılır.
+  const approveMutation = useMutation({
+    mutationFn: (businessId: string) =>
+      postItem(`/businesses/${businessId}/approve`, { reason: "Backoffice onayı" }),
+    onSuccess: () => {
+      setFeedback({
+        severity: "success",
+        message: "İşletme onaylandı; sahibine bildirim gönderildi.",
+      });
+      void queryClient.invalidateQueries({ queryKey: ["businesses"] });
+    },
+    onError: (error: unknown) => {
+      setFeedback({ severity: "error", message: toErrorMessage(error, "Onaylama başarısız.") });
+    },
+  });
 
   const renderRowActions = (row: BusinessListItem) => (
-    <Button size="small" variant="outlined" onClick={() => navigate(`/businesses/${row.id}`)}>
-      Detay
-    </Button>
+    <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
+      {canApprove && row.status === "PendingApproval" ? (
+        <Button
+          size="small"
+          color="success"
+          variant="contained"
+          disabled={approveMutation.isPending}
+          onClick={() => approveMutation.mutate(row.id)}
+        >
+          Onayla
+        </Button>
+      ) : null}
+      <Button size="small" variant="outlined" onClick={() => navigate(`/businesses/${row.id}`)}>
+        Detay
+      </Button>
+    </Box>
   );
 
   return (
@@ -152,6 +193,16 @@ export function BusinessListPage() {
           ) : null
         }
       />
+      <Tabs
+        value={filters.status}
+        onChange={(_event, value: string) => patchParams({ status: value })}
+        sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}
+        aria-label="işletme durum sekmeleri"
+      >
+        {STATUS_OPTIONS.map((option) => (
+          <Tab key={option.value || "all"} value={option.value} label={option.label} />
+        ))}
+      </Tabs>
       <Grid container spacing={2} sx={{ mb: 2, alignItems: "flex-end" }}>
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <TextField
@@ -161,24 +212,6 @@ export function BusinessListPage() {
             value={searchInput}
             onChange={(event) => setSearchInput(event.target.value)}
           />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <FormControl fullWidth size="small">
-            <InputLabel id="business-status-filter-label">Durum</InputLabel>
-            <Select
-              labelId="business-status-filter-label"
-              id="business-status-filter"
-              value={filters.status}
-              label="Durum"
-              onChange={onStatusChange}
-            >
-              {STATUS_OPTIONS.map((option) => (
-                <MenuItem key={option.value || "all"} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
         </Grid>
       </Grid>
       <DataTable<BusinessListItem>
@@ -196,6 +229,18 @@ export function BusinessListPage() {
         emptyLabel="Filtreye uygun işletme bulunamadı."
         rowActions={renderRowActions}
       />
+      <Snackbar
+        open={feedback !== null}
+        autoHideDuration={5000}
+        onClose={() => setFeedback(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        {feedback ? (
+          <Alert severity={feedback.severity} onClose={() => setFeedback(null)}>
+            {feedback.message}
+          </Alert>
+        ) : undefined}
+      </Snackbar>
     </Box>
   );
 }

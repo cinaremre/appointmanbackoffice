@@ -49,9 +49,11 @@ const SUSPEND_IMPACT =
   "Bu işletmeyi askıya almak yeni rezervasyonların görünürlüğünü etkileyebilir. Mevcut randevular işletme politikasına göre korunur.";
 const ACTIVATE_IMPACT =
   "Bu işletmeyi aktifleştirmek işletmenin yeni rezervasyonlarda tekrar görünür olmasını sağlar. Mevcut randevular ve işletme politikası etkilenmez.";
+const APPROVE_IMPACT =
+  "Bu işletmeyi onaylamak arama sonuçlarında görünür olmasını ve randevu almasını sağlar. İşletme sahibine \"İşletmeniz onaylanmıştır, Rezervise dünyasına hoşgeldiniz!\" bildirimi gönderilir.";
 
 type DetailTab = "general" | "audit";
-type PendingStatusAction = "suspend" | "activate";
+type PendingStatusAction = "suspend" | "activate" | "approve";
 type Feedback = { severity: "success" | "error"; message: string } | null;
 
 function formatDateTime(value: string): string {
@@ -127,6 +129,22 @@ export function BusinessDetailPage() {
     },
   });
 
+  // Onay: işletme yayına alınır, sahibine "hoşgeldiniz" bildirimi gider.
+  const approveMutation = useMutation({
+    mutationFn: (reason: string) => postItem(`/businesses/${id}/approve`, { reason }),
+    onSuccess: () => {
+      setFeedback({
+        severity: "success",
+        message: "İşletme onaylandı; sahibine bildirim gönderildi.",
+      });
+      setPendingAction(null);
+      void queryClient.invalidateQueries({ queryKey: ["businesses"] });
+    },
+    onError: (error: unknown) => {
+      setFeedback({ severity: "error", message: toErrorMessage(error, "Onaylama başarısız.") });
+    },
+  });
+
   const { control, handleSubmit, reset } = useForm<BusinessEditForm>({
     resolver: zodResolver(editSchema),
     defaultValues: { name: "", description: "" },
@@ -141,9 +159,30 @@ export function BusinessDetailPage() {
 
   const canUpdate = has_permission(PERMISSIONS.businessUpdate);
   const canSuspend = has_permission(PERMISSIONS.businessSuspend);
+  const canApprove = has_permission(PERMISSIONS.businessApprove);
   const canReadAudit = has_permission(PERMISSIONS.auditRead);
 
-  const statusMutation = pendingAction === "suspend" ? suspendMutation : activateMutation;
+  const statusMutation =
+    pendingAction === "suspend"
+      ? suspendMutation
+      : pendingAction === "approve"
+        ? approveMutation
+        : activateMutation;
+
+  const dialogTitle =
+    pendingAction === "suspend"
+      ? "İşletmeyi Askıya Al"
+      : pendingAction === "approve"
+        ? "İşletmeyi Onayla"
+        : "İşletmeyi Aktifleştir";
+  const dialogImpact =
+    pendingAction === "suspend"
+      ? SUSPEND_IMPACT
+      : pendingAction === "approve"
+        ? APPROVE_IMPACT
+        : ACTIVATE_IMPACT;
+  const dialogConfirmLabel =
+    pendingAction === "suspend" ? "Askıya Al" : pendingAction === "approve" ? "Onayla" : "Aktifleştir";
 
   const onTabChange = (_event: unknown, value: string): void => {
     setTab(value as DetailTab);
@@ -189,6 +228,11 @@ export function BusinessDetailPage() {
       />
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
         <StatusBadge status={detail.status} />
+        {canApprove && detail.status === "PendingApproval" ? (
+          <Button color="success" variant="contained" onClick={() => setPendingAction("approve")}>
+            Onayla
+          </Button>
+        ) : null}
         {canSuspend && detail.status === "Active" ? (
           <Button color="warning" variant="outlined" onClick={() => setPendingAction("suspend")}>
             Askıya Al
@@ -324,9 +368,9 @@ export function BusinessDetailPage() {
 
       <ReasonConfirmDialog
         open={pendingAction !== null}
-        title={pendingAction === "suspend" ? "İşletmeyi Askıya Al" : "İşletmeyi Aktifleştir"}
-        impact={pendingAction === "suspend" ? SUSPEND_IMPACT : ACTIVATE_IMPACT}
-        confirmLabel={pendingAction === "suspend" ? "Askıya Al" : "Aktifleştir"}
+        title={dialogTitle}
+        impact={dialogImpact}
+        confirmLabel={dialogConfirmLabel}
         busy={statusMutation.isPending}
         onCancel={() => setPendingAction(null)}
         onConfirm={(reason) => statusMutation.mutate(reason)}

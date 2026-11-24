@@ -8,6 +8,7 @@ export const PERMISSIONS = {
   businessRead: "business.read",
   businessUpdate: "business.update",
   businessSuspend: "business.suspend",
+  businessApprove: "business.approve",
   categoryRead: "category.read",
   categoryCreate: "category.create",
   categoryUpdate: "category.update",
@@ -56,6 +57,7 @@ export type OwnerPermission = (typeof OWNER_PERMISSIONS)[keyof typeof OWNER_PERM
 
 const PLATFORM_ADMIN: Permission[] = [
   PERMISSIONS.businessRead, PERMISSIONS.businessUpdate, PERMISSIONS.businessSuspend,
+  PERMISSIONS.businessApprove,
   PERMISSIONS.categoryRead, PERMISSIONS.categoryCreate, PERMISSIONS.categoryUpdate, PERMISSIONS.categoryArchive,
   PERMISSIONS.serviceRead, PERMISSIONS.serviceUpdate, PERMISSIONS.serviceBulkUpdate,
   PERMISSIONS.appointmentRead, PERMISSIONS.appointmentCancel,
@@ -95,6 +97,7 @@ export const ROLE_PERMISSIONS: Record<string, (Permission | OwnerPermission)[]> 
   ],
   Admin: [
     PERMISSIONS.businessRead, PERMISSIONS.businessUpdate, PERMISSIONS.businessSuspend,
+    PERMISSIONS.businessApprove,
     PERMISSIONS.categoryRead, PERMISSIONS.categoryUpdate, PERMISSIONS.serviceRead, PERMISSIONS.serviceUpdate,
     PERMISSIONS.appointmentRead, PERMISSIONS.appointmentCancel, PERMISSIONS.userRead, PERMISSIONS.userManage,
     PERMISSIONS.subscriptionRead, PERMISSIONS.featureRead, PERMISSIONS.featureOverride, PERMISSIONS.financeRead,

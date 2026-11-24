@@ -143,6 +143,14 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasDefaultValue(false);
 
+            // Backoffice onay bayrağı: mobil kayıtlar false ile başlar (sentinel
+            // tuzağına dikkat — defaultValue kullanılmaz, değer her zaman gönderilir).
+            builder.Property(x => x.IsApproved)
+                .IsRequired();
+
+            builder.Property(x => x.ApprovedAt)
+                .IsRequired(false);
+
             builder.Property(x => x.Rating)
                 .IsRequired(false)
                 .HasPrecision(3, 1);

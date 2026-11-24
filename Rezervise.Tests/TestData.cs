@@ -6,7 +6,7 @@ namespace Rezervise.Tests;
 
 public static class TestData
 {
-    public static Business NewBusiness(Guid ownerId, Guid? id = null)
+    public static Business NewBusiness(Guid ownerId, Guid? id = null, bool approved = true)
     {
         var business = new Business(
             id ?? Guid.NewGuid(),
@@ -16,6 +16,11 @@ public static class TestData
             new PhoneNumber("+905550000000"),
             new Email("business@test.com"),
             ownerId);
+
+        // Test verisi varsayılan olarak backoffice onayından geçmiş işletmeyi
+        // temsil eder; onay bekleyen senaryolar approved:false ile kurulur.
+        if (approved)
+            business.Approve();
 
         business.ClearDomainEvents();
         return business;

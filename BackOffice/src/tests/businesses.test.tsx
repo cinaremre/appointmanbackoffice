@@ -89,4 +89,13 @@ describe("BusinessListPage", () => {
 
     expect(await screen.findByText("Filtreye uygun işletme bulunamadı.")).toBeVisible();
   });
+
+  it("onay bekleyen işletmede Onayla aksiyonu görünür", async () => {
+    const pending = { ...BUSINESS_ITEM, id: "b-2", status: "PendingApproval" };
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse(envelope([pending], 1))));
+
+    renderListPage();
+
+    expect(await screen.findByRole("button", { name: "Onayla" })).toBeVisible();
+  });
 });

@@ -29,10 +29,12 @@ namespace Rezervise.Application.Features.Businesses.Queries.SearchBusinesses
         {
             try
             {
-                // 1. Temel filtre: aktif, doğrulanmış, silinmemiş
+                // 1. Temel filtre: aktif, doğrulanmış, ONAYLANMIŞ, silinmemiş.
+                //    Onay bekleyen işletmeler backoffice onayına kadar listelenmez.
                 Expression<Func<Business, bool>> predicate = b =>
                     b.IsActive &&
                     b.IsVerified &&
+                    b.IsApproved &&
                     !b.IsDeleted;
 
                 // 2. Kategori filtresi (opsiyonel)
@@ -143,6 +145,7 @@ namespace Rezervise.Application.Features.Businesses.Queries.SearchBusinesses
                     LogoUrl = b.LogoUrl,
                     IsActive = b.IsActive,
                     IsVerified = b.IsVerified,
+                    IsApproved = b.IsApproved,
                     Rating = b.Rating,
                     TotalReviews = b.TotalReviews,
                     OwnerId = b.OwnerId,

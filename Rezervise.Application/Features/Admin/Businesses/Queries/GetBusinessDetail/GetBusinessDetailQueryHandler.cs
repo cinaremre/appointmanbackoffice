@@ -60,13 +60,17 @@ namespace Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinessDet
                     Id = business.Id,
                     Name = business.Name,
                     Description = business.Description,
-                    Status = business.IsActive ? "Active" : "Suspended",
+                    // Onay bekleyen durum diğerlerinin önündedir (liste ile tutarlı).
+                    Status = !business.IsApproved
+                        ? "PendingApproval"
+                        : business.IsActive ? "Active" : "Suspended",
                     CityId = business.Address?.CityId ?? 0,
                     Address = business.Address?.GetFullAddress() ?? string.Empty,
                     PhoneNumber = business.PhoneNumber?.Value ?? string.Empty,
                     Email = business.Email?.Value ?? string.Empty,
                     OwnerId = business.OwnerId,
                     IsVerified = business.IsVerified,
+                    IsApproved = business.IsApproved,
                     Rating = business.Rating,
                     TotalReviews = business.TotalReviews,
                     CreatedAt = business.CreatedAt,

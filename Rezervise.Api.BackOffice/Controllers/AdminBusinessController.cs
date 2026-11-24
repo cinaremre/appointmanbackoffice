@@ -1,5 +1,6 @@
 using Rezervise.Application.Common.Authorization;
 using Rezervise.Application.Features.Admin.Businesses.Commands.ActivateBusinessByAdmin;
+using Rezervise.Application.Features.Admin.Businesses.Commands.ApproveBusinessByAdmin;
 using Rezervise.Application.Features.Admin.Businesses.Commands.SuspendBusinessByAdmin;
 using Rezervise.Application.Features.Admin.Businesses.Commands.UpdateBusinessByAdmin;
 using Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinessAuditTrail;
@@ -122,6 +123,30 @@ namespace Rezervise.BackOffice.Api.Controllers
             return OkEnvelope(result.Value!);
         }
 
+        /// <summary>
+        /// Onay bekleyen işletmeyi onaylar; işletme arama sonuçlarında görünür olur
+        /// ve sahibine "İşletmeniz onaylanmıştır, Rezervise dünyasına hoşgeldiniz!"
+        /// bildirimi gönderilir. Denetim kaydı yazılır.
+        /// </summary>
+        [HttpPost("{id:guid}/approve")]
+        [Authorize(Policy = AdminPermissions.BusinessApprove)]
+        public async Task<IActionResult> Approve(Guid id, [FromBody] ApproveBusinessByAdminRequest? body, CancellationToken cancellationToken)
+        {
+            var command = new ApproveBusinessByAdminCommand
+            {
+                BusinessId = id,
+                Reason = body?.Reason
+            };
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+            var failure = AdminFailureResult.FailureOrNull(result);
+            if (failure is not null)
+                return failure;
+
+            return OkEnvelope(result.Value!);
+        }
+
         /// <summary>İşletme üzerindeki yönetici işlemlerinin denetim kaydı.</summary>
         [HttpGet("{id:guid}/audit")]
         [Authorize(Policy = AdminPermissions.AuditRead)]
@@ -164,6 +189,12 @@ namespace Rezervise.BackOffice.Api.Controllers
 
         /// <summary>Activate gövdesi: Reason opsiyoneldir.</summary>
         public sealed class ActivateBusinessByAdminRequest
+        {
+            public string? Reason { get; init; }
+        }
+
+        /// <summary>Approve gövdesi: Reason opsiyoneldir (denetim kaydına yazılır).</summary>
+        public sealed class ApproveBusinessByAdminRequest
         {
             public string? Reason { get; init; }
         }

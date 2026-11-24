@@ -3,7 +3,7 @@
  * Alanlar backend envelope ile birebir eşleşir; frontend tahmin üretmez.
  */
 
-export type BusinessStatus = "Active" | "Suspended";
+export type BusinessStatus = "Active" | "Suspended" | "PendingApproval";
 
 /** GET /businesses liste öğesi. */
 export interface BusinessListItem {
@@ -23,6 +23,7 @@ export interface BusinessDetail {
   name: string;
   description?: string | null;
   status: BusinessStatus;
+  isApproved: boolean;
   cityId: string;
   ownerId: string;
   employeeCount: number;

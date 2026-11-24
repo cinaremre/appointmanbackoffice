@@ -25,5 +25,11 @@ namespace Rezervise.Application.Features.Users.Commands.Login
 
         /// <summary>Kullanıcının tercih ettiği dil kodu ("tr" / "en").</summary>
         public string LanguageCode { get; set; }
+
+        /// <summary>
+        /// İşletme sahibinin onay bekleyen işletmesi varsa true: mobil uygulama
+        /// "işletmeniz henüz onaylanmadı" uyarı ekranını gösterip akışı yönetir.
+        /// </summary>
+        public bool PendingBusinessApproval { get; set; }
     }
 }

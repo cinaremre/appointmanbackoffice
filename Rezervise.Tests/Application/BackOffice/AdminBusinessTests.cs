@@ -1,5 +1,6 @@
 using Rezervise.Application.Common.Interfaces;
 using Rezervise.Application.Features.Admin.Businesses.Commands.ActivateBusinessByAdmin;
+using Rezervise.Application.Features.Admin.Businesses.Commands.ApproveBusinessByAdmin;
 using Rezervise.Application.Features.Admin.Businesses.Commands.SuspendBusinessByAdmin;
 using Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinessAuditTrail;
 using Rezervise.Application.Features.Admin.Businesses.Queries.GetBusinessDetail;
@@ -139,6 +140,39 @@ public class AdminBusinessTests
         Assert.Equal(50, result.Value!.PageSize);
     }
 
+    [Fact]
+    public async Task GetBusinesses_ShouldListOnlyPendingApproval_WhenStatusPendingApproval()
+    {
+        var approved = TestData.NewBusiness(Guid.NewGuid());
+        var pending = TestData.NewBusiness(Guid.NewGuid(), approved: false);
+
+        var handler = CreateGetBusinessesHandler(approved, pending);
+
+        var result = await handler.Handle(
+            new GetBusinessesQuery { Status = "PendingApproval" }, CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        var item = Assert.Single(result.Value!.Items);
+        Assert.Equal(pending.Id, item.Id);
+        Assert.Equal("PendingApproval", item.Status);
+    }
+
+    [Fact]
+    public async Task GetBusinesses_ShouldNotListPendingBusiness_WhenStatusActive()
+    {
+        var approved = TestData.NewBusiness(Guid.NewGuid());
+        var pending = TestData.NewBusiness(Guid.NewGuid(), approved: false);
+
+        var handler = CreateGetBusinessesHandler(approved, pending);
+
+        var result = await handler.Handle(
+            new GetBusinessesQuery { Status = "Active" }, CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        var item = Assert.Single(result.Value!.Items);
+        Assert.Equal(approved.Id, item.Id);
+    }
+
     // ===== SuspendBusinessByAdmin =====
 
     [Fact]
@@ -257,6 +291,72 @@ public class AdminBusinessTests
         Assert.Equal("CONFLICT", result.Error!.Code);
     }
 
+    // ===== ApproveBusinessByAdmin =====
+
+    [Fact]
+    public async Task Approve_ShouldApproveNotifyOwnerAndWriteAudit()
+    {
+        var business = TestData.NewBusiness(Guid.NewGuid(), approved: false);
+        var notifications = new FakeRepository<Notification>();
+        var auditLogs = new FakeRepository<AdminAuditLog>();
+
+        var handler = CreateApproveHandler(business, notifications, auditLogs);
+
+        var result = await handler.Handle(
+            new ApproveBusinessByAdminCommand { BusinessId = business.Id, Reason = "Belgeler tamam" },
+            CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.True(business.IsApproved);
+        Assert.NotNull(business.ApprovedAt);
+
+        // Sahibine "hosgeldiniz" bildirimi: mobil bildirim kutusuna duser.
+        var notification = Assert.Single(notifications.Items);
+        Assert.Equal(business.OwnerId, notification.UserId);
+        Assert.Equal(EnumNotificationType.BusinessVerification, notification.Type);
+        Assert.Equal(
+            "İşletmeniz onaylanmıştır, Rezervise dünyasına hoşgeldiniz!",
+            notification.Message);
+
+        var log = Assert.Single(auditLogs.Items);
+        Assert.Equal("Approve", log.Action);
+        Assert.Equal("Belgeler tamam", log.Reason);
+        Assert.Contains("PendingApproval", log.OldValues);
+        Assert.Contains("true", log.NewValues);
+    }
+
+    [Fact]
+    public async Task Approve_ShouldFail_WhenBusinessAlreadyApproved()
+    {
+        var business = TestData.NewBusiness(Guid.NewGuid());
+        var notifications = new FakeRepository<Notification>();
+
+        var handler = CreateApproveHandler(
+            business, notifications, new FakeRepository<AdminAuditLog>());
+
+        var result = await handler.Handle(
+            new ApproveBusinessByAdminCommand { BusinessId = business.Id }, CancellationToken.None);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("CONFLICT", result.Error!.Code);
+        Assert.Empty(notifications.Items);
+    }
+
+    [Fact]
+    public async Task Approve_ShouldFail_WhenBusinessNotFound()
+    {
+        var handler = CreateApproveHandler(
+            TestData.NewBusiness(Guid.NewGuid(), approved: false),
+            new FakeRepository<Notification>(),
+            new FakeRepository<AdminAuditLog>());
+
+        var result = await handler.Handle(
+            new ApproveBusinessByAdminCommand { BusinessId = Guid.NewGuid() }, CancellationToken.None);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("NOT_FOUND", result.Error!.Code);
+    }
+
     // ===== GetBusinessDetail =====
 
     [Fact]
@@ -368,6 +468,18 @@ public class AdminBusinessTests
         FakeRepository<AdminAuditLog> auditLogs)
         => new(
             new FakeRepository<Business>(new[] { business }),
+            new FakeUnitOfWork(),
+            TestCurrentUserService.For(AdminId, "PlatformAdmin"),
+            new RecordingAuditSink(auditLogs),
+            new TestAuditContext());
+
+    private static ApproveBusinessByAdminCommandHandler CreateApproveHandler(
+        Business business,
+        FakeRepository<Notification> notifications,
+        FakeRepository<AdminAuditLog> auditLogs)
+        => new(
+            new FakeRepository<Business>(new[] { business }),
+            notifications,
             new FakeUnitOfWork(),
             TestCurrentUserService.For(AdminId, "PlatformAdmin"),
             new RecordingAuditSink(auditLogs),

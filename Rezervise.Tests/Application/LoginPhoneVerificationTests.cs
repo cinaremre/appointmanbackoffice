@@ -59,23 +59,50 @@ public class LoginPhoneVerificationTests
         Assert.Contains("InvalidCredentials", result.Error!.Message);
     }
 
+    [Fact]
+    public async Task Handle_ShouldFlagPendingBusinessApproval_ForOwnerWithUnapprovedBusiness()
+    {
+        var user = NewUser(EnumUserRole.BusinessOwner);
+        user.VerifyPhone();
+        var pending = TestData.NewBusiness(user.Id, approved: false);
+
+        var result = await CreateSut(user, pending).Handle(NewCommand(user), CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        // Mobil, giris sonrasi "isletmeniz henuz onaylanmadi" ekranini bu bayrakla acar.
+        Assert.True(result.Value.PendingBusinessApproval);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldNotFlagPendingApproval_WhenOwnerBusinessIsApproved()
+    {
+        var user = NewUser(EnumUserRole.BusinessOwner);
+        user.VerifyPhone();
+        var approved = TestData.NewBusiness(user.Id);
+
+        var result = await CreateSut(user, approved).Handle(NewCommand(user), CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.False(result.Value.PendingBusinessApproval);
+    }
+
     private static LoginCommand NewCommand(User user) => new()
     {
         Email = user.Email,
         Password = Password
     };
 
-    private static LoginCommandHandler CreateSut(User user)
-        => new(new FakeRepository<User>(new[] { user }), new FakeUnitOfWork(),
-            new FakeTokenService(), new RezerviseMetrics());
+    private static LoginCommandHandler CreateSut(User user, params Business[] businesses)
+        => new(new FakeRepository<User>(new[] { user }), new FakeRepository<Business>(businesses),
+            new FakeUnitOfWork(), new FakeTokenService(), new RezerviseMetrics());
 
-    private static User NewUser()
+    private static User NewUser(EnumUserRole role = EnumUserRole.Customer)
     {
         var user = new User(
             Guid.NewGuid(), "Test", "Kullanici",
             new Email($"login-{Guid.NewGuid():N}@test.com"),
             new PhoneNumber($"+9055{Guid.NewGuid().ToString("N")[..8]}"),
-            EnumUserRole.Customer);
+            role);
 
         user.SetPasswordHash(BCryptNet.HashPassword(Password));
         user.ClearDomainEvents();

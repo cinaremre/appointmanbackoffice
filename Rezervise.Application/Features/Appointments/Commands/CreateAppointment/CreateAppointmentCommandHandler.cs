@@ -101,6 +101,12 @@ namespace Rezervise.Application.Features.Appointments.Commands.CreateAppointment
                     if (!business.IsActive)
                         return Result<Guid>.Failure(Error.BusinessRule("İşletme aktif değil."));
 
+                    // Backoffice onayı gelmeyen işletme randevu kabul edemez:
+                    // kayıt sonrası işletme, insan incelemesi tamamlanana kadar çalışmaz.
+                    if (!business.IsApproved)
+                        return Result<Guid>.Failure(
+                            Error.BusinessRule("İşletme henüz onaylanmadı; randevu kabul edemez."));
+
                     // 3. Hizmet kontrolü
                     var service = await _serviceRepository.GetByIdAsync(request.ServiceId, token);
                     if (service is null)

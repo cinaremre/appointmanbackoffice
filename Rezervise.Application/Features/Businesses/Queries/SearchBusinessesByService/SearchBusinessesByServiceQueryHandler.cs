@@ -99,10 +99,11 @@ namespace Rezervise.Application.Features.Businesses.Queries.SearchBusinessesBySe
                         .ToList();
                 }
 
-                // 3. İşletme filtresi
+                // 3. İşletme filtresi — onay bekleyen işletmeler arama sonuçlarında görünmez.
                 Expression<Func<Business, bool>> businessPredicate = b =>
                     b.IsActive &&
                     b.IsVerified &&
+                    b.IsApproved &&
                     !b.IsDeleted;
 
                 // 3.0. Birleştirilmiş arama: işletme adı, hizmet adı veya şehir adı (OR).
@@ -257,6 +258,7 @@ namespace Rezervise.Application.Features.Businesses.Queries.SearchBusinessesBySe
                     LogoUrl = b.LogoUrl,
                     IsActive = b.IsActive,
                     IsVerified = b.IsVerified,
+                    IsApproved = b.IsApproved,
                     Rating = b.Rating,
                     TotalReviews = b.TotalReviews,
                     OwnerId = b.OwnerId,

@@ -74,6 +74,11 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
             foreach (var business in businesses)
                 business.Verify("seed");
 
+            // Demo verisi işletmeleri backoffice onayından geçmiş sayılır:
+            // arama sonuçlarında görünürler, "onay bekleyen" listesine düşmezler.
+            foreach (var business in businesses)
+                business.Approve();
+
             await context.Businesses.AddRangeAsync(businesses);
             await context.SaveChangesAsync();
 

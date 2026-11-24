@@ -12,6 +12,9 @@ namespace Rezervise.Application.Common.Authorization
         public const string BusinessUpdate = "business.update";
         public const string BusinessSuspend = "business.suspend";
 
+        /// <summary>Backoffice işletme onayı: onay bekleyen işletmeyi yayına alır.</summary>
+        public const string BusinessApprove = "business.approve";
+
         public const string CategoryRead = "category.read";
         public const string CategoryCreate = "category.create";
         public const string CategoryUpdate = "category.update";
@@ -60,7 +63,7 @@ namespace Rezervise.Application.Common.Authorization
             {
                 ["PlatformAdmin"] = new[]
                 {
-                    BusinessRead, BusinessCreate, BusinessUpdate, BusinessSuspend,
+                    BusinessRead, BusinessCreate, BusinessUpdate, BusinessSuspend, BusinessApprove,
                     CategoryRead, CategoryCreate, CategoryUpdate, CategoryArchive,
                     ServiceRead, ServiceUpdate, ServiceBulkUpdate,
                     AppointmentRead, AppointmentCancel, AppointmentOverride,
@@ -102,7 +105,7 @@ namespace Rezervise.Application.Common.Authorization
                 {
                     // Mevcut Admin rolü geriye dönük uyumluluk için tüm okuma
                     // ve sınırlı yazma permission'larını taşır.
-                    BusinessRead, BusinessUpdate, BusinessSuspend,
+                    BusinessRead, BusinessUpdate, BusinessSuspend, BusinessApprove,
                     CategoryRead, CategoryUpdate, ServiceRead, ServiceUpdate,
                     AppointmentRead, AppointmentCancel, UserRead, UserManage,
                     SubscriptionRead, FeatureRead, FeatureOverride, FinanceRead,

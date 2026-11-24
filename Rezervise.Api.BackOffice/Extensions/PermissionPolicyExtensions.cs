@@ -22,6 +22,7 @@ namespace Rezervise.BackOffice.Api.Extensions
                 Register(options, AdminPermissions.BusinessCreate);
                 Register(options, AdminPermissions.BusinessUpdate);
                 Register(options, AdminPermissions.BusinessSuspend);
+                Register(options, AdminPermissions.BusinessApprove);
                 Register(options, AdminPermissions.CategoryRead);
                 Register(options, AdminPermissions.CategoryCreate);
                 Register(options, AdminPermissions.CategoryUpdate);
