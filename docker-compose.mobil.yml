@@ -1,0 +1,73 @@
+# Mobil stack: SQL Server + Mobil API.
+# Tek veritabani ilkesi: DB BURADA tanimlanir; backoffice stack'i
+# (docker-compose.yml) bu aga dis ag olarak katilip ayni 'db'yi kullanir.
+# Gizli degerler .env dosyasindan okunur.
+# Deploy: docker compose -f docker-compose.mobil.yml up -d --build
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: appointman-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD}
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - appointman-network
+    restart: always
+    # The API runs migrations on startup, so it must not start before SQL Server accepts logins.
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$SA_PASSWORD\" -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  appointman.api:
+    build:
+      context: .
+      dockerfile: Rezervise.Api.Mobil/Dockerfile
+    container_name: appointman-api
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:8080
+      - ASPNETCORE_HTTP_PORTS=
+      - ConnectionStrings__DefaultConnection=Server=db;Database=AppointManDb;User=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False
+      # appsettings.json is secret-free by design; the signing key is injected here.
+      - JwtSettings__Secret=${JWT_SECRET}
+      - JwtSettings__Issuer=${JWT_ISSUER:-https://apiapp.rezervise.com/}
+      - JwtSettings__Audience=AppointMan-Users
+      # E-posta dogrulama: appsettings.json sunucuda takip edilmedigi icin
+      # tum Email ayarlari ortam degiskeniyle verilir (.env icindeki EMAIL_*).
+      - Email__Host=${EMAIL_HOST:-}
+      - Email__Port=${EMAIL_PORT:-587}
+      - Email__UseSsl=${EMAIL_USE_SSL:-true}
+      - Email__UserName=${EMAIL_USERNAME:-}
+      - Email__Password=${EMAIL_PASSWORD:-}
+      - Email__FromAddress=${EMAIL_FROM_ADDRESS:-no-reply@rezervise.com}
+      - Email__FromName=${EMAIL_FROM_NAME:-AppointMan}
+      - Email__VerificationLinkBaseUrl=${EMAIL_VERIFICATION_LINK_BASE:-https://apiapp.rezervise.com/api/Auth/verify-email}
+      - Email__TokenLifetimeHours=24
+      - Email__ResendCooldownMinutes=2
+    # Container, host'taki cPanel exim'e SMTPS (465) ile baglanir. TLS sertifikasinin
+    # CN'i bu hostname oldugu icin adres bu sekilde verilip host gateway'e yonlendirilir.
+    extra_hosts:
+      - "104-247-163-45.cprapid.com:172.18.0.1"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - appointman-network
+    restart: always
+
+volumes:
+  sqlserver-data:
+
+networks:
+  appointman-network:
+    driver: bridge
