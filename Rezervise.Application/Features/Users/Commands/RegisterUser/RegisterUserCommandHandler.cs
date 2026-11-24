@@ -59,12 +59,21 @@ namespace Rezervise.Application.Features.Users.Commands.RegisterUser
                 var email = request.Role == EnumUserRole.Customer && string.IsNullOrWhiteSpace(request.Email)
                     ? null
                     : new Email(request.Email!);
-                var existingUserByEmail = await _userRepository.FindAsync(
-                    u => u.Email == email && !u.IsDeleted,
-                    cancellationToken);
 
-                if (existingUserByEmail.Any())
-                    return Result<Guid>.Failure(Error.Conflict("User.EmailTaken"));
+                // E-postasız müşteri kaydında email null'dır; "Email == null" sorgusu
+                // EF'te "Email IS NULL" olarak tercüme edilip önceki e-postasız müşteriyi
+                // bulur ve ikinci kaydı haksız yere CONFLICT ile reddederdi. Bu yüzden
+                // e-posta benzersizlik kontrolü yalnızca e-posta verilmişse yapılır;
+                // null'lar DB'deki filtreli unique index (IS NOT NULL) ile çakışmaz.
+                if (email is not null)
+                {
+                    var existingUserByEmail = await _userRepository.FindAsync(
+                        u => u.Email == email && !u.IsDeleted,
+                        cancellationToken);
+
+                    if (existingUserByEmail.Any())
+                        return Result<Guid>.Failure(Error.Conflict("User.EmailTaken"));
+                }
 
                 // 2. Telefon kontrolü
                 var phone = new PhoneNumber(request.PhoneNumber);
