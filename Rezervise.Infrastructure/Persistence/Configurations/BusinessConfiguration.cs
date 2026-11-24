@@ -59,7 +59,7 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
 
                 address.Property(a => a.PostalCode)
                     .HasColumnName("PostalCode")
-                    .IsRequired()
+                    .IsRequired(false)
                     .HasMaxLength(20);
 
                 address.OwnsOne(a => a.Coordinates, coordinates =>

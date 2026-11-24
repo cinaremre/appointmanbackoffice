@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Rezervise.Application.Features.Businesses.Queries.GetBusinessById
 {
-    public class GetBusinessByIdQuery : IRequest<Result<BusinessDto>>
+    public class GetBusinessByIdQuery : IRequest<Result<BusinessDetailDto>>
     {
         public Guid BusinessId { get; set; }
     }

@@ -11,7 +11,7 @@ namespace Rezervise.Domain.ValueObjects
         public string Street { get; private set; }
         public string? BuildingNumber { get; private set; }
         public string? ApartmentNumber { get; private set; }
-        public string PostalCode { get; private set; }
+        public string? PostalCode { get; private set; }
         public Coordinates? Coordinates { get; private set; }
 
         private Address() { } // EF Core
@@ -20,7 +20,7 @@ namespace Rezervise.Domain.ValueObjects
             int cityId,
             int? districtId,
             string street,
-            string postalCode,
+            string? postalCode,
             string? buildingNumber = null,
             string? apartmentNumber = null,
             Coordinates? coordinates = null,
@@ -45,18 +45,21 @@ namespace Rezervise.Domain.ValueObjects
             if (street.Length > 100)
                 throw new DomainException("Address.StreetMaxLength");
 
-            if (string.IsNullOrWhiteSpace(postalCode))
-                throw new DomainException("Address.PostalCodeRequired");
+            // Posta kodu opsiyoneldir: null veya boş bırakılabilir (uygulama bazı
+            // adreslerde posta kodu istemiyor; 400 yerine kaydedilmelidir).
+            if (!string.IsNullOrWhiteSpace(postalCode))
+            {
+                if (postalCode.Length > 20)
+                    throw new DomainException("Address.PostalCodeMaxLength");
 
-            if (postalCode.Length > 20)
-                throw new DomainException("Address.PostalCodeMaxLength");
+                PostalCode = postalCode.Trim();
+            }
 
             CityId = cityId;
             DistrictId = districtId;
             LocalityId = localityId;
             NeighborhoodId = neighborhoodId;
             Street = street.Trim();
-            PostalCode = postalCode.Trim();
             BuildingNumber = buildingNumber;
             ApartmentNumber = apartmentNumber;
             Coordinates = coordinates;
@@ -111,10 +114,14 @@ namespace Rezervise.Domain.ValueObjects
             ApartmentNumber = apartmentNumber;
         }
 
-        public void SetPostalCode(string postalCode)
+        public void SetPostalCode(string? postalCode)
         {
+            // Posta kodu opsiyoneldir; null/boş ile temizlenebilir.
             if (string.IsNullOrWhiteSpace(postalCode))
-                throw new DomainException("Address.PostalCodeRequired");
+            {
+                PostalCode = null;
+                return;
+            }
 
             if (postalCode.Length > 20)
                 throw new DomainException("Address.PostalCodeMaxLength");

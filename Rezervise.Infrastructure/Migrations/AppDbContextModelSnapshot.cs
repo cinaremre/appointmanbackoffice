@@ -4245,7 +4245,6 @@ namespace Rezervise.Infrastructure.Migrations
                                 .HasColumnName("NeighborhoodId");
 
                             b1.Property<string>("PostalCode")
-                                .IsRequired()
                                 .HasMaxLength(20)
                                 .HasColumnType("nvarchar(20)")
                                 .HasColumnName("PostalCode");

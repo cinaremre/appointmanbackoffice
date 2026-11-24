@@ -139,11 +139,13 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// ID'ye göre işletme getirir.
+        /// ID'ye göre işletme getirir. Adres, kaydederken gönderilen nesne biçiminde döner
+        /// (cityId, street, postalCode, district, city, country); phoneNumber/email
+        /// { "value": "..." } nesnesidir.
         /// </summary>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Result<BusinessDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(Result<BusinessDto>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(Result<BusinessDetailDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<BusinessDetailDto>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(Guid id)
         {
             var query = new GetBusinessByIdQuery { BusinessId = id };

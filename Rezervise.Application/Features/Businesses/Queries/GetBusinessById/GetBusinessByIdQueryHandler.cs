@@ -2,20 +2,28 @@ using Rezervise.Application.Common.DTOs;
 using Rezervise.Application.Common.Results;
 using Rezervise.Domain.Entities;
 using Rezervise.Domain.Interfaces;
+using Rezervise.Domain.ValueObjects;
 using MediatR;
 
 namespace Rezervise.Application.Features.Businesses.Queries.GetBusinessById
 {
-    public class GetBusinessByIdQueryHandler : IRequestHandler<GetBusinessByIdQuery, Result<BusinessDto>>
+    public class GetBusinessByIdQueryHandler : IRequestHandler<GetBusinessByIdQuery, Result<BusinessDetailDto>>
     {
         private readonly IRepository<Business> _businessRepository;
+        private readonly IRepository<City> _cityRepository;
+        private readonly IRepository<District> _districtRepository;
 
-        public GetBusinessByIdQueryHandler(IRepository<Business> businessRepository)
+        public GetBusinessByIdQueryHandler(
+            IRepository<Business> businessRepository,
+            IRepository<City> cityRepository,
+            IRepository<District> districtRepository)
         {
             _businessRepository = businessRepository;
+            _cityRepository = cityRepository;
+            _districtRepository = districtRepository;
         }
 
-        public async Task<Result<BusinessDto>> Handle(GetBusinessByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result<BusinessDetailDto>> Handle(GetBusinessByIdQuery request, CancellationToken cancellationToken)
         {
             try
             {
@@ -24,18 +32,27 @@ namespace Rezervise.Application.Features.Businesses.Queries.GetBusinessById
 
                 // 2. İşletme bulunamadıysa hata döndür
                 if (business is null)
-                    return Result<BusinessDto>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
+                    return Result<BusinessDetailDto>.Failure(Error.NotFound("İşletme", request.BusinessId.ToString()));
 
-                // 3. Verileri DTO'ya dönüştür
-                var dto = new BusinessDto
+                // 3. Adres nesnesini kur: kaydederken gönderilen alanlar (cityId, street,
+                //    postalCode, district, city, country) geri döner; uygulama düzenleme
+                //    ekranında cityId'yi buradan okur.
+                var addressDto = await BuildAddressDtoAsync(business.Address, cancellationToken);
+
+                // 4. Verileri DTO'ya dönüştür
+                var dto = new BusinessDetailDto
                 {
                     Id = business.Id,
                     Name = business.Name,
                     Description = business.Description,
                     BusinessType = business.BusinessType,
-                    Address = business.Address?.GetFullAddress() ?? string.Empty,
-                    PhoneNumber = business.PhoneNumber?.Value ?? string.Empty,
-                    Email = business.Email?.Value ?? string.Empty,
+                    Address = addressDto,
+                    PhoneNumber = business.PhoneNumber is null
+                        ? null
+                        : new ContactValueDto(business.PhoneNumber.Value),
+                    Email = business.Email is null
+                        ? null
+                        : new ContactValueDto(business.Email.Value),
                     WebsiteUrl = business.WebsiteUrl,
                     LogoUrl = business.LogoUrl,
                     IsActive = business.IsActive,
@@ -46,12 +63,58 @@ namespace Rezervise.Application.Features.Businesses.Queries.GetBusinessById
                     CreatedAt = business.CreatedAt
                 };
 
-                return Result<BusinessDto>.Success(dto);
+                return Result<BusinessDetailDto>.Success(dto);
             }
             catch (Exception ex)
             {
-                return Result<BusinessDto>.Failure(Error.Internal("İşletme bilgileri getirilirken bir hata oluştu.", ex.Message));
+                return Result<BusinessDetailDto>.Failure(Error.Internal("İşletme bilgileri getirilirken bir hata oluştu.", ex.Message));
             }
+        }
+
+        private async Task<AddressDto?> BuildAddressDtoAsync(
+            Address? address,
+            CancellationToken cancellationToken)
+        {
+            if (address is null)
+                return null;
+
+            // İl/ilçe adlarını çözümle (id'ler Address içinde tutulur).
+            var city = (await _cityRepository.FindAsync(c => c.Id == address.CityId, cancellationToken))
+                .FirstOrDefault();
+
+            District? district = null;
+            if (address.DistrictId.HasValue)
+            {
+                district = (await _districtRepository.FindAsync(
+                    d => d.Id == address.DistrictId.Value, cancellationToken))
+                    .FirstOrDefault();
+            }
+
+            return new AddressDto
+            {
+                CityId = address.CityId,
+                City = city?.Name,
+                DistrictId = address.DistrictId,
+                District = district?.Name,
+                Country = ResolveCountryName(city),
+                Street = address.Street,
+                PostalCode = address.PostalCode,
+                BuildingNumber = address.BuildingNumber,
+                ApartmentNumber = address.ApartmentNumber,
+                FullAddress = address.GetFullAddress()
+            };
+        }
+
+        /// <summary>
+        /// Ülke adı: sistem tek ülke (TR) için kullandığından CountryCode → "Türkiye"
+        /// eşlemesi yapılır; başka kodlar olduğu gibi döner.
+        /// </summary>
+        private static string? ResolveCountryName(City? city)
+        {
+            if (city is null)
+                return null;
+
+            return city.CountryCode == "TR" ? "Türkiye" : city.CountryCode;
         }
     }
 }
