@@ -156,16 +156,26 @@ namespace Rezervise.Api.Controllers
         }
 
         /// <summary>
-        /// Sahibine göre işletmeleri getirir.
+        /// Sahibine göre işletmeleri getirir. Yalnızca o işletme sahibi erişebilir;
+        /// istek sahibi başka bir kullanıcıysa 403 döner.
         /// </summary>
         [HttpGet("owner/{ownerId}")]
         [ProducesResponseType(typeof(Result<List<BusinessDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<List<BusinessDto>>), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(Result<List<BusinessDto>>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByOwner(
             Guid ownerId,
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10)
         {
+            // Yetki kaynağı JWT kimliğidir; gövde/query'deki ownerId sadece filtre değil
+            // aynı zamanda erişim koşuludur.
+            var callerId = _currentUser.UserId;
+            if (callerId is null || callerId.Value != ownerId)
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    Result<List<BusinessDto>>.Failure(
+                        Error.Forbidden("Yalnızca işletme sahibi işletme listesini görebilir.")));
+
             var query = new GetBusinessesByOwnerQuery
             {
                 OwnerId = ownerId,
