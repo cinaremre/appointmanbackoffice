@@ -1,4 +1,6 @@
+using Rezervise.Application;
 using Rezervise.Application.Common.Interfaces;
+using Rezervise.Application.Common.Serialization;
 using Rezervise.BackOffice.Api.Configuration;
 using Rezervise.BackOffice.Api.Extensions;
 using Rezervise.BackOffice.Api.Middleware;
@@ -72,7 +74,12 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IAdminAuditContext, AdminAuditContextAccessor>();
 
 // ===== MVC + ProblemDetails =====
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Tüm tarih alanları UTC "Z" ekiyle serileştirilir (mobil API ile aynı kural).
+        options.JsonSerializerOptions.Converters.Add(new UtcDateTimeJsonConverter());
+    });
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     // Model doğrulama hataları RFC 9457 ProblemDetails ile döner.

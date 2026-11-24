@@ -11,6 +11,7 @@ using Rezervise.Api.Services;
 using Rezervise.Api.Workflow;
 using Rezervise.Application;
 using Rezervise.Application.Common.Interfaces;
+using Rezervise.Application.Common.Serialization;
 using Rezervise.Application.Common.Services;
 using Rezervise.Infrastructure;
 using Rezervise.Infrastructure.Extensions;
@@ -172,6 +173,9 @@ builder.Services.AddControllers(options =>
 {
     // Bound the deşerialized graph depth to protect against deeply nested payloads.
     options.JsonSerializerOptions.MaxDepth = 32;
+    // Tüm tarih alanları UTC "Z" ekiyle serileştirilir: mobil taraf saat dilimini
+    // kaybedip yanlış yerel saat göstermesin (randevu, slot, personel vb. hepsi).
+    options.JsonSerializerOptions.Converters.Add(new UtcDateTimeJsonConverter());
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
