@@ -23,7 +23,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
             // Ahmet'e randevu hatırlatması
             var n1 = new Notification(Guid.NewGuid(), UserSeed.Customer1Id,
                 "Randevu Hatırlatması",
-                "Yarın saat 10:00da Kadıkoy Berberinde randevunuz var.",
+                "Yarın saat 10:00'da Kadıköy Berberi'nde randevunuz var.",
                 EnumNotificationType.AppointmentReminder,
                 "/appointments/" + AppointmentSeed.Apt6Id);
             n1.SetSentAtForSeed(now.AddHours(-12));
