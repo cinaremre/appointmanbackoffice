@@ -62,8 +62,19 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAppointmentsByB
                     predicate = predicate.AndAlso(a => a.Status == status);
                 }
 
-                // 2. Verileri getir
-                var appointments = await _appointmentRepository.FindAsync(predicate, cancellationToken);
+                // 2. Verileri getir.
+                //    User/Service/Employee navigasyonları yüklenmezse DTO'daki ad alanları
+                //    (userFullName, serviceName, employeeFullName) null döner; detayendpoint'i
+                //    bunları doldurduğu için liste de aynı şekilde dolu gelmelidir.
+                var appointments = await _appointmentRepository.FindWithIncludesAsync(
+                    predicate,
+                    new[]
+                    {
+                        nameof(Appointment.User),
+                        nameof(Appointment.Service),
+                        nameof(Appointment.Employee)
+                    },
+                    cancellationToken);
 
                 // 3. Sayfalama
                 var pagedAppointments = appointments
@@ -88,7 +99,14 @@ namespace Rezervise.Application.Features.Appointments.Queries.GetAppointmentsByB
                     CompletedAt = a.CompletedAt,
                     IsReminderSent = a.IsReminderSent,
                     ReminderSentAt = a.ReminderSentAt,
-                    CreatedAt = a.CreatedAt
+                    CreatedAt = a.CreatedAt,
+
+                    // Ad alanları: işletme randevu listesinde dolu gelmeli.
+                    UserFullName = a.User?.GetFullName(),
+                    UserEmail = a.User?.Email,
+                    ServiceName = a.Service?.Name,
+                    EmployeeFullName = a.Employee?.GetFullName(),
+                    EmployeeTitle = a.Employee?.Title
                 }).ToList();
 
                 return Result<List<AppointmentDto>>.Success(dtos);

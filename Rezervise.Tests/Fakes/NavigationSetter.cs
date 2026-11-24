@@ -26,6 +26,12 @@ public static class NavigationSetter
     public static void SetService(Appointment appointment, Service service)
         => Set(appointment, nameof(Appointment.Service), service);
 
+    /// <summary>Randevunun kullanici navigation'ini baglar (userFullName icin gerekir).</summary>
+    /// <param name="appointment">Hedef randevu.</param>
+    /// <param name="user">Baglanacak kullanici.</param>
+    public static void SetUser(Appointment appointment, User user)
+        => Set(appointment, nameof(Appointment.User), user);
+
     private static void Set(object target, string propertyName, object value)
     {
         var property = target.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance)
