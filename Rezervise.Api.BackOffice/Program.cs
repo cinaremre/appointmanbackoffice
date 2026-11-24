@@ -5,11 +5,14 @@ using Rezervise.BackOffice.Api.Configuration;
 using Rezervise.BackOffice.Api.Extensions;
 using Rezervise.BackOffice.Api.Middleware;
 using Rezervise.Infrastructure;
+using Rezervise.Infrastructure.Persistence.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
@@ -107,6 +110,11 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     };
 });
 
+// Health endpoint: orkestrasyon ve izleme için (doküman 20.2). DB erişilemezse
+// 503 döner ve istemciye sabit mesaj verilir.
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<AppDbContext>("database");
+
 // ===== Rate limiting: backoffice ayrı pencere =====
 builder.Services.AddRateLimiter(options =>
 {
@@ -161,9 +169,26 @@ app.UseCors("BackOffice");
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Health endpoint: orkestrasyon ve izleme için (doküman 20.2).
-app.MapGet("/health", () => Results.Ok(new { status = "healthy" }))
-    .AllowAnonymous();
+// Health endpoint: orkestrasyon ve izleme için (doküman 20.2). DB erişilemezse
+// 503 döner ve istemciye istemcinin doğrudan gösterebileceği mesaj taşınır.
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = static async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+
+        if (report.Status == HealthStatus.Healthy)
+        {
+            await context.Response.WriteAsync("""{"status":"healthy"}""", context.RequestAborted);
+            return;
+        }
+
+        await context.Response.WriteAsync(
+            """{"statusCode":503,"code":"service_unavailable","message":"İşlem Şu Anda Gerçekleştirilemiyor. Lütfen Birazdan Tekrar Deneyin."}""",
+            context.RequestAborted);
+    }
+})
+.AllowAnonymous();
 
 app.MapControllers();
 

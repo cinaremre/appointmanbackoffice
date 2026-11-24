@@ -18,9 +18,11 @@ using Rezervise.Infrastructure.Extensions;
 using Rezervise.Infrastructure.Persistence.Context;
 using Rezervise.Infrastructure.Persistence.SeedData;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using OpenTelemetry.Metrics;
@@ -162,8 +164,10 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Sağlık kontrolü: ek paket gerektirmeyen basit self-check ucu.
-builder.Services.AddHealthChecks();
+// Sağlık kontrolü: DB bağlantısı gerçekten sınanır. DB erişilemediğinde
+// health ucu 503 döner ve istemciye sabit, anlaşılır mesaj verilir.
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<AppDbContext>("database", tags: new[] { "ready" });
 
 builder.Services.AddControllers(options =>
 {
@@ -248,8 +252,27 @@ app.UseRateLimiter();
 app.UseAuthorization();
 app.MapControllers();
 
-// Sağlık ucu: kimlik doğrulama gerektirmez, yalnızca process'in ayakta öldüğünü gösterir.
-app.MapHealthChecks("/health").AllowAnonymous();
+// Sağlık ucu: kimlik doğrulama gerektirmez. DB erişilemezse 503 döner ve
+// gövdede istemcinin doğrudan gösterebileceği mesaj taşınır.
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = static async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+
+        if (report.Status == HealthStatus.Healthy)
+        {
+            await context.Response.WriteAsync("""{"status":"healthy"}""", context.RequestAborted);
+            return;
+        }
+
+        // 503 yanıtı health middleware tarafından zaten atanmıştır; burada yalnızca
+        // istemcinin kullanıcıya göstereceği mesaj yazılır.
+        await context.Response.WriteAsync(
+            """{"statusCode":503,"code":"service_unavailable","message":"İşlem Şu Anda Gerçekleştirilemiyor. Lütfen Birazdan Tekrar Deneyin."}""",
+            context.RequestAborted);
+    }
+}).AllowAnonymous();
 
 // Prometheus kazıma ucu. Canlı ortamda ağ seviyesinde kısıtlanmalıdır (reverse proxy / firewall).
 var metricsSettings = builder.Configuration.GetSection(MetricsSettings.SectionName).Get<MetricsSettings>()
