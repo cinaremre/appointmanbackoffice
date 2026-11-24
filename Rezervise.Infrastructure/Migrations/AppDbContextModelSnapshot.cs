@@ -1981,11 +1981,11 @@ namespace Rezervise.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<TimeSpan?>("BreakEndTime")
-                        .HasColumnType("time");
+                    b.Property<long?>("BreakEndTime")
+                        .HasColumnType("bigint");
 
-                    b.Property<TimeSpan?>("BreakStartTime")
-                        .HasColumnType("time");
+                    b.Property<long?>("BreakStartTime")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -1999,8 +1999,8 @@ namespace Rezervise.Infrastructure.Migrations
                     b.Property<Guid>("EmployeeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<TimeSpan>("EndTime")
-                        .HasColumnType("time");
+                    b.Property<long>("EndTime")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("IsClosed")
                         .ValueGeneratedOnAdd()
@@ -2017,8 +2017,8 @@ namespace Rezervise.Infrastructure.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("time");
+                    b.Property<long>("StartTime")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -4101,8 +4101,8 @@ namespace Rezervise.Infrastructure.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<TimeSpan>("EndTime")
-                        .HasColumnType("time");
+                    b.Property<long>("EndTime")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("IsClosed")
                         .ValueGeneratedOnAdd()
@@ -4119,8 +4119,8 @@ namespace Rezervise.Infrastructure.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("time");
+                    b.Property<long>("StartTime")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");

@@ -1,4 +1,5 @@
 using Rezervise.Domain.Entities;
+using Rezervise.Infrastructure.Persistence.Converters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,9 +18,11 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
                 .HasConversion<int>();
 
             builder.Property(x => x.StartTime)
+                .HasConversion(TimeSpanTicksConverter.Instance)
                 .IsRequired();
 
             builder.Property(x => x.EndTime)
+                .HasConversion(TimeSpanTicksConverter.Instance)
                 .IsRequired();
 
             builder.Property(x => x.IsClosed)
