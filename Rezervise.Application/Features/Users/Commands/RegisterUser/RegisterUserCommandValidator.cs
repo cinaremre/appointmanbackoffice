@@ -1,5 +1,6 @@
 using Rezervise.Application.Common.Interfaces;
 using Rezervise.Application.Common.Security;
+using Rezervise.Domain.Enums;
 using FluentValidation;
 
 namespace Rezervise.Application.Features.Users.Commands.RegisterUser
@@ -24,11 +25,15 @@ namespace Rezervise.Application.Features.Users.Commands.RegisterUser
                 .MaximumLength(50)
                 .WithMessage(localizer.Get("Validation.LastNameMaxLength"));
 
+            // Müşteri (role 0) e-postası opsiyonel: boş/null geldiğinde kayıt olur.
+            // Telefon OTP ile giriş ve bildirimler telefon numarası üzerinden işler.
             RuleFor(x => x.Email)
                 .NotEmpty()
                 .WithMessage(localizer.Get("Validation.EmailRequired"))
+                .When(x => x.Role != EnumUserRole.Customer)
                 .EmailAddress()
-                .WithMessage(localizer.Get("Validation.EmailInvalid"));
+                .WithMessage(localizer.Get("Validation.EmailInvalid"))
+                .When(x => x.Role != EnumUserRole.Customer);
 
             RuleFor(x => x.PhoneNumber)
                 .NotEmpty()

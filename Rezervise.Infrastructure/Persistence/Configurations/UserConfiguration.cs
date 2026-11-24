@@ -22,8 +22,9 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
 
+            // Müşteri (role 0) e-postası opsiyonel; diğer rollerde FluentValidation zorunlu tutar.
             builder.Property(x => x.Email)
-                .IsRequired()
+                .IsRequired(false)
                 .HasMaxLength(255)
                 .HasColumnName("Email");
 
@@ -191,7 +192,11 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Index'ler
-            builder.HasIndex(x => x.Email).IsUnique();
+            // Filtreli unique index: e-postası olmayan (NULL) birden fazla müşteriye izin verir.
+            builder.HasIndex(x => x.Email)
+                .IsUnique()
+                .HasDatabaseName("UX_Users_Email")
+                .HasFilter("[Email] IS NOT NULL");
             builder.HasIndex(x => x.PhoneNumber).IsUnique();
             builder.HasIndex(x => x.AccountStatus);
             builder.HasIndex(x => x.CityId);

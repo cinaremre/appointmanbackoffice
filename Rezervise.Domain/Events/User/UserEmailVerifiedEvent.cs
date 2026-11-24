@@ -8,7 +8,7 @@ namespace Rezervise.Domain.Events.User
 
         public UserEmailVerifiedEvent(
             Guid userId,
-            string email,
+            string? email,
             string fullName) : base(userId, email, fullName)
         {
             VerifiedAt = DateTime.UtcNow;

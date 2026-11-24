@@ -9,7 +9,7 @@ namespace Rezervise.Domain.Events.User
 
         public UserAccountUnlockedEvent(
             Guid userId,
-            string email,
+            string? email,
             string fullName,
             string? unlockedBy = null) : base(userId, email, fullName)
         {

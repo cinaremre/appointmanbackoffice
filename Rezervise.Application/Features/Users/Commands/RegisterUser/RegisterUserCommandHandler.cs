@@ -6,6 +6,7 @@ using Rezervise.Application.Common.Models;
 using Rezervise.Application.Common.Results;
 using Rezervise.Application.Common.Security;
 using Rezervise.Domain.Entities;
+using Rezervise.Domain.Enums;
 using Rezervise.Domain.Exceptions;
 using Rezervise.Domain.Interfaces;
 using Rezervise.Domain.ValueObjects;
@@ -53,7 +54,11 @@ namespace Rezervise.Application.Features.Users.Commands.RegisterUser
             try
             {
                 // 1. Email kontrolü
-                var email = new Email(request.Email);
+                //    Müşteri rolünde (role 0) e-posta boş/null geldiğinde User.Email null
+                //    olarak kalır; diğer rollerde validator zaten zorunluluk gerektirir.
+                var email = request.Role == EnumUserRole.Customer && string.IsNullOrWhiteSpace(request.Email)
+                    ? null
+                    : new Email(request.Email!);
                 var existingUserByEmail = await _userRepository.FindAsync(
                     u => u.Email == email && !u.IsDeleted,
                     cancellationToken);
@@ -179,6 +184,10 @@ namespace Rezervise.Application.Features.Users.Commands.RegisterUser
         /// <param name="rawToken">E-postaya yazılacak ham (hash'lenmemiş) token.</param>
         private void TryQueueVerificationEmail(User user, string rawToken)
         {
+            // E-postası olmayan kullanıcılar için doğrulama e-postası gönderilmez.
+            if (user.Email is null)
+                return;
+
             if (string.IsNullOrWhiteSpace(_emailOptions.VerificationLinkBaseUrl))
                 return;
 

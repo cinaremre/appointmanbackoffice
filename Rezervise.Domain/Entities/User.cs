@@ -16,7 +16,7 @@ namespace Rezervise.Domain.Entities
 
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
-        public string Email { get; private set; }
+        public string? Email { get; private set; }
         public PhoneNumber PhoneNumber { get; private set; }
         public string PasswordHash { get; private set; }
         public EnumUserRole Role { get; private set; }
@@ -88,17 +88,17 @@ namespace Rezervise.Domain.Entities
 
         private User() { } // EF Core için
 
-        public User(string firstName, string lastName, Email email, PhoneNumber phoneNumber, EnumUserRole role)
+        public User(string firstName, string lastName, Email? email, PhoneNumber phoneNumber, EnumUserRole role)
             : this(Guid.NewGuid(), firstName, lastName, email, phoneNumber, role)
         {
         }
 
-        public User(Guid id, string firstName, string lastName, Email email, PhoneNumber phoneNumber, EnumUserRole role)
+        public User(Guid id, string firstName, string lastName, Email? email, PhoneNumber phoneNumber, EnumUserRole role)
             : base(id)
         {
             SetFirstName(firstName);
             SetLastName(lastName);
-            Email = email ?? throw new ArgumentNullException(nameof(email));
+            Email = email?.Value;
             PhoneNumber = phoneNumber ?? throw new ArgumentNullException(nameof(phoneNumber));
             Role = role;
             AccountStatus = EnumAccountStatus.Active;

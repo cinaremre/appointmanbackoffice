@@ -9,7 +9,7 @@ namespace Rezervise.Domain.Events.User
 
         public UserProfileUpdatedEvent(
             Guid userId,
-            string email,
+            string? email,
             string fullName,
             string? updatedBy = null) : base(userId, email, fullName)
         {

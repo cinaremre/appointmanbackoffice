@@ -9,7 +9,7 @@ namespace Rezervise.Domain.Events.User
 
         public UserPasswordChangedEvent(
             Guid userId,
-            string email,
+            string? email,
             string fullName,
             string? changedBy = null) : base(userId, email, fullName)
         {

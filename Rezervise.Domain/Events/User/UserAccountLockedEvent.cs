@@ -10,7 +10,7 @@ namespace Rezervise.Domain.Events.User
 
         public UserAccountLockedEvent(
             Guid userId,
-            string email,
+            string? email,
             string fullName,
             string? reason = null,
             string? lockedBy = null) : base(userId, email, fullName)
