@@ -1,119 +1,57 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Rezervise.Infrastructure.Migrations
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Mesai kolonları time(7) → bigint (tick). SQL Server time ile bigint arasında
+    /// ALTER COLUMN dönüşümü olmadığından (Error 206: operand type clash) kolonlar
+    /// düşürülüp bigint olarak yeniden oluşturulur. Kolonlar migration sırasında
+    /// henüz boştur (fresh DB); mevcut veritabanlarında mesai saatleri yeniden girilir.
+    /// </summary>
     public partial class AlterWorkingHourTimesToTicks : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<long>(
-                name: "StartTime",
-                table: "WorkingHours",
-                type: "bigint",
-                nullable: false,
-                oldClrType: typeof(TimeSpan),
-                oldType: "time");
-
-            migrationBuilder.AlterColumn<long>(
-                name: "EndTime",
-                table: "WorkingHours",
-                type: "bigint",
-                nullable: false,
-                oldClrType: typeof(TimeSpan),
-                oldType: "time");
-
-            migrationBuilder.AlterColumn<long>(
-                name: "StartTime",
-                table: "EmployeeWorkingHours",
-                type: "bigint",
-                nullable: false,
-                oldClrType: typeof(TimeSpan),
-                oldType: "time");
-
-            migrationBuilder.AlterColumn<long>(
-                name: "EndTime",
-                table: "EmployeeWorkingHours",
-                type: "bigint",
-                nullable: false,
-                oldClrType: typeof(TimeSpan),
-                oldType: "time");
-
-            migrationBuilder.AlterColumn<long>(
-                name: "BreakStartTime",
-                table: "EmployeeWorkingHours",
-                type: "bigint",
-                nullable: true,
-                oldClrType: typeof(TimeSpan),
-                oldType: "time",
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "BreakEndTime",
-                table: "EmployeeWorkingHours",
-                type: "bigint",
-                nullable: true,
-                oldClrType: typeof(TimeSpan),
-                oldType: "time",
-                oldNullable: true);
+            DropTimeAddLong(migrationBuilder, "WorkingHours", "StartTime", nullable: false);
+            DropTimeAddLong(migrationBuilder, "WorkingHours", "EndTime", nullable: false);
+            DropTimeAddLong(migrationBuilder, "EmployeeWorkingHours", "StartTime", nullable: false);
+            DropTimeAddLong(migrationBuilder, "EmployeeWorkingHours", "EndTime", nullable: false);
+            DropTimeAddLong(migrationBuilder, "EmployeeWorkingHours", "BreakStartTime", nullable: true);
+            DropTimeAddLong(migrationBuilder, "EmployeeWorkingHours", "BreakEndTime", nullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<TimeSpan>(
-                name: "StartTime",
-                table: "WorkingHours",
-                type: "time",
-                nullable: false,
-                oldClrType: typeof(long),
-                oldType: "bigint");
+            DropLongAddTime(migrationBuilder, "WorkingHours", "StartTime", nullable: false);
+            DropLongAddTime(migrationBuilder, "WorkingHours", "EndTime", nullable: false);
+            DropLongAddTime(migrationBuilder, "EmployeeWorkingHours", "StartTime", nullable: false);
+            DropLongAddTime(migrationBuilder, "EmployeeWorkingHours", "EndTime", nullable: false);
+            DropLongAddTime(migrationBuilder, "EmployeeWorkingHours", "BreakStartTime", nullable: true);
+            DropLongAddTime(migrationBuilder, "EmployeeWorkingHours", "BreakEndTime", nullable: true);
+        }
 
-            migrationBuilder.AlterColumn<TimeSpan>(
-                name: "EndTime",
-                table: "WorkingHours",
-                type: "time",
-                nullable: false,
-                oldClrType: typeof(long),
-                oldType: "bigint");
+        private static void DropTimeAddLong(MigrationBuilder migrationBuilder, string table, string column, bool nullable)
+        {
+            migrationBuilder.DropColumn(name: column, table: table);
+            migrationBuilder.AddColumn<long>(
+                name: column,
+                table: table,
+                type: "bigint",
+                nullable: nullable);
+        }
 
-            migrationBuilder.AlterColumn<TimeSpan>(
-                name: "StartTime",
-                table: "EmployeeWorkingHours",
+        private static void DropLongAddTime(MigrationBuilder migrationBuilder, string table, string column, bool nullable)
+        {
+            migrationBuilder.DropColumn(name: column, table: table);
+            migrationBuilder.AddColumn<TimeSpan>(
+                name: column,
+                table: table,
                 type: "time",
-                nullable: false,
-                oldClrType: typeof(long),
-                oldType: "bigint");
-
-            migrationBuilder.AlterColumn<TimeSpan>(
-                name: "EndTime",
-                table: "EmployeeWorkingHours",
-                type: "time",
-                nullable: false,
-                oldClrType: typeof(long),
-                oldType: "bigint");
-
-            migrationBuilder.AlterColumn<TimeSpan>(
-                name: "BreakStartTime",
-                table: "EmployeeWorkingHours",
-                type: "time",
-                nullable: true,
-                oldClrType: typeof(long),
-                oldType: "bigint",
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<TimeSpan>(
-                name: "BreakEndTime",
-                table: "EmployeeWorkingHours",
-                type: "time",
-                nullable: true,
-                oldClrType: typeof(long),
-                oldType: "bigint",
-                oldNullable: true);
+                nullable: nullable);
         }
     }
 }
