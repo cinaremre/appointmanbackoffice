@@ -21,7 +21,9 @@ public class GetBusinessByIdQueryHandlerTests
     {
         var business = NewBusiness();
         // Kadıköy/İstanbul, posta kodu yok — kaydederken gönderilen şekil.
-        business.UpdateAddress(new Address(34, 438, "Caferağa Mahallesi, Moda Caddesi, No: 45, D: 3", null));
+        business.UpdateAddress(new Address(
+            34, 438, "Caferağa Mahallesi, Moda Caddesi, No: 45, D: 3", null,
+            coordinates: new Coordinates(40.987654, 29.025678)));
 
         var city = new City(34, "İstanbul", "TR");
         var district = new District(438, 34, "Kadıköy");
@@ -49,8 +51,29 @@ public class GetBusinessByIdQueryHandlerTests
         Assert.Equal("Caferağa Mahallesi, Moda Caddesi, No: 45, D: 3", dto.Address.Street);
         Assert.Null(dto.Address.PostalCode);
 
+        // Koordinatlar kaydederken gönderilen şekilde geri döner.
+        Assert.NotNull(dto.Address.Coordinates);
+        Assert.Equal(40.987654, dto.Address.Coordinates.Latitude);
+        Assert.Equal(29.025678, dto.Address.Coordinates.Longitude);
+
         // Tek metin adres posta kodu olmadan düzgün oluşmalı.
         Assert.Equal("Caferağa Mahallesi, Moda Caddesi, No: 45, D: 3", dto.Address.FullAddress);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnNullCoordinates_WhenAddressHasNoCoordinates()
+    {
+        var business = NewBusiness();
+        business.UpdateAddress(new Address(34, 438, "Moda Caddesi", null));
+
+        var sut = CreateSut(business, new City(34, "İstanbul", "TR"), new District(438, "Kadıköy"));
+
+        var result = await sut.Handle(new GetBusinessByIdQuery { BusinessId = BusinessId }, CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Value.Address);
+        // Koordinat yoksa alan null döner (istemci harita göstermez).
+        Assert.Null(result.Value.Address.Coordinates);
     }
 
     [Fact]

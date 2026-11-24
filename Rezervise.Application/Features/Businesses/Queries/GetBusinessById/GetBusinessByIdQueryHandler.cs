@@ -102,6 +102,13 @@ namespace Rezervise.Application.Features.Businesses.Queries.GetBusinessById
                 PostalCode = address.PostalCode,
                 BuildingNumber = address.BuildingNumber,
                 ApartmentNumber = address.ApartmentNumber,
+                Coordinates = address.Coordinates is null
+                    ? null
+                    : new CoordinatesDto
+                    {
+                        Latitude = address.Coordinates.Latitude,
+                        Longitude = address.Coordinates.Longitude
+                    },
                 FullAddress = address.GetFullAddress()
             };
         }

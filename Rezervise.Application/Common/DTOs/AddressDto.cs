@@ -18,6 +18,22 @@ public class AddressDto
     public string? BuildingNumber { get; set; }
     public string? ApartmentNumber { get; set; }
 
+    /// <summary>
+    /// Adresin koordinatları (kaydederken gönderilen şekil):
+    /// { "latitude": 40.987, "longitude": 29.025 }. Koordinat yoksa null.
+    /// </summary>
+    public CoordinatesDto? Coordinates { get; set; }
+
     /// <summary>Tek metin adres (eski GET davranışı ile aynı biçim).</summary>
     public string? FullAddress { get; set; }
+}
+
+/// <summary>
+/// Enlem/boylam çifti. Adres kaydındaki <c>coordinates</c> nesnesiyle birebir
+/// aynı alan adlarını kullanır; mobil düzenleme ekranı buradan okur.
+/// </summary>
+public class CoordinatesDto
+{
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
 }
