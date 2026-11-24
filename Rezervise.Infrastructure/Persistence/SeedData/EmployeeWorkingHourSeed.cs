@@ -87,6 +87,15 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
                 TimeSpan.FromHours(10), TimeSpan.FromHours(19),
                 TimeSpan.FromHours(13), TimeSpan.FromHours(14));
 
+            // Nur Gece (Emp13): gece vardiyası — her gün 00:00-08:00 (yerel gece yarısı dahil).
+            // NOT: EmployeeWorkingHour tek kayıtla gece yarısını geçemez (start < end kuralı);
+            // "akşam 20:00'den sabaha" kesintisiz vardiya bu nedenle 00:00-08:00 olarak seed edilir.
+            for (int day = 0; day <= 6; day++)
+            {
+                workingHours.Add(new EmployeeWorkingHour(Guid.NewGuid(), EmployeeSeed.Emp13Id, (DayOfWeek)day,
+                    TimeSpan.FromHours(0), TimeSpan.FromHours(8)));
+            }
+
             await context.EmployeeWorkingHours.AddRangeAsync(workingHours);
             await context.SaveChangesAsync();
 

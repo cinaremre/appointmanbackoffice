@@ -38,7 +38,10 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
                 (BusinessSeed.Biz5Id, ServiceCategorySeed.DentalServicesId),
 
                 // Nilüfer Ağda: Epilasyon
-                (BusinessSeed.Biz6Id, ServiceCategorySeed.HairRemovalId)
+                (BusinessSeed.Biz6Id, ServiceCategorySeed.HairRemovalId),
+
+                // Gece Kuaförü: Saç (gece vardiyası test verisi)
+                (BusinessSeed.Biz7Id, ServiceCategorySeed.HairServicesId)
             };
 
             var businessServiceCategories = assignments

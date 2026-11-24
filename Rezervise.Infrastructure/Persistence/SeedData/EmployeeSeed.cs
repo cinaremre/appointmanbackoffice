@@ -20,6 +20,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
         public static readonly Guid Emp10Id = Guid.Parse("c1000010-0000-0000-0000-000000000010");
         public static readonly Guid Emp11Id = Guid.Parse("c1000011-0000-0000-0000-000000000011");
         public static readonly Guid Emp12Id = Guid.Parse("c1000012-0000-0000-0000-000000000012");
+        public static readonly Guid Emp13Id = Guid.Parse("c1000013-0000-0000-0000-000000000013");
 
         public static async Task SeedAsync(AppDbContext context, ILogger logger)
         {
@@ -65,7 +66,11 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
                     BusinessSeed.Biz5Id, 2),
 
                 CreateEmployee(Emp12Id, "Fatma", "Uzman", "Ağda Uzmanı", "+905551110012",
-                    BusinessSeed.Biz6Id, 1)
+                    BusinessSeed.Biz6Id, 1),
+
+                // Gece vardiyası test verisi: Gece Kuaförü'nün gece personeli.
+                CreateEmployee(Emp13Id, "Nur", "Gece", "Gece Vardiyası Kuaförü", "+905551110013",
+                    BusinessSeed.Biz7Id, 1)
             };
 
             // Onur (Emp8) randevu kabul etmiyor

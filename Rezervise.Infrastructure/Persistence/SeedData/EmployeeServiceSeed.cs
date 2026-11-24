@@ -68,7 +68,10 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
                 // Fatma Uzman (Emp12)
                 (EmployeeSeed.Emp12Id, ServiceSeed.Svc20Id),
                 (EmployeeSeed.Emp12Id, ServiceSeed.Svc21Id),
-                (EmployeeSeed.Emp12Id, ServiceSeed.Svc22Id)
+                (EmployeeSeed.Emp12Id, ServiceSeed.Svc22Id),
+
+                // Nur Gece (Emp13) — gece vardiyası test verisi
+                (EmployeeSeed.Emp13Id, ServiceSeed.Svc23Id)
             };
 
             var employeeServices = assignments

@@ -30,6 +30,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
         public static readonly Guid Svc20Id = Guid.Parse("d1000020-0000-0000-0000-000000000020");
         public static readonly Guid Svc21Id = Guid.Parse("d1000021-0000-0000-0000-000000000021");
         public static readonly Guid Svc22Id = Guid.Parse("d1000022-0000-0000-0000-000000000022");
+        public static readonly Guid Svc23Id = Guid.Parse("d1000023-0000-0000-0000-000000000023");
 
         public static async Task SeedAsync(AppDbContext context, ILogger logger)
         {
@@ -73,7 +74,10 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
                 // Nilüfer Ağda hizmetleri
                 CreateService(Svc20Id, "Tüm Vücut Ağda", "Tüm vücut ağda", 400m, 90, ServiceCategorySeed.FullBodyWaxId, BusinessSeed.Biz6Id),
                 CreateService(Svc21Id, "Bacak Ağda", "Bacak ağda", 150m, 30, ServiceCategorySeed.LegWaxId, BusinessSeed.Biz6Id),
-                CreateService(Svc22Id, "Koltuk Altı Ağda", "Koltuk altı", 80m, 15, ServiceCategorySeed.UnderarmWaxId, BusinessSeed.Biz6Id)
+                CreateService(Svc22Id, "Koltuk Altı Ağda", "Koltuk altı", 80m, 15, ServiceCategorySeed.UnderarmWaxId, BusinessSeed.Biz6Id),
+
+                // Gece Kuaförü hizmeti (gece vardiyası test verisi)
+                CreateService(Svc23Id, "Gece Saç Kesimi", "Gece vardiyası saç kesimi", 200m, 30, ServiceCategorySeed.HaircutId, BusinessSeed.Biz7Id)
             };
 
             await context.Services.AddRangeAsync(services);

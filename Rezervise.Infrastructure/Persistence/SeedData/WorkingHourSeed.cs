@@ -41,6 +41,11 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
             AddWeekSchedule(workingHours, BusinessSeed.Biz6Id,
                 TimeSpan.FromHours(10), TimeSpan.FromHours(19), TimeSpan.FromHours(10), TimeSpan.FromHours(17));
 
+            // Gece Kuaförü: her gün 00:00-24:00 (tam gece dahil açık)
+            AddWeekSchedule(workingHours, BusinessSeed.Biz7Id,
+                TimeSpan.FromHours(0), TimeSpan.FromHours(24),
+                TimeSpan.FromHours(0), TimeSpan.FromHours(24), sundayOpen: true);
+
             await context.WorkingHours.AddRangeAsync(workingHours);
             await context.SaveChangesAsync();
 

@@ -15,6 +15,7 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
         public static readonly Guid Biz4Id = Guid.Parse("b1000004-0000-0000-0000-000000000004");
         public static readonly Guid Biz5Id = Guid.Parse("b1000005-0000-0000-0000-000000000005");
         public static readonly Guid Biz6Id = Guid.Parse("b1000006-0000-0000-0000-000000000006");
+        public static readonly Guid Biz7Id = Guid.Parse("b1000007-0000-0000-0000-000000000007");
 
         public static async Task SeedAsync(AppDbContext context, ILogger logger)
         {
@@ -60,7 +61,14 @@ namespace Rezervise.Infrastructure.Persistence.SeedData
                     EnumBusinessType.Waxing, "FSM Bulvarı", "55", "1",
                     16, 200, "16110",
                     "+902241234567", "info@niluferagda.com", UserSeed.Owner3Id,
-                    BusinessCategorySeed.WaxingId, 4.3m, 6)
+                    BusinessCategorySeed.WaxingId, 4.3m, 6),
+
+                // Gece vardiyası test verisi: tam gece açık işletme (00:00-24:00 mesai).
+                CreateBusiness(Biz7Id, "Gece Kuaförü", "Gece boyu açık kuaför — gece vardiyası test verisi.",
+                    EnumBusinessType.Hairdresser, "Gece Caddesi", "7", "1",
+                    34, 438, "34710",
+                    "+902121234570", "info@gecekuvaforu.com", UserSeed.Owner1Id,
+                    BusinessCategorySeed.HairdresserId, 4.6m, 15)
             };
 
             foreach (var business in businesses)
