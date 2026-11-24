@@ -197,7 +197,11 @@ namespace Rezervise.Infrastructure.Persistence.Configurations
                 .IsUnique()
                 .HasDatabaseName("UX_Users_Email")
                 .HasFilter("[Email] IS NOT NULL");
-            builder.HasIndex(x => x.PhoneNumber).IsUnique();
+            // Telefon unique index'ine ad verilir: AppDbContext'in duplicate-key mesaj
+            // eslemesi (UX_Users_PhoneNumber) ancak bu adla devreye girer.
+            builder.HasIndex(x => x.PhoneNumber)
+                .IsUnique()
+                .HasDatabaseName("UX_Users_PhoneNumber");
             builder.HasIndex(x => x.AccountStatus);
             builder.HasIndex(x => x.CityId);
             builder.HasIndex(x => x.DistrictId);

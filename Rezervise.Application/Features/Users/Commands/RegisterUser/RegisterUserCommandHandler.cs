@@ -27,6 +27,12 @@ namespace Rezervise.Application.Features.Users.Commands.RegisterUser
         private readonly ISmsCodeSender _smsCodeSender;
         private readonly IDateTimeService _dateTimeService;
 
+        /// <summary>Telefon tekilliğini sağlayan veritabanı index adı.</summary>
+        private const string PhoneIndexName = "UX_Users_PhoneNumber";
+
+        /// <summary>E-posta tekilliğini sağlayan veritabanı index adı.</summary>
+        private const string EmailIndexName = "UX_Users_Email";
+
         public RegisterUserCommandHandler(
             IRepository<User> userRepository,
             IUnitOfWork unitOfWork,
@@ -145,10 +151,17 @@ namespace Rezervise.Application.Features.Users.Commands.RegisterUser
 
                 return Result<Guid>.Success(user.Id);
             }
-            catch (DuplicateKeyException)
+            catch (DuplicateKeyException ex)
             {
                 // Es zamanlı iki kayıt denemesinde ikincisi unique index'e takılır.
-                return Result<Guid>.Failure(ConcurrencyErrors.DuplicateRegistration());
+                // Hangi alanın çakıştığı index adından okunur; boylece istemci
+                // "telefon kayıtlı" ile "e-posta kayıtlı" durumunu ayırt edebilir.
+                return Result<Guid>.Failure(ex.IndexName switch
+                {
+                    PhoneIndexName => Error.Conflict("User.PhoneTaken"),
+                    EmailIndexName => Error.Conflict("User.EmailTaken"),
+                    _ => ConcurrencyErrors.DuplicateRegistration()
+                });
             }
             catch (ConcurrencyConflictException)
             {
