@@ -85,6 +85,22 @@ namespace Rezervise.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
+        /// <summary>
+        /// Kategorinin eslestiği isletme tipini günceller. Seed gibi idempotent
+        /// akislarda mevcut kaydin tipinin düzeltilebilmesi için gereklidir;
+        /// ctor yalnizca ilk olusturmada deger atar.
+        /// </summary>
+        /// <param name="businessType">Yeni isletme tipi; null ise tip temizlenir.</param>
+        public void SetCorrespondingBusinessType(EnumBusinessType? businessType)
+        {
+            // Enum üyesi olmayan (tanimsiz) bir sayisal deger kaydedilmemeli.
+            if (businessType.HasValue && !Enum.IsDefined(typeof(EnumBusinessType), businessType.Value))
+                throw new DomainException("Geçersiz işletme tipi.");
+
+            CorrespondingBusinessType = businessType;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
         public void Activate()
         {
             IsActive = true;
