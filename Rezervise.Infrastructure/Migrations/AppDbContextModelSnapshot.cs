@@ -3968,7 +3968,8 @@ namespace Rezervise.Infrastructure.Migrations
                     b.HasIndex("LanguageCode");
 
                     b.HasIndex("PhoneNumber")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("UX_Users_PhoneNumber");
 
                     b.HasIndex("PhoneVerificationCodeHash")
                         .HasDatabaseName("IX_Users_PhoneVerificationCodeHash")

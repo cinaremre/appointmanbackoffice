@@ -1,66 +1,43 @@
-using Rezervise.Infrastructure.Persistence.Context;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Rezervise.Infrastructure.Migrations
 {
-    /// <summary>
-    /// Users.PhoneNumber değerlerini kanonik (+90XXXXXXXXXX) biçime getirir.
-    /// Eski PhoneNumber üretimi ülke kodu yazılmamış girdilerde baştaki trunk sıfırını
-    /// koruduğu için aynı numara "+9005551112233" ve "+905551112233" gibi farklı
-    /// değerlerle saklanabiliyordu. Bu fark yüzünden kayıt sırasındaki tekillik
-    /// kontrolü ikinci kaydı yakalayamıyordu. Index de aynı kolon üzerinde olduğu için
-    /// veritabanı da ikinci kaydı engellemiyordu.
-    ///
-    /// Normalizasyon sırasında iki satır aynı değere inebileceği için unique index
-    /// normalizasyondan SONRA oluşturulur. Önceden oluşmuş çift kayıt varsa index
-    /// oluşturma adımı hata verir; bu durumda önce
-    /// docs/scripts/user-phone-normalization.sql script'indeki çakışma raporu
-    /// incelenip mükerrer kayıtlar temizlenmelidir.
-    /// </summary>
-    [DbContext(typeof(AppDbContext))]
-    [Migration("20261125120000_NormalizeUserPhoneNumbers")]
+    /// <inheritdoc />
     public partial class NormalizeUserPhoneNumbers : Migration
     {
-        /// <inheritdoç />
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Eski index otomatik adla kurulmuştu; config artık UX_Users_PhoneNumber
-            // adını kullanıyor (duplicate-key mesaj eşlemesi bu ada bağlı).
-            migrationBuilder.DropIndex(
+            migrationBuilder.RenameIndex(
                 name: "IX_Users_PhoneNumber",
-                table: "Users");
-
-            migrationBuilder.Sql(NormalizePhoneNumbersSql);
-
-            migrationBuilder.CreateIndex(
-                name: "UX_Users_PhoneNumber",
                 table: "Users",
-                column: "PhoneNumber",
-                unique: true);
+                newName: "UX_Users_PhoneNumber");
+
+            // Index adi degisimi tek basina yetmiyor: eski PhoneNumber uretimi ulke kodu
+            // yazilmamis girdilerde bastaki trunk sifirini koruyordu ("+9005551112233").
+            // Ayni numara farkli bicimlerde saklandigi icin kayit sirasindaki tekillik
+            // kontrolu ikinci kaydi yakalayamiyordu. Mevcut satirlar kanonik bicime
+            // cevrilir; index zaten kolon uzerinde oldugu icin normalizasyon sonrasi
+            // mukerrer kayit varsa bu adim hata verir (once
+            // docs/scripts/user-phone-normalization.sql ile cakisma temizlenmelidir).
+            migrationBuilder.Sql(NormalizePhoneNumbersSql);
         }
 
-        /// <inheritdoç />
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
+            migrationBuilder.RenameIndex(
                 name: "UX_Users_PhoneNumber",
-                table: "Users");
-
-            // Normalizasyon geri alınamaz; yalnızca index adı eski haline döner.
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_PhoneNumber",
                 table: "Users",
-                column: "PhoneNumber",
-                unique: true);
+                newName: "IX_Users_PhoneNumber");
         }
 
         /// <summary>
-        /// Her satır için en uzun eşleşen ülke kodunu bulur ve ulusal numaranın başındaki
-        /// trunk sıfırlarını temizler. Domain tarafındaki PhoneNumber kanonikleştirmesiyle
-        /// aynı sonucu üretir; böylece eski kayıtlar da yeni kontrollere takılır.
+        /// Her satir icin en uzun eslesen ulke kodunu bulur ve ulusal numaranin basindaki
+        /// trunk sifirlarini temizler. Domain tarafindaki PhoneNumber kanoniklestirmesiyle
+        /// ayni sonucu uretir; boylece eski kayitlar da yeni kontrollere takilir.
         /// </summary>
         private const string NormalizePhoneNumbersSql = @"
 ;WITH Codes AS (
