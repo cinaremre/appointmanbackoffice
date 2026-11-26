@@ -12,6 +12,17 @@ public class AddressDto
     public string? City { get; set; }
     public int? DistrictId { get; set; }
     public string? District { get; set; }
+
+    /// <summary>
+    /// Semt (locality) kimliği. Kayıtta gönderilmediyse null döner.
+    /// </summary>
+    public int? LocalityId { get; set; }
+
+    /// <summary>
+    /// Mahalle kimliği. Kayıtta gönderilmediyse null döner.
+    /// </summary>
+    public int? NeighborhoodId { get; set; }
+
     public string? Country { get; set; }
     public string? Street { get; set; }
     public string? PostalCode { get; set; }

@@ -97,6 +97,8 @@ namespace Rezervise.Application.Features.Businesses.Queries.GetBusinessById
                 City = city?.Name,
                 DistrictId = address.DistrictId,
                 District = district?.Name,
+                LocalityId = address.LocalityId,
+                NeighborhoodId = address.NeighborhoodId,
                 Country = ResolveCountryName(city),
                 Street = address.Street,
                 PostalCode = address.PostalCode,

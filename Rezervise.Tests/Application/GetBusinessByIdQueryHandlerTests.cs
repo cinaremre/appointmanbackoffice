@@ -23,7 +23,9 @@ public class GetBusinessByIdQueryHandlerTests
         // Kadıköy/İstanbul, posta kodu yok — kaydederken gönderilen şekil.
         business.UpdateAddress(new Address(
             34, 438, "Caferağa Mahallesi, Moda Caddesi, No: 45, D: 3", null,
-            coordinates: new Coordinates(40.987654, 29.025678)));
+            coordinates: new Coordinates(40.987654, 29.025678),
+            localityId: 1984,
+            neighborhoodId: 51001));
 
         var city = new City(34, "İstanbul", "TR");
         var district = new District(438, 34, "Kadıköy");
@@ -47,6 +49,8 @@ public class GetBusinessByIdQueryHandlerTests
         Assert.Equal("İstanbul", dto.Address.City);
         Assert.Equal(438, dto.Address.DistrictId);
         Assert.Equal("Kadıköy", dto.Address.District);
+        Assert.Equal(1984, dto.Address.LocalityId);
+        Assert.Equal(51001, dto.Address.NeighborhoodId);
         Assert.Equal("Türkiye", dto.Address.Country);
         Assert.Equal("Caferağa Mahallesi, Moda Caddesi, No: 45, D: 3", dto.Address.Street);
         Assert.Null(dto.Address.PostalCode);
@@ -74,6 +78,9 @@ public class GetBusinessByIdQueryHandlerTests
         Assert.NotNull(result.Value.Address);
         // Koordinat yoksa alan null döner (istemci harita göstermez).
         Assert.Null(result.Value.Address.Coordinates);
+        // Locality / mahalle gönderilmediyse null döner.
+        Assert.Null(result.Value.Address.LocalityId);
+        Assert.Null(result.Value.Address.NeighborhoodId);
     }
 
     [Fact]
