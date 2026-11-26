@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Compile Remove="Common\DTOs\SemtDto.cs" />
-    <Compile Remove="Features\Neighborhoods\Queries\GetByDistrict\GetNeighborhoodsByDistrictQueryHandler.cs" />
     <Compile Remove="Features\Neighborhoods\Queries\GetBySemt\GetNeighborhoodsBySemtQueryHandler.cs" />
     <Compile Remove="Features\Semts\Queries\GetByDistrict\GetSemtsByDistrictQuery.cs" />
   </ItemGroup>
