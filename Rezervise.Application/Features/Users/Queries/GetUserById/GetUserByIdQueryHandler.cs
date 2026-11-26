@@ -37,6 +37,8 @@ namespace Rezervise.Application.Features.Users.Queries.GetUserById
                     Role = user.Role,
                     DateOfBirth = user.DateOfBirth,
                     ProfilePictureUrl = user.ProfilePictureUrl,
+                    CityId = user.CityId,
+                    DistrictId = user.DistrictId,
                     IsEmailVerified = user.IsEmailVerified,
                     IsPhoneVerified = user.IsPhoneVerified,
                     CreatedAt = user.CreatedAt

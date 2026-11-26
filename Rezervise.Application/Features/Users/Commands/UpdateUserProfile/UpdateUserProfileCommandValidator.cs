@@ -30,6 +30,13 @@ namespace Rezervise.Application.Features.Users.Commands.UpdateUserProfile
                 .Must(date => !date.HasValue || date.Value < DateTime.UtcNow.AddYears(-18))
                 .WithMessage("Yaş 18'den büyük olmalıdır.");
 
+            RuleFor(x => x.Email)
+                .EmailAddress()
+                .WithMessage("Geçersiz e-posta adresi.")
+                .MaximumLength(255)
+                .WithMessage("E-posta en fazla 255 karakter olabilir.")
+                .When(x => !string.IsNullOrWhiteSpace(x.Email));
+
             RuleFor(x => x.CityId)
                 .GreaterThan(0)
                 .When(x => x.CityId.HasValue)

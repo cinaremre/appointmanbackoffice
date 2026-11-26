@@ -12,6 +12,13 @@ namespace Rezervise.Application.Common.DTOs
         public EnumUserRole Role { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public string? ProfilePictureUrl { get; set; }
+
+        /// <summary>Kullanıcının kayıtlı ili (arama varsayılanı).</summary>
+        public int? CityId { get; set; }
+
+        /// <summary>Kullanıcının kayıtlı ilçesi (arama varsayılanı).</summary>
+        public int? DistrictId { get; set; }
+
         public bool IsEmailVerified { get; set; }
         public bool IsPhoneVerified { get; set; }
         public DateTime CreatedAt { get; set; }

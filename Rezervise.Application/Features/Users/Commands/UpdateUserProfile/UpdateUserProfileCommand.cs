@@ -8,6 +8,13 @@ namespace Rezervise.Application.Features.Users.Commands.UpdateUserProfile
         public Guid UserId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
+        /// <summary>
+        /// Profil güncellemesinde değiştirilecek e-posta. Boş bırakılırsa mevcut
+        /// e-posta korunur. Değiştiğinde doğrulama durumu sıfırlanır.
+        /// </summary>
+        public string? Email { get; set; }
+
         public DateTime? DateOfBirth { get; set; }
         public string? ProfilePictureUrl { get; set; }
 
