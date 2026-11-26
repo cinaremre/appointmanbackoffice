@@ -3,6 +3,7 @@ using Rezervise.Application.Common.Results;
 using Rezervise.Application.Features.Cities.Queries.GetAll;
 using Rezervise.Application.Features.Districts.Queries.GetByCity;
 using Rezervise.Application.Features.Localities.Queries.GetByDistrict;
+using Rezervise.Application.Features.Neighborhoods.Queries.GetByDistrict;
 using Rezervise.Application.Features.Neighborhoods.Queries.GetByLocality;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -100,6 +101,35 @@ namespace Rezervise.Api.Controllers
             var result = await _mediator.Send(query);
 
             // 3. Sonuça göre cevap döndür
+            if (result.IsSuccess)
+                return Ok(result);
+
+            return NotFound(result);
+        }
+
+        /// <summary>
+        /// Bir ilçenin tüm mahallelerini (semt ayrımı olmadan) getirir.
+        /// Mobil adres seçiminde ilçe seçildikten sonra tek çağrıyla mahalle
+        /// listesi alınır; semti (localityId) boş olan mahalleler de döner.
+        /// </summary>
+        /// <param name="districtId">İlçe ID'si</param>
+        /// <param name="onlyActive">Sadece aktif mahalleler mi? (opsiyonel)</param>
+        /// <returns>Mahalle listesi</returns>
+        [HttpGet("districts/{districtId}/neighborhoods")]
+        [ProducesResponseType(typeof(Result<List<NeighborhoodDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<List<NeighborhoodDto>>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetNeighborhoodsByDistrict(
+            int districtId,
+            [FromQuery] bool? onlyActive = null)
+        {
+            var query = new GetNeighborhoodsByDistrictQuery
+            {
+                DistrictId = districtId,
+                OnlyActive = onlyActive
+            };
+
+            var result = await _mediator.Send(query);
+
             if (result.IsSuccess)
                 return Ok(result);
 
